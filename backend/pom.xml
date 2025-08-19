@@ -10,8 +10,8 @@
     <relativePath/>
   </parent>
 
-  <groupId>com.architecturemarketplace</groupId>
-  <artifactId>architecture-marketplace</artifactId>
+  <groupId>com.rumantra</groupId>
+  <artifactId>rumantra</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>Architecture Marketplace</name>
   <description>A platform connecting architects and clients</description>

@@ -91,9 +91,9 @@
     </springProfile>
 
     <!-- Module-specific Logging Configurations -->
-    <logger name="com.architecturemarketplace.user" level="DEBUG"/>
-    <logger name="com.architecturemarketplace.security" level="DEBUG"/>
-    <logger name="com.architecturemarketplace.project" level="DEBUG"/>
+    <logger name="com.rumantra.user" level="DEBUG"/>
+    <logger name="com.rumantra.security" level="DEBUG"/>
+    <logger name="com.rumantra.project" level="DEBUG"/>
 
     <!-- Framework and Third-Party Logging -->
     <logger name="org.springframework" level="INFO"/>
