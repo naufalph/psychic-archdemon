@@ -1,10 +1,216 @@
 package com.rumantra.architect.service;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.rumantra.architect.domain.Architect;
+import com.rumantra.architect.dto.*;
+import com.rumantra.architect.repository.ArchitectRepository;
+import com.rumantra.security.JwtUtils;
+import com.rumantra.shared.exception.ResourceNotFoundException;
+import com.rumantra.user.domain.User;
+import com.rumantra.user.repository.UserRepository;
+
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class ArchitectService {
 
-  // TODO: Implement architect service methods
+  private final ArchitectRepository architectRepository;
+  private final UserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
+  private final JwtUtils jwtUtils;
 
+  @Transactional
+  public ArchitectDto signup(SignupRequestDto signupRequest) {
+    // Check if username already exists
+    if (userRepository.existsByUserName(signupRequest.getUserName())) {
+      throw new IllegalArgumentException("Username is already taken!");
+    }
+
+    // Check if email already exists
+    if (userRepository.existsByEmail(signupRequest.getEmail())) {
+      throw new IllegalArgumentException("Email is already in use!");
+    }
+
+    // Check if KTP number already exists
+    if (architectRepository.existsByKtpNum(signupRequest.getKtpNum())) {
+      throw new IllegalArgumentException("KTP number is already registered!");
+    }
+
+    // Check if NPWP already exists
+    if (architectRepository.existsByNpwp(signupRequest.getNpwp())) {
+      throw new IllegalArgumentException("NPWP is already registered!");
+    }
+
+    // Create new user
+    User user =
+        User.builder()
+            .userName(signupRequest.getUserName())
+            .email(signupRequest.getEmail())
+            .password(passwordEncoder.encode(signupRequest.getPassword()))
+            .isEmailVerified(false)
+            .isActive(true)
+            .createdAt(Timestamp.valueOf(LocalDateTime.now()))
+            .build();
+
+    user = userRepository.save(user);
+
+    // Create architect profile
+    Architect architect =
+        Architect.builder()
+            .user(user)
+            .companyName(signupRequest.getCompanyName())
+            .companySite(signupRequest.getCompanySite())
+            .contactName(signupRequest.getContactName())
+            .ktpNum(signupRequest.getKtpNum())
+            .ktpVerified(false)
+            .npwp(signupRequest.getNpwp())
+            .npwpVerified(false)
+            .bidLeft(10) // Default bid count
+            .successMatch(0)
+            .successProject(0)
+            .build();
+
+    architect = architectRepository.save(architect);
+
+    return mapToDto(architect);
+  }
+
+  public AuthResponseDto login(LoginRequestDto loginRequest) {
+    // Find user by username or email
+    User user =
+        userRepository
+            .findByUserNameOrEmail(
+                loginRequest.getUsernameOrEmail(), loginRequest.getUsernameOrEmail())
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        "User not found with username or email: "
+                            + loginRequest.getUsernameOrEmail()));
+
+    // Check password
+    if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+      throw new IllegalArgumentException("Invalid password!");
+    }
+
+    // Check if user is active
+    if (!user.isActive()) {
+      throw new IllegalArgumentException("User account is deactivated!");
+    }
+
+    // Find architect profile
+    Architect architect =
+        architectRepository
+            .findByUserId(user.getId())
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        "Architect profile not found for user: " + user.getUserName()));
+
+    // Generate JWT token
+    String jwt = jwtUtils.generateJwtToken(user.getUserName());
+
+    return AuthResponseDto.builder()
+        .token(jwt)
+        .type("Bearer")
+        .id(user.getId())
+        .userName(user.getUserName())
+        .email(user.getEmail())
+        .architect(mapToDto(architect))
+        .build();
+  }
+
+  @Transactional
+  public ArchitectDto updateArchitect(Long userId, UpdateArchitectDto updateRequest) {
+    // Find architect by user ID
+    Architect architect =
+        architectRepository
+            .findByUserId(userId)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Architect not found for user ID: " + userId));
+
+    User user = architect.getUser();
+
+    // Update user fields if provided
+    if (updateRequest.getEmail() != null && !updateRequest.getEmail().equals(user.getEmail())) {
+      // Check if new email is already taken
+      if (userRepository.existsByEmail(updateRequest.getEmail())) {
+        throw new IllegalArgumentException("Email is already in use!");
+      }
+      user.setEmail(updateRequest.getEmail());
+    }
+
+    if (updateRequest.getPassword() != null) {
+      user.setPassword(passwordEncoder.encode(updateRequest.getPassword()));
+    }
+
+    user.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+    userRepository.save(user);
+
+    // Update architect fields if provided
+    if (updateRequest.getCompanyName() != null) {
+      architect.setCompanyName(updateRequest.getCompanyName());
+    }
+
+    if (updateRequest.getCompanySite() != null) {
+      architect.setCompanySite(updateRequest.getCompanySite());
+    }
+
+    if (updateRequest.getContactName() != null) {
+      architect.setContactName(updateRequest.getContactName());
+    }
+
+    if (updateRequest.getKtpNum() != null
+        && !updateRequest.getKtpNum().equals(architect.getKtpNum())) {
+      // Check if new KTP number is already taken
+      if (architectRepository.existsByKtpNum(updateRequest.getKtpNum())) {
+        throw new IllegalArgumentException("KTP number is already registered!");
+      }
+      architect.setKtpNum(updateRequest.getKtpNum());
+    }
+
+    if (updateRequest.getNpwp() != null && !updateRequest.getNpwp().equals(architect.getNpwp())) {
+      // Check if new NPWP is already taken
+      if (architectRepository.existsByNpwp(updateRequest.getNpwp())) {
+        throw new IllegalArgumentException("NPWP is already registered!");
+      }
+      architect.setNpwp(updateRequest.getNpwp());
+    }
+
+    architect = architectRepository.save(architect);
+
+    return mapToDto(architect);
+  }
+
+  public ArchitectDto getArchitectByUserId(Long userId) {
+    Architect architect =
+        architectRepository
+            .findByUserId(userId)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Architect not found for user ID: " + userId));
+    return mapToDto(architect);
+  }
+
+  private ArchitectDto mapToDto(Architect architect) {
+    return ArchitectDto.builder()
+        .id(architect.getId())
+        .userId(architect.getUser().getId())
+        .companyName(architect.getCompanyName())
+        .companySite(architect.getCompanySite())
+        .contactName(architect.getContactName())
+        .ktpNum(architect.getKtpNum())
+        .ktpVerified(architect.isKtpVerified())
+        .npwp(architect.getNpwp())
+        .npwpVerified(architect.isNpwpVerified())
+        .bidLeft(architect.getBidLeft())
+        .successMatch(architect.getSuccessMatch())
+        .successProject(architect.getSuccessProject())
+        .build();
+  }
 }

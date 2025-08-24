@@ -1,11 +1,22 @@
 package com.rumantra.user.repository;
 
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import com.rumantra.user.domain.User;
+
 @Repository
-public interface UserRepository extends JpaRepository<Object, Long> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
-  // TODO: Implement user repository methods
+  Optional<User> findByUserName(String userName);
 
+  Optional<User> findByEmail(String email);
+
+  Optional<User> findByUserNameOrEmail(String userName, String email);
+
+  boolean existsByUserName(String userName);
+
+  boolean existsByEmail(String email);
 }

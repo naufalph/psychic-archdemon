@@ -30,7 +30,7 @@ public class Architect {
   @Column(name = "company_site")
   private String companySite;
 
-  @Column(name = "company_name", nullable = false, length = 255)
+  @Column(name = "contact_name", nullable = false, length = 255)
   private String contactName;
 
   @Column(name = "ktp_num", nullable = false, length = 16)

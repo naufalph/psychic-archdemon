@@ -1,9 +1,9 @@
 services:
   postgres:
     image: postgres:15-alpine
-    container_name: architecture-marketplace-db
+    container_name: rumantra-database
     environment:
-      POSTGRES_DB: architecture_marketplace
+      POSTGRES_DB: rumantra-db
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
     ports:
@@ -11,11 +11,11 @@ services:
     volumes:
       - postgres-data:/var/lib/postgresql/data
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+#    healthcheck:
+#      test: ["CMD-SHELL", "pg_isready -U postgres"]
+#      interval: 5s
+#      timeout: 5s
+#      retries: 5
 
 volumes:
   postgres-data:

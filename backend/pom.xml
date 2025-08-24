@@ -13,7 +13,7 @@
   <groupId>com.rumantra</groupId>
   <artifactId>rumantra</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>Architecture Marketplace</name>
+  <name>Rumantra</name>
   <description>A platform connecting architects and clients</description>
 
   <properties>
