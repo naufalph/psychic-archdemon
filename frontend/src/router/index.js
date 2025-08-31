@@ -22,7 +22,7 @@ const routes = [
     name: 'Home',
     component: Home,
     meta: {
-      title: 'Home - ArchMatch',
+      title: 'Home - Rumantra',
       description: 'Connect with talented architects for your next project'
     }
   },
@@ -31,7 +31,7 @@ const routes = [
     name: 'About',
     component: About,
     meta: {
-      title: 'About - ArchMatch',
+      title: 'About - Rumantra',
       description: 'Learn more about our platform and mission'
     }
   },
@@ -42,7 +42,7 @@ const routes = [
     name: 'Login',
     component: Login,
     meta: {
-      title: 'Sign In - ArchMatch',
+      title: 'Sign In - Rumantra',
       requiresGuest: true
     }
   },
@@ -51,7 +51,7 @@ const routes = [
     name: 'Register',
     component: Register,
     meta: {
-      title: 'Sign Up - ArchMatch',
+      title: 'Sign Up - Rumantra',
       requiresGuest: true
     }
   },
@@ -62,7 +62,7 @@ const routes = [
     name: 'Projects',
     component: Projects,
     meta: {
-      title: 'Projects - ArchMatch',
+      title: 'Projects - Rumantra',
       description: 'Browse available architecture projects'
     }
   },
@@ -71,7 +71,7 @@ const routes = [
     name: 'CreateProject',
     component: CreateProject,
     meta: {
-      title: 'Create Project - ArchMatch',
+      title: 'Create Project - Rumantra',
       requiresAuth: true,
       roles: ['CLIENT', 'ADMIN']
     }
@@ -82,7 +82,7 @@ const routes = [
     component: ProjectDetail,
     props: true,
     meta: {
-      title: 'Project Details - ArchMatch'
+      title: 'Project Details - Rumantra'
     }
   },
 
@@ -92,7 +92,7 @@ const routes = [
     name: 'Architects',
     component: Architects,
     meta: {
-      title: 'Architects - ArchMatch',
+      title: 'Architects - Rumantra',
       description: 'Discover talented architects'
     }
   },
@@ -102,7 +102,7 @@ const routes = [
     component: ArchitectProfile,
     props: true,
     meta: {
-      title: 'Architect Profile - ArchMatch'
+      title: 'Architect Profile - Rumantra'
     }
   },
 
@@ -112,7 +112,7 @@ const routes = [
     name: 'Dashboard',
     component: Dashboard,
     meta: {
-      title: 'Dashboard - ArchMatch',
+      title: 'Dashboard - Rumantra',
       requiresAuth: true
     }
   },
@@ -121,7 +121,7 @@ const routes = [
     name: 'Profile',
     component: Profile,
     meta: {
-      title: 'My Profile - ArchMatch',
+      title: 'My Profile - Rumantra',
       requiresAuth: true
     }
   },
@@ -132,7 +132,7 @@ const routes = [
     name: 'AdminDashboard',
     component: AdminDashboard,
     meta: {
-      title: 'Admin Dashboard - ArchMatch',
+      title: 'Admin Dashboard - Rumantra',
       requiresAuth: true,
       roles: ['ADMIN']
     }
@@ -144,7 +144,7 @@ const routes = [
     name: 'NotFound',
     component: NotFound,
     meta: {
-      title: 'Page Not Found - ArchMatch'
+      title: 'Page Not Found - Rumantra'
     }
   },
   {

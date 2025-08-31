@@ -22,6 +22,11 @@ public class UpdateArchitectDto {
   private String contactName;
 
   @Pattern(regexp = "^[0-9]{16}$", message = "KTP number must be exactly 16 digits")
+  private String phoneNum;
+
+  private String category;
+
+  @Pattern(regexp = "^[0-9]{16}$", message = "KTP number must be exactly 16 digits")
   private String ktpNum;
 
   @Pattern(regexp = "^[0-9]{15,16}$", message = "NPWP must be 15 or 16 digits")

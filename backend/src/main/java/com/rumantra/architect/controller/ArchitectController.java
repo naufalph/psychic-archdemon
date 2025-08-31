@@ -10,24 +10,21 @@ import com.rumantra.architect.service.ArchitectService;
 import com.rumantra.security.UserPrincipal;
 import com.rumantra.shared.dto.ApiResponse;
 
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @RestController
-@RequestMapping("/api/v1/architects")
+@RequestMapping("/rmtr/architects")
 @RequiredArgsConstructor
 public class ArchitectController {
 
   private final ArchitectService architectService;
 
-  @PostMapping("/signup")
-  public ResponseEntity<ApiResponse<ArchitectDto>> signup(
-      @Valid @RequestBody SignupRequestDto signupRequest) {
+  @PostMapping("/register")
+  public ResponseEntity<ApiResponse<ArchitectDto>> register(
+      @Valid @RequestBody ArchitectSignupRequestDto signupRequest) {
     try {
-      ArchitectDto architect = architectService.signup(signupRequest);
+      ArchitectDto architect = architectService.register(signupRequest);
       return ResponseEntity.status(HttpStatus.CREATED)
           .body(
               ApiResponse.<ArchitectDto>builder()
@@ -44,36 +41,6 @@ public class ArchitectController {
               ApiResponse.<ArchitectDto>builder()
                   .success(false)
                   .message("An error occurred during registration")
-                  .build());
-    }
-  }
-
-  @PostMapping("/login")
-  public ResponseEntity<ApiResponse<AuthResponseDto>> login(
-      @Valid @RequestBody LoginRequestDto loginRequest, HttpServletRequest request) {
-    try {
-      AuthResponseDto authResponse = architectService.login(loginRequest);
-      request.getSession().setAttribute("architectDto", authResponse.getArchitect());
-      return ResponseEntity.ok(
-          ApiResponse.<AuthResponseDto>builder()
-              .success(true)
-              .message("Login successful!")
-              .data(authResponse)
-              .timestamp(LocalDateTime.now().toString())
-              .build());
-    } catch (IllegalArgumentException e) {
-      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-          .body(
-              ApiResponse.<AuthResponseDto>builder()
-                  .success(false)
-                  .message(e.getMessage())
-                  .build());
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(
-              ApiResponse.<AuthResponseDto>builder()
-                  .success(false)
-                  .message("An error occurred during login")
                   .build());
     }
   }

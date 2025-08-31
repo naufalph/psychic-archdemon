@@ -1,34 +1,20 @@
--- Create rmtr_architect table based on JPA entity
+-- Create rmtr_architect table
 CREATE TABLE IF NOT EXISTS rmtr_architect (
     id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT NOT NULL UNIQUE,
-    company_name VARCHAR(255) NOT NULL,
+    user_id BIGINT NOT NULL UNIQUE REFERENCES rmtr_user(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    company_name VARCHAR(255),
     company_site VARCHAR(255),
-    contact_name VARCHAR(255) NOT NULL,
-    ktp_num VARCHAR(16) NOT NULL,
+    contact_name VARCHAR(255),
+    category VARCHAR(10),
+    phone_num VARCHAR(16),
+    ktp_num VARCHAR(16),
     is_ktp_verified BOOLEAN DEFAULT FALSE,
-    npwp VARCHAR(16) NOT NULL,
+    npwp VARCHAR(16),
     is_npwp_verified BOOLEAN DEFAULT FALSE,
-    bid_left INT,
-    success_match INT DEFAULT 0,
-    success_project INT DEFAULT 0
-
-    -- Foreign key constraint (assuming users table exists)
---    CONSTRAINT fk_architect_user FOREIGN KEY (user_id) REFERENCES rmtr_user(id) ON DELETE CASCADE,
-
-    -- Additional constraints for data integrity
---    CONSTRAINT chk_ktp_num_length CHECK (length(ktp_num) = 16),
---    CONSTRAINT chk_npwp_length CHECK (length(npwp) = 16),
---    CONSTRAINT chk_success_match_non_negative CHECK (success_match >= 0),
---    CONSTRAINT chk_success_project_non_negative CHECK (success_project >= 0),
---    CONSTRAINT chk_bid_left_non_negative CHECK (bid_left >= 0)
+    bid_left INT CHECK (bid_left >= 0),
+    success_match INT DEFAULT 0 CHECK (success_match >= 0),
+    success_project INT DEFAULT 0 CHECK (success_project >= 0)
 );
-
--- Create indexes for better performance
---CREATE INDEX IF NOT EXISTS idx_architect_user_id ON rmtr_architect(user_id);
---CREATE INDEX IF NOT EXISTS idx_architect_company_name ON rmtr_architect(company_name);
---CREATE INDEX IF NOT EXISTS idx_architect_ktp_num ON rmtr_architect(ktp_num);
---CREATE INDEX IF NOT EXISTS idx_architect_npwp ON rmtr_architect(npwp);
 
 -- Create rmtr_user table based on JPA entity
 CREATE TABLE IF NOT EXISTS rmtr_user (
@@ -36,20 +22,28 @@ CREATE TABLE IF NOT EXISTS rmtr_user (
     username VARCHAR(255) NOT NULL UNIQUE,
     password_hash TEXT NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
+    first_nm VARCHAR(255),
+    last_nm VARCHAR(255),
     is_email_verified BOOLEAN DEFAULT FALSE,
     is_active BOOLEAN DEFAULT TRUE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT NULL
+    updated_at TIMESTAMP NULL DEFAULT NULL,
 
-    -- Additional constraints for data integrity
---    CONSTRAINT chk_username_not_empty CHECK (length(trim(username)) > 0),
---    CONSTRAINT chk_email_format CHECK (email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
---    CONSTRAINT chk_password_not_empty CHECK (length(password_hash) > 0)
+    CONSTRAINT chk_username_not_empty CHECK (username IS NOT NULL AND trim(username) != ''),
+    CONSTRAINT chk_email_format CHECK (email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
+    CONSTRAINT chk_password_not_empty CHECK (length(password_hash) > 0)
 );
 
--- Create indexes for better performance
---CREATE INDEX IF NOT EXISTS idx_user_username ON rmtr_user(username);
---CREATE INDEX IF NOT EXISTS idx_user_email ON rmtr_user(email);
---CREATE INDEX IF NOT EXISTS idx_user_active ON rmtr_user(is_active);
---CREATE INDEX IF NOT EXISTS idx_user_email_verified ON rmtr_user(is_email_verified);
---CREATE INDEX IF NOT EXISTS idx_user_created_at ON rmtr_user(created_at);
+CREATE INDEX IF NOT EXISTS idx_user_username ON rmtr_user(username);
+CREATE INDEX IF NOT EXISTS idx_user_email ON rmtr_user(email);
+
+CREATE TABLE IF NOT EXISTS rmtr_client (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL unique REFERENCES rmtr_user(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    phone_num VARCHAR(16),
+    is_phonenum_verified BOOLEAN DEFAULT FALSE,
+    ktp_num VARCHAR(16),
+    is_ktp_verified BOOLEAN DEFAULT FALSE,
+    project_match INTEGER DEFAULT 0,
+    project_finished INTEGER DEFAULT 0
+);

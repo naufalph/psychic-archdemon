@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SignupRequestDto {
+public class ArchitectSignupRequestDto {
 
   @NotBlank(message = "Username is required")
   @Size(min = 3, max = 50, message = "Username must be between 3 and 50 characters")
@@ -41,6 +41,13 @@ public class SignupRequestDto {
   @NotBlank(message = "Contact name is required")
   @Size(max = 255, message = "Contact name must not exceed 255 characters")
   private String contactName;
+
+  @NotBlank(message = "Phone number is required")
+  @Pattern(regexp = "^[0-9]{16}$", message = "KTP number must be exactly 16 digits")
+  private String phoneNum;
+
+  @NotBlank(message = "Category is required") // from droplist
+  private String category;
 
   @NotBlank(message = "KTP number is required")
   @Pattern(regexp = "^[0-9]{16}$", message = "KTP number must be exactly 16 digits")

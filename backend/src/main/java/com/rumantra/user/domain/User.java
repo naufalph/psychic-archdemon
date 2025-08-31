@@ -20,14 +20,17 @@ public class User {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "username", unique = true, nullable = false, length = 255)
-  private String userName;
-
   @Column(name = "password_hash", nullable = false)
   private String password;
 
   @Column(name = "email", nullable = false, unique = true)
   private String email;
+
+  @Column(name = "first_nm")
+  private String firstName;
+
+  @Column(name = "last_nm")
+  private String lastName;
 
   @Column(name = "is_email_verified")
   @Builder.Default()

@@ -6,7 +6,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthResponseDto {
+public class ArchitectAuthResponseDto {
 
   private String token;
   private String type = "Bearer";

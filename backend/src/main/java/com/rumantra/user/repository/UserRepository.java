@@ -10,13 +10,13 @@ import com.rumantra.user.domain.User;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-  Optional<User> findByUserName(String userName);
+  Optional<User> findByUserNameAndIsActive(String userName);
 
   Optional<User> findByEmail(String email);
 
-  Optional<User> findByUserNameOrEmail(String userName, String email);
-
-  boolean existsByUserName(String userName);
+  Optional<User> findByEmailAndIsActive(String email);
 
   boolean existsByEmail(String email);
+
+  Optional<User> findByUserId(Long userId);
 }

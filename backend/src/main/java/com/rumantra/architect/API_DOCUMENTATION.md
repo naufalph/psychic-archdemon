@@ -5,7 +5,7 @@ This document describes the authentication APIs for the Architect module in the 
 
 ## Base URL
 ```
-http://localhost:8080/api/v1/architects
+http://localhost:8080/rmtr/architects
 ```
 
 ## Authentication
@@ -16,8 +16,8 @@ Authorization: Bearer <token>
 
 ## Endpoints
 
-### 1. Sign Up (Create Architect Account)
-**Endpoint:** `POST /api/v1/architects/signup`  
+### 1. Register (Create Architect Account)
+**Endpoint:** `POST /rmtr/architects/register`  
 **Authentication:** Not required  
 **Description:** Creates a new architect account with user credentials and architect profile.
 
@@ -75,58 +75,8 @@ Authorization: Bearer <token>
 }
 ```
 
-### 2. Login
-**Endpoint:** `POST /api/v1/architects/login`  
-**Authentication:** Not required  
-**Description:** Authenticates an architect using username/email and password.
-
-**Request Body:**
-```json
-{
-  "usernameOrEmail": "john_architect",
-  "password": "SecurePass123!"
-}
-```
-
-**Success Response (200 OK):**
-```json
-{
-  "success": true,
-  "message": "Login successful!",
-  "data": {
-    "token": "eyJhbGciOiJIUzI1NiJ9...",
-    "type": "Bearer",
-    "id": 1,
-    "userName": "john_architect",
-    "email": "john@architecture.com",
-    "architect": {
-      "id": 1,
-      "userId": 1,
-      "companyName": "John Architecture Studio",
-      "companySite": "https://johnarchitecture.com",
-      "contactName": "John Doe",
-      "ktpNum": "1234567890123456",
-      "ktpVerified": false,
-      "npwp": "123456789012345",
-      "npwpVerified": false,
-      "bidLeft": 10,
-      "successMatch": 0,
-      "successProject": 0
-    }
-  }
-}
-```
-
-**Error Response (401 Unauthorized):**
-```json
-{
-  "success": false,
-  "message": "Invalid password!"
-}
-```
-
-### 3. Update Profile
-**Endpoint:** `PUT /api/v1/architects/profile`  
+### 3. Update Architect Profile
+**Endpoint:** `PUT /rmtr/architects/profile`  
 **Authentication:** Required  
 **Description:** Updates architect profile information. Note that some fields like `ktpVerified`, `npwpVerified`, `bidLeft`, `successMatch`, and `successProject` cannot be updated by the user.
 
@@ -171,7 +121,7 @@ Authorization: Bearer <token>
 ```
 
 ### 4. Get Profile
-**Endpoint:** `GET /api/v1/architects/profile`  
+**Endpoint:** `GET /rmtr/architects/profile`  
 **Authentication:** Required  
 **Description:** Retrieves the authenticated architect's profile information.
 

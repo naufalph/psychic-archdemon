@@ -10,8 +10,11 @@ public class ArchitectDto {
 
   private Long id;
   private Long userId;
+  private String email;
   private String companyName;
   private String companySite;
+  private String category;
+  private String phoneNumber;
   private String contactName;
   private String ktpNum;
   private boolean ktpVerified;

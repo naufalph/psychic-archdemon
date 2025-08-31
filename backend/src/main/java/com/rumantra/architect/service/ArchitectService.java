@@ -2,6 +2,7 @@ package com.rumantra.architect.service;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,11 +28,7 @@ public class ArchitectService {
   private final JwtUtils jwtUtils;
 
   @Transactional
-  public ArchitectDto signup(SignupRequestDto signupRequest) {
-    // Check if username already exists
-    if (userRepository.existsByUserName(signupRequest.getUserName())) {
-      throw new IllegalArgumentException("Username is already taken!");
-    }
+  public ArchitectDto register(ArchitectSignupRequestDto signupRequest) {
 
     // Check if email already exists
     if (userRepository.existsByEmail(signupRequest.getEmail())) {
@@ -49,81 +46,33 @@ public class ArchitectService {
     }
 
     // Create new user
-    User user =
-        User.builder()
-            .userName(signupRequest.getUserName())
-            .email(signupRequest.getEmail())
-            .password(passwordEncoder.encode(signupRequest.getPassword()))
-            .isEmailVerified(false)
-            .isActive(true)
-            .createdAt(Timestamp.valueOf(LocalDateTime.now()))
-            .build();
+    Optional<User> user = userRepository.findByEmailAndIsActive(signupRequest.getEmail());
 
-    user = userRepository.save(user);
+    if (user.isEmpty()) {
+      throw new IllegalArgumentException("user is not found!");
+    } else {
+      // Create architect profile
+      Architect architect =
+          Architect.builder()
+              .user(user.get())
+              .companyName(signupRequest.getCompanyName())
+              .companySite(signupRequest.getCompanySite())
+              .contactName(signupRequest.getContactName())
+              .phoneNumber(signupRequest.getPhoneNum())
+              .category(signupRequest.getCategory())
+              .ktpNum(signupRequest.getKtpNum())
+              .ktpVerified(false)
+              .npwp(signupRequest.getNpwp())
+              .npwpVerified(false)
+              .bidLeft(10)
+              .successMatch(0)
+              .successProject(0)
+              .build();
 
-    // Create architect profile
-    Architect architect =
-        Architect.builder()
-            .user(user)
-            .companyName(signupRequest.getCompanyName())
-            .companySite(signupRequest.getCompanySite())
-            .contactName(signupRequest.getContactName())
-            .ktpNum(signupRequest.getKtpNum())
-            .ktpVerified(false)
-            .npwp(signupRequest.getNpwp())
-            .npwpVerified(false)
-            .bidLeft(10) // Default bid count
-            .successMatch(0)
-            .successProject(0)
-            .build();
+      architect = architectRepository.save(architect);
 
-    architect = architectRepository.save(architect);
-
-    return mapToDto(architect);
-  }
-
-  public AuthResponseDto login(LoginRequestDto loginRequest) {
-    // Find user by username or email
-    User user =
-        userRepository
-            .findByUserNameOrEmail(
-                loginRequest.getUsernameOrEmail(), loginRequest.getUsernameOrEmail())
-            .orElseThrow(
-                () ->
-                    new ResourceNotFoundException(
-                        "User not found with username or email: "
-                            + loginRequest.getUsernameOrEmail()));
-
-    // Check password
-    if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-      throw new IllegalArgumentException("Invalid password!");
+      return mapToDto(architect);
     }
-
-    // Check if user is active
-    if (!user.isActive()) {
-      throw new IllegalArgumentException("User account is deactivated!");
-    }
-
-    // Find architect profile
-    Architect architect =
-        architectRepository
-            .findByUserId(user.getId())
-            .orElseThrow(
-                () ->
-                    new ResourceNotFoundException(
-                        "Architect profile not found for user: " + user.getUserName()));
-
-    // Generate JWT token
-    String jwt = jwtUtils.generateJwtToken(user.getUserName());
-
-    return AuthResponseDto.builder()
-        .token(jwt)
-        .type("Bearer")
-        .id(user.getId())
-        .userName(user.getUserName())
-        .email(user.getEmail())
-        .architect(mapToDto(architect))
-        .build();
   }
 
   @Transactional
@@ -166,6 +115,14 @@ public class ArchitectService {
       architect.setContactName(updateRequest.getContactName());
     }
 
+    if (updateRequest.getCategory() != null) {
+      architect.setCategory(updateRequest.getCategory());
+    }
+
+    if (updateRequest.getPhoneNum() != null) {
+      architect.setPhoneNumber(updateRequest.getPhoneNum());
+    }
+
     if (updateRequest.getKtpNum() != null
         && !updateRequest.getKtpNum().equals(architect.getKtpNum())) {
       // Check if new KTP number is already taken
@@ -201,6 +158,9 @@ public class ArchitectService {
     return ArchitectDto.builder()
         .id(architect.getId())
         .userId(architect.getUser().getId())
+        .email(architect.getUser().getEmail())
+        .category(architect.getCategory())
+        .phoneNumber(architect.getPhoneNumber())
         .companyName(architect.getCompanyName())
         .companySite(architect.getCompanySite())
         .contactName(architect.getContactName())
