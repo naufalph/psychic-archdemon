@@ -1,19 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
 
 // Import views (lazy-loaded for better performance)
 const Home = () => import('@/views/Home.vue')
-const About = () => import('@/views/About.vue')
-const Login = () => import('@/views/auth/Login.vue')
-const Register = () => import('@/views/auth/Register.vue')
 const Projects = () => import('@/views/projects/ProjectList.vue')
 const ProjectDetail = () => import('@/views/projects/ProjectDetail.vue')
 const CreateProject = () => import('@/views/projects/CreateProject.vue')
 const Architects = () => import('@/views/architects/ArchitectList.vue')
 const ArchitectProfile = () => import('@/views/architects/ArchitectProfile.vue')
-const Dashboard = () => import('@/views/dashboard/Dashboard.vue')
+const Dashboard = () => import('@/views/clients/ClientDashboard.vue')
 const Profile = () => import('@/views/user/Profile.vue')
-const AdminDashboard = () => import('@/views/admin/AdminDashboard.vue')
 const NotFound = () => import('@/views/errors/NotFound.vue')
 
 const routes = [
@@ -24,35 +19,6 @@ const routes = [
     meta: {
       title: 'Home - Rumantra',
       description: 'Connect with talented architects for your next project'
-    }
-  },
-  {
-    path: '/about',
-    name: 'About',
-    component: About,
-    meta: {
-      title: 'About - Rumantra',
-      description: 'Learn more about our platform and mission'
-    }
-  },
-
-  // Authentication Routes
-  {
-    path: '/login',
-    name: 'Login',
-    component: Login,
-    meta: {
-      title: 'Sign In - Rumantra',
-      requiresGuest: true
-    }
-  },
-  {
-    path: '/register',
-    name: 'Register',
-    component: Register,
-    meta: {
-      title: 'Sign Up - Rumantra',
-      requiresGuest: true
     }
   },
 
@@ -109,11 +75,11 @@ const routes = [
   // User Dashboard Routes
   {
     path: '/dashboard',
-    name: 'Dashboard',
+    name: 'ClientDashboard',
     component: Dashboard,
     meta: {
-      title: 'Dashboard - Rumantra',
-      requiresAuth: true
+      title: 'Client Dashboard - Rumantra',
+      description: 'Manage your architecture projects and find architects'
     }
   },
   {
@@ -123,18 +89,6 @@ const routes = [
     meta: {
       title: 'My Profile - Rumantra',
       requiresAuth: true
-    }
-  },
-
-  // Admin Routes
-  {
-    path: '/admin',
-    name: 'AdminDashboard',
-    component: AdminDashboard,
-    meta: {
-      title: 'Admin Dashboard - Rumantra',
-      requiresAuth: true,
-      roles: ['ADMIN']
     }
   },
 
@@ -177,8 +131,6 @@ const router = createRouter({
 
 // Navigation Guards
 router.beforeEach(async (to, from, next) => {
-  const authStore = useAuthStore()
-
   // Update document title
   if (to.meta.title) {
     document.title = to.meta.title
@@ -192,42 +144,54 @@ router.beforeEach(async (to, from, next) => {
     }
   }
 
-  // Check if route requires authentication
-  if (to.meta.requiresAuth) {
-    // Initialize auth store if not already done
-    if (!authStore.isInitialized) {
-      await authStore.checkAuth()
-    }
+  // Only access store for routes that require authentication or guest checks
+  if (to.meta.requiresAuth || to.meta.requiresGuest) {
+    try {
+      // Import the auth store inside the guard to avoid Pinia initialization issues
+      const { useAuthStore } = await import('@/stores/auth')
+      const authStore = useAuthStore()
 
-    if (!authStore.isAuthenticated) {
-      // Redirect to login with return URL
-      next({
-        name: 'Login',
-        query: { redirect: to.fullPath }
-      })
-      return
-    }
+      // Check if route requires authentication
+      if (to.meta.requiresAuth) {
+        // Initialize auth store if not already done
+        if (!authStore.isInitialized) {
+          await authStore.checkAuth()
+        }
 
-    // Check role permissions
-    if (to.meta.roles && to.meta.roles.length > 0) {
-      const userRole = authStore.user?.role
-      if (!userRole || !to.meta.roles.includes(userRole)) {
-        // Redirect to dashboard or show unauthorized
-        next({
-          name: 'Dashboard',
-          query: { error: 'unauthorized' }
-        })
+        if (!authStore.isAuthenticated) {
+          // Redirect to login with return URL
+          next({
+            name: 'Login',
+            query: { redirect: to.fullPath }
+          })
+          return
+        }
+
+        // Check role permissions
+        if (to.meta.roles && to.meta.roles.length > 0) {
+          const userRole = authStore.user?.role
+          if (!userRole || !to.meta.roles.includes(userRole)) {
+            // Redirect to dashboard or show unauthorized
+            next({
+              name: 'Dashboard',
+              query: { error: 'unauthorized' }
+            })
+            return
+          }
+        }
+      }
+
+      // Check if route requires guest (not authenticated)
+      if (to.meta.requiresGuest && authStore.isAuthenticated) {
+        // Redirect authenticated users away from guest-only pages
+        const redirectPath = to.query.redirect || '/dashboard'
+        next(redirectPath)
         return
       }
+    } catch (error) {
+      console.error('Router guard error:', error)
+      // If there's an error with the store, continue navigation
     }
-  }
-
-  // Check if route requires guest (not authenticated)
-  if (to.meta.requiresGuest && authStore.isAuthenticated) {
-    // Redirect authenticated users away from guest-only pages
-    const redirectPath = to.query.redirect || '/dashboard'
-    next(redirectPath)
-    return
   }
 
   // Continue with navigation

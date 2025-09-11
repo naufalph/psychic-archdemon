@@ -1,0 +1,60 @@
+{
+  "nav": {
+    "logo": "rumantra",
+    "links": {
+      "howItWorks": "Cara kerja",
+      "designerSelection": "Pilihan designer",
+      "ideas": "Ide",
+      "articles": "Artikel"
+    }
+  },
+  "auth": {
+    "signUp": "Daftar",
+    "signIn": "Login",
+    "signup": {
+      "title": "Buat Akun Anda",
+      "alreadyHaveAccount": "Sudah Punya Akun?",
+      "socialLogin": {
+        "linkedin": "Daftar Dengan LinkedIn",
+        "email": "Daftar Dengan Email",
+        "google": "Daftar Dengan Google",
+        "facebook": "Daftar Dengan Facebook"
+      },
+      "termsAndPrivacy": {
+        "prefix": "Dengan mendaftar, Anda menyetujui",
+        "terms": "Ketentuan Layanan",
+        "and": "dan",
+        "privacy": "Kebijakan Privasi"
+      }
+    },
+    "signin": {
+      "title": "Masuk ke Akun Anda",
+      "signUp": "Daftar sekarang",
+      "noAccount": "Belum punya akun?",
+      "rememberMe": "Ingat saya",
+      "forgotPassword": "Lupa password?",
+      "socialLogin": {
+        "or": "Atau masuk dengan"
+      }
+    },
+    "emailSignup": {
+      "title": "Masuk Dengan Email",
+      "backToSignup": "Kembali ke Daftar",
+      "createAccount": "Buat Akun",
+      "emailPlaceholder": "nama@email.com",
+      "passwordPlaceholder": "Password",
+      "errors": {
+        "emailRequired": "Email harus diisi",
+        "emailInvalid": "Format email tidak valid",
+        "passwordRequired": "Password harus diisi",
+        "passwordLength": "Password minimal 6 karakter",
+        "emailExists": "Email sudah terdaftar",
+        "generalError": "Terjadi kesalahan. Silakan coba lagi."
+      }
+    },
+    "validation": {
+      "emailRequired": "Email harus diisi",
+      "passwordRequired": "Password harus diisi"
+    }
+  }
+}

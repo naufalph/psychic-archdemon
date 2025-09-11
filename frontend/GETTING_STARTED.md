@@ -1,6 +1,6 @@
-# Getting Started with ArchMatch Frontend
+# Getting Started with Rumantra Frontend
 
-Welcome to the ArchMatch frontend! This guide will help you get up and running with the Vue 3 application for the Architecture Marketplace platform.
+Welcome to the Rumantra frontend! This guide will help you get up and running with the Vue 3 application for the Architecture Marketplace platform.
 
 ## 🚀 Quick Start
 
@@ -31,7 +31,7 @@ Welcome to the ArchMatch frontend! This guide will help you get up and running w
    http://localhost:3000
    ```
 
-🎉 **You should now see the ArchMatch homepage!**
+🎉 **You should now see the Rumantra homepage!**
 
 ## 📋 Available Scripts
 
@@ -336,9 +336,3 @@ Check that:
 - **Console Logs**: Use browser dev tools to debug issues
 - **Vue 3 Docs**: https://vuejs.org/guide/
 - **Tailwind CSS**: https://tailwindcss.com/docs
-
----
-
-**Happy coding! 🎉**
-
-The ArchMatch platform is designed to be developer-friendly and scalable. Take your time exploring the codebase, and don't hesitate to experiment with new features.

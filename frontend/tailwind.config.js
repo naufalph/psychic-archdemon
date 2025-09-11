@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+const typography = require('./src/design-system/typography.js')
+
 export default {
   content: [
     "./index.html",
@@ -37,6 +39,30 @@ export default {
       fontFamily: {
         sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+        'inter': ['Inter', 'sans-serif']
+      },
+      fontSize: {
+        'display-large': typography.typography.display.large.fontSize,
+        'display-medium': typography.typography.display.medium.fontSize,
+        'display-small': typography.typography.display.small.fontSize,
+        'headline-large': typography.typography.headline.large.fontSize,
+        'headline-medium': typography.typography.headline.medium.fontSize,
+        'headline-small': typography.typography.headline.small.fontSize,
+        'title-large': typography.typography.title.large.fontSize,
+        'title-medium': typography.typography.title.medium.fontSize,
+        'title-small': typography.typography.title.small.fontSize,
+        'body-large': typography.typography.body.large.fontSize,
+        'body-medium': typography.typography.body.medium.fontSize,
+        'body-small': typography.typography.body.small.fontSize,
+        'button-large': typography.typography.button.large.fontSize,
+        'button-medium': typography.typography.button.medium.fontSize
+      },
+      fontWeight: {
+        'display': '700',
+        'headline': '500',
+        'title': '500',
+        'body-regular': '400',
+        'button': '500'
       },
       spacing: {
         '18': '4.5rem',

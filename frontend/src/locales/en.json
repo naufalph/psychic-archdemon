@@ -1,0 +1,60 @@
+{
+  "nav": {
+    "logo": "rumantra",
+    "links": {
+      "howItWorks": "How it works",
+      "designerSelection": "Designer selection",
+      "ideas": "Ideas",
+      "articles": "Articles"
+    }
+  },
+  "auth": {
+    "signIn": "Login",
+    "signUp": "Register",
+    "signup": {
+      "title": "Create Your Account",
+      "alreadyHaveAccount": "Already have an account?",
+      "socialLogin": {
+        "linkedin": "Sign up with LinkedIn",
+        "email": "Sign up with Email",
+        "google": "Sign up with Google",
+        "facebook": "Sign up with Facebook"
+      },
+      "termsAndPrivacy": {
+        "prefix": "By signing up, you agree to our",
+        "terms": "Terms of Service",
+        "and": "and",
+        "privacy": "Privacy Policy"
+      }
+    },
+    "signin": {
+      "title": "Sign In to Your Account",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up now",
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "socialLogin": {
+        "or": "Or sign in with"
+      }
+    },
+    "emailSignup": {
+      "title": "Sign Up with Email",
+      "backToSignup": "Back to Signup",
+      "createAccount": "Create Account",
+      "emailPlaceholder": "name@email.com",
+      "passwordPlaceholder": "Password",
+      "errors": {
+        "emailRequired": "Email must be filled",
+        "emailInvalid": "Invalid email format",
+        "passwordRequired": "Password must be filled",
+        "passwordLength": "Password must be at least 6 characters",
+        "emailExists": "Email already registered",
+        "generalError": "An error occurred. Please try again."
+      }
+    },
+    "validation": {
+      "emailRequired": "Email is required",
+      "passwordRequired": "Password is required"
+    }
+  }
+}

@@ -2,6 +2,7 @@ import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import router from './router'
 import App from './App.vue'
+import i18n from './plugins/i18n'
 
 // Import global styles
 import './assets/main.css'
@@ -12,6 +13,7 @@ const app = createApp(App)
 // Install plugins
 app.use(createPinia())
 app.use(router)
+app.use(i18n)
 
 // Global properties (if needed)
 app.config.globalProperties.$API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'

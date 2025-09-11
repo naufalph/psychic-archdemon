@@ -1,4 +1,4 @@
-# ArchMatch Frontend
+# Rumantra Frontend
 
 A Vue 3 frontend application for the Architecture Marketplace platform, connecting architects with clients for building and design projects.
 
@@ -41,7 +41,7 @@ A Vue 3 frontend application for the Architecture Marketplace platform, connecti
    Edit `.env` file with your configuration:
    ```env
    VITE_API_BASE_URL=http://localhost:8080/api
-   VITE_APP_NAME=ArchMatch
+   VITE_APP_NAME=rumantra
    VITE_DEBUG_MODE=true
    ```
 
@@ -291,8 +291,8 @@ VITE_ENABLE_ANALYTICS=true
 ```nginx
 server {
     listen 80;
-    server_name your-domain.com;
-    root /var/www/archmatch-frontend/dist;
+    server_name rumantra.com;
+    root /var/www/rumantra/dist;
     index index.html;
 
     location / {

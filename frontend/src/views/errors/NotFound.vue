@@ -51,7 +51,7 @@
             <router-link to="/about" class="text-primary-600 hover:text-primary-500 font-medium">
               About Us
             </router-link>
-            <a href="mailto:support@archmatch.com" class="text-primary-600 hover:text-primary-500 font-medium">
+            <a href="mailto:support@rumantra.com" class="text-primary-600 hover:text-primary-500 font-medium">
               Contact Support
             </a>
           </div>
@@ -101,7 +101,7 @@
           </p>
           <div class="flex flex-col gap-2">
             <a
-              href="mailto:support@archmatch.com"
+              href="mailto:support@rumantra.com"
               class="inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-primary-600 bg-primary-50 rounded-md hover:bg-primary-100 transition-colors"
             >
               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -129,7 +129,7 @@ export default {
   },
   mounted() {
     // Set the document title
-    document.title = '404 - Page Not Found | ArchMatch'
+    document.title = '404 - Page Not Found | Rumantra'
 
     // Log the 404 for analytics (if enabled)
     if (import.meta.env.VITE_ENABLE_ANALYTICS === 'true') {

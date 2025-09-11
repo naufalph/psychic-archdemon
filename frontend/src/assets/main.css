@@ -1,176 +1,239 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Base styles */
-@layer base {
-  html {
-    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  }
-
-  body {
-    @apply text-gray-900 bg-gray-50;
-  }
-
-  /* Custom scrollbar */
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-
-  ::-webkit-scrollbar-track {
-    @apply bg-gray-100;
-  }
-
-  ::-webkit-scrollbar-thumb {
-    @apply bg-gray-300 rounded-full;
-  }
-
-  ::-webkit-scrollbar-thumb:hover {
-    @apply bg-gray-400;
-  }
+/* Typography Classes */
+.display-large {
+  font-family: 'Inter', sans-serif;
+  font-size: theme('fontSize.display-large');
+  font-weight: theme('fontWeight.display');
+  color: theme('colors.black');
+  transition: color 0.3s ease;
 }
 
-/* Component styles */
-@layer components {
-  /* Button variants */
-  .btn {
-    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2;
-  }
-
-  .btn-primary {
-    @apply btn bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500;
-  }
-
-  .btn-secondary {
-    @apply btn bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500;
-  }
-
-  .btn-outline {
-    @apply btn border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 focus:ring-gray-500;
-  }
-
-  .btn-danger {
-    @apply btn bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
-  }
-
-  .btn-sm {
-    @apply px-3 py-1.5 text-xs;
-  }
-
-  .btn-lg {
-    @apply px-6 py-3 text-base;
-  }
-
-  /* Form elements */
-  .form-input {
-    @apply block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500;
-  }
-
-  .form-label {
-    @apply block text-sm font-medium text-gray-700 mb-1;
-  }
-
-  .form-error {
-    @apply text-sm text-red-600 mt-1;
-  }
-
-  /* Card component */
-  .card {
-    @apply bg-white rounded-lg shadow-sm border border-gray-200;
-  }
-
-  .card-header {
-    @apply px-6 py-4 border-b border-gray-200;
-  }
-
-  .card-body {
-    @apply px-6 py-4;
-  }
-
-  .card-footer {
-    @apply px-6 py-4 border-t border-gray-200 bg-gray-50;
-  }
-
-  /* Navigation */
-  .nav-link {
-    @apply text-gray-600 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium transition-colors;
-  }
-
-  .nav-link.active {
-    @apply text-primary-600 bg-primary-50;
-  }
-
-  /* Badge component */
-  .badge {
-    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
-  }
-
-  .badge-primary {
-    @apply badge bg-primary-100 text-primary-800;
-  }
-
-  .badge-success {
-    @apply badge bg-green-100 text-green-800;
-  }
-
-  .badge-warning {
-    @apply badge bg-yellow-100 text-yellow-800;
-  }
-
-  .badge-danger {
-    @apply badge bg-red-100 text-red-800;
-  }
-
-  /* Loading spinner */
-  .spinner {
-    @apply inline-block w-4 h-4 border-2 border-current border-r-transparent rounded-full animate-spin;
-  }
+.display-large:hover {
+  color: #185C93;
 }
 
-/* Utility styles */
-@layer utilities {
-  /* Animation utilities */
-  .animate-fade-in {
-    animation: fadeIn 0.5s ease-in-out;
-  }
-
-  .animate-slide-in {
-    animation: slideIn 0.3s ease-out;
-  }
-
-  /* Custom shadows */
-  .shadow-card {
-    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-  }
-
-  .shadow-card-hover {
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  }
-
-  /* Text utilities */
-  .text-balance {
-    text-wrap: balance;
-  }
+.display-large:active {
+  color: #0E3758;
 }
 
-/* Global transitions */
-* {
-  @apply transition-colors duration-200;
+.display-medium {
+  font-family: 'Inter', sans-serif;
+  font-size: theme('fontSize.display-medium');
+  font-weight: theme('fontWeight.display');
+  color: theme('colors.black');
+  transition: color 0.3s ease;
 }
 
-/* Focus styles for accessibility */
-.focus-visible {
-  @apply focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 focus:outline-none;
+.display-medium:hover {
+  color: #185C93;
 }
 
-/* Print styles */
-@media print {
-  .no-print {
-    display: none !important;
-  }
+.display-medium:active {
+  color: #0E3758;
+}
 
-  .print-break {
-    page-break-after: always;
-  }
+.display-small {
+  font-family: 'Inter', sans-serif;
+  font-size: theme('fontSize.display-small');
+  font-weight: theme('fontWeight.display');
+  color: theme('colors.black');
+  transition: color 0.3s ease;
+}
+
+.display-small:hover {
+  color: #185C93;
+}
+
+.display-small:active {
+  color: #0E3758;
+}
+
+.headline-large {
+  font-family: 'Inter', sans-serif;
+  font-size: theme('fontSize.headline-large');
+  font-weight: theme('fontWeight.headline');
+  color: theme('colors.black');
+  transition: color 0.3s ease;
+}
+
+.headline-large:hover {
+  color: #185C93;
+}
+
+.headline-large:active {
+  color: #0E3758;
+}
+
+.headline-medium {
+  font-family: 'Inter', sans-serif;
+  font-size: theme('fontSize.headline-medium');
+  font-weight: theme('fontWeight.headline');
+  color: theme('colors.black');
+  transition: color 0.3s ease;
+}
+
+.headline-medium:hover {
+  color: #185C93;
+}
+
+.headline-medium:active {
+  color: #0E3758;
+}
+
+.headline-small {
+  font-family: 'Inter', sans-serif;
+  font-size: theme('fontSize.headline-small');
+  font-weight: theme('fontWeight.headline');
+  color: theme('colors.black');
+  transition: color 0.3s ease;
+}
+
+.headline-small:hover {
+  color: #185C93;
+}
+
+.headline-small:active {
+  color: #0E3758;
+}
+
+.title-large {
+  font-family: 'Inter', sans-serif;
+  font-size: theme('fontSize.title-large');
+  font-weight: theme('fontWeight.title');
+  color: theme('colors.black');
+  transition: color 0.3s ease;
+}
+
+.title-large:hover {
+  color: #185C93;
+}
+
+.title-large:active {
+  color: #0E3758;
+}
+
+.title-medium {
+  font-family: 'Inter', sans-serif;
+  font-size: theme('fontSize.title-medium');
+  font-weight: theme('fontWeight.title');
+  color: theme('colors.black');
+  transition: color 0.3s ease;
+}
+
+.title-medium:hover {
+  color: #185C93;
+}
+
+.title-medium:active {
+  color: #0E3758;
+}
+
+.title-small {
+  font-family: 'Inter', sans-serif;
+  font-size: theme('fontSize.title-small');
+  font-weight: theme('fontWeight.title');
+  color: theme('colors.black');
+  transition: color 0.3s ease;
+}
+
+.title-small:hover {
+  color: #185C93;
+}
+
+.title-small:active {
+  color: #0E3758;
+}
+
+.body-large {
+  font-family: 'Inter', sans-serif;
+  font-size: theme('fontSize.body-large');
+  font-weight: theme('fontWeight.body-regular');
+  color: theme('colors.black');
+  transition: color 0.3s ease;
+}
+
+.body-large:hover {
+  color: #185C93;
+}
+
+.body-large:active {
+  color: #0E3758;
+}
+
+.body-medium {
+  font-family: 'Inter', sans-serif;
+  font-size: theme('fontSize.body-medium');
+  font-weight: theme('fontWeight.body-regular');
+  color: theme('colors.black');
+  transition: color 0.3s ease;
+}
+
+.body-medium:hover {
+  color: #185C93;
+}
+
+.body-medium:active {
+  color: #0E3758;
+}
+
+.body-small {
+  font-family: 'Inter', sans-serif;
+  font-size: theme('fontSize.body-small');
+  font-weight: theme('fontWeight.body-regular');
+  color: theme('colors.black');
+  transition: color 0.3s ease;
+}
+
+.body-small:hover {
+  color: #185C93;
+}
+
+.body-small:active {
+  color: #0E3758;
+}
+
+.button-large {
+  font-family: 'Inter', sans-serif;
+  font-size: theme('fontSize.button-large');
+  font-weight: theme('fontWeight.button');
+  color: theme('colors.black');
+  transition: color 0.3s ease;
+}
+
+.button-large:hover {
+  color: #185C93;
+}
+
+.button-large:active {
+  color: #0E3758;
+}
+
+.button-medium {
+  font-family: 'Inter', sans-serif;
+  font-size: theme('fontSize.button-medium');
+  font-weight: theme('fontWeight.button');
+  color: theme('colors.black');
+  transition: color 0.3s ease;
+}
+
+.button-medium:hover {
+  color: #185C93;
+}
+
+.button-medium:active {
+  color: #0E3758;
+}
+
+.logo {
+  font-family: 'Barlow', sans-serif;
+  font-weight: 900;
+  font-size: 28px;
+  line-height: 30px;
+  letter-spacing: 0;
+  vertical-align: middle;
 }

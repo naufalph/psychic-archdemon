@@ -284,7 +284,3 @@ export const useAuthStore = defineStore('auth', {
     }
   }
 })
-
-// Initialize lockout state when store is created
-const authStore = useAuthStore()
-authStore.initializeLockoutState()

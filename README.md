@@ -1,8 +1,4 @@
-# Nameless Architecture Marketplace
-
-## Project Overview
-
-A comprehensive marketplace platform for architectural designs, services, and collaborations.
+# RUMANTRA
 
 ## Prerequisites
 
