@@ -4,10 +4,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.rumantra.shared.RumantraConstants;
 import com.rumantra.shared.dto.ApiResponse;
@@ -53,6 +50,35 @@ public class UserController {
               ApiResponse.<UserAuthResponseDto>builder()
                   .success(false)
                   .message("An error occurred during login")
+                  .build());
+    }
+  }
+
+  @GetMapping("/oauth2/google")
+  public ResponseEntity<String> googleLogin() {
+    // Return the Google OAuth2 authorization URL
+    return ResponseEntity.ok(userService.getGoogleAuthorizationUrl());
+  }
+
+  @GetMapping("/oauth2/callback/google")
+  public ResponseEntity<ApiResponse<UserAuthResponseDto>> googleCallback(
+      @RequestParam("code") String code, HttpServletRequest request) {
+    try {
+      UserAuthResponseDto authResponse = userService.processGoogleCallback(code);
+      request.getSession().setAttribute(RumantraConstants.LOGIN_CONTAINER, authResponse);
+      return ResponseEntity.ok(
+          ApiResponse.<UserAuthResponseDto>builder()
+              .success(true)
+              .message("Google login successful!")
+              .data(authResponse)
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(
+              ApiResponse.<UserAuthResponseDto>builder()
+                  .success(false)
+                  .message("An error occurred during Google login")
                   .build());
     }
   }

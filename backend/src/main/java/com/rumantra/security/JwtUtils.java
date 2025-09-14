@@ -22,9 +22,9 @@ public class JwtUtils {
   @Value("${app.jwtExpirationMs:86400000}")
   private int jwtExpirationMs;
 
-  public String generateJwtToken(String username) {
+  public String generateJwtToken(String email) {
     return Jwts.builder()
-        .subject(username)
+        .subject(email)
         .issuedAt(new Date())
         .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
         .signWith(key())

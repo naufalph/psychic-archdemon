@@ -5,9 +5,17 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rumantra.architect.domain.Architect;
 import com.rumantra.architect.repository.ArchitectRepository;
 import com.rumantra.architect.service.ArchitectService;
@@ -19,10 +27,7 @@ import com.rumantra.security.JwtUtils;
 import com.rumantra.shared.RumantraConstants;
 import com.rumantra.shared.exception.ResourceNotFoundException;
 import com.rumantra.user.domain.User;
-import com.rumantra.user.dto.UserAuthResponseDto;
-import com.rumantra.user.dto.UserDto;
-import com.rumantra.user.dto.UserLoginRequestDto;
-import com.rumantra.user.dto.UserSignupRequestDto;
+import com.rumantra.user.dto.*;
 import com.rumantra.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -37,6 +42,18 @@ public class UserService {
   private final ClientService clientService;
   private final ArchitectRepository architectRepository;
   private final ClientRepository clientRepository;
+
+  @Value("${spring.security.oauth2.client.registration.google.client-id}")
+  private String googleClientId;
+
+  @Value("${spring.security.oauth2.client.registration.google.client-secret}")
+  private String googleClientSecret;
+
+  @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
+  private String redirectUri;
+
+  private final RestTemplate restTemplate = new RestTemplate();
+  private final ObjectMapper objectMapper = new ObjectMapper();
 
   public UserAuthResponseDto login(UserLoginRequestDto loginRequest) {
     User user =
@@ -155,5 +172,111 @@ public class UserService {
     clientService.register(clientSignupRequestDto);
 
     return mapToDto(user);
+  }
+
+  public String getGoogleAuthorizationUrl() {
+    String baseUrl = "https://accounts.google.com/o/oauth2/v2/auth";
+    String scope = "email profile";
+
+    return String.format(
+        "%s?client_id=%s&response_type=code&scope=%s&redirect_uri=%s&access_type=offline",
+        baseUrl, googleClientId, scope, redirectUri);
+  }
+
+  public UserAuthResponseDto processGoogleCallback(String code) {
+    try {
+      // 1. Exchange code for tokens
+      String tokenUrl = "https://oauth2.googleapis.com/token";
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
+
+      String requestBody =
+          String.format(
+              "code=%s&client_id=%s&client_secret=%s&redirect_uri=%s&grant_type=authorization_code",
+              code, googleClientId, googleClientSecret, redirectUri);
+
+      ResponseEntity<String> tokenResponse =
+          restTemplate.exchange(
+              tokenUrl, HttpMethod.POST, new HttpEntity<>(requestBody, headers), String.class);
+
+      JsonNode tokenNode = objectMapper.readTree(tokenResponse.getBody());
+      String accessToken = tokenNode.get("access_token").asText();
+
+      // 2. Get user info using access token
+      HttpHeaders userInfoHeaders = new HttpHeaders();
+      userInfoHeaders.setBearerAuth(accessToken);
+
+      ResponseEntity<String> userInfoResponse =
+          restTemplate.exchange(
+              "https://www.googleapis.com/oauth2/v3/userinfo",
+              HttpMethod.GET,
+              new HttpEntity<>(userInfoHeaders),
+              String.class);
+
+      JsonNode userInfo = objectMapper.readTree(userInfoResponse.getBody());
+
+      GoogleUserInfoDto googleUser =
+          GoogleUserInfoDto.builder()
+              .email(userInfo.get("email").asText())
+              .name(userInfo.get("name").asText())
+              .picture(userInfo.get("picture").asText())
+              .emailVerified(userInfo.get("email_verified").asBoolean())
+              .build();
+
+      User user =
+          userRepository
+              .findByEmail(googleUser.getEmail())
+              .orElseGet(() -> createGoogleUser(googleUser));
+
+      String jwt = jwtUtils.generateJwtToken(user.getEmail());
+      List<String> registeredRoles = new ArrayList<>();
+
+      // Add default client role for Google users
+      if (clientRepository.findByUserId(user.getId()).isEmpty()) {
+        Client client =
+            Client.builder()
+                .user(user)
+                .ktpVerified(false)
+                .projectMatch(0)
+                .projectFinished(0)
+                .build();
+        clientRepository.save(client);
+      }
+      registeredRoles.add(RumantraConstants.CLIENT_ROLE);
+
+      return UserAuthResponseDto.builder()
+          .token(jwt)
+          .type("Bearer")
+          .id(user.getId())
+          .email(user.getEmail())
+          .registeredRoles(registeredRoles)
+          .build();
+
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Failed to process Google login: " + e.getMessage());
+    }
+  }
+
+  private User createGoogleUser(GoogleUserInfoDto googleUser) {
+    if (!googleUser.isEmailVerified()) {
+      throw new IllegalArgumentException("Google email is not verified!");
+    }
+
+    // Split name into first and last name
+    String[] nameParts = googleUser.getName().split(" ", 2);
+    String firstName = nameParts[0];
+    String lastName = nameParts.length > 1 ? nameParts[1] : "";
+
+    User newUser =
+        User.builder()
+            .email(googleUser.getEmail())
+            .firstName(firstName)
+            .lastName(lastName)
+            .isEmailVerified(true)
+            .isActive(true)
+            .createdAt(Timestamp.valueOf(LocalDateTime.now()))
+            .build();
+
+    return userRepository.save(newUser);
   }
 }
