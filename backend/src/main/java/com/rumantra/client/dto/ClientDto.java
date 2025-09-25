@@ -17,7 +17,7 @@ public class ClientDto {
   private String email;
   private String phoneNumber;
   private String ktpNum;
-  private boolean ktpVerified = false;
-  private int projectMatch = 0;
-  private int projectFinished = 0;
+  @Builder.Default private boolean ktpVerified = false;
+  @Builder.Default private int projectMatch = 0;
+  @Builder.Default private int projectFinished = 0;
 }

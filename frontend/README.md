@@ -40,7 +40,7 @@ A Vue 3 frontend application for the Architecture Marketplace platform, connecti
    
    Edit `.env` file with your configuration:
    ```env
-   VITE_API_BASE_URL=http://localhost:8080/api
+   VITE_API_BASE_URL=http://localhost:8080/
    VITE_APP_NAME=rumantra
    VITE_DEBUG_MODE=true
    ```

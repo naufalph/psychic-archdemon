@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import axios from 'axios'
+import { authAPI } from '@/services/api'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -35,16 +35,13 @@ export const useAuthStore = defineStore('auth', {
 
       try {
         if (this.token) {
-          // Set axios default header
-          axios.defaults.headers.common['Authorization'] = `Bearer ${this.token}`
-
-          // Verify token is still valid
-          const response = await axios.get('/api/auth/me')
-          this.user = response.data
+          // Token validation will be handled by the request interceptor
+          // For now, just mark as initialized if token exists
+          // TODO: Add a proper token validation endpoint
+          this.isInitialized = true
         }
       } catch (error) {
         console.error('Auth check failed:', error)
-        // Token is invalid, clear it
         this.clearAuth()
       } finally {
         this.isLoading = false
@@ -63,24 +60,26 @@ export const useAuthStore = defineStore('auth', {
       this.isLoading = true
 
       try {
-        const response = await axios.post('/api/auth/login', credentials)
-        const { token, user } = response.data
+        const response = await authAPI.login(credentials)
+
+        // Extract data from ApiResponse wrapper
+        const { data: authResponse } = response.data
 
         // Store authentication data
-        this.token = token
-        this.user = user
+        this.token = authResponse.token
+        this.user = {
+          id: authResponse.id,
+          email: authResponse.email
+        }
 
         // Persist token to localStorage
-        localStorage.setItem('auth_token', token)
-
-        // Set axios default header
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+        localStorage.setItem('auth_token', authResponse.token)
 
         // Reset login attempts on successful login
         this.loginAttempts = 0
         this.lockoutTime = null
 
-        return { success: true, user }
+        return { success: true, user: this.user }
       } catch (error) {
         // Handle login failures
         this.handleLoginFailure(error)
@@ -90,25 +89,18 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
-    // Register new user
+    // Register new user (requires email verification)
     async register(userData) {
       this.isLoading = true
 
       try {
-        const response = await axios.post('/api/auth/register', userData)
-        const { token, user } = response.data
+        const response = await authAPI.register(userData)
 
-        // Store authentication data
-        this.token = token
-        this.user = user
+        // Registration returns a message about email verification
+        // No token is returned until email is verified
+        const { data: message } = response.data
 
-        // Persist token to localStorage
-        localStorage.setItem('auth_token', token)
-
-        // Set axios default header
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
-
-        return { success: true, user }
+        return { success: true, message }
       } catch (error) {
         console.error('Registration failed:', error)
         throw error
@@ -122,109 +114,150 @@ export const useAuthStore = defineStore('auth', {
       this.isLoading = true
 
       try {
-        // Call logout endpoint to invalidate token on server
-        if (this.token) {
-          await axios.post('/api/auth/logout')
-        }
-      } catch (error) {
-        // Even if server logout fails, we still clear local auth
-        console.error('Server logout failed:', error)
-      } finally {
+        // Since JWT tokens are stateless, just clear local storage
+        // No server-side logout endpoint needed
         this.clearAuth()
+      } catch (error) {
+        console.error('Logout failed:', error)
+      } finally {
         this.isLoading = false
       }
     },
 
-    // Refresh authentication token
+    // JWT tokens don't need refresh for this implementation
     async refreshToken() {
-      if (!this.token) {
-        throw new Error('No token to refresh')
-      }
-
-      try {
-        const response = await axios.post('/api/auth/refresh', {
-          token: this.token
-        })
-
-        const { token: newToken } = response.data
-
-        // Update token
-        this.token = newToken
-        localStorage.setItem('auth_token', newToken)
-        axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`
-
-        return newToken
-      } catch (error) {
-        console.error('Token refresh failed:', error)
-        // If refresh fails, clear auth
-        this.clearAuth()
-        throw error
-      }
+      // JWT tokens are stateless and don't require refresh
+      // If the token is expired, user will need to login again
+      throw new Error('Token refresh not supported with stateless JWT')
     },
 
-    // Update user profile
-    async updateProfile(profileData) {
+
+    // Verify email and auto-login
+    async verifyEmail(token) {
       this.isLoading = true
 
       try {
-        const response = await axios.put('/api/user/profile', profileData)
-        this.user = { ...this.user, ...response.data }
-        return response.data
+        const response = await authAPI.verifyEmail(token)
+
+        // Extract data from ApiResponse wrapper
+        const { data: authResponse } = response.data
+
+        // Store authentication data for auto-login
+        this.token = authResponse.token
+        this.user = {
+          id: authResponse.id,
+          email: authResponse.email
+        }
+
+        // Persist token to localStorage
+        localStorage.setItem('auth_token', authResponse.token)
+
+        return { success: true, user: this.user }
       } catch (error) {
-        console.error('Profile update failed:', error)
+        console.error('Email verification failed:', error)
         throw error
       } finally {
         this.isLoading = false
       }
     },
 
-    // Change password
-    async changePassword(passwordData) {
+    // Resend verification email
+    async resendVerification(email) {
       this.isLoading = true
 
       try {
-        await axios.post('/api/auth/change-password', passwordData)
-        return { success: true }
+        const response = await authAPI.resendVerification(email)
+        const { data: message } = response.data
+
+        return { success: true, message }
       } catch (error) {
-        console.error('Password change failed:', error)
+        console.error('Resend verification failed:', error)
         throw error
       } finally {
         this.isLoading = false
       }
     },
 
-    // Request password reset
-    async requestPasswordReset(email) {
+    // Handle Google OAuth login
+    async loginWithGoogle() {
+      try {
+        const response = await authAPI.getGoogleAuthUrl()
+        const authUrl = response.data
+
+        // Redirect to Google OAuth
+        window.location.href = authUrl
+      } catch (error) {
+        console.error('Google login failed:', error)
+        throw error
+      }
+    },
+
+    // Handle Google OAuth callback
+    async handleGoogleCallback(code) {
       this.isLoading = true
 
       try {
-        await axios.post('/api/auth/forgot-password', { email })
-        return { success: true }
+        const response = await authAPI.googleCallback(code)
+
+        // Extract data from ApiResponse wrapper
+        const { data: authResponse } = response.data
+
+        // Store authentication data
+        this.token = authResponse.token
+        this.user = {
+          id: authResponse.id,
+          email: authResponse.email
+        }
+
+        // Persist token to localStorage
+        localStorage.setItem('auth_token', authResponse.token)
+
+        return { success: true, user: this.user }
       } catch (error) {
-        console.error('Password reset request failed:', error)
+        console.error('Google callback failed:', error)
         throw error
       } finally {
         this.isLoading = false
       }
     },
 
-    // Reset password with token
-    async resetPassword(resetData) {
+    // Handle LinkedIn OAuth login
+    async loginWithLinkedIn() {
+      try {
+        const response = await authAPI.getLinkedInAuthUrl()
+        const authUrl = response.data
+
+        // Redirect to LinkedIn OAuth
+        window.location.href = authUrl
+      } catch (error) {
+        console.error('LinkedIn login failed:', error)
+        throw error
+      }
+    },
+
+    // Handle LinkedIn OAuth callback
+    async handleLinkedInCallback(code) {
       this.isLoading = true
 
       try {
-        const response = await axios.post('/api/auth/reset-password', resetData)
-        const { token, user } = response.data
+        const response = await authAPI.linkedinCallback(code)
 
-        // Auto-login after password reset
-        this.token = token
-        this.user = user
-        localStorage.setItem('auth_token', token)
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+        // Extract data from ApiResponse wrapper
+        const { data: authResponse } = response.data
 
-        return { success: true, user }
+        // Store authentication data
+        this.token = authResponse.token
+        this.user = {
+          id: authResponse.id,
+          email: authResponse.email
+        }
+
+        // Persist token to localStorage
+        localStorage.setItem('auth_token', authResponse.token)
+
+        return { success: true, user: this.user }
       } catch (error) {
-        console.error('Password reset failed:', error)
+        console.error('LinkedIn callback failed:', error)
         throw error
       } finally {
         this.isLoading = false
@@ -238,9 +271,6 @@ export const useAuthStore = defineStore('auth', {
 
       // Remove from localStorage
       localStorage.removeItem('auth_token')
-
-      // Remove axios default header
-      delete axios.defaults.headers.common['Authorization']
 
       // Reset state
       this.isInitialized = false

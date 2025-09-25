@@ -10,7 +10,8 @@
   },
   "auth": {
     "signUp": "Daftar",
-    "signIn": "Login",
+    "signIn": "Sign in",
+    "or": "Atau",
     "signup": {
       "title": "Buat Akun Anda",
       "alreadyHaveAccount": "Sudah Punya Akun?",
@@ -38,7 +39,24 @@
       }
     },
     "emailSignup": {
+      "title": "Daftar Dengan Email",
+      "back": "Kembali",
+      "backToSignup": "Kembali ke Daftar",
+      "createAccount": "Buat Akun",
+      "emailPlaceholder": "nama@email.com",
+      "passwordPlaceholder": "Password",
+      "errors": {
+        "emailRequired": "Email harus diisi",
+        "emailInvalid": "Format email tidak valid",
+        "passwordRequired": "Password harus diisi",
+        "passwordLength": "Password minimal 6 karakter",
+        "emailExists": "Email sudah terdaftar",
+        "generalError": "Terjadi kesalahan. Silakan coba lagi."
+      }
+    },
+    "emailSignin": {
       "title": "Masuk Dengan Email",
+      "back": "Kembali",
       "backToSignup": "Kembali ke Daftar",
       "createAccount": "Buat Akun",
       "emailPlaceholder": "nama@email.com",

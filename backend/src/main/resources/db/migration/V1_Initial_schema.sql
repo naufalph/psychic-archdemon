@@ -19,9 +19,9 @@ CREATE TABLE IF NOT EXISTS rmtr_architect (
 -- Create rmtr_user table based on JPA entity
 CREATE TABLE IF NOT EXISTS rmtr_user (
     id BIGSERIAL PRIMARY KEY,
-    username VARCHAR(255) NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,
-    email VARCHAR(255) NOT NULL UNIQUE,
+    password_hash TEXT,
+    email VARCHAR(255) NOT NULL,
+    social_type VARCHAR(20) NOT NULL DEFAULT 'EMAIL',
     first_nm VARCHAR(255),
     last_nm VARCHAR(255),
     is_email_verified BOOLEAN DEFAULT FALSE,
@@ -29,12 +29,11 @@ CREATE TABLE IF NOT EXISTS rmtr_user (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL DEFAULT NULL,
 
-    CONSTRAINT chk_username_not_empty CHECK (username IS NOT NULL AND trim(username) != ''),
     CONSTRAINT chk_email_format CHECK (email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
-    CONSTRAINT chk_password_not_empty CHECK (length(password_hash) > 0)
+    CONSTRAINT chk_password_not_empty CHECK (length(password_hash) > 0),
+    CONSTRAINT uk_user_email_social UNIQUE (email, social_type)
 );
 
-CREATE INDEX IF NOT EXISTS idx_user_username ON rmtr_user(username);
 CREATE INDEX IF NOT EXISTS idx_user_email ON rmtr_user(email);
 
 CREATE TABLE IF NOT EXISTS rmtr_client (
@@ -47,3 +46,16 @@ CREATE TABLE IF NOT EXISTS rmtr_client (
     project_match INTEGER DEFAULT 0,
     project_finished INTEGER DEFAULT 0
 );
+
+-- Create email verification table
+CREATE TABLE IF NOT EXISTS rmtr_email_verification (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES rmtr_user(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    expiry TIMESTAMP NOT NULL DEFAULT (CURRENT_TIMESTAMP + INTERVAL '24 hours'),
+    verified BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_email_verification_token ON rmtr_email_verification(token);
+CREATE INDEX IF NOT EXISTS idx_email_verification_user_id ON rmtr_email_verification(user_id);

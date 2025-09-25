@@ -13,6 +13,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import com.rumantra.security.JwtAuthenticationFilter;
 
@@ -43,16 +46,44 @@ public class SecurityConfig {
   }
 
   @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.addAllowedOriginPattern("http://localhost:3000");
+    configuration.addAllowedMethod("*");
+    configuration.addAllowedHeader("*");
+    configuration.setAllowCredentials(true);
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+  }
+
+  @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-    http.csrf(csrf -> csrf.disable())
+    http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
+        .csrf(csrf -> csrf.disable())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers("/api/v1/architects/signup", "/api/v1/architects/login")
+                auth
+                    // Legacy architect endpoints
+                    .requestMatchers("/api/v1/architects/signup", "/api/v1/architects/login")
                     .permitAll()
+
+                    // New user endpoints (public)
+                    .requestMatchers("/rmtr/users/login", "/rmtr/users/register")
+                    .permitAll()
+                    .requestMatchers("/rmtr/users/verify-email", "/rmtr/users/resend-verification")
+                    .permitAll()
+                    .requestMatchers("/rmtr/users/oauth2/**")
+                    .permitAll()
+
+                    // Protected endpoints
                     .requestMatchers("/api/v1/architects/profile", "/api/v1/architects/profile/**")
                     .authenticated()
+
+                    // Documentation
                     .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html")
                     .permitAll()
                     .anyRequest()

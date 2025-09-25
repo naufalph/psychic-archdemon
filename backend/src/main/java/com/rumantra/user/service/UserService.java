@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -12,6 +13,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,8 +28,12 @@ import com.rumantra.client.service.ClientService;
 import com.rumantra.security.JwtUtils;
 import com.rumantra.shared.RumantraConstants;
 import com.rumantra.shared.exception.ResourceNotFoundException;
+import com.rumantra.user.domain.EmailVerification;
+import com.rumantra.user.domain.SocialType;
 import com.rumantra.user.domain.User;
 import com.rumantra.user.dto.*;
+import com.rumantra.user.dto.LinkedInUserInfoDto;
+import com.rumantra.user.repository.EmailVerificationRepository;
 import com.rumantra.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -36,12 +42,14 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserService {
   private final UserRepository userRepository;
+  private final EmailVerificationRepository emailVerificationRepository;
   private final PasswordEncoder passwordEncoder;
   private final JwtUtils jwtUtils;
   private final ArchitectService architectService;
   private final ClientService clientService;
   private final ArchitectRepository architectRepository;
   private final ClientRepository clientRepository;
+  private final EmailService emailService;
 
   @Value("${spring.security.oauth2.client.registration.google.client-id}")
   private String googleClientId;
@@ -52,13 +60,22 @@ public class UserService {
   @Value("${spring.security.oauth2.client.registration.google.redirect-uri}")
   private String redirectUri;
 
+  @Value("${spring.security.oauth2.client.registration.linkedin.client-id}")
+  private String linkedinClientId;
+
+  @Value("${spring.security.oauth2.client.registration.linkedin.client-secret}")
+  private String linkedinClientSecret;
+
+  @Value("${spring.security.oauth2.client.registration.linkedin.redirect-uri}")
+  private String linkedinRedirectUri;
+
   private final RestTemplate restTemplate = new RestTemplate();
   private final ObjectMapper objectMapper = new ObjectMapper();
 
   public UserAuthResponseDto login(UserLoginRequestDto loginRequest) {
     User user =
         userRepository
-            .findByEmailAndIsActive(loginRequest.getEmail())
+            .findByEmailAndSocialTypeAndIsActive(loginRequest.getEmail(), SocialType.EMAIL, true)
             .orElseThrow(
                 () ->
                     new ResourceNotFoundException(
@@ -70,6 +87,10 @@ public class UserService {
 
     if (!user.isActive()) {
       throw new IllegalArgumentException("User account is deactivated!");
+    }
+
+    if (!user.isEmailVerified()) {
+      throw new IllegalArgumentException("Please verify your email before logging in!");
     }
 
     List<String> registeredRoles = new ArrayList<>();
@@ -125,15 +146,6 @@ public class UserService {
     }
   }
 
-  public UserDto getUserByUserId(Long userId) {
-    User user =
-        userRepository
-            .findByUserId(userId)
-            .orElseThrow(
-                () -> new ResourceNotFoundException("User not found for user ID: " + userId));
-    return mapToDto(user);
-  }
-
   private UserDto mapToDto(User user) {
     return UserDto.builder()
         .id(user.getId())
@@ -145,13 +157,14 @@ public class UserService {
         .build();
   }
 
+  @Transactional
   public UserDto register(UserSignupRequestDto signupRequest) {
-    // Check if email already exists
-    if (userRepository.existsByEmail(signupRequest.getEmail())) {
+    // Check if email already exists for EMAIL social type
+    if (userRepository.existsByEmailAndSocialType(signupRequest.getEmail(), SocialType.EMAIL)) {
       throw new IllegalArgumentException("Email is already in use!");
     }
 
-    // Create new user
+    // Create new user with email unverified
     User user =
         User.builder()
             .email(signupRequest.getEmail())
@@ -165,7 +178,12 @@ public class UserService {
 
     user = userRepository.save(user);
 
-    // Create client profile
+    // Generate and send verification email
+    String verificationToken = generateVerificationToken();
+    saveVerificationToken(user.getId(), verificationToken);
+    emailService.sendVerificationEmail(user.getEmail(), verificationToken);
+
+    // Create client profile (but user can't log in until verified)
     ClientSignupRequestDto clientSignupRequestDto =
         ClientSignupRequestDto.builder().userId(user.getId()).build();
 
@@ -225,7 +243,7 @@ public class UserService {
 
       User user =
           userRepository
-              .findByEmail(googleUser.getEmail())
+              .findByEmailAndSocialType(googleUser.getEmail(), SocialType.GOOGLE)
               .orElseGet(() -> createGoogleUser(googleUser));
 
       String jwt = jwtUtils.generateJwtToken(user.getEmail());
@@ -270,6 +288,7 @@ public class UserService {
     User newUser =
         User.builder()
             .email(googleUser.getEmail())
+            .socialType(SocialType.GOOGLE)
             .firstName(firstName)
             .lastName(lastName)
             .isEmailVerified(true)
@@ -278,5 +297,225 @@ public class UserService {
             .build();
 
     return userRepository.save(newUser);
+  }
+
+  public String getLinkedInAuthorizationUrl() {
+    String baseUrl = "https://www.linkedin.com/oauth/v2/authorization";
+    String scope = "openid profile email";
+
+    return String.format(
+        "%s?response_type=code&client_id=%s&redirect_uri=%s&scope=%s",
+        baseUrl, linkedinClientId, linkedinRedirectUri, scope);
+  }
+
+  public UserAuthResponseDto processLinkedInCallback(String code) {
+    try {
+      // 1. Exchange code for access token
+      String tokenUrl = "https://www.linkedin.com/oauth/v2/accessToken";
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
+
+      // URL encode parameters to handle special characters
+      String encodedCode = java.net.URLEncoder.encode(code, "UTF-8");
+      String encodedRedirectUri = java.net.URLEncoder.encode(linkedinRedirectUri, "UTF-8");
+      String encodedClientId = java.net.URLEncoder.encode(linkedinClientId, "UTF-8");
+      String encodedClientSecret = java.net.URLEncoder.encode(linkedinClientSecret, "UTF-8");
+
+      String requestBody =
+          String.format(
+              "grant_type=authorization_code&code=%s&redirect_uri=%s&client_id=%s&client_secret=%s",
+              encodedCode, encodedRedirectUri, encodedClientId, encodedClientSecret);
+
+      ResponseEntity<String> tokenResponse;
+      try {
+        tokenResponse =
+            restTemplate.exchange(
+                tokenUrl, HttpMethod.POST, new HttpEntity<>(requestBody, headers), String.class);
+      } catch (Exception e) {
+        throw new IllegalArgumentException(
+            "LinkedIn token exchange request failed: " + e.getMessage());
+      }
+
+      if (!tokenResponse.getStatusCode().is2xxSuccessful()) {
+        throw new IllegalArgumentException(
+            "LinkedIn token exchange failed with status: "
+                + tokenResponse.getStatusCode()
+                + ", body: "
+                + tokenResponse.getBody());
+      }
+
+      JsonNode tokenNode = objectMapper.readTree(tokenResponse.getBody());
+      if (!tokenNode.has("access_token")) {
+        throw new IllegalArgumentException(
+            "No access token in LinkedIn response: " + tokenResponse.getBody());
+      }
+      String accessToken = tokenNode.get("access_token").asText();
+
+      // 2. Get user profile info using OpenID Connect userinfo endpoint
+      HttpHeaders profileHeaders = new HttpHeaders();
+      profileHeaders.setBearerAuth(accessToken);
+
+      ResponseEntity<String> profileResponse =
+          restTemplate.exchange(
+              "https://api.linkedin.com/v2/userinfo",
+              HttpMethod.GET,
+              new HttpEntity<>(profileHeaders),
+              String.class);
+
+      JsonNode profileInfo = objectMapper.readTree(profileResponse.getBody());
+      String email = profileInfo.get("email").asText();
+
+      // 4. Extract profile picture from userinfo response
+      String profilePicture = "";
+      if (profileInfo.has("picture")) {
+        profilePicture = profileInfo.get("picture").asText();
+      }
+
+      // 5. Parse name from userinfo response
+      String firstName = "";
+      String lastName = "";
+      if (profileInfo.has("given_name")) {
+        firstName = profileInfo.get("given_name").asText();
+      }
+      if (profileInfo.has("family_name")) {
+        lastName = profileInfo.get("family_name").asText();
+      }
+
+      // Fallback to name field if given_name/family_name not available
+      if (firstName.isEmpty() && profileInfo.has("name")) {
+        String fullName = profileInfo.get("name").asText();
+        String[] nameParts = fullName.split(" ", 2);
+        firstName = nameParts[0];
+        lastName = nameParts.length > 1 ? nameParts[1] : "";
+      }
+
+      LinkedInUserInfoDto linkedinUser =
+          LinkedInUserInfoDto.builder()
+              .id(profileInfo.get("sub").asText()) // 'sub' is the user ID in OpenID Connect
+              .firstName(firstName)
+              .lastName(lastName)
+              .email(email)
+              .profilePicture(profilePicture)
+              .emailVerified(true) // LinkedIn emails are considered verified
+              .build();
+
+      User user =
+          userRepository
+              .findByEmailAndSocialType(linkedinUser.getEmail(), SocialType.LINKEDIN)
+              .orElseGet(() -> createLinkedInUser(linkedinUser));
+
+      String jwt = jwtUtils.generateJwtToken(user.getEmail());
+      List<String> registeredRoles = new ArrayList<>();
+
+      // Add default client role for LinkedIn users
+      if (clientRepository.findByUserId(user.getId()).isEmpty()) {
+        Client client =
+            Client.builder()
+                .user(user)
+                .ktpVerified(false)
+                .projectMatch(0)
+                .projectFinished(0)
+                .build();
+        clientRepository.save(client);
+      }
+      registeredRoles.add(RumantraConstants.CLIENT_ROLE);
+
+      return UserAuthResponseDto.builder()
+          .token(jwt)
+          .type("Bearer")
+          .id(user.getId())
+          .email(user.getEmail())
+          .registeredRoles(registeredRoles)
+          .build();
+
+    } catch (Exception e) {
+      throw new IllegalArgumentException("Failed to process LinkedIn login: " + e.getMessage());
+    }
+  }
+
+  private User createLinkedInUser(LinkedInUserInfoDto linkedinUser) {
+    if (!linkedinUser.isEmailVerified()) {
+      throw new IllegalArgumentException("LinkedIn email is not verified!");
+    }
+
+    User newUser =
+        User.builder()
+            .email(linkedinUser.getEmail())
+            .socialType(SocialType.LINKEDIN)
+            .firstName(linkedinUser.getFirstName())
+            .lastName(linkedinUser.getLastName())
+            .isEmailVerified(true)
+            .isActive(true)
+            .createdAt(Timestamp.valueOf(LocalDateTime.now()))
+            .build();
+
+    return userRepository.save(newUser);
+  }
+
+  public void verifyEmail(String token) {
+    EmailVerification verification =
+        emailVerificationRepository
+            .findByToken(token)
+            .orElseThrow(() -> new IllegalArgumentException("Invalid verification token"));
+
+    if (verification.isExpired()) {
+      throw new IllegalArgumentException("Verification token has expired");
+    }
+
+    if (verification.isVerified()) {
+      throw new IllegalArgumentException("Email has already been verified");
+    }
+
+    // Mark user as verified
+    User user =
+        userRepository
+            .findById(verification.getUserId())
+            .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+    user.setEmailVerified(true);
+    userRepository.save(user);
+
+    // Mark token as used
+    verification.setVerified(true);
+    emailVerificationRepository.save(verification);
+
+    // Send welcome email
+    emailService.sendWelcomeEmail(user.getEmail(), user.getFirstName());
+  }
+
+  public void resendVerificationEmail(String email) {
+    User user =
+        userRepository
+            .findByEmail(email)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("User not found with email: " + email));
+
+    if (user.isEmailVerified()) {
+      throw new IllegalArgumentException("Email is already verified");
+    }
+
+    // Invalidate existing tokens for this user
+    emailVerificationRepository.deleteByUserId(user.getId());
+
+    // Generate new token and send email
+    String verificationToken = generateVerificationToken();
+    saveVerificationToken(user.getId(), verificationToken);
+    emailService.sendVerificationEmail(user.getEmail(), verificationToken);
+  }
+
+  private String generateVerificationToken() {
+    return UUID.randomUUID().toString();
+  }
+
+  private void saveVerificationToken(Long userId, String token) {
+    EmailVerification verification =
+        EmailVerification.builder()
+            .userId(userId)
+            .token(token)
+            .expiry(Timestamp.valueOf(LocalDateTime.now().plusHours(24)))
+            .verified(false)
+            .build();
+
+    emailVerificationRepository.save(verification);
   }
 }

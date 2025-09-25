@@ -3,7 +3,7 @@ import { useAuthStore } from '@/stores/auth'
 
 // Create axios instance with default configuration
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/',
   timeout: 30000, // 30 seconds
   headers: {
     'Content-Type': 'application/json',
@@ -14,11 +14,12 @@ const api = axios.create({
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
-    const authStore = useAuthStore()
+    // Get token from localStorage directly to avoid circular dependency
+    const token = localStorage.getItem('auth_token')
 
     // Add auth token if available
-    if (authStore.token) {
-      config.headers.Authorization = `Bearer ${authStore.token}`
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`
     }
 
     // Add request timestamp for debugging
@@ -55,29 +56,22 @@ api.interceptors.response.use(
       console.error('[API Error]', error.response?.status, error.response?.data)
     }
 
-    // Handle 401 Unauthorized errors
+    // Handle 401 Unauthorized errors (JWT token expired or invalid)
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true
 
-      try {
-        // Try to refresh the token
-        await authStore.refreshToken()
+      // For stateless JWT, clear auth and redirect to login
+      console.warn('JWT token expired or invalid, redirecting to login')
 
-        // Retry the original request with new token
-        originalRequest.headers.Authorization = `Bearer ${authStore.token}`
-        return api(originalRequest)
-      } catch (refreshError) {
-        // Refresh failed, redirect to login
-        console.error('Token refresh failed:', refreshError)
-        authStore.clearAuth()
+      // Clear auth data using the store method
+      authStore.clearAuth()
 
-        // Redirect to login if not already there
-        if (window.location.pathname !== '/login') {
-          window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname)
-        }
-
-        return Promise.reject(refreshError)
+      // Redirect to login if not already there
+      if (window.location.pathname !== '/login' && window.location.pathname !== '/') {
+        window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname)
       }
+
+      return Promise.reject(error)
     }
 
     // Handle 403 Forbidden errors
@@ -162,14 +156,25 @@ export const downloadFile = async (endpoint, filename) => {
 
 // API endpoints organized by resource
 export const authAPI = {
-  login: (credentials) => api.post('/auth/login', credentials),
-  register: (userData) => api.post('/auth/register', userData),
-  logout: () => api.post('/auth/logout'),
-  refresh: (token) => api.post('/auth/refresh', { token }),
-  me: () => api.get('/auth/me'),
-  forgotPassword: (email) => api.post('/auth/forgot-password', { email }),
-  resetPassword: (resetData) => api.post('/auth/reset-password', resetData),
-  changePassword: (passwordData) => api.post('/auth/change-password', passwordData)
+  // Email login with credentials
+  login: (credentials) => api.post('/rmtr/users/login', credentials),
+
+  // Email registration with email verification
+  register: (userData) => api.post('/rmtr/users/register', userData),
+
+  // Email verification callback
+  verifyEmail: (token) => api.get(`/rmtr/users/verify-email?token=${token}`),
+
+  // Resend email verification
+  resendVerification: (email) => api.post(`/rmtr/users/resend-verification?email=${email}`),
+
+  // Google OAuth endpoints
+  getGoogleAuthUrl: () => api.get('/rmtr/users/oauth2/google'),
+  googleCallback: (code) => api.get(`/rmtr/users/oauth2/callback/google?code=${code}`),
+
+  // LinkedIn OAuth endpoints
+  getLinkedInAuthUrl: () => api.get('/rmtr/users/oauth2/linkedin'),
+  linkedinCallback: (code) => api.get(`/rmtr/users/oauth2/callback/linkedin?code=${code}`)
 }
 
 export const userAPI = {

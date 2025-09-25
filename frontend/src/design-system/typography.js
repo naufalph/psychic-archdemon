@@ -81,6 +81,12 @@ module.exports = {
         fontSize: '14px',
         fontWeight: 400,
         color: '#000000'
+      },
+      xsmall: {
+        fontFamily: 'Inter',
+        fontSize: '12px',
+        fontWeight: 400,
+        color: '#B3B3B3'
       }
     },
     button: {

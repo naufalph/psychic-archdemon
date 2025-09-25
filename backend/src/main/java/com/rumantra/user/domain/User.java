@@ -23,8 +23,13 @@ public class User {
   @Column(name = "password_hash", nullable = false)
   private String password;
 
-  @Column(name = "email", nullable = false, unique = true)
+  @Column(name = "email", nullable = false)
   private String email;
+
+  @Enumerated(EnumType.STRING)
+  @Column(name = "social_type", nullable = false)
+  @Builder.Default()
+  private SocialType socialType = SocialType.EMAIL;
 
   @Column(name = "first_nm")
   private String firstName;

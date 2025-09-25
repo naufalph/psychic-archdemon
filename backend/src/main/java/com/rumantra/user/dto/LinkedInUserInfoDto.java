@@ -1,7 +1,5 @@
 package com.rumantra.user.dto;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,11 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserAuthResponseDto {
-
-  private String token;
-  @Builder.Default private String type = "Bearer";
-  private Long id;
+public class LinkedInUserInfoDto {
   private String email;
-  private List<String> registeredRoles;
+  private String firstName;
+  private String lastName;
+  private String profilePicture;
+  private String id;
+  private boolean emailVerified;
 }

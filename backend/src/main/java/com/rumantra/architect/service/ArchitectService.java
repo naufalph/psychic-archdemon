@@ -46,7 +46,7 @@ public class ArchitectService {
     }
 
     // Create new user
-    Optional<User> user = userRepository.findByEmailAndIsActive(signupRequest.getEmail());
+    Optional<User> user = userRepository.findByEmailAndIsActive(signupRequest.getEmail(), true);
 
     if (user.isEmpty()) {
       throw new IllegalArgumentException("user is not found!");

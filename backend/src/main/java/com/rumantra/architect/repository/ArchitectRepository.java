@@ -14,12 +14,6 @@ public interface ArchitectRepository extends JpaRepository<Architect, Long> {
 
   Optional<Architect> findByUserEmail(String email);
 
-  Optional<Architect> findByUserUserName(String userName);
-
-  boolean existsByUserEmail(String email);
-
-  boolean existsByUserUserName(String userName);
-
   boolean existsByKtpNum(String ktpNum);
 
   boolean existsByNpwp(String npwp);

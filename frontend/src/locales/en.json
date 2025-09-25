@@ -11,6 +11,7 @@
   "auth": {
     "signIn": "Login",
     "signUp": "Register",
+    "or": "Or",
     "signup": {
       "title": "Create Your Account",
       "alreadyHaveAccount": "Already have an account?",
@@ -34,13 +35,32 @@
       "rememberMe": "Remember me",
       "forgotPassword": "Forgot password?",
       "socialLogin": {
-        "or": "Or sign in with"
+        "linkedin": "Sign in with LinkedIn",
+        "email": "Sign in with Email",
+        "google": "Sign in with Google",
+        "facebook": "Sign in with Facebook"
       }
     },
     "emailSignup": {
       "title": "Sign Up with Email",
+      "back": "Back",
       "backToSignup": "Back to Signup",
       "createAccount": "Create Account",
+      "emailPlaceholder": "name@email.com",
+      "passwordPlaceholder": "Password",
+      "errors": {
+        "emailRequired": "Email must be filled",
+        "emailInvalid": "Invalid email format",
+        "passwordRequired": "Password must be filled",
+        "passwordLength": "Password must be at least 6 characters",
+        "emailExists": "Email already registered",
+        "generalError": "An error occurred. Please try again."
+      }
+    },
+    "emailSignin": {
+      "title": "Login with Email",
+      "back": "Back",
+      "backToSignup": "Back to Sign In",
       "emailPlaceholder": "name@email.com",
       "passwordPlaceholder": "Password",
       "errors": {

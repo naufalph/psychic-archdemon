@@ -109,6 +109,14 @@
   transition: color 0.3s ease;
 }
 
+.title-no-hover-large {
+  font-family: 'Inter', sans-serif;
+  font-size: theme('fontSize.title-large');
+  font-weight: theme('fontWeight.title');
+  color: theme('colors.black');
+  transition: color 0.3s ease;
+}
+
 .title-large:hover {
   color: #185C93;
 }
@@ -118,6 +126,14 @@
 }
 
 .title-medium {
+  font-family: 'Inter', sans-serif;
+  font-size: theme('fontSize.title-medium');
+  font-weight: theme('fontWeight.title');
+  color: theme('colors.black');
+  transition: color 0.3s ease;
+}
+
+.title-no-hover-medium {
   font-family: 'Inter', sans-serif;
   font-size: theme('fontSize.title-medium');
   font-weight: theme('fontWeight.title');
@@ -141,6 +157,14 @@
   transition: color 0.3s ease;
 }
 
+.title-no-hover-small {
+  font-family: 'Inter', sans-serif;
+  font-size: theme('fontSize.title-small');
+  font-weight: theme('fontWeight.title');
+  color: theme('colors.black');
+  transition: color 0.3s ease;
+}
+
 .title-small:hover {
   color: #185C93;
 }
@@ -154,15 +178,6 @@
   font-size: theme('fontSize.body-large');
   font-weight: theme('fontWeight.body-regular');
   color: theme('colors.black');
-  transition: color 0.3s ease;
-}
-
-.body-large:hover {
-  color: #185C93;
-}
-
-.body-large:active {
-  color: #0E3758;
 }
 
 .body-medium {
@@ -170,15 +185,6 @@
   font-size: theme('fontSize.body-medium');
   font-weight: theme('fontWeight.body-regular');
   color: theme('colors.black');
-  transition: color 0.3s ease;
-}
-
-.body-medium:hover {
-  color: #185C93;
-}
-
-.body-medium:active {
-  color: #0E3758;
 }
 
 .body-small {
@@ -186,15 +192,6 @@
   font-size: theme('fontSize.body-small');
   font-weight: theme('fontWeight.body-regular');
   color: theme('colors.black');
-  transition: color 0.3s ease;
-}
-
-.body-small:hover {
-  color: #185C93;
-}
-
-.body-small:active {
-  color: #0E3758;
 }
 
 .button-large {

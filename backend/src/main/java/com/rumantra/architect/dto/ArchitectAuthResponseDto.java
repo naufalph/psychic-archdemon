@@ -9,7 +9,7 @@ import lombok.*;
 public class ArchitectAuthResponseDto {
 
   private String token;
-  private String type = "Bearer";
+  private String type;
   private Long id;
   private String userName;
   private String email;

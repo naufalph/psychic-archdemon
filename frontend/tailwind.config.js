@@ -54,13 +54,16 @@ export default {
         'body-large': typography.typography.body.large.fontSize,
         'body-medium': typography.typography.body.medium.fontSize,
         'body-small': typography.typography.body.small.fontSize,
+        'body-xsmall': typography.typography.body.xsmall.fontSize,
         'button-large': typography.typography.button.large.fontSize,
-        'button-medium': typography.typography.button.medium.fontSize
+        'button-medium': typography.typography.button.medium.fontSize,
+        'xxs' : '10px'
       },
       fontWeight: {
         'display': '700',
         'headline': '500',
         'title': '500',
+        'title-no-hover': '500',
         'body-regular': '400',
         'button': '500'
       },
