@@ -74,5 +74,145 @@
       "emailRequired": "Email harus diisi",
       "passwordRequired": "Password harus diisi"
     }
+  },
+  "clientLanding": {
+    "hero": {
+      "title": "Temukan Arsitek",
+      "titleHighlight": "Terbaik",
+      "titleSuffix": "untuk Proyek Anda",
+      "subtitle": "Platform terpercaya untuk menghubungkan Anda dengan arsitek profesional. Wujudkan rumah impian dengan desain yang sesuai kebutuhan dan budget Anda.",
+      "startProject": "Mulai Proyek",
+      "viewArchitects": "Lihat Arsitek"
+    },
+    "services": {
+      "title": "Cara Kerja",
+      "subtitle": "Proses mudah dan transparan untuk mendapatkan arsitek terbaik",
+      "consultation": {
+        "title": "Posting Proyek Anda",
+        "description": "Diskusi kebutuhan dan budget dengan arsitek pilihan Anda secara gratis"
+      },
+      "customDesign": {
+        "title": "Terima Tawaran dan Bandingkan",
+        "description": "Dapatkan desain yang dibuat khusus sesuai gaya dan kebutuhan Anda"
+      },
+      "supervision": {
+        "title": "Mulai Proyek, Pembayaran Bertahap dan Terjamin",
+        "description": "Arsitek akan mengawasi proses konstruksi untuk memastikan kualitas"
+      },
+      "learnMore": "Pelajari"
+    },
+    "whyChoose": {
+      "title": "Semuanya, dalam satu layer.",
+      "subtitle": "Bandingkan portofolio, harga, dan desain.",
+      "tryNow": "Coba Sekarang"
+    },
+    "categories": {
+      "title": "Wujudkan Desain Impian Anda",
+      "subtitle": "Berbagai kategori desain sesuai kebutuhan Anda",
+      "residential": "Rumah Tinggal",
+      "apartment": "Apartemen",
+      "office": "Kantor",
+      "restaurant": "Restoran",
+      "hotel": "Hotel",
+      "others": "Lainnya",
+      "projects": "proyek"
+    },
+    "portfolio": {
+      "title": "Lihat pilihan desainer kami",
+      "subtitle": "Karya terbaik dari arsitek berpengalaman",
+      "viewAll": "Lihat Semua",
+      "viewAllArchitects": "Lihat Semua Arsitek"
+    },
+    "inspiration": {
+      "title": "Cari inspirasi dan tips desain",
+      "subtitle": "Dapatkan ide-ide kreatif dan panduan dari para ahli untuk mewujudkan rumah impian Anda dengan desain yang fungsional dan estetis.",
+      "explore": "Jelajahi Inspirasi"
+    },
+    "cta": {
+      "title": "Siap Mulai Proyek Impian Anda?",
+      "subtitle": "Bergabunglah dengan ribuan klien yang telah mewujudkan rumah impian mereka",
+      "startNow": "Mulai Sekarang",
+      "learnMore": "Pelajari Lebih Lanjut"
+    },
+    "common": {
+      "modernMinimalistHouse": "Rumah Minimalis Modern",
+      "modernMinimalistDescription": "Desain rumah minimalis modern dengan konsep open space dan pencahayaan alami yang optimal.",
+      "luxuryVilla": "Desain Villa Mewah",
+      "luxuryVillaDescription": "Villa mewah dengan perpaduan arsitektur tropis dan modern yang elegan dan nyaman.",
+      "category": "Kategori"
+    }
+  },
+  "architectLanding": {
+    "hero": {
+      "title": "Cara Kerja",
+      "subtitle": "Bergabunglah dengan platform kami dan terhubung dengan klien yang membutuhkan keahlian arsitektur Anda. Mulai meraih penghasilan dan kembangkan praktik Anda hari ini.",
+      "signUpNow": "Daftar Sekarang",
+      "viewProjects": "Lihat Proyek"
+    },
+    "howItWorks": {
+      "title": "Cara Kerja",
+      "steps": {
+        "createProfile": {
+          "title": "Buat Profil",
+          "description": "Tampilkan portofolio Anda dan bangun reputasi di platform kami"
+        },
+        "sendOffers": {
+          "title": "Kirim Tawaran",
+          "description": "Temukan proyek yang sesuai dan kirim tawaran Anda"
+        },
+        "workAndGetPaid": {
+          "title": "Bekerja dan Dibayar",
+          "description": "Update klien terkini untuk melacak semua pekerjaan dan pembayaran Anda"
+        }
+      },
+      "signUpNow": "Daftar Sekarang"
+    },
+    "platform": {
+      "title": "Semuanya dalam Satu Platform",
+      "features": {
+        "smartPortfolio": {
+          "title": "Portofolio Pintar",
+          "description": "Lupakan membuat ulang proposal",
+          "subtitle": "Jaga karya terbaik Anda tetap terorganisir dan mudah diakses untuk proposal klien apa pun."
+        },
+        "curatedProjects": {
+          "title": "Proyek Terkurasi",
+          "description": "Akses proyek terkurasi",
+          "subtitle": "Atur proyek dan proposal Anda dengan rapi. Dan lihat semuanya dalam satu dashboard yang mudah dilihat."
+        },
+        "estimateAssistance": {
+          "title": "Bantuan Estimasi",
+          "description": "Buat estimasi biaya",
+          "subtitle": "Dapatkan estimasi biaya instan berdasarkan spesifikasi dan kebutuhan proyek Anda."
+        },
+        "onDemandSurveys": {
+          "title": "Survei Sesuai Permintaan",
+          "description": "Pesan survei secara instan",
+          "subtitle": "Jadwalkan dan lakukan survei lokasi proyek dengan sistem pemesanan yang efisien."
+        },
+        "contractDocs": {
+          "title": "Dokumen Kontrak",
+          "description": "Tentukan ketentuan di awal",
+          "subtitle": "Buat kontrak yang jelas dan profesional yang melindungi Anda dan klien Anda."
+        }
+      },
+      "tryNow": "Coba Sekarang"
+    },
+    "portfolio": {
+      "title": "Tampilkan Karya Terbaik Anda",
+      "subtitle": "Bangun portofolio yang mengesankan yang menarik klien berkualitas tinggi dan menunjukkan keahlian arsitektur Anda.",
+      "createPortfolio": "Buat Portofolio"
+    },
+    "success": {
+      "title": "Bergabung dengan Arsitek Sukses",
+      "subtitle": "Terhubung dengan klien, kembangkan bisnis Anda, dan bangun reputasi di platform terpercaya kami.",
+      "startJourney": "Mulai Perjalanan Anda"
+    },
+    "cta": {
+      "title": "Siap Mengembangkan Praktik Arsitektur Anda?",
+      "subtitle": "Bergabunglah dengan ribuan arsitek yang telah memperluas basis klien dan meningkatkan pendapatan mereka",
+      "getStarted": "Mulai Hari Ini",
+      "browseProjects": "Jelajahi Proyek"
+    }
   }
 }

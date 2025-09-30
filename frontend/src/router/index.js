@@ -8,6 +8,8 @@ const CreateProject = () => import('@/views/projects/CreateProject.vue')
 const Architects = () => import('@/views/architects/ArchitectList.vue')
 const ArchitectProfile = () => import('@/views/architects/ArchitectProfile.vue')
 const Dashboard = () => import('@/views/clients/ClientDashboard.vue')
+const ClientLandingPage = () => import('@/views/clients/ClientLandingPage.vue')
+const ArchitectLandingPage = () => import('@/views/architects/ArchitectLandingPage.vue')
 const Profile = () => import('@/views/user/Profile.vue')
 const NotFound = () => import('@/views/errors/NotFound.vue')
 
@@ -89,6 +91,28 @@ const routes = [
     meta: {
       title: 'My Profile - Rumantra',
       requiresAuth: true
+    }
+  },
+
+  // Temporary route for reviewing ClientLandingPage
+  {
+    path: '/client-landing',
+    name: 'ClientLanding',
+    component: ClientLandingPage,
+    meta: {
+      title: 'Client Landing - Rumantra',
+      description: 'Landing page for clients to find architects'
+    }
+  },
+
+  // Architect Landing Page
+  {
+    path: '/architect-landing',
+    name: 'ArchitectLanding',
+    component: ArchitectLandingPage,
+    meta: {
+      title: 'Architect Landing - Rumantra',
+      description: 'Landing page for architects to join the platform'
     }
   },
 

@@ -76,5 +76,145 @@
       "emailRequired": "Email is required",
       "passwordRequired": "Password is required"
     }
+  },
+  "clientLanding": {
+    "hero": {
+      "title": "Find the Best",
+      "titleHighlight": "Architects",
+      "titleSuffix": "for Your Project",
+      "subtitle": "Trusted platform to connect you with professional architects. Make your dream home a reality with designs that match your needs and budget.",
+      "startProject": "Start Project",
+      "viewArchitects": "View Architects"
+    },
+    "services": {
+      "title": "How It Works",
+      "subtitle": "Easy and transparent process to get the best architects",
+      "consultation": {
+        "title": "Posting Your Project",
+        "description": "Discuss your needs and budget with your chosen architect for free"
+      },
+      "customDesign": {
+        "title": "Receive Offers & Compare",
+        "description": "Get designs made specifically according to your style and needs"
+      },
+      "supervision": {
+        "title": "Start Project, Payment & Schedule",
+        "description": "Architect will supervise the construction process to ensure quality"
+      },
+      "learnMore": "Learn More"
+    },
+    "whyChoose": {
+      "title": "Everything, in one layer.",
+      "subtitle": "Compare portfolios, pricing, and designs.",
+      "tryNow": "Try Now"
+    },
+    "categories": {
+      "title": "Realize Your Dream Design",
+      "subtitle": "Various design categories according to your needs",
+      "residential": "Residential",
+      "apartment": "Apartment",
+      "office": "Office",
+      "restaurant": "Restaurant",
+      "hotel": "Hotel",
+      "others": "Others",
+      "projects": "projects"
+    },
+    "portfolio": {
+      "title": "See our designer selection",
+      "subtitle": "Best works from experienced architects",
+      "viewAll": "View All",
+      "viewAllArchitects": "View All Architects"
+    },
+    "inspiration": {
+      "title": "Find inspiration and design tips",
+      "subtitle": "Get creative ideas and expert guidance to realize your dream home with functional and aesthetic designs.",
+      "explore": "Explore Inspiration"
+    },
+    "cta": {
+      "title": "Ready to Start Your Dream Project?",
+      "subtitle": "Join thousands of clients who have realized their dream homes",
+      "startNow": "Start Now",
+      "learnMore": "Learn More"
+    },
+    "common": {
+      "modernMinimalistHouse": "Modern Minimalist House",
+      "modernMinimalistDescription": "Modern minimalist house design with open space concept and optimal natural lighting.",
+      "luxuryVilla": "Luxury Villa Design",
+      "luxuryVillaDescription": "Luxury villa with a combination of tropical and modern architecture that is elegant and comfortable.",
+      "category": "Category"
+    }
+  },
+  "architectLanding": {
+    "hero": {
+      "title": "How It Works",
+      "subtitle": "Join our platform and connect with clients who need your architectural expertise. Start earning and grow your practice today.",
+      "signUpNow": "Sign Up Now",
+      "viewProjects": "View Projects"
+    },
+    "howItWorks": {
+      "title": "How It Works",
+      "steps": {
+        "createProfile": {
+          "title": "Create Profile",
+          "description": "Show your portfolio and build your reputation on our platform"
+        },
+        "sendOffers": {
+          "title": "Send Offers",
+          "description": "Find suitable projects and send your offers"
+        },
+        "workAndGetPaid": {
+          "title": "Work and Get Paid",
+          "description": "Latest client updates to track all your work and payment"
+        }
+      },
+      "signUpNow": "Sign Up Now"
+    },
+    "platform": {
+      "title": "Everything in One Platform",
+      "features": {
+        "smartPortfolio": {
+          "title": "Smart Portfolio",
+          "description": "Forget rebuilding proposals",
+          "subtitle": "Keep your best work organized and accessible for any client proposal."
+        },
+        "curatedProjects": {
+          "title": "Curated Projects",
+          "description": "Access curated projects",
+          "subtitle": "Get your projects and proposals organized. And view it all in one easy-to-view dashboard."
+        },
+        "estimateAssistance": {
+          "title": "Estimate Assistance",
+          "description": "Generate cost estimates",
+          "subtitle": "Get instant cost estimates based on your project specifications and requirements."
+        },
+        "onDemandSurveys": {
+          "title": "On-Demand Surveys",
+          "description": "Book surveys instantly",
+          "subtitle": "Schedule and conduct project site surveys with our efficient booking system."
+        },
+        "contractDocs": {
+          "title": "Contract Docs",
+          "description": "Define terms upfront",
+          "subtitle": "Create clear, professional contracts that protect both you and your clients."
+        }
+      },
+      "tryNow": "Try Now"
+    },
+    "portfolio": {
+      "title": "Showcase Your Best Work",
+      "subtitle": "Build an impressive portfolio that attracts high-quality clients and showcases your architectural expertise.",
+      "createPortfolio": "Create Portfolio"
+    },
+    "success": {
+      "title": "Join Successful Architects",
+      "subtitle": "Connect with clients, grow your business, and build your reputation on our trusted platform.",
+      "startJourney": "Start Your Journey"
+    },
+    "cta": {
+      "title": "Ready to Grow Your Architecture Practice?",
+      "subtitle": "Join thousands of architects who have expanded their client base and increased their income",
+      "getStarted": "Get Started Today",
+      "browseProjects": "Browse Projects"
+    }
   }
 }

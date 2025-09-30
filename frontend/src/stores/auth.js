@@ -13,10 +13,18 @@ export const useAuthStore = defineStore('auth', {
 
   getters: {
     isAuthenticated: (state) => !!state.token && !!state.user,
-    userRole: (state) => state.user?.role || null,
-    isAdmin: (state) => state.user?.role === 'ADMIN',
-    isArchitect: (state) => state.user?.role === 'ARCHITECT',
-    isClient: (state) => state.user?.role === 'CLIENT',
+    userRoles: (state) => state.user?.registeredRoles || [],
+    hasRole: (state) => (role) => state.user?.registeredRoles?.includes(role) || false,
+    isAdmin: (state) => state.user?.registeredRoles?.includes('ADMIN') || false,
+    isArchitect: (state) => state.user?.registeredRoles?.includes('ARCHITECT') || false,
+    isClient: (state) => state.user?.registeredRoles?.includes('CLIENT') || false,
+    primaryRole: (state) => {
+      const roles = state.user?.registeredRoles || []
+      if (roles.includes('ADMIN')) return 'ADMIN'
+      if (roles.includes('ARCHITECT')) return 'ARCHITECT'
+      if (roles.includes('CLIENT')) return 'CLIENT'
+      return null
+    },
     userName: (state) => state.user?.firstName && state.user?.lastName
       ? `${state.user.firstName} ${state.user.lastName}`
       : state.user?.email || '',
