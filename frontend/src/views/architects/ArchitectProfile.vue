@@ -19,17 +19,29 @@
                   :src="architect.avatar"
                   :alt="architect.name"
                   class="w-full h-full object-cover"
+                />
+                <div
+                  v-else
+                  class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-100 to-primary-200"
                 >
-                <div v-else class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-100 to-primary-200">
                   <svg class="w-16 h-16 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
                   </svg>
                 </div>
               </div>
               <div v-if="architect.verified" class="absolute -top-2 -right-2">
                 <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
                   <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    <path
+                      fill-rule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clip-rule="evenodd"
+                    />
                   </svg>
                 </div>
               </div>
@@ -52,30 +64,54 @@
                     fill="currentColor"
                     viewBox="0 0 20 20"
                   >
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                    <path
+                      d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                    />
                   </svg>
                 </div>
-                <span class="ml-2 text-sm text-gray-600">{{ architect.rating }}/5 ({{ architect.reviewCount }} reviews)</span>
+                <span class="ml-2 text-sm text-gray-600"
+                  >{{ architect.rating }}/5 ({{ architect.reviewCount }} reviews)</span
+                >
               </div>
 
               <!-- Info Tags -->
               <div class="flex flex-wrap justify-center lg:justify-start gap-4 mt-4 text-sm text-gray-600">
                 <div class="flex items-center">
                   <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
                   </svg>
                   {{ architect.location }}
                 </div>
                 <div class="flex items-center">
                   <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2V6"/>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2V6"
+                    />
                   </svg>
                   {{ architect.experience }} years experience
                 </div>
                 <div class="flex items-center">
                   <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                    />
                   </svg>
                   {{ architect.projectCount }} projects completed
                 </div>
@@ -83,11 +119,7 @@
 
               <!-- Specializations -->
               <div class="flex flex-wrap justify-center lg:justify-start gap-2 mt-6">
-                <span
-                  v-for="spec in architect.specializations"
-                  :key="spec"
-                  class="badge badge-primary"
-                >
+                <span v-for="spec in architect.specializations" :key="spec" class="badge badge-primary">
                   {{ spec }}
                 </span>
               </div>
@@ -99,13 +131,23 @@
             <div class="space-y-3">
               <button class="btn btn-primary w-full lg:w-auto">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                  />
                 </svg>
                 Contact
               </button>
               <button class="btn btn-outline w-full lg:w-auto">
                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                  />
                 </svg>
                 Save
               </button>
@@ -123,9 +165,11 @@
               :key="tab.id"
               @click="activeTab = tab.id"
               class="py-4 px-1 border-b-2 font-medium text-sm"
-              :class="activeTab === tab.id
-                ? 'border-primary-500 text-primary-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+              :class="
+                activeTab === tab.id
+                  ? 'border-primary-500 text-primary-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              "
             >
               {{ tab.name }}
             </button>
@@ -155,7 +199,12 @@
           <div v-if="activeTab === 'portfolio'">
             <div v-if="architect.portfolio.length === 0" class="text-center py-12">
               <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
               </svg>
               <h3 class="text-lg font-medium text-gray-900 mb-2">No portfolio items</h3>
               <p class="text-gray-600">This architect hasn't uploaded their portfolio yet.</p>
@@ -182,18 +231,19 @@
           <div v-if="activeTab === 'reviews'">
             <div v-if="architect.reviews.length === 0" class="text-center py-12">
               <svg class="w-12 h-12 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                />
               </svg>
               <h3 class="text-lg font-medium text-gray-900 mb-2">No reviews yet</h3>
               <p class="text-gray-600">This architect hasn't received any reviews.</p>
             </div>
 
             <div v-else class="space-y-6">
-              <div
-                v-for="review in architect.reviews"
-                :key="review.id"
-                class="border border-gray-200 rounded-lg p-6"
-              >
+              <div v-for="review in architect.reviews" :key="review.id" class="border border-gray-200 rounded-lg p-6">
                 <div class="flex items-start justify-between">
                   <div class="flex-1">
                     <div class="flex items-center space-x-2">
@@ -207,7 +257,9 @@
                           fill="currentColor"
                           viewBox="0 0 20 20"
                         >
-                          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                          <path
+                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                          />
                         </svg>
                       </div>
                     </div>
@@ -227,9 +279,7 @@
       <div class="text-center">
         <h2 class="text-2xl font-bold text-gray-900 mb-4">Architect not found</h2>
         <p class="text-gray-600 mb-6">The architect you're looking for doesn't exist or has been removed.</p>
-        <router-link to="/architects" class="btn btn-primary">
-          Back to Architects
-        </router-link>
+        <router-link to="/architects" class="btn btn-primary"> Back to Architects </router-link>
       </div>
     </div>
   </div>
@@ -277,23 +327,20 @@ export default {
           location: 'San Francisco, CA',
           experience: 12,
           projectCount: 45,
-          bio: 'I am a passionate architect with over 12 years of experience in residential design and sustainable architecture. I believe in creating spaces that are not only beautiful but also environmentally responsible and perfectly suited to my clients\' needs.',
+          bio: "I am a passionate architect with over 12 years of experience in residential design and sustainable architecture. I believe in creating spaces that are not only beautiful but also environmentally responsible and perfectly suited to my clients' needs.",
           education: [
             'Master of Architecture, UC Berkeley (2012)',
             'Bachelor of Environmental Design, UC Davis (2010)'
           ],
-          certifications: [
-            'LEED Accredited Professional',
-            'California Registered Architect',
-            'NCARB Certificate'
-          ],
+          certifications: ['LEED Accredited Professional', 'California Registered Architect', 'NCARB Certificate'],
           portfolio: [],
           reviews: [
             {
               id: 1,
               clientName: 'John Smith',
               rating: 5,
-              comment: 'Sarah designed our dream home perfectly. Her attention to detail and sustainable design approach exceeded our expectations.',
+              comment:
+                'Sarah designed our dream home perfectly. Her attention to detail and sustainable design approach exceeded our expectations.',
               createdAt: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
             }
           ]
@@ -327,8 +374,12 @@ export default {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .badge {

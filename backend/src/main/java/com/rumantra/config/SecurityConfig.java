@@ -83,6 +83,18 @@ public class SecurityConfig {
                     .requestMatchers("/api/v1/architects/profile", "/api/v1/architects/profile/**")
                     .authenticated()
 
+                    // Porto endpoints - require ARCHITECT role
+                    .requestMatchers("/api/architects/*/portos/**")
+                    .hasRole("ARCHITECT")
+                    .requestMatchers("/api/architects/*/portos")
+                    .hasRole("ARCHITECT")
+                    .requestMatchers("/api/portos/**")
+                    .hasRole("ARCHITECT")
+
+                    // Static file serving (uploads)
+                    .requestMatchers("/uploads/**")
+                    .permitAll()
+
                     // Documentation
                     .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html")
                     .permitAll()

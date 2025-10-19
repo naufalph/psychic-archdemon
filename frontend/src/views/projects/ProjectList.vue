@@ -5,20 +5,13 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div class="md:flex md:items-center md:justify-between">
           <div class="flex-1 min-w-0">
-            <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-              Projects
-            </h1>
-            <p class="mt-1 text-sm text-gray-500">
-              Discover architecture projects and opportunities
-            </p>
+            <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Projects</h1>
+            <p class="mt-1 text-sm text-gray-500">Discover architecture projects and opportunities</p>
           </div>
           <div class="mt-4 flex md:mt-0 md:ml-4">
-            <router-link
-              to="/projects/create"
-              class="btn btn-primary"
-            >
+            <router-link to="/projects/create" class="btn btn-primary">
               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
               Post New Project
             </router-link>
@@ -43,7 +36,12 @@
               />
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
               </div>
             </div>
@@ -80,9 +78,7 @@
             <span class="text-sm text-gray-600">{{ filteredProjects.length }} projects found</span>
           </div>
           <div class="flex space-x-2">
-            <button @click="clearFilters" class="btn btn-outline btn-sm">
-              Clear Filters
-            </button>
+            <button @click="clearFilters" class="btn btn-outline btn-sm">Clear Filters</button>
             <select v-model="sortBy" class="form-input text-sm">
               <option value="created">Newest First</option>
               <option value="budget">Budget: High to Low</option>
@@ -114,10 +110,18 @@
               :src="project.image"
               :alt="project.title"
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
+            <div
+              v-else
+              class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200"
             >
-            <div v-else class="w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-100 to-gray-200">
               <svg class="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                />
               </svg>
             </div>
           </div>
@@ -125,13 +129,12 @@
           <!-- Project Content -->
           <div class="card-body">
             <div class="flex items-start justify-between mb-2">
-              <h3 class="text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-1">
+              <h3
+                class="text-lg font-semibold text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-1"
+              >
                 {{ project.title }}
               </h3>
-              <span
-                class="badge"
-                :class="getStatusBadgeClass(project.status)"
-              >
+              <span class="badge" :class="getStatusBadgeClass(project.status)">
                 {{ project.status }}
               </span>
             </div>
@@ -143,8 +146,18 @@
             <div class="flex items-center justify-between mb-4">
               <div class="flex items-center text-sm text-gray-500">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
                 </svg>
                 {{ project.location }}
               </div>
@@ -153,14 +166,10 @@
 
             <div class="flex items-center justify-between">
               <div>
-                <span class="text-lg font-bold text-gray-900">
-                  ${{ project.budget?.toLocaleString() }}
-                </span>
+                <span class="text-lg font-bold text-gray-900"> ${{ project.budget?.toLocaleString() }} </span>
                 <span class="text-sm text-gray-500 ml-1">budget</span>
               </div>
-              <div class="text-sm text-gray-500">
-                {{ project.bidCount || 0 }} bids
-              </div>
+              <div class="text-sm text-gray-500">{{ project.bidCount || 0 }} bids</div>
             </div>
           </div>
 
@@ -168,13 +177,16 @@
           <div class="card-footer flex items-center justify-between">
             <div class="flex items-center text-sm text-gray-500">
               <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               {{ formatDate(project.deadline) }}
             </div>
-            <span class="text-primary-600 font-medium text-sm group-hover:text-primary-700">
-              View Details →
-            </span>
+            <span class="text-primary-600 font-medium text-sm group-hover:text-primary-700"> View Details → </span>
           </div>
         </div>
       </div>
@@ -182,26 +194,21 @@
       <!-- Empty State -->
       <div v-else class="text-center py-12">
         <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2-2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1"
+            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2-2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+          />
         </svg>
         <h3 class="text-lg font-medium text-gray-900 mb-2">No projects found</h3>
         <p class="text-gray-600 mb-6">
           {{ hasFilters ? 'Try adjusting your filters or search terms.' : 'Be the first to post a project!' }}
         </p>
-        <router-link
-          v-if="!hasFilters"
-          to="/projects/create"
-          class="btn btn-primary"
-        >
+        <router-link v-if="!hasFilters" to="/projects/create" class="btn btn-primary">
           Post Your First Project
         </router-link>
-        <button
-          v-else
-          @click="clearFilters"
-          class="btn btn-outline"
-        >
-          Clear All Filters
-        </button>
+        <button v-else @click="clearFilters" class="btn btn-outline">Clear All Filters</button>
       </div>
 
       <!-- Pagination -->
@@ -215,9 +222,7 @@
             Previous
           </button>
 
-          <span class="px-4 py-2 text-sm text-gray-700">
-            Page {{ currentPage }} of {{ totalPages }}
-          </span>
+          <span class="px-4 py-2 text-sm text-gray-700"> Page {{ currentPage }} of {{ totalPages }} </span>
 
           <button
             @click="currentPage < totalPages && (currentPage += 1)"
@@ -242,7 +247,8 @@ export default {
         {
           id: 1,
           title: 'Modern Family Home Design',
-          description: 'Looking for an architect to design a contemporary 3-bedroom family home with sustainable features and open-plan living spaces.',
+          description:
+            'Looking for an architect to design a contemporary 3-bedroom family home with sustainable features and open-plan living spaces.',
           category: 'residential',
           budget: 250000,
           location: 'Austin, TX',
@@ -255,7 +261,8 @@ export default {
         {
           id: 2,
           title: 'Office Complex Renovation',
-          description: 'Seeking architectural services to transform a 1980s office building into a modern, collaborative workspace with natural lighting and eco-friendly materials.',
+          description:
+            'Seeking architectural services to transform a 1980s office building into a modern, collaborative workspace with natural lighting and eco-friendly materials.',
           category: 'commercial',
           budget: 750000,
           location: 'Seattle, WA',
@@ -268,7 +275,8 @@ export default {
         {
           id: 3,
           title: 'Community Center Design',
-          description: 'Design a multi-purpose community center that will serve as a hub for local activities, events, and educational programs.',
+          description:
+            'Design a multi-purpose community center that will serve as a hub for local activities, events, and educational programs.',
           category: 'public',
           budget: 1200000,
           location: 'Portland, OR',
@@ -296,10 +304,11 @@ export default {
       // Apply search filter
       if (this.filters.search) {
         const search = this.filters.search.toLowerCase()
-        filtered = filtered.filter(project =>
-          project.title.toLowerCase().includes(search) ||
-          project.description.toLowerCase().includes(search) ||
-          project.location.toLowerCase().includes(search)
+        filtered = filtered.filter(
+          project =>
+            project.title.toLowerCase().includes(search) ||
+            project.description.toLowerCase().includes(search) ||
+            project.location.toLowerCase().includes(search)
         )
       }
 
@@ -450,8 +459,12 @@ export default {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Card hover effects */

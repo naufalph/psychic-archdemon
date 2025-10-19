@@ -7,13 +7,13 @@ const api = axios.create({
   timeout: 30000, // 30 seconds
   headers: {
     'Content-Type': 'application/json',
-    'Accept': 'application/json'
+    Accept: 'application/json'
   }
 })
 
 // Request interceptor to add auth token
 api.interceptors.request.use(
-  (config) => {
+  config => {
     // Get token from localStorage directly to avoid circular dependency
     const token = localStorage.getItem('auth_token')
 
@@ -25,12 +25,15 @@ api.interceptors.request.use(
     // Add request timestamp for debugging
     if (import.meta.env.DEV) {
       config.metadata = { startTime: new Date() }
-      console.log(`[API Request] ${config.method?.toUpperCase()} ${config.url}`, config.data || config.params)
+      console.log(
+        `[API Request] ${config.method?.toUpperCase()} ${config.url}`,
+        config.data || config.params
+      )
     }
 
     return config
   },
-  (error) => {
+  error => {
     console.error('[API Request Error]', error)
     return Promise.reject(error)
   }
@@ -38,16 +41,18 @@ api.interceptors.request.use(
 
 // Response interceptor to handle common responses
 api.interceptors.response.use(
-  (response) => {
+  response => {
     // Log response time in development
     if (import.meta.env.DEV && response.config.metadata) {
       const duration = new Date() - response.config.metadata.startTime
-      console.log(`[API Response] ${response.config.method?.toUpperCase()} ${response.config.url} - ${response.status} (${duration}ms)`)
+      console.log(
+        `[API Response] ${response.config.method?.toUpperCase()} ${response.config.url} - ${response.status} (${duration}ms)`
+      )
     }
 
     return response
   },
-  async (error) => {
+  async error => {
     const authStore = useAuthStore()
     const originalRequest = error.config
 
@@ -121,7 +126,7 @@ export const uploadFile = async (endpoint, file, onProgress) => {
     headers: {
       'Content-Type': 'multipart/form-data'
     },
-    onUploadProgress: (progressEvent) => {
+    onUploadProgress: progressEvent => {
       if (onProgress && progressEvent.total) {
         const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total)
         onProgress(progress)
@@ -157,43 +162,43 @@ export const downloadFile = async (endpoint, filename) => {
 // API endpoints organized by resource
 export const authAPI = {
   // Email login with credentials
-  login: (credentials) => api.post('/rmtr/users/login', credentials),
+  login: credentials => api.post('/rmtr/users/login', credentials),
 
   // Email registration with email verification
-  register: (userData) => api.post('/rmtr/users/register', userData),
+  register: userData => api.post('/rmtr/users/register', userData),
 
   // Email verification callback
-  verifyEmail: (token) => api.get(`/rmtr/users/verify-email?token=${token}`),
+  verifyEmail: token => api.get(`/rmtr/users/verify-email?token=${token}`),
 
   // Resend email verification
-  resendVerification: (email) => api.post(`/rmtr/users/resend-verification?email=${email}`),
+  resendVerification: email => api.post(`/rmtr/users/resend-verification?email=${email}`),
 
   // Google OAuth endpoints
   getGoogleAuthUrl: () => api.get('/rmtr/users/oauth2/google'),
-  googleCallback: (code) => api.get(`/rmtr/users/oauth2/callback/google?code=${code}`),
+  googleCallback: code => api.get(`/rmtr/users/oauth2/callback/google?code=${code}`),
 
   // LinkedIn OAuth endpoints
   getLinkedInAuthUrl: () => api.get('/rmtr/users/oauth2/linkedin'),
-  linkedinCallback: (code) => api.get(`/rmtr/users/oauth2/callback/linkedin?code=${code}`)
+  linkedinCallback: code => api.get(`/rmtr/users/oauth2/callback/linkedin?code=${code}`)
 }
 
 export const userAPI = {
   getProfile: () => api.get('/user/profile'),
-  updateProfile: (profileData) => api.put('/user/profile', profileData),
+  updateProfile: profileData => api.put('/user/profile', profileData),
   uploadAvatar: (file, onProgress) => uploadFile('/user/avatar', file, onProgress),
   getNotifications: () => api.get('/user/notifications'),
-  markNotificationRead: (id) => api.patch(`/user/notifications/${id}/read`),
+  markNotificationRead: id => api.patch(`/user/notifications/${id}/read`),
   getSettings: () => api.get('/user/settings'),
-  updateSettings: (settings) => api.put('/user/settings', settings)
+  updateSettings: settings => api.put('/user/settings', settings)
 }
 
 export const projectAPI = {
-  getAll: (params) => api.get('/projects', { params }),
-  getById: (id) => api.get(`/projects/${id}`),
-  create: (projectData) => api.post('/projects', projectData),
+  getAll: params => api.get('/projects', { params }),
+  getById: id => api.get(`/projects/${id}`),
+  create: projectData => api.post('/projects', projectData),
   update: (id, projectData) => api.put(`/projects/${id}`, projectData),
-  delete: (id) => api.delete(`/projects/${id}`),
-  getBids: (id) => api.get(`/projects/${id}/bids`),
+  delete: id => api.delete(`/projects/${id}`),
+  getBids: id => api.get(`/projects/${id}/bids`),
   createBid: (id, bidData) => api.post(`/projects/${id}/bids`, bidData),
   acceptBid: (projectId, bidId) => api.patch(`/projects/${projectId}/bids/${bidId}/accept`),
   rejectBid: (projectId, bidId) => api.patch(`/projects/${projectId}/bids/${bidId}/reject`),
@@ -208,31 +213,32 @@ export const projectAPI = {
 }
 
 export const architectAPI = {
-  getAll: (params) => api.get('/architects', { params }),
-  getById: (id) => api.get(`/architects/${id}`),
-  getPortfolio: (id) => api.get(`/architects/${id}/portfolio`),
-  updatePortfolio: (portfolioData) => api.put('/architects/portfolio', portfolioData),
-  getReviews: (id) => api.get(`/architects/${id}/reviews`),
+  getAll: params => api.get('/architects', { params }),
+  getById: id => api.get(`/architects/${id}`),
+  getPortfolio: id => api.get(`/architects/${id}/portfolio`),
+  updatePortfolio: portfolioData => api.put('/architects/portfolio', portfolioData),
+  getReviews: id => api.get(`/architects/${id}/reviews`),
   addReview: (id, reviewData) => api.post(`/architects/${id}/reviews`, reviewData)
 }
 
 export const bidAPI = {
   getMyBids: () => api.get('/bids/my-bids'),
-  getBid: (id) => api.get(`/bids/${id}`),
+  getBid: id => api.get(`/bids/${id}`),
   updateBid: (id, bidData) => api.put(`/bids/${id}`, bidData),
-  deleteBid: (id) => api.delete(`/bids/${id}`)
+  deleteBid: id => api.delete(`/bids/${id}`)
 }
 
 export const adminAPI = {
   getStats: () => api.get('/admin/stats'),
-  getUsers: (params) => api.get('/admin/users', { params }),
-  getUserById: (id) => api.get(`/admin/users/${id}`),
+  getUsers: params => api.get('/admin/users', { params }),
+  getUserById: id => api.get(`/admin/users/${id}`),
   updateUser: (id, userData) => api.put(`/admin/users/${id}`, userData),
-  deleteUser: (id) => api.delete(`/admin/users/${id}`),
-  getProjects: (params) => api.get('/admin/projects', { params }),
-  deleteProject: (id) => api.delete(`/admin/projects/${id}`),
+  deleteUser: id => api.delete(`/admin/users/${id}`),
+  getProjects: params => api.get('/admin/projects', { params }),
+  deleteProject: id => api.delete(`/admin/projects/${id}`),
   getReports: () => api.get('/admin/reports'),
-  generateReport: (reportType, params) => api.post('/admin/reports/generate', { type: reportType, ...params })
+  generateReport: (reportType, params) =>
+    api.post('/admin/reports/generate', { type: reportType, ...params })
 }
 
 // Default export

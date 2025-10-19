@@ -5,12 +5,8 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div class="md:flex md:items-center md:justify-between">
           <div class="flex-1 min-w-0">
-            <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
-              Find Architects
-            </h1>
-            <p class="mt-1 text-sm text-gray-500">
-              Discover talented architects for your next project
-            </p>
+            <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">Find Architects</h1>
+            <p class="mt-1 text-sm text-gray-500">Discover talented architects for your next project</p>
           </div>
         </div>
       </div>
@@ -32,7 +28,12 @@
               />
               <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
                 </svg>
               </div>
             </div>
@@ -69,9 +70,7 @@
             <span class="text-sm text-gray-600">{{ filteredArchitects.length }} architects found</span>
           </div>
           <div class="flex space-x-2">
-            <button @click="clearFilters" class="btn btn-outline btn-sm">
-              Clear Filters
-            </button>
+            <button @click="clearFilters" class="btn btn-outline btn-sm">Clear Filters</button>
             <select v-model="sortBy" class="form-input text-sm">
               <option value="rating">Highest Rated</option>
               <option value="experience">Most Experienced</option>
@@ -105,17 +104,29 @@
                   :src="architect.avatar"
                   :alt="architect.name"
                   class="w-full h-full object-cover"
+                />
+                <div
+                  v-else
+                  class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-100 to-primary-200"
                 >
-                <div v-else class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-100 to-primary-200">
                   <svg class="w-10 h-10 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
                   </svg>
                 </div>
               </div>
               <div v-if="architect.verified" class="absolute -top-1 -right-1">
                 <div class="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
                   <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                    <path
+                      fill-rule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clip-rule="evenodd"
+                    />
                   </svg>
                 </div>
               </div>
@@ -137,7 +148,9 @@
                   fill="currentColor"
                   viewBox="0 0 20 20"
                 >
-                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                  <path
+                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                  />
                 </svg>
               </div>
               <span class="ml-1 text-sm text-gray-600">({{ architect.reviewCount }})</span>
@@ -152,10 +165,7 @@
               >
                 {{ spec }}
               </span>
-              <span
-                v-if="architect.specializations.length > 2"
-                class="badge bg-gray-100 text-gray-600 text-xs"
-              >
+              <span v-if="architect.specializations.length > 2" class="badge bg-gray-100 text-gray-600 text-xs">
                 +{{ architect.specializations.length - 2 }}
               </span>
             </div>
@@ -164,14 +174,29 @@
             <div class="space-y-2 text-sm text-gray-600 mb-4">
               <div class="flex items-center justify-center">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
                 </svg>
                 {{ architect.location }}
               </div>
               <div class="flex items-center justify-center">
                 <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2V6"/>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2-2v2m8 0V6a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V8a2 2 0 012-2V6"
+                  />
                 </svg>
                 {{ architect.experience }} years experience
               </div>
@@ -196,19 +221,18 @@
       <!-- Empty State -->
       <div v-else class="text-center py-12">
         <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1"
+            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+          />
         </svg>
         <h3 class="text-lg font-medium text-gray-900 mb-2">No architects found</h3>
         <p class="text-gray-600 mb-6">
           {{ hasFilters ? 'Try adjusting your search criteria.' : 'No architects are currently available.' }}
         </p>
-        <button
-          v-if="hasFilters"
-          @click="clearFilters"
-          class="btn btn-outline"
-        >
-          Clear All Filters
-        </button>
+        <button v-if="hasFilters" @click="clearFilters" class="btn btn-outline">Clear All Filters</button>
       </div>
     </div>
   </div>
@@ -276,20 +300,19 @@ export default {
       // Apply search filter
       if (this.filters.search) {
         const search = this.filters.search.toLowerCase()
-        filtered = filtered.filter(architect =>
-          architect.name.toLowerCase().includes(search) ||
-          architect.title.toLowerCase().includes(search) ||
-          architect.location.toLowerCase().includes(search) ||
-          architect.specializations.some(spec => spec.toLowerCase().includes(search))
+        filtered = filtered.filter(
+          architect =>
+            architect.name.toLowerCase().includes(search) ||
+            architect.title.toLowerCase().includes(search) ||
+            architect.location.toLowerCase().includes(search) ||
+            architect.specializations.some(spec => spec.toLowerCase().includes(search))
         )
       }
 
       // Apply specialization filter
       if (this.filters.specialization) {
         filtered = filtered.filter(architect =>
-          architect.specializations.some(spec =>
-            spec.toLowerCase().includes(this.filters.specialization.toLowerCase())
-          )
+          architect.specializations.some(spec => spec.toLowerCase().includes(this.filters.specialization.toLowerCase()))
         )
       }
 
@@ -360,8 +383,12 @@ export default {
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .badge {

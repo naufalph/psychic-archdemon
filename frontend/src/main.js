@@ -16,7 +16,8 @@ app.use(router)
 app.use(i18n)
 
 // Global properties (if needed)
-app.config.globalProperties.$API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'
+app.config.globalProperties.$API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api'
 
 // Global error handler
 app.config.errorHandler = (err, vm, info) => {

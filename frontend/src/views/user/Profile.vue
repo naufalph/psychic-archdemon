@@ -7,15 +7,18 @@
           <div class="flex items-center space-x-4">
             <div class="relative">
               <div class="w-20 h-20 bg-gray-200 rounded-full overflow-hidden">
-                <img
-                  v-if="user.avatar"
-                  :src="user.avatar"
-                  :alt="user.name"
-                  class="w-full h-full object-cover"
+                <img v-if="user.avatar" :src="user.avatar" :alt="user.name" class="w-full h-full object-cover" />
+                <div
+                  v-else
+                  class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-100 to-primary-200"
                 >
-                <div v-else class="w-full h-full flex items-center justify-center bg-gradient-to-br from-primary-100 to-primary-200">
                   <svg class="w-10 h-10 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                    />
                   </svg>
                 </div>
               </div>
@@ -24,8 +27,18 @@
                 class="absolute -bottom-1 -right-1 bg-primary-600 text-white p-1.5 rounded-full hover:bg-primary-700 transition-colors"
               >
                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"/>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
                 </svg>
               </button>
             </div>
@@ -33,25 +46,22 @@
               <h1 class="text-2xl font-bold text-gray-900">{{ userName }}</h1>
               <p class="text-sm text-gray-600">{{ user.email }}</p>
               <div class="flex items-center mt-1">
-                <span
-                  class="badge"
-                  :class="getRoleBadgeClass(user.role)"
-                >
+                <span class="badge" :class="getRoleBadgeClass(user.role)">
                   {{ user.role }}
                 </span>
-                <span v-if="user.verified" class="ml-2 text-green-600 text-sm font-medium">
-                  ✓ Verified
-                </span>
+                <span v-if="user.verified" class="ml-2 text-green-600 text-sm font-medium"> ✓ Verified </span>
               </div>
             </div>
           </div>
           <div class="mt-4 sm:mt-0">
-            <button
-              @click="activeTab = 'edit'"
-              class="btn btn-primary"
-            >
+            <button @click="activeTab = 'edit'" class="btn btn-primary">
               <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                />
               </svg>
               Edit Profile
             </button>
@@ -68,9 +78,11 @@
               :key="tab.id"
               @click="activeTab = tab.id"
               class="py-4 px-1 border-b-2 font-medium text-sm"
-              :class="activeTab === tab.id
-                ? 'border-primary-500 text-primary-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'"
+              :class="
+                activeTab === tab.id
+                  ? 'border-primary-500 text-primary-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              "
             >
               {{ tab.name }}
             </button>
@@ -108,9 +120,7 @@
                 <!-- Recent Activity -->
                 <div>
                   <h3 class="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
-                  <div v-if="recentActivity.length === 0" class="text-gray-500 text-sm">
-                    No recent activity
-                  </div>
+                  <div v-if="recentActivity.length === 0" class="text-gray-500 text-sm">No recent activity</div>
                   <div v-else class="space-y-3">
                     <div
                       v-for="activity in recentActivity.slice(0, 5)"
@@ -167,42 +177,22 @@
                   <div class="grid grid-cols-2 gap-4">
                     <div>
                       <label for="firstName" class="form-label">First Name</label>
-                      <input
-                        id="firstName"
-                        v-model="editForm.firstName"
-                        type="text"
-                        class="form-input"
-                      />
+                      <input id="firstName" v-model="editForm.firstName" type="text" class="form-input" />
                     </div>
                     <div>
                       <label for="lastName" class="form-label">Last Name</label>
-                      <input
-                        id="lastName"
-                        v-model="editForm.lastName"
-                        type="text"
-                        class="form-input"
-                      />
+                      <input id="lastName" v-model="editForm.lastName" type="text" class="form-input" />
                     </div>
                   </div>
 
                   <div>
                     <label for="email" class="form-label">Email</label>
-                    <input
-                      id="email"
-                      v-model="editForm.email"
-                      type="email"
-                      class="form-input"
-                    />
+                    <input id="email" v-model="editForm.email" type="email" class="form-input" />
                   </div>
 
                   <div>
                     <label for="phone" class="form-label">Phone</label>
-                    <input
-                      id="phone"
-                      v-model="editForm.phone"
-                      type="tel"
-                      class="form-input"
-                    />
+                    <input id="phone" v-model="editForm.phone" type="tel" class="form-input" />
                   </div>
 
                   <div>
@@ -246,31 +236,15 @@
 
                   <div v-if="isArchitect">
                     <label for="experience" class="form-label">Years of Experience</label>
-                    <input
-                      id="experience"
-                      v-model="editForm.experience"
-                      type="number"
-                      min="0"
-                      class="form-input"
-                    />
+                    <input id="experience" v-model="editForm.experience" type="number" min="0" class="form-input" />
                   </div>
                 </div>
               </div>
 
               <!-- Form Actions -->
               <div class="flex justify-end space-x-4 pt-6">
-                <button
-                  type="button"
-                  @click="activeTab = 'overview'"
-                  class="btn btn-outline"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  :disabled="isLoading"
-                  class="btn btn-primary"
-                >
+                <button type="button" @click="activeTab = 'overview'" class="btn btn-outline">Cancel</button>
+                <button type="submit" :disabled="isLoading" class="btn btn-primary">
                   <span v-if="isLoading">Saving...</span>
                   <span v-else>Save Changes</span>
                 </button>
@@ -296,12 +270,7 @@
                   </div>
                   <div>
                     <label for="newPassword" class="form-label">New Password</label>
-                    <input
-                      id="newPassword"
-                      v-model="passwordForm.newPassword"
-                      type="password"
-                      class="form-input"
-                    />
+                    <input id="newPassword" v-model="passwordForm.newPassword" type="password" class="form-input" />
                   </div>
                   <div>
                     <label for="confirmPassword" class="form-label">Confirm New Password</label>
@@ -312,11 +281,7 @@
                       class="form-input"
                     />
                   </div>
-                  <button
-                    type="submit"
-                    :disabled="isLoading"
-                    class="btn btn-primary"
-                  >
+                  <button type="submit" :disabled="isLoading" class="btn btn-primary">
                     <span v-if="isLoading">Updating...</span>
                     <span v-else>Update Password</span>
                   </button>
@@ -333,12 +298,10 @@
                       <p class="text-sm text-gray-500">Receive notifications about your projects and proposals</p>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
-                      <input
-                        v-model="settings.emailNotifications"
-                        type="checkbox"
-                        class="sr-only peer"
-                      />
-                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                      <input v-model="settings.emailNotifications" type="checkbox" class="sr-only peer" />
+                      <div
+                        class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"
+                      ></div>
                     </label>
                   </div>
 
@@ -348,12 +311,10 @@
                       <p class="text-sm text-gray-500">Allow others to find and view your profile</p>
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
-                      <input
-                        v-model="settings.profileVisible"
-                        type="checkbox"
-                        class="sr-only peer"
-                      />
-                      <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+                      <input v-model="settings.profileVisible" type="checkbox" class="sr-only peer" />
+                      <div
+                        class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"
+                      ></div>
                     </label>
                   </div>
                 </div>

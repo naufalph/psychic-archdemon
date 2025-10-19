@@ -12,23 +12,24 @@ export const useAuthStore = defineStore('auth', {
   }),
 
   getters: {
-    isAuthenticated: (state) => !!state.token && !!state.user,
-    userRoles: (state) => state.user?.registeredRoles || [],
-    hasRole: (state) => (role) => state.user?.registeredRoles?.includes(role) || false,
-    isAdmin: (state) => state.user?.registeredRoles?.includes('ADMIN') || false,
-    isArchitect: (state) => state.user?.registeredRoles?.includes('ARCHITECT') || false,
-    isClient: (state) => state.user?.registeredRoles?.includes('CLIENT') || false,
-    primaryRole: (state) => {
+    isAuthenticated: state => !!state.token && !!state.user,
+    userRoles: state => state.user?.registeredRoles || [],
+    hasRole: state => role => state.user?.registeredRoles?.includes(role) || false,
+    isAdmin: state => state.user?.registeredRoles?.includes('ADMIN') || false,
+    isArchitect: state => state.user?.registeredRoles?.includes('ARCHITECT') || false,
+    isClient: state => state.user?.registeredRoles?.includes('CLIENT') || false,
+    primaryRole: state => {
       const roles = state.user?.registeredRoles || []
       if (roles.includes('ADMIN')) return 'ADMIN'
       if (roles.includes('ARCHITECT')) return 'ARCHITECT'
       if (roles.includes('CLIENT')) return 'CLIENT'
       return null
     },
-    userName: (state) => state.user?.firstName && state.user?.lastName
-      ? `${state.user.firstName} ${state.user.lastName}`
-      : state.user?.email || '',
-    isLocked: (state) => {
+    userName: state =>
+      state.user?.firstName && state.user?.lastName
+        ? `${state.user.firstName} ${state.user.lastName}`
+        : state.user?.email || '',
+    isLocked: state => {
       if (!state.lockoutTime) return false
       return Date.now() < state.lockoutTime
     }
@@ -138,7 +139,6 @@ export const useAuthStore = defineStore('auth', {
       // If the token is expired, user will need to login again
       throw new Error('Token refresh not supported with stateless JWT')
     },
-
 
     // Verify email and auto-login
     async verifyEmail(token) {
@@ -290,7 +290,7 @@ export const useAuthStore = defineStore('auth', {
 
       // Lock account after 5 failed attempts for 15 minutes
       if (this.loginAttempts >= 5) {
-        this.lockoutTime = Date.now() + (15 * 60 * 1000) // 15 minutes
+        this.lockoutTime = Date.now() + 15 * 60 * 1000 // 15 minutes
         localStorage.setItem('auth_lockout', this.lockoutTime.toString())
       }
 

@@ -5,10 +5,10 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
           <div>
-            <h1 class="text-display-large font-display  text-white mb-6 text-balance">
+            <h1 class="text-display-large font-display text-white mb-6 text-balance">
               {{ $t('architectLanding.hero.title') }}
             </h1>
-            <p class="text-body-large font-body-regular  text-blue-100 mb-8 leading-relaxed">
+            <p class="text-body-large font-body-regular text-blue-100 mb-8 leading-relaxed">
               {{ $t('architectLanding.hero.subtitle') }}
             </p>
             <div class="flex flex-col sm:flex-row gap-4">
@@ -44,7 +44,7 @@
     <section class="how-it-works-section py-20 bg-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-16">
-          <h2 class="text-display-small font-display  text-gray-900 mb-4">
+          <h2 class="text-display-small font-display text-gray-900 mb-4">
             {{ $t('architectLanding.howItWorks.title') }}
           </h2>
         </div>
@@ -54,10 +54,10 @@
             <div class="step-number-container mb-6">
               <div class="step-number">1</div>
             </div>
-            <h3 class="text-title-large font-title  text-gray-900 mb-3">
+            <h3 class="text-title-large font-title text-gray-900 mb-3">
               {{ $t('architectLanding.howItWorks.steps.createProfile.title') }}
             </h3>
-            <p class="text-body-small font-body-regular  text-gray-600 leading-relaxed">
+            <p class="text-body-small font-body-regular text-gray-600 leading-relaxed">
               {{ $t('architectLanding.howItWorks.steps.createProfile.description') }}
             </p>
           </div>
@@ -65,10 +65,10 @@
             <div class="step-number-container mb-6">
               <div class="step-number">2</div>
             </div>
-            <h3 class="text-title-large font-title  text-gray-900 mb-3">
+            <h3 class="text-title-large font-title text-gray-900 mb-3">
               {{ $t('architectLanding.howItWorks.steps.sendOffers.title') }}
             </h3>
-            <p class="text-body-small font-body-regular  text-gray-600 leading-relaxed">
+            <p class="text-body-small font-body-regular text-gray-600 leading-relaxed">
               {{ $t('architectLanding.howItWorks.steps.sendOffers.description') }}
             </p>
           </div>
@@ -76,17 +76,19 @@
             <div class="step-number-container mb-6">
               <div class="step-number">3</div>
             </div>
-            <h3 class="text-title-large font-title  text-gray-900 mb-3">
+            <h3 class="text-title-large font-title text-gray-900 mb-3">
               {{ $t('architectLanding.howItWorks.steps.workAndGetPaid.title') }}
             </h3>
-            <p class="text-body-small font-body-regular  text-gray-600 leading-relaxed">
+            <p class="text-body-small font-body-regular text-gray-600 leading-relaxed">
               {{ $t('architectLanding.howItWorks.steps.workAndGetPaid.description') }}
             </p>
           </div>
         </div>
 
         <div class="text-center">
-          <button class="bg-black text-white px-6 py-3 rounded-full text-button-medium font-button  hover:bg-gray-800 transition-colors">
+          <button
+            class="bg-black text-white px-6 py-3 rounded-full text-button-medium font-button hover:bg-gray-800 transition-colors"
+          >
             {{ $t('architectLanding.howItWorks.signUpNow') }}
           </button>
         </div>
@@ -97,7 +99,7 @@
     <section class="platform-section py-20 bg-gray-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
-          <h2 class="text-display-small font-display  text-gray-900 mb-4">
+          <h2 class="text-display-small font-display text-gray-900 mb-4">
             {{ $t('architectLanding.platform.title') }}
           </h2>
         </div>
@@ -111,7 +113,7 @@
             class="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300"
           >
             <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
             </svg>
           </button>
 
@@ -121,7 +123,7 @@
             class="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 bg-white rounded-full p-3 shadow-lg hover:shadow-xl transition-all duration-300"
           >
             <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
             </svg>
           </button>
 
@@ -132,61 +134,61 @@
             @scroll="updateScrollPosition"
           >
             <div class="flex-shrink-0 w-72 bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow">
-              <div class="text-headline-small font-headline  text-gray-600 mb-4">
+              <div class="text-headline-small font-headline text-gray-600 mb-4">
                 {{ $t('architectLanding.platform.features.smartPortfolio.title') }}
               </div>
-              <h3 class="text-title-large font-title  text-gray-900 mb-2">
+              <h3 class="text-title-large font-title text-gray-900 mb-2">
                 {{ $t('architectLanding.platform.features.smartPortfolio.description') }}
               </h3>
-              <p class="text-body-small font-body-regular  text-gray-600 leading-relaxed">
+              <p class="text-body-small font-body-regular text-gray-600 leading-relaxed">
                 {{ $t('architectLanding.platform.features.smartPortfolio.subtitle') }}
               </p>
             </div>
 
             <div class="flex-shrink-0 w-72 bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow">
-              <div class="text-headline-small font-headline  text-gray-600 mb-4">
+              <div class="text-headline-small font-headline text-gray-600 mb-4">
                 {{ $t('architectLanding.platform.features.curatedProjects.title') }}
               </div>
-              <h3 class="text-title-large font-title  text-gray-900 mb-2">
+              <h3 class="text-title-large font-title text-gray-900 mb-2">
                 {{ $t('architectLanding.platform.features.curatedProjects.description') }}
               </h3>
-              <p class="text-body-small font-body-regular  text-gray-600 leading-relaxed">
+              <p class="text-body-small font-body-regular text-gray-600 leading-relaxed">
                 {{ $t('architectLanding.platform.features.curatedProjects.subtitle') }}
               </p>
             </div>
 
             <div class="flex-shrink-0 w-72 bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow">
-              <div class="text-headline-small font-headline  text-gray-600 mb-4">
+              <div class="text-headline-small font-headline text-gray-600 mb-4">
                 {{ $t('architectLanding.platform.features.estimateAssistance.title') }}
               </div>
-              <h3 class="text-title-large font-title  text-gray-900 mb-2">
+              <h3 class="text-title-large font-title text-gray-900 mb-2">
                 {{ $t('architectLanding.platform.features.estimateAssistance.description') }}
               </h3>
-              <p class="text-body-small font-body-regular  text-gray-600 leading-relaxed">
+              <p class="text-body-small font-body-regular text-gray-600 leading-relaxed">
                 {{ $t('architectLanding.platform.features.estimateAssistance.subtitle') }}
               </p>
             </div>
 
             <div class="flex-shrink-0 w-72 bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow">
-              <div class="text-headline-small font-headline  text-gray-600 mb-4">
+              <div class="text-headline-small font-headline text-gray-600 mb-4">
                 {{ $t('architectLanding.platform.features.onDemandSurveys.title') }}
               </div>
-              <h3 class="text-title-large font-title  text-gray-900 mb-2">
+              <h3 class="text-title-large font-title text-gray-900 mb-2">
                 {{ $t('architectLanding.platform.features.onDemandSurveys.description') }}
               </h3>
-              <p class="text-body-small font-body-regular  text-gray-600 leading-relaxed">
+              <p class="text-body-small font-body-regular text-gray-600 leading-relaxed">
                 {{ $t('architectLanding.platform.features.onDemandSurveys.subtitle') }}
               </p>
             </div>
 
             <div class="flex-shrink-0 w-72 bg-white rounded-xl p-6 shadow-sm hover:shadow-lg transition-shadow">
-              <div class="text-headline-small font-headline  text-gray-600 mb-4">
+              <div class="text-headline-small font-headline text-gray-600 mb-4">
                 {{ $t('architectLanding.platform.features.contractDocs.title') }}
               </div>
-              <h3 class="text-title-large font-title  text-gray-900 mb-2">
+              <h3 class="text-title-large font-title text-gray-900 mb-2">
                 {{ $t('architectLanding.platform.features.contractDocs.description') }}
               </h3>
-              <p class="text-body-small font-body-regular  text-gray-600 leading-relaxed">
+              <p class="text-body-small font-body-regular text-gray-600 leading-relaxed">
                 {{ $t('architectLanding.platform.features.contractDocs.subtitle') }}
               </p>
             </div>
@@ -194,7 +196,9 @@
         </div>
 
         <div class="text-center mt-12">
-          <button class="bg-black text-white px-6 py-3 rounded-full text-button-medium font-button  hover:bg-gray-800 transition-colors">
+          <button
+            class="bg-black text-white px-6 py-3 rounded-full text-button-medium font-button hover:bg-gray-800 transition-colors"
+          >
             {{ $t('architectLanding.platform.tryNow') }}
           </button>
         </div>
@@ -208,13 +212,15 @@
           <!-- Left Content Card -->
           <div class="lg:col-span-5">
             <div class="bg-gray-50 rounded-xl p-8">
-              <h2 class="text-display-medium font-display  text-gray-900 mb-4">
+              <h2 class="text-display-medium font-display text-gray-900 mb-4">
                 {{ $t('architectLanding.portfolio.title') }}
               </h2>
-              <p class="text-body-large font-body-regular  text-gray-600 mb-8">
+              <p class="text-body-large font-body-regular text-gray-600 mb-8">
                 {{ $t('architectLanding.portfolio.subtitle') }}
               </p>
-              <button class="bg-black text-white px-6 py-3 rounded-full text-button-medium font-button  hover:bg-gray-800 transition-colors">
+              <button
+                class="bg-black text-white px-6 py-3 rounded-full text-button-medium font-button hover:bg-gray-800 transition-colors"
+              >
                 {{ $t('architectLanding.portfolio.createPortfolio') }}
               </button>
             </div>
@@ -247,13 +253,15 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           <!-- Left Content -->
           <div class="lg:col-span-5">
-            <h2 class="text-display-medium font-display  text-gray-900 mb-4">
+            <h2 class="text-display-medium font-display text-gray-900 mb-4">
               {{ $t('architectLanding.success.title') }}
             </h2>
-            <p class="text-body-large font-body-regular  text-gray-600 mb-8">
+            <p class="text-body-large font-body-regular text-gray-600 mb-8">
               {{ $t('architectLanding.success.subtitle') }}
             </p>
-            <button class="bg-black text-white px-6 py-3 rounded-full text-button-medium font-button  hover:bg-gray-800 transition-colors">
+            <button
+              class="bg-black text-white px-6 py-3 rounded-full text-button-medium font-button hover:bg-gray-800 transition-colors"
+            >
               {{ $t('architectLanding.success.startJourney') }}
             </button>
           </div>
@@ -311,17 +319,17 @@ export default {
         {
           id: 1,
           title: 'Modern Residential Design',
-          image: '/src/assets/images/landing/portfolio-designer-workspace.jpg',
+          image: '/src/assets/images/landing/portfolio-designer-workspace.jpg'
         },
         {
           id: 2,
           title: 'Commercial Architecture',
-          image: '/src/assets/images/landing/portfolio-architect-planning.jpg',
+          image: '/src/assets/images/landing/portfolio-architect-planning.jpg'
         },
         {
           id: 3,
           title: 'Interior Space Design',
-          image: '/src/assets/images/landing/portfolio-interior-modern.jpg',
+          image: '/src/assets/images/landing/portfolio-interior-modern.jpg'
         }
       ]
     }
@@ -338,7 +346,8 @@ export default {
   methods: {
     handleImageError(event) {
       // Replace broken images with placeholder
-      event.target.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xNiAxNkwyNCAyNE0xNiAyNEwyNCAyNCIgc3Ryb2tlPSIjOUI5QkEwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4K'
+      event.target.src =
+        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjQwIiBoZWlnaHQ9IjQwIiBmaWxsPSIjRjNGNEY2Ii8+CjxwYXRoIGQ9Ik0xNiAxNkwyNCAyNE0xNiAyNEwyNCAyNCIgc3Ryb2tlPSIjOUI5QkEwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvPgo8L3N2Zz4K'
     },
     scrollLeft() {
       const container = this.$refs.scrollContainer

@@ -11,6 +11,7 @@ const Dashboard = () => import('@/views/clients/ClientDashboard.vue')
 const ClientLandingPage = () => import('@/views/clients/ClientLandingPage.vue')
 const ArchitectLandingPage = () => import('@/views/architects/ArchitectLandingPage.vue')
 const Profile = () => import('@/views/user/Profile.vue')
+const VerifyEmail = () => import('@/views/auth/VerifyEmail.vue')
 const NotFound = () => import('@/views/errors/NotFound.vue')
 
 const routes = [
@@ -113,6 +114,17 @@ const routes = [
     meta: {
       title: 'Architect Landing - Rumantra',
       description: 'Landing page for architects to join the platform'
+    }
+  },
+
+  // Email Verification Route
+  {
+    path: '/verify-email',
+    name: 'VerifyEmail',
+    component: VerifyEmail,
+    meta: {
+      title: 'Verify Email - Rumantra',
+      description: 'Verify your email address'
     }
   },
 
@@ -234,7 +246,7 @@ router.afterEach((to, from) => {
 })
 
 // Handle navigation errors
-router.onError((error) => {
+router.onError(error => {
   console.error('Router error:', error)
 
   // You could redirect to an error page or show a notification

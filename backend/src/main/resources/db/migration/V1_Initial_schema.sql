@@ -59,3 +59,32 @@ CREATE TABLE IF NOT EXISTS rmtr_email_verification (
 
 CREATE INDEX IF NOT EXISTS idx_email_verification_token ON rmtr_email_verification(token);
 CREATE INDEX IF NOT EXISTS idx_email_verification_user_id ON rmtr_email_verification(user_id);
+
+-- Create rmtr_porto table (architect portfolio)
+CREATE TABLE IF NOT EXISTS rmtr_porto (
+    id BIGSERIAL PRIMARY KEY,
+    architect_id BIGINT NOT NULL REFERENCES rmtr_architect(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    title VARCHAR(255) NOT NULL,
+    description TEXT,
+    project_date DATE,
+    location VARCHAR(255),
+    project_type VARCHAR(100),
+    is_built BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_porto_architect_id ON rmtr_porto(architect_id);
+
+-- Create rmtr_porto_dtl table (portfolio image details)
+CREATE TABLE IF NOT EXISTS rmtr_porto_dtl (
+    id BIGSERIAL PRIMARY KEY,
+    porto_id BIGINT NOT NULL REFERENCES rmtr_porto(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    original_url TEXT NOT NULL,
+    large_url TEXT NOT NULL,
+    medium_url TEXT NOT NULL,
+    display_order INT DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_porto_dtl_porto_id ON rmtr_porto_dtl(porto_id);

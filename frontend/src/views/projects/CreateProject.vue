@@ -3,9 +3,7 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div class="mb-8">
         <h1 class="text-3xl font-bold text-gray-900">Post New Project</h1>
-        <p class="mt-2 text-gray-600">
-          Tell us about your project and connect with talented architects
-        </p>
+        <p class="mt-2 text-gray-600">Tell us about your project and connect with talented architects</p>
       </div>
 
       <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -82,24 +80,13 @@
           <!-- Deadline -->
           <div>
             <label for="deadline" class="form-label">Project Deadline</label>
-            <input
-              id="deadline"
-              v-model="form.deadline"
-              type="date"
-              class="form-input"
-            />
+            <input id="deadline" v-model="form.deadline" type="date" class="form-input" />
           </div>
 
           <!-- Form Actions -->
           <div class="flex justify-end space-x-4 pt-6">
-            <router-link to="/projects" class="btn btn-outline">
-              Cancel
-            </router-link>
-            <button
-              type="submit"
-              :disabled="isLoading"
-              class="btn btn-primary"
-            >
+            <router-link to="/projects" class="btn btn-outline"> Cancel </router-link>
+            <button type="submit" :disabled="isLoading" class="btn btn-primary">
               <span v-if="isLoading">Posting...</span>
               <span v-else>Post Project</span>
             </button>

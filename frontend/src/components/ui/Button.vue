@@ -1,9 +1,9 @@
 <template>
-  <button 
+  <button
     :class="[
-      'btn', 
-      `btn-${size}`, 
-      `btn-${variant}`, 
+      'btn',
+      `btn-${size}`,
+      `btn-${variant}`,
       {
         'btn-icon-left': leftIcon,
         'btn-icon-right': rightIcon
@@ -29,12 +29,12 @@ export default {
     size: {
       type: String,
       default: 'medium',
-      validator: (value) => ['medium', 'large'].includes(value)
+      validator: value => ['medium', 'large'].includes(value)
     },
     variant: {
       type: String,
       default: 'filled',
-      validator: (value) => ['filled', 'outlined', 'gradient'].includes(value)
+      validator: value => ['filled', 'outlined', 'gradient'].includes(value)
     },
     leftIcon: {
       type: String,
@@ -55,9 +55,15 @@ export default {
 
 <style scoped>
 @keyframes gradientShift {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
 }
 
 .btn {
@@ -90,7 +96,7 @@ export default {
 
 .btn-filled {
   background-color: #000000;
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 .btn-filled:hover {
@@ -98,27 +104,27 @@ export default {
 }
 
 .btn-filled:active {
-  background-color: #4D4D4D;
+  background-color: #4d4d4d;
 }
 
 .btn-outlined {
-  background-color: #FFFFFF;
+  background-color: #ffffff;
   color: #000000;
   border: 2px solid #000000;
 }
 
 .btn-outlined:hover {
-  background-color: #E6E6E6;
+  background-color: #e6e6e6;
 }
 
 .btn-outlined:active {
-  background-color: #CCCCCC;
+  background-color: #cccccc;
 }
 
 .btn-gradient {
-  background: linear-gradient(to right, #185C93, #0C82EE);
+  background: linear-gradient(to right, #185c93, #0c82ee);
   background-size: 200% 100%;
-  color: #FFFFFF;
+  color: #ffffff;
   animation: gradientShift 3s ease-in-out infinite;
 }
 

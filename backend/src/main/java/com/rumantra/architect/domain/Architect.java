@@ -1,5 +1,8 @@
 package com.rumantra.architect.domain;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.rumantra.user.domain.User;
 
 import jakarta.persistence.*;
@@ -23,6 +26,15 @@ public class Architect {
   @JoinColumn(name = "user_id", nullable = false, unique = true)
   @ToString.Exclude
   private User user;
+
+  @OneToMany(
+      mappedBy = "architect",
+      cascade = CascadeType.ALL,
+      orphanRemoval = true,
+      fetch = FetchType.LAZY)
+  @Builder.Default
+  @ToString.Exclude
+  private List<Porto> portos = new ArrayList<>();
 
   @Column(name = "company_name", length = 255)
   private String companyName; // kalau freelance ga wajib
