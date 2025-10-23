@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.rumantra.security.JwtUtils;
+import com.rumantra.security.SecurityUtils;
+import com.rumantra.shared.RumantraConstants;
 import com.rumantra.shared.dto.ApiResponse;
 import com.rumantra.user.dto.UserAuthResponseDto;
 import com.rumantra.user.dto.UserDto;
@@ -229,6 +231,55 @@ public class UserController {
           frontendUrl + "/auth/callback?" + "success=false" + "&error=" + e.getMessage();
 
       return new RedirectView(callbackUrl);
+    }
+  }
+
+  @PostMapping("/me/activate-role")
+  public ResponseEntity<ApiResponse<UserDto>> activateRole(@RequestParam("role") String role) {
+    try {
+      // Validate role parameter
+      if (!RumantraConstants.ARCH_ROLE.equals(role)
+          && !RumantraConstants.CLIENT_ROLE.equals(role)) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(
+                ApiResponse.<UserDto>builder()
+                    .success(false)
+                    .message(
+                        "Invalid role. Must be '"
+                            + RumantraConstants.ARCH_ROLE
+                            + "' or '"
+                            + RumantraConstants.CLIENT_ROLE
+                            + "'")
+                    .timestamp(LocalDateTime.now().toString())
+                    .build());
+      }
+
+      Long userId = SecurityUtils.getCurrentUserId();
+      UserDto userDto = userService.activateRole(userId, role);
+
+      return ResponseEntity.ok(
+          ApiResponse.<UserDto>builder()
+              .success(true)
+              .message("Role '" + role + "' activated successfully!")
+              .data(userDto)
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              ApiResponse.<UserDto>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(
+              ApiResponse.<UserDto>builder()
+                  .success(false)
+                  .message("An error occurred while activating role")
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
     }
   }
 }

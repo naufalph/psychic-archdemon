@@ -3,6 +3,9 @@ package com.rumantra.user.domain;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
+import com.rumantra.architect.domain.Architect;
+import com.rumantra.client.domain.Client;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -51,4 +54,11 @@ public class User {
 
   @Column(name = "updated_at")
   private Timestamp updatedAt;
+
+  // Role relationships - eagerly fetched for security checks
+  @OneToOne(mappedBy = "user", fetch = FetchType.EAGER)
+  private Architect architect;
+
+  @OneToOne(mappedBy = "user", fetch = FetchType.EAGER)
+  private Client client;
 }

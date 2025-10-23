@@ -5,9 +5,12 @@ import java.util.Map;
 public class RumantraConstants {
 
   public static final String LOGIN_CONTAINER = "loginContainer";
-  public static final String ARCH_ROLE = "ARCH_ROLES_RMTR";
-  public static final String CLIENT_ROLE = "CLIENT_ROLES_RMTR";
-  public static final String ADMIN_ROLE = "ADMIN_ROLES_RMTR";
+
+  // Role constants - these are used in both API requests and Spring Security
+  // Spring Security will automatically prefix with "ROLE_" internally
+  public static final String ARCH_ROLE = "ARCHITECT";
+  public static final String CLIENT_ROLE = "CLIENT";
+  public static final String ADMIN_ROLE = "ADMIN";
   public static final String FREELANCE_CATEGORY_CODE = "FREELANCER";
   public static final String COMPANY_CATEGORY_CODE = "COMPANY";
   public static final String FREELANCE_CATEGORY = "Freelancer";

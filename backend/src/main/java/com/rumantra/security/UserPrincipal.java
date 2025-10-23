@@ -1,12 +1,14 @@
 package com.rumantra.security;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.rumantra.shared.RumantraConstants;
 import com.rumantra.user.domain.User;
 
 import lombok.AllArgsConstructor;
@@ -22,9 +24,22 @@ public class UserPrincipal implements UserDetails {
   private Collection<? extends GrantedAuthority> authorities;
 
   public static UserPrincipal create(User user) {
-    // For now, all architects have the same role
-    Collection<GrantedAuthority> authorities =
-        Collections.singletonList(new SimpleGrantedAuthority("ROLE_ARCHITECT"));
+    // Dynamically assign roles based on user's relationships to Architect and Client entities
+    List<GrantedAuthority> authorities = new ArrayList<>();
+
+    // Check if user has an Architect profile
+    if (user.getArchitect() != null) {
+      authorities.add(new SimpleGrantedAuthority("ROLE_" + RumantraConstants.ARCH_ROLE));
+    }
+
+    // Check if user has a Client profile
+    if (user.getClient() != null) {
+      authorities.add(new SimpleGrantedAuthority("ROLE_" + RumantraConstants.CLIENT_ROLE));
+    }
+
+    // Note: Users can authenticate with no roles initially.
+    // They will activate roles via /api/users/me/activate-role endpoint.
+    // Spring Security will still enforce role requirements on protected endpoints.
 
     return new UserPrincipal(user.getId(), user.getEmail(), user.getPassword(), authorities);
   }

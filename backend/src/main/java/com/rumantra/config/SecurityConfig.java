@@ -67,10 +67,6 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             auth ->
                 auth
-                    // Legacy architect endpoints
-                    .requestMatchers("/api/v1/architects/signup", "/api/v1/architects/login")
-                    .permitAll()
-
                     // New user endpoints (public)
                     .requestMatchers("/rmtr/users/login", "/rmtr/users/register")
                     .permitAll()
@@ -78,6 +74,10 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers("/rmtr/users/oauth2/**")
                     .permitAll()
+
+                    // User profile endpoints (authenticated)
+                    .requestMatchers("/rmtr/users/me/**")
+                    .authenticated()
 
                     // Protected endpoints
                     .requestMatchers("/api/v1/architects/profile", "/api/v1/architects/profile/**")
@@ -90,6 +90,14 @@ public class SecurityConfig {
                     .hasRole("ARCHITECT")
                     .requestMatchers("/api/portos/**")
                     .hasRole("ARCHITECT")
+
+                    // Client project endpoints - require CLIENT role
+                    .requestMatchers("/api/clients/*/projects/**")
+                    .hasRole("CLIENT")
+                    .requestMatchers("/api/clients/*/projects")
+                    .hasRole("CLIENT")
+                    .requestMatchers("/api/projects/**")
+                    .hasRole("CLIENT")
 
                     // Static file serving (uploads)
                     .requestMatchers("/uploads/**")

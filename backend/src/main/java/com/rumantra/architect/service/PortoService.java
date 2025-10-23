@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,6 +17,7 @@ import com.rumantra.architect.dto.*;
 import com.rumantra.architect.repository.ArchitectRepository;
 import com.rumantra.architect.repository.PortoDetailRepository;
 import com.rumantra.architect.repository.PortoRepository;
+import com.rumantra.security.SecurityUtils;
 import com.rumantra.shared.storage.FileStorageService;
 import com.rumantra.shared.storage.ImageSize;
 
@@ -40,31 +40,47 @@ public class PortoService {
   @PersistenceContext private EntityManager entityManager;
 
   /**
+   * Get the architect ID for the currently authenticated user.
+   *
+   * @return The architect ID
+   * @throws RuntimeException if the user doesn't have an architect profile
+   */
+  private Long getCurrentUserArchitectId() {
+    Long userId = SecurityUtils.getCurrentUserId();
+
+    Architect architect =
+        architectRepository
+            .findByUserId(userId)
+            .orElseThrow(
+                () ->
+                    new RuntimeException(
+                        "Current user does not have an architect profile. Please activate the architect role first."));
+
+    return architect.getId();
+  }
+
+  /**
    * Verify that the currently authenticated user owns the specified architect profile.
    *
    * @param architectId The architect ID to verify ownership for
    * @throws AccessDeniedException if the user is not the owner
    */
   private void verifyArchitectOwnership(Long architectId) {
-    String authenticatedEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+    Long userId = SecurityUtils.getCurrentUserId();
 
     Architect architect =
         architectRepository
             .findById(architectId)
             .orElseThrow(() -> new RuntimeException("Architect not found with id: " + architectId));
 
-    String architectEmail = architect.getUser().getEmail();
-
-    if (!architectEmail.equals(authenticatedEmail)) {
+    if (!architect.getUser().getId().equals(userId)) {
       log.warn(
-          "Access denied: User {} attempted to access architect {} resources",
-          authenticatedEmail,
-          architectId);
+          "Access denied: User {} attempted to access architect {} resources", userId, architectId);
       throw new AccessDeniedException(
           "You do not have permission to access this architect's resources");
     }
 
-    log.debug("Ownership verified: User {} owns architect {}", authenticatedEmail, architectId);
+    log.debug("Ownership verified: User {} owns architect {}", userId, architectId);
   }
 
   /**
@@ -83,11 +99,10 @@ public class PortoService {
   }
 
   @Transactional
-  public PortoResponse createPorto(
-      Long architectId, CreatePortoRequest request, List<MultipartFile> images) {
+  public PortoResponse createPorto(CreatePortoRequest request, List<MultipartFile> images) {
 
-    // Verify ownership before creating
-    verifyArchitectOwnership(architectId);
+    // Get current user's architect ID
+    Long architectId = getCurrentUserArchitectId();
 
     // Get architect reference
     Architect architect = entityManager.getReference(Architect.class, architectId);
@@ -118,9 +133,9 @@ public class PortoService {
     return mapToPortoResponse(porto);
   }
 
-  public List<PortoListResponse> getPortosByArchitect(Long architectId) {
-    // Verify ownership before retrieving
-    verifyArchitectOwnership(architectId);
+  public List<PortoListResponse> getPortosByArchitect() {
+    // Get current user's architect ID
+    Long architectId = getCurrentUserArchitectId();
 
     List<Porto> portos = portoRepository.findByArchitectIdWithDetails(architectId);
 

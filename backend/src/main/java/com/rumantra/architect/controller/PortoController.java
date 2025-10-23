@@ -28,28 +28,21 @@ public class PortoController {
   private final PortoService portoService;
 
   /**
-   * Create a new portfolio for an architect with images.
+   * Create a new portfolio for the authenticated architect with images.
    *
-   * @param architectId The architect ID
    * @param request Portfolio metadata
    * @param images List of image files (optional)
    * @return Created portfolio
    */
-  @PostMapping(
-      value = "/architects/{architectId}/portos",
-      consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PostMapping(value = "/portos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<ApiResponse<PortoResponse>> createPorto(
-      @PathVariable Long architectId,
       @Valid @ModelAttribute CreatePortoRequest request,
       @RequestParam(value = "images", required = false) List<MultipartFile> images) {
 
     try {
-      log.info(
-          "Creating portfolio for architect {} with {} images",
-          architectId,
-          images != null ? images.size() : 0);
+      log.info("Creating portfolio with {} images", images != null ? images.size() : 0);
 
-      PortoResponse response = portoService.createPorto(architectId, request, images);
+      PortoResponse response = portoService.createPorto(request, images);
 
       return ResponseEntity.status(HttpStatus.CREATED)
           .body(
@@ -76,7 +69,7 @@ public class PortoController {
                   .timestamp(LocalDateTime.now().toString())
                   .build());
     } catch (RuntimeException e) {
-      log.error("Error creating portfolio for architect {}", architectId, e);
+      log.error("Error creating portfolio", e);
       return ResponseEntity.status(HttpStatus.NOT_FOUND)
           .body(
               ApiResponse.<PortoResponse>builder()
@@ -85,7 +78,7 @@ public class PortoController {
                   .timestamp(LocalDateTime.now().toString())
                   .build());
     } catch (Exception e) {
-      log.error("Unexpected error creating portfolio for architect {}", architectId, e);
+      log.error("Unexpected error creating portfolio", e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(
               ApiResponse.<PortoResponse>builder()
@@ -97,20 +90,18 @@ public class PortoController {
   }
 
   /**
-   * Get all portfolios for an architect. Returns lightweight responses with first image for each
-   * portfolio.
+   * Get all portfolios for the authenticated architect. Returns lightweight responses with first
+   * image for each portfolio.
    *
-   * @param architectId The architect ID
    * @return List of portfolios
    */
-  @GetMapping("/architects/{architectId}/portos")
-  public ResponseEntity<ApiResponse<List<PortoListResponse>>> getPortosByArchitect(
-      @PathVariable Long architectId) {
+  @GetMapping("/portos")
+  public ResponseEntity<ApiResponse<List<PortoListResponse>>> getPortosByArchitect() {
 
     try {
-      log.info("Fetching portfolios for architect {}", architectId);
+      log.info("Fetching portfolios for authenticated architect");
 
-      List<PortoListResponse> response = portoService.getPortosByArchitect(architectId);
+      List<PortoListResponse> response = portoService.getPortosByArchitect();
 
       return ResponseEntity.ok(
           ApiResponse.<List<PortoListResponse>>builder()
@@ -128,7 +119,7 @@ public class PortoController {
                   .timestamp(LocalDateTime.now().toString())
                   .build());
     } catch (RuntimeException e) {
-      log.error("Error fetching portfolios for architect {}", architectId, e);
+      log.error("Error fetching portfolios for authenticated architect", e);
       return ResponseEntity.status(HttpStatus.NOT_FOUND)
           .body(
               ApiResponse.<List<PortoListResponse>>builder()
@@ -137,7 +128,7 @@ public class PortoController {
                   .timestamp(LocalDateTime.now().toString())
                   .build());
     } catch (Exception e) {
-      log.error("Unexpected error fetching portfolios for architect {}", architectId, e);
+      log.error("Unexpected error fetching portfolios for authenticated architect", e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(
               ApiResponse.<List<PortoListResponse>>builder()

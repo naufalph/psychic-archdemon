@@ -93,9 +93,16 @@ public class UserService {
       throw new IllegalArgumentException("Please verify your email before logging in!");
     }
 
+    // Collect user's current roles
     List<String> registeredRoles = new ArrayList<>();
-    autoRegisterWhenSignIn(user, loginRequest, registeredRoles);
+    if (architectRepository.findByUserId(user.getId()).isPresent()) {
+      registeredRoles.add(RumantraConstants.ARCH_ROLE);
+    }
+    if (clientRepository.findByUserId(user.getId()).isPresent()) {
+      registeredRoles.add(RumantraConstants.CLIENT_ROLE);
+    }
 
+    // Generate JWT token
     String jwt = jwtUtils.generateJwtToken(user.getEmail());
 
     return UserAuthResponseDto.builder()
@@ -105,45 +112,6 @@ public class UserService {
         .email(user.getEmail())
         .registeredRoles(registeredRoles)
         .build();
-  }
-
-  private void autoRegisterWhenSignIn(
-      User user, UserLoginRequestDto loginRequest, List<String> registeredRoles) {
-    if (RumantraConstants.ARCH_ROLE.equals(loginRequest.getRole())) {
-      try {
-        architectService.getArchitectByUserId(user.getId());
-      } catch (ResourceNotFoundException e) {
-        // This is expected when user is not an architect
-        Architect architect =
-            Architect.builder()
-                .user(user)
-                .ktpVerified(false)
-                .npwpVerified(false)
-                .bidLeft(10)
-                .successMatch(0)
-                .successProject(0)
-                .build();
-        architectRepository.save(
-            architect); // create architect instance whenever user login with blank profile
-      }
-      registeredRoles.add(RumantraConstants.ARCH_ROLE);
-    } else if (RumantraConstants.CLIENT_ROLE.equals(loginRequest.getRole())) {
-      try {
-        clientService.getClientByUserId(user.getId());
-      } catch (ResourceNotFoundException e) {
-        // This is expected when user is not a client
-        Client client =
-            Client.builder()
-                .user(user)
-                .ktpVerified(false)
-                .projectMatch(0)
-                .projectFinished(0)
-                .build();
-        clientRepository.save(
-            client); // create user instance whenever user login with blank profile
-      }
-      registeredRoles.add(RumantraConstants.CLIENT_ROLE);
-    }
   }
 
   private UserDto mapToDto(User user) {
@@ -517,5 +485,61 @@ public class UserService {
             .build();
 
     emailVerificationRepository.save(verification);
+  }
+
+  /**
+   * Activate a role for a user by creating the corresponding Architect or Client profile.
+   *
+   * @param userId The user ID
+   * @param role The role to activate (ARCHITECT or CLIENT)
+   * @return Updated user DTO
+   */
+  @Transactional
+  public UserDto activateRole(Long userId, String role) {
+    User user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+    if (RumantraConstants.ARCH_ROLE.equals(role)) {
+      // Check if architect profile already exists
+      if (architectRepository.findByUserId(userId).isPresent()) {
+        throw new IllegalArgumentException("User already has Architect role activated");
+      }
+
+      // Create architect profile
+      Architect architect =
+          Architect.builder()
+              .user(user)
+              .ktpVerified(false)
+              .npwpVerified(false)
+              .bidLeft(10)
+              .successMatch(0)
+              .successProject(0)
+              .build();
+      architectRepository.save(architect);
+
+    } else if (RumantraConstants.CLIENT_ROLE.equals(role)) {
+      // Check if client profile already exists
+      if (clientRepository.findByUserId(userId).isPresent()) {
+        throw new IllegalArgumentException("User already has Client role activated");
+      }
+
+      // Create client profile
+      Client client =
+          Client.builder()
+              .user(user)
+              .ktpVerified(false)
+              .phoneNumVerified(false)
+              .projectMatch(0)
+              .projectFinished(0)
+              .build();
+      clientRepository.save(client);
+
+    } else {
+      throw new IllegalArgumentException("Invalid role: " + role);
+    }
+
+    return mapToDto(user);
   }
 }

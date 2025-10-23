@@ -14,7 +14,6 @@ import lombok.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Table(name = "rmtr_porto")
 public class Porto {
 
