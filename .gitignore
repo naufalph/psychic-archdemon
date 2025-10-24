@@ -95,6 +95,9 @@ docker-compose.override.yml
 **/frontend/dist/
 **/frontend/build/
 
+# Uploaded files
+uploads/
+
 # Maven wrapper
 .mvn/wrapper/maven-wrapper.jar
 

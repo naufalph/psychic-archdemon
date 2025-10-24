@@ -88,3 +88,41 @@ CREATE TABLE IF NOT EXISTS rmtr_porto_dtl (
 );
 
 CREATE INDEX IF NOT EXISTS idx_porto_dtl_porto_id ON rmtr_porto_dtl(porto_id);
+
+-- Create rmtr_project table (client projects)
+CREATE TABLE IF NOT EXISTS rmtr_project (
+    id BIGSERIAL PRIMARY KEY,
+    client_id BIGINT NOT NULL REFERENCES rmtr_client(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    budget_min BIGINT NOT NULL CHECK (budget_min >= 0),
+    budget_max BIGINT NOT NULL CHECK (budget_max >= budget_min),
+    project_category VARCHAR(255),
+    building_function VARCHAR(255),
+    estimated_build_area INTEGER CHECK (estimated_build_area > 0),
+    number_of_floors INTEGER CHECK (number_of_floors > 0),
+    owns_land BOOLEAN,
+    has_legal_documents BOOLEAN,
+    scope_of_work TEXT,
+    deliverables JSONB,
+    design_preferences TEXT,
+    contact_person VARCHAR(255),
+    expected_start_date DATE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_project_client_id ON rmtr_project(client_id);
+CREATE INDEX IF NOT EXISTS idx_project_budget ON rmtr_project(budget_min, budget_max);
+CREATE INDEX IF NOT EXISTS idx_project_created_at ON rmtr_project(created_at DESC);
+
+-- Create rmtr_project_file table (project file uploads)
+CREATE TABLE IF NOT EXISTS rmtr_project_file (
+    id BIGSERIAL PRIMARY KEY,
+    project_id BIGINT NOT NULL REFERENCES rmtr_project(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    file_name VARCHAR(255) NOT NULL,
+    file_path VARCHAR(500) NOT NULL,
+    file_type VARCHAR(50),
+    file_size BIGINT,
+    uploaded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_project_file_project_id ON rmtr_project_file(project_id);

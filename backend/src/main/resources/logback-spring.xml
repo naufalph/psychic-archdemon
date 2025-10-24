@@ -95,6 +95,7 @@
     <logger name="com.rumantra.security" level="DEBUG"/>
     <logger name="com.rumantra.project" level="DEBUG"/>
     <logger name="com.rumantra.architect" level="DEBUG"/>
+    <logger name="com.rumantra.client" level="DEBUG"/>
     <logger name="com.rumantra.shared" level="DEBUG"/>
 
     <!-- Framework and Third-Party Logging -->

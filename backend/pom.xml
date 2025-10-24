@@ -162,6 +162,13 @@
       <artifactId>spring-boot-starter-oauth2-client</artifactId>
     </dependency>
 
+    <!-- Hypersistence Utils for JSONB support -->
+    <dependency>
+      <groupId>io.hypersistence</groupId>
+      <artifactId>hypersistence-utils-hibernate-63</artifactId>
+      <version>3.7.3</version>
+    </dependency>
+
   </dependencies>
 
   <build>

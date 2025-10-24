@@ -1,0 +1,292 @@
+package com.rumantra.client.service;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.rumantra.client.domain.Client;
+import com.rumantra.client.domain.Project;
+import com.rumantra.client.domain.ProjectFile;
+import com.rumantra.client.dto.CreateProjectRequest;
+import com.rumantra.client.dto.ProjectFileDto;
+import com.rumantra.client.dto.ProjectResponse;
+import com.rumantra.client.repository.ClientRepository;
+import com.rumantra.client.repository.ProjectFileRepository;
+import com.rumantra.client.repository.ProjectRepository;
+import com.rumantra.security.SecurityUtils;
+import com.rumantra.shared.exception.ResourceNotFoundException;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class ProjectService {
+
+  private final ProjectRepository projectRepository;
+  private final ProjectFileRepository projectFileRepository;
+  private final ClientRepository clientRepository;
+
+  @PersistenceContext private EntityManager entityManager;
+
+  @Value("${file.upload-dir:uploads/projects}")
+  private String uploadDir;
+
+  /**
+   * Get the client ID for the currently authenticated user.
+   *
+   * @return The client ID
+   * @throws RuntimeException if the user doesn't have a client profile
+   */
+  private Long getCurrentUserClientId() {
+    Long userId = SecurityUtils.getCurrentUserId();
+
+    Client client =
+        clientRepository
+            .findByUserId(userId)
+            .orElseThrow(
+                () ->
+                    new RuntimeException(
+                        "Current user does not have a client profile. Please activate the client role first."));
+
+    return client.getId();
+  }
+
+  /**
+   * Verify that the currently authenticated user owns the specified project.
+   *
+   * @param projectId The project ID to verify ownership for
+   * @throws RuntimeException if project doesn't exist or user doesn't own it
+   */
+  private void verifyProjectOwnership(Long projectId) {
+    Long userId = SecurityUtils.getCurrentUserId();
+
+    Project project =
+        projectRepository
+            .findById(projectId)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Project not found with id: " + projectId));
+
+    if (!project.getClient().getUser().getId().equals(userId)) {
+      log.warn(
+          "Access denied: User {} attempted to access project {} resources", userId, projectId);
+      throw new RuntimeException("You do not have permission to access this project's resources");
+    }
+
+    log.debug("Ownership verified: User {} owns project {}", userId, projectId);
+  }
+
+  @Transactional
+  public ProjectResponse createProject(CreateProjectRequest request, List<MultipartFile> files) {
+
+    // Get current user's client ID
+    Long clientId = getCurrentUserClientId();
+
+    // Get client entity
+    Client client =
+        clientRepository
+            .findById(clientId)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Client not found with id: " + clientId));
+
+    // Validate budget range
+    if (request.getBudgetMax() < request.getBudgetMin()) {
+      throw new IllegalArgumentException("Maximum budget must be greater than minimum budget");
+    }
+
+    // Build project entity
+    Project project =
+        Project.builder()
+            .client(client)
+            .budgetMin(request.getBudgetMin())
+            .budgetMax(request.getBudgetMax())
+            .projectCategory(request.getProjectCategory())
+            .buildingFunction(request.getBuildingFunction())
+            .estimatedBuildArea(request.getEstimatedBuildArea())
+            .numberOfFloors(request.getNumberOfFloors())
+            .ownsLand(request.getOwnsLand())
+            .hasLegalDocuments(request.getHasLegalDocuments())
+            .scopeOfWork(request.getScopeOfWork())
+            .deliverables(request.getDeliverables())
+            .designPreferences(request.getDesignPreferences())
+            .contactPerson(request.getContactPerson())
+            .expectedStartDate(request.getExpectedStartDate())
+            .build();
+
+    project = projectRepository.save(project);
+
+    // Handle file uploads if present
+    if (files != null && !files.isEmpty()) {
+      addFilesToProject(project, files);
+    }
+
+    // Reload with files
+    Project finalProject = project;
+    project =
+        projectRepository
+            .findByIdWithFiles(project.getId())
+            .orElseThrow(
+                () ->
+                    new ResourceNotFoundException(
+                        "Project not found with id: " + finalProject.getId()));
+
+    return mapToProjectResponse(project);
+  }
+
+  @Transactional(readOnly = true)
+  public ProjectResponse getProjectById(Long projectId) {
+    // Verify ownership before retrieving
+    verifyProjectOwnership(projectId);
+
+    Project project =
+        projectRepository
+            .findByIdWithFiles(projectId)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Project not found with id: " + projectId));
+    return mapToProjectResponse(project);
+  }
+
+  @Transactional(readOnly = true)
+  public List<ProjectResponse> getProjectsByClient() {
+    // Get current user's client ID
+    Long clientId = getCurrentUserClientId();
+
+    List<Project> projects = projectRepository.findByClientIdWithFiles(clientId);
+    return projects.stream().map(this::mapToProjectResponse).collect(Collectors.toList());
+  }
+
+  @Transactional
+  public void deleteProject(Long projectId) {
+    // Verify ownership before deleting
+    verifyProjectOwnership(projectId);
+
+    Project project =
+        projectRepository
+            .findById(projectId)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Project not found with id: " + projectId));
+
+    // Delete associated files from disk
+    project.getFiles().forEach(this::deleteFileFromDisk);
+
+    projectRepository.delete(project);
+  }
+
+  private void addFilesToProject(Project project, List<MultipartFile> files) {
+    try {
+      // Create upload directory if it doesn't exist
+      Path uploadPath = Paths.get(uploadDir);
+      if (!Files.exists(uploadPath)) {
+        Files.createDirectories(uploadPath);
+      }
+
+      for (MultipartFile file : files) {
+        if (file.isEmpty()) {
+          continue;
+        }
+
+        // Validate file type (png, jpg, pdf)
+        String contentType = file.getContentType();
+        if (contentType == null
+            || (!contentType.equals("image/png")
+                && !contentType.equals("image/jpeg")
+                && !contentType.equals("application/pdf"))) {
+          log.warn("Skipping file with unsupported type: {}", contentType);
+          continue;
+        }
+
+        // Generate unique filename
+        String originalFilename = file.getOriginalFilename();
+        String fileExtension =
+            originalFilename != null && originalFilename.contains(".")
+                ? originalFilename.substring(originalFilename.lastIndexOf("."))
+                : "";
+        String uniqueFilename = UUID.randomUUID().toString() + fileExtension;
+
+        // Save file to disk
+        Path filePath = uploadPath.resolve(uniqueFilename);
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        // Create ProjectFile entity
+        ProjectFile projectFile =
+            ProjectFile.builder()
+                .project(project)
+                .fileName(originalFilename)
+                .filePath(filePath.toString())
+                .fileType(contentType)
+                .fileSize(file.getSize())
+                .build();
+
+        project.getFiles().add(projectFile);
+        projectFileRepository.save(projectFile);
+      }
+    } catch (IOException e) {
+      log.error("Error uploading files for project {}", project.getId(), e);
+      throw new RuntimeException("Failed to upload files", e);
+    }
+  }
+
+  private void deleteFileFromDisk(ProjectFile projectFile) {
+    try {
+      Path filePath = Paths.get(projectFile.getFilePath());
+      Files.deleteIfExists(filePath);
+    } catch (IOException e) {
+      log.error("Error deleting file: {}", projectFile.getFilePath(), e);
+    }
+  }
+
+  private ProjectResponse mapToProjectResponse(Project project) {
+    List<ProjectFileDto> fileDtos =
+        project.getFiles() != null
+            ? project.getFiles().stream()
+                .map(this::mapToProjectFileDto)
+                .collect(Collectors.toList())
+            : new ArrayList<>();
+
+    return ProjectResponse.builder()
+        .id(project.getId())
+        .clientId(project.getClient().getId())
+        .budgetMin(project.getBudgetMin())
+        .budgetMax(project.getBudgetMax())
+        .projectCategory(project.getProjectCategory())
+        .buildingFunction(project.getBuildingFunction())
+        .estimatedBuildArea(project.getEstimatedBuildArea())
+        .numberOfFloors(project.getNumberOfFloors())
+        .ownsLand(project.getOwnsLand())
+        .hasLegalDocuments(project.getHasLegalDocuments())
+        .scopeOfWork(project.getScopeOfWork())
+        .deliverables(project.getDeliverables())
+        .designPreferences(project.getDesignPreferences())
+        .contactPerson(project.getContactPerson())
+        .expectedStartDate(project.getExpectedStartDate())
+        .files(fileDtos)
+        .createdAt(project.getCreatedAt())
+        .updatedAt(project.getUpdatedAt())
+        .build();
+  }
+
+  private ProjectFileDto mapToProjectFileDto(ProjectFile projectFile) {
+    return ProjectFileDto.builder()
+        .id(projectFile.getId())
+        .fileName(projectFile.getFileName())
+        .filePath(projectFile.getFilePath())
+        .fileType(projectFile.getFileType())
+        .fileSize(projectFile.getFileSize())
+        .uploadedAt(projectFile.getUploadedAt())
+        .build();
+  }
+}
