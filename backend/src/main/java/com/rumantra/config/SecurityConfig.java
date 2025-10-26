@@ -1,5 +1,6 @@
 package com.rumantra.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -31,6 +33,18 @@ public class SecurityConfig {
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
   private final PasswordEncoder passwordEncoder;
 
+  @Value("${app.cors.allowed-origins:http://localhost:3000}")
+  private String allowedOrigins;
+
+  @Value("${app.security.hsts.enabled:false}")
+  private boolean hstsEnabled;
+
+  @Value("${app.security.hsts.max-age:31536000}")
+  private long hstsMaxAge;
+
+  @Value("${app.security.hsts.include-subdomains:true}")
+  private boolean hstsIncludeSubdomains;
+
   @Bean
   public DaoAuthenticationProvider authenticationProvider() {
     DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -48,7 +62,14 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.addAllowedOriginPattern("http://localhost:3000");
+
+    // Support multiple origins separated by comma
+    // Example: http://localhost:3000,https://yourdomain.com,https://www.yourdomain.com
+    String[] origins = allowedOrigins.split(",");
+    for (String origin : origins) {
+      configuration.addAllowedOriginPattern(origin.trim());
+    }
+
     configuration.addAllowedMethod("*");
     configuration.addAllowedHeader("*");
     configuration.setAllowCredentials(true);
@@ -64,6 +85,52 @@ public class SecurityConfig {
         .csrf(csrf -> csrf.disable())
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+        // Security Headers Configuration
+        .headers(
+            headers ->
+                headers
+                    // Prevent clickjacking by disabling iframe embedding
+                    .frameOptions(frame -> frame.deny())
+                    // Prevent MIME sniffing
+                    .contentTypeOptions(contentType -> contentType.disable())
+                    // Enable XSS protection (legacy, but still useful for older browsers)
+                    .xssProtection(
+                        xss ->
+                            xss.headerValue(
+                                XXssProtectionHeaderWriter.HeaderValue.valueOf("1; mode=block")))
+                    // Configure HSTS (only if enabled via environment variable)
+                    .httpStrictTransportSecurity(
+                        hsts -> {
+                          if (hstsEnabled) {
+                            hsts.maxAgeInSeconds(hstsMaxAge)
+                                .includeSubDomains(hstsIncludeSubdomains);
+                          } else {
+                            hsts.disable();
+                          }
+                        })
+                    // Add custom security headers
+                    .addHeaderWriter(
+                        (request, response) -> {
+                          // Referrer Policy - only send origin when navigating cross-origin
+                          response.setHeader("Referrer-Policy", "strict-origin-when-cross-origin");
+
+                          // Permissions Policy - control browser features
+                          response.setHeader(
+                              "Permissions-Policy", "camera=(), microphone=(), geolocation=(self)");
+
+                          // Content Security Policy - prevent XSS and injection attacks
+                          String csp =
+                              "default-src 'self'; "
+                                  + "script-src 'self'; "
+                                  + "style-src 'self' 'unsafe-inline'; "
+                                  + "img-src 'self' data: https:; "
+                                  + "font-src 'self' data:; "
+                                  + "connect-src 'self'; "
+                                  + "frame-ancestors 'none'; "
+                                  + "base-uri 'self'; "
+                                  + "form-action 'self'";
+                          response.setHeader("Content-Security-Policy", csp);
+                        }))
         .authorizeHttpRequests(
             auth ->
                 auth
