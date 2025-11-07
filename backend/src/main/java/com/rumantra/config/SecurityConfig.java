@@ -96,6 +96,10 @@ public class SecurityConfig {
                     .hasRole("CLIENT")
                     .requestMatchers("/api/clients/*/projects")
                     .hasRole("CLIENT")
+                    .requestMatchers("/api/v1/projects/{projectId}/validate")
+                    .hasRole("SUPERUSER")
+                    .requestMatchers("/api/v1/projects/all")
+                    .hasRole("SUPERUSER")
                     .requestMatchers("/api/projects/**")
                     .hasRole("CLIENT")
 

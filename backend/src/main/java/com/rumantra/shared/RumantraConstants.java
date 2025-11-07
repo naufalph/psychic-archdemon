@@ -11,6 +11,7 @@ public class RumantraConstants {
   public static final String ARCH_ROLE = "ARCHITECT";
   public static final String CLIENT_ROLE = "CLIENT";
   public static final String ADMIN_ROLE = "ADMIN";
+  public static final String SUPERUSER_ROLE = "SUPERUSER";
   public static final String FREELANCE_CATEGORY_CODE = "FREELANCER";
   public static final String COMPANY_CATEGORY_CODE = "COMPANY";
   public static final String FREELANCE_CATEGORY = "Freelancer";

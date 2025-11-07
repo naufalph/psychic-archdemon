@@ -314,7 +314,172 @@ curl --location --request DELETE 'http://localhost:8080/api/v1/projects/1' \
 
 ---
 
+## 6. Update Project Validation Status (Superuser Only)
+
+**PUT** `/api/v1/projects/{{PROJECT_ID}}/validate`
+
+```bash
+curl --location --request PUT 'http://localhost:8080/api/v1/projects/1/validate' \
+--header 'Authorization: Bearer {{SUPERUSER_JWT_TOKEN}}' \
+--header 'Content-Type: application/json' \
+--data '{
+  "isValid": true
+}'
+```
+
+**Expected Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Project validation status updated successfully",
+  "data": {
+    "id": 1,
+    "clientId": 1,
+    "budgetMin": 50000000,
+    "budgetMax": 100000000,
+    "projectCategory": "Residential",
+    "buildingFunction": "Single Family Home",
+    "estimatedBuildArea": 250,
+    "numberOfFloors": 2,
+    "ownsLand": true,
+    "hasLegalDocuments": true,
+    "scopeOfWork": "Complete architectural design including structural, MEP, and interior design",
+    "deliverables": [
+      "Architectural Drawings",
+      "3D Renderings",
+      "Construction Documents",
+      "BOQ (Bill of Quantities)"
+    ],
+    "designPreferences": "Modern minimalist style with open floor plan and large windows for natural lighting",
+    "contactPerson": "John Doe - +628123456789",
+    "expectedStartDate": "2025-12-01",
+    "isValid": true,
+    "files": [
+      {
+        "id": 1,
+        "fileName": "site-plan.pdf",
+        "filePath": "uploads/projects/a1b2c3d4-e5f6-7890-1234-56789abcdef0.pdf",
+        "fileType": "application/pdf",
+        "fileSize": 245678,
+        "uploadedAt": "2025-10-19T23:40:15.123456"
+      }
+    ],
+    "createdAt": "2025-10-19T23:40:15.012345",
+    "updatedAt": "2025-10-20T10:30:00.123456"
+  },
+  "timestamp": "2025-10-20T10:30:00.234567"
+}
+```
+
+**To Invalidate a Project:**
+```bash
+curl --location --request PUT 'http://localhost:8080/api/v1/projects/1/validate' \
+--header 'Authorization: Bearer {{SUPERUSER_JWT_TOKEN}}' \
+--header 'Content-Type: application/json' \
+--data '{
+  "isValid": false
+}'
+```
+
+---
+
+## 7. Get All Projects (Superuser Only)
+
+**GET** `/api/v1/projects/all`
+
+```bash
+curl --location 'http://localhost:8080/api/v1/projects/all' \
+--header 'Authorization: Bearer {{SUPERUSER_JWT_TOKEN}}'
+```
+
+**Expected Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "All projects retrieved successfully",
+  "data": [
+    {
+      "id": 1,
+      "clientId": 1,
+      "budgetMin": 50000000,
+      "budgetMax": 100000000,
+      "projectCategory": "Residential",
+      "buildingFunction": "Single Family Home",
+      "estimatedBuildArea": 250,
+      "numberOfFloors": 2,
+      "ownsLand": true,
+      "hasLegalDocuments": true,
+      "scopeOfWork": "Complete architectural design including structural, MEP, and interior design",
+      "deliverables": [
+        "Architectural Drawings",
+        "3D Renderings",
+        "Construction Documents",
+        "BOQ (Bill of Quantities)"
+      ],
+      "designPreferences": "Modern minimalist style with open floor plan and large windows for natural lighting",
+      "contactPerson": "John Doe - +628123456789",
+      "expectedStartDate": "2025-12-01",
+      "isValid": true,
+      "files": [
+        {
+          "id": 1,
+          "fileName": "site-plan.pdf",
+          "filePath": "uploads/projects/a1b2c3d4-e5f6-7890-1234-56789abcdef0.pdf",
+          "fileType": "application/pdf",
+          "fileSize": 245678,
+          "uploadedAt": "2025-10-19T23:40:15.123456"
+        }
+      ],
+      "createdAt": "2025-10-19T23:40:15.012345",
+      "updatedAt": "2025-10-20T10:30:00.123456"
+    },
+    {
+      "id": 2,
+      "clientId": 1,
+      "budgetMin": 30000000,
+      "budgetMax": 75000000,
+      "projectCategory": "Commercial",
+      "buildingFunction": "Office Building",
+      "estimatedBuildArea": 500,
+      "numberOfFloors": 3,
+      "ownsLand": false,
+      "hasLegalDocuments": false,
+      "scopeOfWork": "Architectural design and permit processing",
+      "deliverables": [
+        "Conceptual Design",
+        "Permit Documents"
+      ],
+      "designPreferences": "Contemporary office design with efficient space utilization",
+      "contactPerson": "Jane Smith - +628234567890",
+      "expectedStartDate": "2026-01-15",
+      "isValid": false,
+      "files": [],
+      "createdAt": "2025-10-19T23:45:22.123456",
+      "updatedAt": null
+    }
+  ],
+  "timestamp": "2025-10-20T10:35:00.123456"
+}
+```
+
+---
+
 ## Notes
+
+### Superuser Role
+- **SUPERUSER role** is required for validation and viewing all projects
+- Superuser must be assigned manually via database:
+  ```sql
+  UPDATE rmtr_user SET is_superuser = true WHERE email = 'admin@rumantra.com';
+  ```
+- After updating the database, user needs to login again to get new JWT token with SUPERUSER role
+- Use `{{SUPERUSER_JWT_TOKEN}}` variable in Postman for superuser endpoints
+
+### Project Validation
+- All projects are created with `isValid: false` by default
+- Only superusers can change the `isValid` status
+- Clients can see the `isValid` status but cannot modify it
+- Superusers can validate/invalidate projects without ownership verification
 
 ### Budget Values
 - Budget is stored in the smallest currency unit (e.g., cents)

@@ -26,6 +26,7 @@ CREATE TABLE IF NOT EXISTS rmtr_user (
     last_nm VARCHAR(255),
     is_email_verified BOOLEAN DEFAULT FALSE,
     is_active BOOLEAN DEFAULT TRUE,
+    is_superuser BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL DEFAULT NULL,
 
@@ -106,6 +107,7 @@ CREATE TABLE IF NOT EXISTS rmtr_project (
     design_preferences TEXT,
     contact_person VARCHAR(255),
     expected_start_date DATE,
+    is_valid BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL DEFAULT NULL
 );

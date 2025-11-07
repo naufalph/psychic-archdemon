@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.rumantra.client.dto.CreateProjectRequest;
 import com.rumantra.client.dto.ProjectResponse;
+import com.rumantra.client.dto.UpdateValidationRequest;
 import com.rumantra.client.service.ProjectService;
 import com.rumantra.shared.dto.ApiResponse;
 import com.rumantra.shared.exception.ResourceNotFoundException;
@@ -150,6 +151,70 @@ public class ProjectController {
               ApiResponse.<Void>builder()
                   .success(false)
                   .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
+  }
+
+  @PutMapping("/{projectId}/validate")
+  public ResponseEntity<ApiResponse<ProjectResponse>> updateProjectValidation(
+      @PathVariable Long projectId, @Valid @RequestBody UpdateValidationRequest request) {
+
+    try {
+      ProjectResponse response =
+          projectService.updateProjectValidation(projectId, request.getIsValid());
+
+      return ResponseEntity.ok(
+          ApiResponse.<ProjectResponse>builder()
+              .success(true)
+              .message("Project validation status updated successfully")
+              .data(response)
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+
+    } catch (ResourceNotFoundException e) {
+      log.error("Project not found: {}", projectId, e);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .body(
+              ApiResponse.<ProjectResponse>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+
+    } catch (Exception e) {
+      log.error("Error updating project validation status {}", projectId, e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(
+              ApiResponse.<ProjectResponse>builder()
+                  .success(false)
+                  .message("An error occurred while updating project validation status")
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
+  }
+
+  @GetMapping("/all")
+  public ResponseEntity<ApiResponse<List<ProjectResponse>>> getAllProjects() {
+
+    try {
+      List<ProjectResponse> responses = projectService.getAllProjects();
+
+      return ResponseEntity.ok(
+          ApiResponse.<List<ProjectResponse>>builder()
+              .success(true)
+              .message("All projects retrieved successfully")
+              .data(responses)
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+
+    } catch (Exception e) {
+      log.error("Error retrieving all projects", e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(
+              ApiResponse.<List<ProjectResponse>>builder()
+                  .success(false)
+                  .message("An error occurred while retrieving projects")
                   .timestamp(LocalDateTime.now().toString())
                   .build());
     }

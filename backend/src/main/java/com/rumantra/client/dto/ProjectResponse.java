@@ -30,6 +30,7 @@ public class ProjectResponse {
   private String designPreferences;
   private String contactPerson;
   private LocalDate expectedStartDate;
+  private Boolean isValid;
   private List<ProjectFileDto> files;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;

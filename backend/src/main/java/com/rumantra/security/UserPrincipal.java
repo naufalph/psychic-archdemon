@@ -27,6 +27,11 @@ public class UserPrincipal implements UserDetails {
     // Dynamically assign roles based on user's relationships to Architect and Client entities
     List<GrantedAuthority> authorities = new ArrayList<>();
 
+    // Check if user is a superuser
+    if (user.isSuperuser()) {
+      authorities.add(new SimpleGrantedAuthority("ROLE_" + RumantraConstants.SUPERUSER_ROLE));
+    }
+
     // Check if user has an Architect profile
     if (user.getArchitect() != null) {
       authorities.add(new SimpleGrantedAuthority("ROLE_" + RumantraConstants.ARCH_ROLE));

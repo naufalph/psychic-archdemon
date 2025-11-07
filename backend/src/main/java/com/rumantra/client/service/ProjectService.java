@@ -186,6 +186,40 @@ public class ProjectService {
     projectRepository.delete(project);
   }
 
+  /**
+   * Update project validation status (Superuser only).
+   *
+   * @param projectId The project ID to update
+   * @param isValid The new validation status
+   * @return Updated project response
+   */
+  @Transactional
+  public ProjectResponse updateProjectValidation(Long projectId, Boolean isValid) {
+    Project project =
+        projectRepository
+            .findById(projectId)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Project not found with id: " + projectId));
+
+    project.setIsValid(isValid);
+    project = projectRepository.save(project);
+
+    log.info("Project {} validation status updated to {} by superuser", projectId, isValid);
+
+    return mapToProjectResponse(project);
+  }
+
+  /**
+   * Get all projects (Superuser only).
+   *
+   * @return List of all projects regardless of validation status
+   */
+  @Transactional(readOnly = true)
+  public List<ProjectResponse> getAllProjects() {
+    List<Project> projects = projectRepository.findAll();
+    return projects.stream().map(this::mapToProjectResponse).collect(Collectors.toList());
+  }
+
   private void addFilesToProject(Project project, List<MultipartFile> files) {
     try {
       // Create upload directory if it doesn't exist
@@ -273,6 +307,7 @@ public class ProjectService {
         .designPreferences(project.getDesignPreferences())
         .contactPerson(project.getContactPerson())
         .expectedStartDate(project.getExpectedStartDate())
+        .isValid(project.getIsValid())
         .files(fileDtos)
         .createdAt(project.getCreatedAt())
         .updatedAt(project.getUpdatedAt())

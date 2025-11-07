@@ -48,6 +48,10 @@ public class User {
   @Builder.Default()
   private boolean isActive = true;
 
+  @Column(name = "is_superuser")
+  @Builder.Default()
+  private boolean isSuperuser = false;
+
   @Column(name = "created_at", nullable = false)
   @Builder.Default()
   private Timestamp createdAt = Timestamp.valueOf(LocalDateTime.now());

@@ -70,6 +70,10 @@ public class Project {
   @Column(name = "expected_start_date")
   private LocalDate expectedStartDate;
 
+  @Column(name = "is_valid")
+  @Builder.Default
+  private Boolean isValid = false;
+
   @OneToMany(
       mappedBy = "project",
       cascade = CascadeType.ALL,
