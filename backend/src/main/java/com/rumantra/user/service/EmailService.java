@@ -92,4 +92,21 @@ public class EmailService {
             + "The Rumantra Team",
         firstName != null ? firstName : "there", frontendUrl);
   }
+
+  public void sendProjectValidationEmail(String toEmail, String subject, String message) {
+    try {
+      SimpleMailMessage mailMessage = new SimpleMailMessage();
+      mailMessage.setFrom(fromEmail);
+      mailMessage.setTo(toEmail);
+      mailMessage.setSubject(subject);
+      mailMessage.setText(message);
+
+      mailSender.send(mailMessage);
+      log.info("Project validation email sent successfully to: {}", toEmail);
+
+    } catch (Exception e) {
+      log.error("Failed to send project validation email to: {}", toEmail, e);
+      // Don't throw exception - email failure shouldn't break the flow
+    }
+  }
 }

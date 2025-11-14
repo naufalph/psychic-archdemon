@@ -79,6 +79,10 @@ public class SecurityConfig {
                     .requestMatchers("/rmtr/users/me/**")
                     .authenticated()
 
+                    // Notification endpoints (authenticated)
+                    .requestMatchers("/api/notifications/**")
+                    .authenticated()
+
                     // Protected endpoints
                     .requestMatchers("/api/v1/architects/profile", "/api/v1/architects/profile/**")
                     .authenticated()

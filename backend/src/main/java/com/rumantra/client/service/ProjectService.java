@@ -11,6 +11,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +25,7 @@ import com.rumantra.client.dto.ProjectResponse;
 import com.rumantra.client.repository.ClientRepository;
 import com.rumantra.client.repository.ProjectFileRepository;
 import com.rumantra.client.repository.ProjectRepository;
+import com.rumantra.notification.event.ProjectValidatedEvent;
 import com.rumantra.security.SecurityUtils;
 import com.rumantra.shared.exception.ResourceNotFoundException;
 
@@ -40,6 +42,7 @@ public class ProjectService {
   private final ProjectRepository projectRepository;
   private final ProjectFileRepository projectFileRepository;
   private final ClientRepository clientRepository;
+  private final ApplicationEventPublisher eventPublisher;
 
   @PersistenceContext private EntityManager entityManager;
 
@@ -125,6 +128,7 @@ public class ProjectService {
             .designPreferences(request.getDesignPreferences())
             .contactPerson(request.getContactPerson())
             .expectedStartDate(request.getExpectedStartDate())
+            .isValid(null)
             .build();
 
     project = projectRepository.save(project);
@@ -206,6 +210,21 @@ public class ProjectService {
 
     log.info("Project {} validation status updated to {} by superuser", projectId, isValid);
 
+    // Publish event for notification system
+    Long superuserId = SecurityUtils.getCurrentUserId();
+    String projectTitle = buildProjectTitle(project);
+
+    eventPublisher.publishEvent(
+        new ProjectValidatedEvent(
+            this,
+            project.getId(),
+            project.getClient().getId(),
+            projectTitle,
+            isValid,
+            superuserId));
+
+    log.info("ProjectValidatedEvent published for project {}", projectId);
+
     return mapToProjectResponse(project);
   }
 
@@ -249,7 +268,7 @@ public class ProjectService {
             originalFilename != null && originalFilename.contains(".")
                 ? originalFilename.substring(originalFilename.lastIndexOf("."))
                 : "";
-        String uniqueFilename = UUID.randomUUID().toString() + fileExtension;
+        String uniqueFilename = UUID.randomUUID() + fileExtension;
 
         // Save file to disk
         Path filePath = uploadPath.resolve(uniqueFilename);
@@ -323,5 +342,21 @@ public class ProjectService {
         .fileSize(projectFile.getFileSize())
         .uploadedAt(projectFile.getUploadedAt())
         .build();
+  }
+
+  /**
+   * Build a human-readable project title for notifications.
+   *
+   * @param project The project entity
+   * @return A descriptive title
+   */
+  private String buildProjectTitle(Project project) {
+    if (project.getBuildingFunction() != null && !project.getBuildingFunction().isBlank()) {
+      return project.getBuildingFunction() + " (Project #" + project.getId() + ")";
+    } else if (project.getProjectCategory() != null && !project.getProjectCategory().isBlank()) {
+      return project.getProjectCategory() + " (Project #" + project.getId() + ")";
+    } else {
+      return "Project #" + project.getId();
+    }
   }
 }

@@ -107,7 +107,7 @@ CREATE TABLE IF NOT EXISTS rmtr_project (
     design_preferences TEXT,
     contact_person VARCHAR(255),
     expected_start_date DATE,
-    is_valid BOOLEAN DEFAULT FALSE,
+    is_valid BOOLEAN DEFAULT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL DEFAULT NULL
 );
@@ -128,3 +128,23 @@ CREATE TABLE IF NOT EXISTS rmtr_project_file (
 );
 
 CREATE INDEX IF NOT EXISTS idx_project_file_project_id ON rmtr_project_file(project_id);
+
+-- Create rmtr_dashboard_notif table (dashboard notifications)
+CREATE TABLE IF NOT EXISTS rmtr_dashboard_notif (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL REFERENCES rmtr_user(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    type VARCHAR(50) NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    reference_type VARCHAR(50),
+    reference_id BIGINT,
+    is_read BOOLEAN DEFAULT FALSE,
+    read_at TIMESTAMP NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT chk_dashboard_notif_type CHECK (type IN ('PROJECT_VALIDATED', 'PROJECT_UPDATED', 'BID_RECEIVED', 'BID_ACCEPTED', 'PAYMENT_RECEIVED'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_dashboard_notif_user_id ON rmtr_dashboard_notif(user_id);
+CREATE INDEX IF NOT EXISTS idx_dashboard_notif_user_read ON rmtr_dashboard_notif(user_id, is_read);
+CREATE INDEX IF NOT EXISTS idx_dashboard_notif_created_at ON rmtr_dashboard_notif(created_at DESC);
