@@ -1,147 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { APP_VERSION } from '@/config/app-version'
+import routesV1 from './routes-v1'
+import routesV2 from './routes-v2'
 
-// Import views (lazy-loaded for better performance)
-const Home = () => import('@/views/Home.vue')
-const Projects = () => import('@/views/projects/ProjectList.vue')
-const ProjectDetail = () => import('@/views/projects/ProjectDetail.vue')
-const CreateProject = () => import('@/views/projects/CreateProject.vue')
-const Architects = () => import('@/views/architects/ArchitectList.vue')
-const ArchitectProfile = () => import('@/views/architects/ArchitectProfile.vue')
-const Dashboard = () => import('@/views/clients/ClientDashboard.vue')
-const ClientLandingPage = () => import('@/views/clients/ClientLandingPage.vue')
-const ArchitectLandingPage = () => import('@/views/architects/ArchitectLandingPage.vue')
-const Profile = () => import('@/views/user/Profile.vue')
-const VerifyEmail = () => import('@/views/auth/VerifyEmail.vue')
-const NotFound = () => import('@/views/errors/NotFound.vue')
+// Version-based route selection
+const routeMap = {
+  v1: routesV1,
+  v2: routesV2
+}
 
-const routes = [
-  {
-    path: '/',
-    name: 'Home',
-    component: Home,
-    meta: {
-      title: 'Home - Rumantra',
-      description: 'Connect with talented architects for your next project'
-    }
-  },
-
-  // Project Routes
-  {
-    path: '/projects',
-    name: 'Projects',
-    component: Projects,
-    meta: {
-      title: 'Projects - Rumantra',
-      description: 'Browse available architecture projects'
-    }
-  },
-  {
-    path: '/projects/create',
-    name: 'CreateProject',
-    component: CreateProject,
-    meta: {
-      title: 'Create Project - Rumantra',
-      requiresAuth: true,
-      roles: ['CLIENT', 'ADMIN']
-    }
-  },
-  {
-    path: '/projects/:id',
-    name: 'ProjectDetail',
-    component: ProjectDetail,
-    props: true,
-    meta: {
-      title: 'Project Details - Rumantra'
-    }
-  },
-
-  // Architect Routes
-  {
-    path: '/architects',
-    name: 'Architects',
-    component: Architects,
-    meta: {
-      title: 'Architects - Rumantra',
-      description: 'Discover talented architects'
-    }
-  },
-  {
-    path: '/architects/:id',
-    name: 'ArchitectProfile',
-    component: ArchitectProfile,
-    props: true,
-    meta: {
-      title: 'Architect Profile - Rumantra'
-    }
-  },
-
-  // User Dashboard Routes
-  {
-    path: '/dashboard',
-    name: 'ClientDashboard',
-    component: Dashboard,
-    meta: {
-      title: 'Client Dashboard - Rumantra',
-      description: 'Manage your architecture projects and find architects'
-    }
-  },
-  {
-    path: '/profile',
-    name: 'Profile',
-    component: Profile,
-    meta: {
-      title: 'My Profile - Rumantra',
-      requiresAuth: true
-    }
-  },
-
-  // Temporary route for reviewing ClientLandingPage
-  {
-    path: '/client-landing',
-    name: 'ClientLanding',
-    component: ClientLandingPage,
-    meta: {
-      title: 'Client Landing - Rumantra',
-      description: 'Landing page for clients to find architects'
-    }
-  },
-
-  // Architect Landing Page
-  {
-    path: '/architect-landing',
-    name: 'ArchitectLanding',
-    component: ArchitectLandingPage,
-    meta: {
-      title: 'Architect Landing - Rumantra',
-      description: 'Landing page for architects to join the platform'
-    }
-  },
-
-  // Email Verification Route
-  {
-    path: '/verify-email',
-    name: 'VerifyEmail',
-    component: VerifyEmail,
-    meta: {
-      title: 'Verify Email - Rumantra',
-      description: 'Verify your email address'
-    }
-  },
-
-  // Error Routes
-  {
-    path: '/404',
-    name: 'NotFound',
-    component: NotFound,
-    meta: {
-      title: 'Page Not Found - Rumantra'
-    }
-  },
-  {
-    path: '/:pathMatch(.*)*',
-    redirect: '/404'
-  }
-]
+const routes = routeMap[APP_VERSION] || routesV1
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),

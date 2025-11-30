@@ -1,6 +1,11 @@
 <template>
   <div id="app" class="min-h-screen bg-gray-50">
-    <NavLink @open-signin="showSignInPopup = true" @open-signup="showSignUpPopup = true" />
+    <!-- Only show NavLink if route doesn't hide it -->
+    <NavLink
+      v-if="!$route.meta.hideNavbar"
+      @open-signin="showSignInPopup = true"
+      @open-signup="showSignUpPopup = true"
+    />
 
     <router-view v-slot="{ Component }">
       <transition name="fade" mode="out-in" enter-active-class="animate-fade-in" leave-active-class="animate-fade-in">

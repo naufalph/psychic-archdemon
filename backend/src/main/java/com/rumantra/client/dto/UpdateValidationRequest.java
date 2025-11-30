@@ -14,4 +14,6 @@ public class UpdateValidationRequest {
 
   @NotNull(message = "isValid field is required")
   private Boolean isValid;
+
+  private String validationNotes;
 }

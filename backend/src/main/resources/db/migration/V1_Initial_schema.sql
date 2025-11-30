@@ -108,6 +108,7 @@ CREATE TABLE IF NOT EXISTS rmtr_project (
     contact_person VARCHAR(255),
     expected_start_date DATE,
     is_valid BOOLEAN DEFAULT NULL,
+    validation_notes TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL DEFAULT NULL
 );

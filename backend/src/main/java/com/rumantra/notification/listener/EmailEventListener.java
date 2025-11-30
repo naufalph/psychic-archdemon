@@ -47,7 +47,8 @@ public class EmailEventListener {
       String message =
           event.getIsValid()
               ? buildApprovedEmailBody(client.getFirstName(), event.getProjectTitle())
-              : buildNeedsChangesEmailBody(client.getFirstName(), event.getProjectTitle());
+              : buildNeedsChangesEmailBody(
+                  client.getFirstName(), event.getProjectTitle(), event.getValidationNotes());
 
       emailService.sendProjectValidationEmail(client.getEmail(), subject, message);
 
@@ -83,10 +84,17 @@ public class EmailEventListener {
         projectTitle);
   }
 
-  private String buildNeedsChangesEmailBody(String firstName, String projectTitle) {
+  private String buildNeedsChangesEmailBody(
+      String firstName, String projectTitle, String validationNotes) {
+    String notesSection = "";
+    if (validationNotes != null && !validationNotes.isBlank()) {
+      notesSection = "\n\nValidation Notes:\n" + validationNotes + "\n";
+    }
+
     return String.format(
         "Hello %s,\n\n"
-            + "Your project '%s' has been reviewed and requires some changes before it can be published.\n\n"
+            + "Your project '%s' has been reviewed and requires some changes before it can be published."
+            + "%s\n"
             + "Please review your project details and make the necessary updates. Common reasons for changes:\n"
             + "• Incomplete project information\n"
             + "• Missing required documents\n"
@@ -96,6 +104,7 @@ public class EmailEventListener {
             + "Best regards,\n"
             + "The Rumantra Team",
         firstName != null ? firstName : "there",
-        projectTitle);
+        projectTitle,
+        notesSection);
   }
 }

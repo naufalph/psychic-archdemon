@@ -198,7 +198,8 @@ public class ProjectService {
    * @return Updated project response
    */
   @Transactional
-  public ProjectResponse updateProjectValidation(Long projectId, Boolean isValid) {
+  public ProjectResponse updateProjectValidation(
+      Long projectId, Boolean isValid, String validationNotes) {
     Project project =
         projectRepository
             .findById(projectId)
@@ -206,11 +207,11 @@ public class ProjectService {
                 () -> new ResourceNotFoundException("Project not found with id: " + projectId));
 
     project.setIsValid(isValid);
+    project.setValidationNotes(validationNotes);
     project = projectRepository.save(project);
 
     log.info("Project {} validation status updated to {} by superuser", projectId, isValid);
 
-    // Publish event for notification system
     Long superuserId = SecurityUtils.getCurrentUserId();
     String projectTitle = buildProjectTitle(project);
 
@@ -221,7 +222,8 @@ public class ProjectService {
             project.getClient().getId(),
             projectTitle,
             isValid,
-            superuserId));
+            superuserId,
+            validationNotes));
 
     log.info("ProjectValidatedEvent published for project {}", projectId);
 
@@ -327,6 +329,7 @@ public class ProjectService {
         .contactPerson(project.getContactPerson())
         .expectedStartDate(project.getExpectedStartDate())
         .isValid(project.getIsValid())
+        .validationNotes(project.getValidationNotes())
         .files(fileDtos)
         .createdAt(project.getCreatedAt())
         .updatedAt(project.getUpdatedAt())

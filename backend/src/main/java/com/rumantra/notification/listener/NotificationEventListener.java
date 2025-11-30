@@ -30,14 +30,7 @@ public class NotificationEventListener {
   public void handleProjectValidated(ProjectValidatedEvent event) {
     try {
       String title = event.getIsValid() ? "Project Approved" : "Project Needs Changes";
-      String message =
-          event.getIsValid()
-              ? String.format(
-                  "Your project '%s' has been approved and is now visible to architects!",
-                  event.getProjectTitle())
-              : String.format(
-                  "Your project '%s' requires changes. Please review and update your project.",
-                  event.getProjectTitle());
+      String message = buildNotificationMessage(event);
 
       dashboardNotificationService.createNotification(
           event.getClientId(),
@@ -59,7 +52,22 @@ public class NotificationEventListener {
           event.getProjectId(),
           e.getMessage(),
           e);
-      // Don't throw - let other listeners continue
+    }
+  }
+
+  private String buildNotificationMessage(ProjectValidatedEvent event) {
+    if (event.getIsValid()) {
+      return String.format(
+          "Your project '%s' has been approved and is now visible to architects!",
+          event.getProjectTitle());
+    } else {
+      String baseMessage =
+          String.format("Your project '%s' requires changes.", event.getProjectTitle());
+
+      if (event.getValidationNotes() != null && !event.getValidationNotes().isBlank()) {
+        return baseMessage + " Reason: " + event.getValidationNotes();
+      }
+      return baseMessage + " Please review and update your project.";
     }
   }
 }

@@ -162,7 +162,8 @@ public class ProjectController {
 
     try {
       ProjectResponse response =
-          projectService.updateProjectValidation(projectId, request.getIsValid());
+          projectService.updateProjectValidation(
+              projectId, request.getIsValid(), request.getValidationNotes());
 
       return ResponseEntity.ok(
           ApiResponse.<ProjectResponse>builder()

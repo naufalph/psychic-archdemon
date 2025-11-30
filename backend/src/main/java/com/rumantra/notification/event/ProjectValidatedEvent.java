@@ -12,6 +12,7 @@ public class ProjectValidatedEvent extends ApplicationEvent {
   private final String projectTitle;
   private final Boolean isValid;
   private final Long validatedBySuperuserId;
+  private final String validationNotes;
 
   public ProjectValidatedEvent(
       Object source,
@@ -19,12 +20,14 @@ public class ProjectValidatedEvent extends ApplicationEvent {
       Long clientId,
       String projectTitle,
       Boolean isValid,
-      Long validatedBySuperuserId) {
+      Long validatedBySuperuserId,
+      String validationNotes) {
     super(source);
     this.projectId = projectId;
     this.clientId = clientId;
     this.projectTitle = projectTitle;
     this.isValid = isValid;
     this.validatedBySuperuserId = validatedBySuperuserId;
+    this.validationNotes = validationNotes;
   }
 }

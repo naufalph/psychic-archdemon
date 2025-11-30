@@ -74,6 +74,9 @@ public class Project {
   @Builder.Default
   private Boolean isValid = false;
 
+  @Column(name = "validation_notes", columnDefinition = "TEXT")
+  private String validationNotes;
+
   @OneToMany(
       mappedBy = "project",
       cascade = CascadeType.ALL,
