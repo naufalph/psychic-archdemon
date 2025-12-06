@@ -22,10 +22,9 @@ public class EmailEventListener {
   private final UserRepository userRepository;
 
   /**
-   * Handle ProjectValidatedEvent by sending an email notification.
-   * Runs asynchronously to avoid blocking the main thread.
-   * Uses @TransactionalEventListener to ensure email is only sent after the project
-   * validation transaction commits successfully.
+   * Handle ProjectValidatedEvent by sending an email notification. Runs asynchronously to avoid
+   * blocking the main thread. Uses @TransactionalEventListener to ensure email is only sent after
+   * the project validation transaction commits successfully.
    *
    * @param event The project validated event
    */
@@ -80,8 +79,7 @@ public class EmailEventListener {
             + "View your project and manage bids in your dashboard.\n\n"
             + "Best regards,\n"
             + "The Rumantra Team",
-        firstName != null ? firstName : "there",
-        projectTitle);
+        firstName != null ? firstName : "there", projectTitle);
   }
 
   private String buildNeedsChangesEmailBody(
@@ -103,8 +101,6 @@ public class EmailEventListener {
             + "If you have questions, please contact our support team.\n\n"
             + "Best regards,\n"
             + "The Rumantra Team",
-        firstName != null ? firstName : "there",
-        projectTitle,
-        notesSection);
+        firstName != null ? firstName : "there", projectTitle, notesSection);
   }
 }

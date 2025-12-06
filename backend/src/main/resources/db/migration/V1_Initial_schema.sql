@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS rmtr_architect (
     is_ktp_verified BOOLEAN DEFAULT FALSE,
     npwp VARCHAR(16),
     is_npwp_verified BOOLEAN DEFAULT FALSE,
-    bid_left INT CHECK (bid_left >= 0),
     success_match INT DEFAULT 0 CHECK (success_match >= 0),
     success_project INT DEFAULT 0 CHECK (success_project >= 0)
 );
@@ -107,15 +106,17 @@ CREATE TABLE IF NOT EXISTS rmtr_project (
     design_preferences TEXT,
     contact_person VARCHAR(255),
     expected_start_date DATE,
-    is_valid BOOLEAN DEFAULT NULL,
+    status VARCHAR(50) NOT NULL DEFAULT 'PENDING_APPROVAL',
     validation_notes TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT NULL
+    updated_at TIMESTAMP NULL DEFAULT NULL,
+    CONSTRAINT chk_project_status CHECK (status IN ('PENDING_APPROVAL', 'REJECTED', 'OPEN', 'BIDDING_CLOSED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'))
 );
 
 CREATE INDEX IF NOT EXISTS idx_project_client_id ON rmtr_project(client_id);
 CREATE INDEX IF NOT EXISTS idx_project_budget ON rmtr_project(budget_min, budget_max);
 CREATE INDEX IF NOT EXISTS idx_project_created_at ON rmtr_project(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_project_status ON rmtr_project(status);
 
 -- Create rmtr_project_file table (project file uploads)
 CREATE TABLE IF NOT EXISTS rmtr_project_file (
@@ -142,10 +143,129 @@ CREATE TABLE IF NOT EXISTS rmtr_dashboard_notif (
     is_read BOOLEAN DEFAULT FALSE,
     read_at TIMESTAMP NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-
     CONSTRAINT chk_dashboard_notif_type CHECK (type IN ('PROJECT_VALIDATED', 'PROJECT_UPDATED', 'BID_RECEIVED', 'BID_ACCEPTED', 'PAYMENT_RECEIVED'))
 );
 
 CREATE INDEX IF NOT EXISTS idx_dashboard_notif_user_id ON rmtr_dashboard_notif(user_id);
 CREATE INDEX IF NOT EXISTS idx_dashboard_notif_user_read ON rmtr_dashboard_notif(user_id, is_read);
 CREATE INDEX IF NOT EXISTS idx_dashboard_notif_created_at ON rmtr_dashboard_notif(created_at DESC);
+
+-- Create rmtr_bid_quota table (tracks bid usage for architects)
+CREATE TABLE IF NOT EXISTS rmtr_bid_quota (
+    id BIGSERIAL PRIMARY KEY,
+    architect_id BIGINT NOT NULL UNIQUE REFERENCES rmtr_architect(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    tier VARCHAR(20) NOT NULL DEFAULT 'FREE',
+    total_bids_allowed INTEGER NOT NULL DEFAULT 3,
+    bids_used INTEGER NOT NULL DEFAULT 0 CHECK (bids_used >= 0),
+    reset_interval VARCHAR(20) NOT NULL DEFAULT 'BI_WEEKLY',
+    last_reset_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    next_reset_date TIMESTAMP NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT NULL,
+
+    CONSTRAINT chk_bid_quota_tier CHECK (tier IN ('FREE', 'PREMIUM')),
+    CONSTRAINT chk_bid_quota_reset_interval CHECK (reset_interval IN ('BI_WEEKLY', 'MONTHLY')),
+    CONSTRAINT chk_bid_quota_bids_used CHECK (bids_used <= total_bids_allowed)
+);
+
+CREATE INDEX IF NOT EXISTS idx_bid_quota_architect_id ON rmtr_bid_quota(architect_id);
+CREATE INDEX IF NOT EXISTS idx_bid_quota_next_reset ON rmtr_bid_quota(next_reset_date);
+
+-- Create rmtr_subscription table (tracks subscription history for architects)
+CREATE TABLE IF NOT EXISTS rmtr_subscription (
+    id BIGSERIAL PRIMARY KEY,
+    architect_id BIGINT NOT NULL REFERENCES rmtr_architect(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    tier VARCHAR(20) NOT NULL DEFAULT 'FREE',
+    start_date DATE NOT NULL,
+    end_date DATE NULL,
+    payment_status VARCHAR(20) DEFAULT 'ACTIVE',
+    monthly_price DECIMAL(10, 2) NULL,
+    payment_method_id VARCHAR(255) NULL,
+    is_active BOOLEAN NOT NULL DEFAULT TRUE,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT NULL,
+
+    CONSTRAINT chk_subscription_tier CHECK (tier IN ('FREE', 'PREMIUM')),
+    CONSTRAINT chk_subscription_payment_status CHECK (payment_status IN ('ACTIVE', 'EXPIRED', 'CANCELLED', 'PENDING'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_subscription_architect_id ON rmtr_subscription(architect_id);
+CREATE INDEX IF NOT EXISTS idx_subscription_active ON rmtr_subscription(architect_id, is_active);
+
+-- Create rmtr_bid table (architect bids on projects)
+CREATE TABLE IF NOT EXISTS rmtr_bid (
+    id BIGSERIAL PRIMARY KEY,
+    project_id BIGINT NOT NULL REFERENCES rmtr_project(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    architect_id BIGINT NOT NULL REFERENCES rmtr_architect(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    bid_amount DECIMAL(15, 2) NOT NULL CHECK (bid_amount > 0),
+    proposed_timeline_days INTEGER CHECK (proposed_timeline_days > 0),
+    proposal TEXT,
+    status VARCHAR(20) NOT NULL DEFAULT 'DRAFT',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT NULL,
+    submitted_at TIMESTAMP NULL,
+    accepted_at TIMESTAMP NULL,
+    rejected_at TIMESTAMP NULL,
+    CONSTRAINT chk_bid_status CHECK (status IN ('DRAFT', 'PENDING', 'ACCEPTED', 'REJECTED', 'WITHDRAWN', 'REFUNDED')),
+    CONSTRAINT uk_bid_project_architect UNIQUE (project_id, architect_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_bid_project_id ON rmtr_bid(project_id);
+CREATE INDEX IF NOT EXISTS idx_bid_architect_id ON rmtr_bid(architect_id);
+CREATE INDEX IF NOT EXISTS idx_bid_status ON rmtr_bid(status);
+
+CREATE TABLE IF NOT EXISTS rmtr_bid_detail (
+    id BIGSERIAL PRIMARY KEY,
+    bid_id BIGINT NOT NULL UNIQUE REFERENCES rmtr_bid(id) ON DELETE CASCADE,
+    concept_statement TEXT,
+    project_risks TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_bid_detail_bid_id ON rmtr_bid_detail(bid_id);
+
+CREATE TABLE IF NOT EXISTS rmtr_bid_image (
+    id BIGSERIAL PRIMARY KEY,
+    bid_id BIGINT NOT NULL REFERENCES rmtr_bid(id) ON DELETE CASCADE,
+    image_type VARCHAR(30) NOT NULL,
+    image_url TEXT NOT NULL,
+    display_order INTEGER DEFAULT 0,
+    file_name VARCHAR(255),
+    file_size BIGINT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT chk_bid_image_type CHECK (image_type IN ('CONCEPT_SKETCH', 'MOOD_BOARD'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_bid_image_bid_id ON rmtr_bid_image(bid_id);
+CREATE INDEX IF NOT EXISTS idx_bid_image_type ON rmtr_bid_image(bid_id, image_type);
+
+CREATE TABLE IF NOT EXISTS rmtr_bid_portfolio_ref (
+    id BIGSERIAL PRIMARY KEY,
+    bid_id BIGINT NOT NULL REFERENCES rmtr_bid(id) ON DELETE CASCADE,
+    porto_id BIGINT NOT NULL REFERENCES rmtr_porto(id) ON DELETE CASCADE,
+    display_order INTEGER DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uk_bid_portfolio UNIQUE (bid_id, porto_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_bid_portfolio_ref_bid_id ON rmtr_bid_portfolio_ref(bid_id);
+CREATE INDEX IF NOT EXISTS idx_bid_portfolio_ref_porto_id ON rmtr_bid_portfolio_ref(porto_id);
+
+-- Create rmtr_bid_usage_log table (audit trail for bid quota changes)
+CREATE TABLE IF NOT EXISTS rmtr_bid_usage_log (
+    id BIGSERIAL PRIMARY KEY,
+    architect_id BIGINT NOT NULL REFERENCES rmtr_architect(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    bid_id BIGINT NULL REFERENCES rmtr_bid(id) ON DELETE SET NULL ON UPDATE CASCADE,
+    action VARCHAR(30) NOT NULL,
+    quota_change INTEGER NOT NULL,
+    quota_after INTEGER NOT NULL CHECK (quota_after >= 0),
+    description TEXT,
+    timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT chk_bid_usage_action CHECK (action IN ('BID_PLACED', 'BID_REFUNDED', 'QUOTA_RESET', 'QUOTA_UPGRADED', 'QUOTA_DOWNGRADED', 'MANUAL_ADJUSTMENT'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_bid_usage_log_architect_id ON rmtr_bid_usage_log(architect_id);
+CREATE INDEX IF NOT EXISTS idx_bid_usage_log_bid_id ON rmtr_bid_usage_log(bid_id);
+CREATE INDEX IF NOT EXISTS idx_bid_usage_log_timestamp ON rmtr_bid_usage_log(timestamp DESC);

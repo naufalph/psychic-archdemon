@@ -70,9 +70,10 @@ public class Project {
   @Column(name = "expected_start_date")
   private LocalDate expectedStartDate;
 
-  @Column(name = "is_valid")
+  @Enumerated(EnumType.STRING)
+  @Column(name = "status", nullable = false)
   @Builder.Default
-  private Boolean isValid = false;
+  private ProjectStatus status = ProjectStatus.PENDING_APPROVAL;
 
   @Column(name = "validation_notes", columnDefinition = "TEXT")
   private String validationNotes;

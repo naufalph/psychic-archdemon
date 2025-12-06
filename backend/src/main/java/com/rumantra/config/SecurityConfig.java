@@ -95,6 +95,10 @@ public class SecurityConfig {
                     .requestMatchers("/api/portos/**")
                     .hasRole("ARCHITECT")
 
+                    // Bid endpoints - require ARCHITECT role
+                    .requestMatchers("/api/bids/**")
+                    .hasRole("ARCHITECT")
+
                     // Client project endpoints - require CLIENT role
                     .requestMatchers("/api/clients/*/projects/**")
                     .hasRole("CLIENT")

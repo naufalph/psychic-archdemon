@@ -64,7 +64,6 @@ public class ArchitectService {
               .ktpVerified(false)
               .npwp(signupRequest.getNpwp())
               .npwpVerified(false)
-              .bidLeft(10)
               .successMatch(0)
               .successProject(0)
               .build();
@@ -168,7 +167,6 @@ public class ArchitectService {
         .ktpVerified(architect.isKtpVerified())
         .npwp(architect.getNpwp())
         .npwpVerified(architect.isNpwpVerified())
-        .bidLeft(architect.getBidLeft())
         .successMatch(architect.getSuccessMatch())
         .successProject(architect.getSuccessProject())
         .build();

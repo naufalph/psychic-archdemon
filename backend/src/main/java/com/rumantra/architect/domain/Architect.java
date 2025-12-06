@@ -64,9 +64,6 @@ public class Architect {
   @Builder.Default()
   private boolean npwpVerified = false;
 
-  @Column(name = "bid_left")
-  private int bidLeft;
-
   @Column(name = "success_match")
   @Builder.Default()
   private int successMatch = 0;

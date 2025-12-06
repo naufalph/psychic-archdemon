@@ -25,7 +25,8 @@ public interface DashboardNotificationRepository
   List<DashboardNotification> findByUserIdAndIsReadFalseOrderByCreatedAtDesc(Long userId);
 
   // Count unread notifications for a user
-  @Query("SELECT COUNT(n) FROM DashboardNotification n WHERE n.user.id = :userId AND n.isRead = false")
+  @Query(
+      "SELECT COUNT(n) FROM DashboardNotification n WHERE n.user.id = :userId AND n.isRead = false")
   Long countUnreadByUserId(@Param("userId") Long userId);
 
   // Find notifications by user and type

@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.rumantra.client.domain.ProjectStatus;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -30,7 +32,8 @@ public class ProjectResponse {
   private String designPreferences;
   private String contactPerson;
   private LocalDate expectedStartDate;
-  private Boolean isValid;
+  private ProjectStatus status; // New field
+  private Boolean isValid; // Deprecated - computed from status for backward compatibility
   private String validationNotes;
   private List<ProjectFileDto> files;
   private LocalDateTime createdAt;

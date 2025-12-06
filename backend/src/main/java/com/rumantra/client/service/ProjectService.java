@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.rumantra.client.domain.Client;
 import com.rumantra.client.domain.Project;
 import com.rumantra.client.domain.ProjectFile;
+import com.rumantra.client.domain.ProjectStatus;
 import com.rumantra.client.dto.CreateProjectRequest;
 import com.rumantra.client.dto.ProjectFileDto;
 import com.rumantra.client.dto.ProjectResponse;
@@ -128,8 +129,7 @@ public class ProjectService {
             .designPreferences(request.getDesignPreferences())
             .contactPerson(request.getContactPerson())
             .expectedStartDate(request.getExpectedStartDate())
-            .isValid(null)
-            .build();
+            .build(); // status defaults to PENDING_APPROVAL
 
     project = projectRepository.save(project);
 
@@ -206,7 +206,8 @@ public class ProjectService {
             .orElseThrow(
                 () -> new ResourceNotFoundException("Project not found with id: " + projectId));
 
-    project.setIsValid(isValid);
+    // Map boolean to ProjectStatus
+    project.setStatus(isValid ? ProjectStatus.OPEN : ProjectStatus.REJECTED);
     project.setValidationNotes(validationNotes);
     project = projectRepository.save(project);
 
@@ -328,7 +329,11 @@ public class ProjectService {
         .designPreferences(project.getDesignPreferences())
         .contactPerson(project.getContactPerson())
         .expectedStartDate(project.getExpectedStartDate())
-        .isValid(project.getIsValid())
+        .status(project.getStatus())
+        .isValid(
+            project.getStatus() == ProjectStatus.OPEN
+                ? true
+                : (project.getStatus() == ProjectStatus.REJECTED ? false : null))
         .validationNotes(project.getValidationNotes())
         .files(fileDtos)
         .createdAt(project.getCreatedAt())

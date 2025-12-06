@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rumantra.architect.domain.Architect;
 import com.rumantra.architect.repository.ArchitectRepository;
 import com.rumantra.architect.service.ArchitectService;
+import com.rumantra.bidding.service.BidQuotaService;
 import com.rumantra.client.domain.Client;
 import com.rumantra.client.dto.ClientSignupRequestDto;
 import com.rumantra.client.repository.ClientRepository;
@@ -28,6 +29,7 @@ import com.rumantra.client.service.ClientService;
 import com.rumantra.security.JwtUtils;
 import com.rumantra.shared.RumantraConstants;
 import com.rumantra.shared.exception.ResourceNotFoundException;
+import com.rumantra.subscription.service.SubscriptionService;
 import com.rumantra.user.domain.EmailVerification;
 import com.rumantra.user.domain.SocialType;
 import com.rumantra.user.domain.User;
@@ -50,6 +52,8 @@ public class UserService {
   private final ArchitectRepository architectRepository;
   private final ClientRepository clientRepository;
   private final EmailService emailService;
+  private final BidQuotaService bidQuotaService;
+  private final SubscriptionService subscriptionService;
 
   @Value("${spring.security.oauth2.client.registration.google.client-id}")
   private String googleClientId;
@@ -513,11 +517,14 @@ public class UserService {
               .user(user)
               .ktpVerified(false)
               .npwpVerified(false)
-              .bidLeft(10)
               .successMatch(0)
               .successProject(0)
               .build();
-      architectRepository.save(architect);
+      architect = architectRepository.save(architect);
+
+      // Initialize bid quota and subscription for new architect
+      bidQuotaService.initializeBidQuota(architect);
+      subscriptionService.initializeFreeTier(architect);
 
     } else if (RumantraConstants.CLIENT_ROLE.equals(role)) {
       // Check if client profile already exists
