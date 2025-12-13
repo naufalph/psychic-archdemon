@@ -48,15 +48,14 @@ public class CloudinaryStorageService implements FileStorageService {
   }
 
   @Override
-  public Map<ImageSize, String> uploadImage(MultipartFile file, Long architectId, Long portoId) {
+  public Map<ImageSize, String> uploadImagePorto(
+      MultipartFile file, Long architectId, Long portoId) {
     validateImage(file);
 
     try {
-      // Generate unique public ID: portfolios/{architectId}/{portoId}/{uuid}
       String uniqueId = UUID.randomUUID().toString();
       String publicId = "portfolios/" + architectId + "/" + portoId + "/" + uniqueId;
 
-      // Upload original image to Cloudinary
       Map<String, Object> uploadResult =
           cloudinary
               .uploader()
@@ -69,7 +68,6 @@ public class CloudinaryStorageService implements FileStorageService {
 
       String baseUrl = (String) uploadResult.get("secure_url");
 
-      // Generate URLs for different sizes using Cloudinary transformations
       Map<ImageSize, String> urlMap = new HashMap<>();
 
       for (ImageSize size : ImageSize.values()) {
@@ -86,19 +84,51 @@ public class CloudinaryStorageService implements FileStorageService {
   }
 
   @Override
+  public String uploadImage(MultipartFile file, String path) {
+    validateImage(file);
+
+    try {
+      String uniqueId = UUID.randomUUID().toString();
+      String publicId = path + "/" + uniqueId;
+
+      Map<String, Object> uploadResult =
+          cloudinary
+              .uploader()
+              .upload(
+                  file.getBytes(),
+                  ObjectUtils.asMap("public_id", publicId, "resource_type", "image"));
+
+      String url = (String) uploadResult.get("secure_url");
+      log.info("Uploaded image to Cloudinary: {}", publicId);
+      return url;
+
+    } catch (IOException e) {
+      throw new StorageException("Failed to upload image to Cloudinary", e);
+    }
+  }
+
+  @Override
   public void deleteImages(List<String> urls) {
     for (String url : urls) {
       try {
-        // Extract public ID from URL
         String publicId = extractPublicIdFromUrl(url);
-
         cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
         log.debug("Deleted Cloudinary image: {}", publicId);
-
       } catch (Exception e) {
         log.error("Failed to delete Cloudinary image: {}", url, e);
-        // Continue deleting other files even if one fails
       }
+    }
+  }
+
+  @Override
+  public void deleteSingleImage(String url) {
+    try {
+      String publicId = extractPublicIdFromUrl(url);
+      cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
+      log.debug("Deleted Cloudinary image: {}", publicId);
+    } catch (Exception e) {
+      log.error("Failed to delete Cloudinary image: {}", url, e);
+      throw new StorageException("Failed to delete image from Cloudinary", e);
     }
   }
 
@@ -126,19 +156,23 @@ public class CloudinaryStorageService implements FileStorageService {
   }
 
   private String extractPublicIdFromUrl(String url) {
-    // Cloudinary URL format:
-    // https://res.cloudinary.com/{cloud}/image/upload/{transformations}/{publicId}.{ext}
-    // Extract publicId from URL
     String[] parts = url.split("/upload/");
     if (parts.length < 2) {
       throw new StorageException("Invalid Cloudinary URL: " + url);
     }
 
     String afterUpload = parts[1];
-    // Remove transformations and get public ID
-    String publicIdWithExt = afterUpload.substring(afterUpload.indexOf("portfolios/"));
+    String publicIdWithExt;
 
-    // Remove extension
+    if (afterUpload.contains("portfolios/")) {
+      publicIdWithExt = afterUpload.substring(afterUpload.indexOf("portfolios/"));
+    } else if (afterUpload.contains("bids/")) {
+      publicIdWithExt = afterUpload.substring(afterUpload.indexOf("bids/"));
+    } else {
+      int firstSlash = afterUpload.indexOf("/");
+      publicIdWithExt = firstSlash > 0 ? afterUpload.substring(firstSlash + 1) : afterUpload;
+    }
+
     int lastDot = publicIdWithExt.lastIndexOf(".");
     return lastDot > 0 ? publicIdWithExt.substring(0, lastDot) : publicIdWithExt;
   }

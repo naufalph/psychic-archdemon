@@ -291,9 +291,8 @@ public class PortoService {
     for (int i = 0; i < images.size(); i++) {
       MultipartFile file = images.get(i);
 
-      // Upload image and get URLs for all sizes
       Map<ImageSize, String> urlMap =
-          fileStorageService.uploadImage(file, porto.getArchitect().getId(), porto.getId());
+          fileStorageService.uploadImagePorto(file, porto.getArchitect().getId(), porto.getId());
 
       // Create PortoDetail entity
       PortoDetail detail =

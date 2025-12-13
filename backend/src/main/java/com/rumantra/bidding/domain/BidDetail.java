@@ -1,7 +1,8 @@
 package com.rumantra.bidding.domain;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
+
+import jakarta.persistence.*;
 import lombok.*;
 
 @Builder

@@ -1,18 +1,23 @@
 package com.rumantra.bidding.service;
 
-import com.rumantra.bidding.domain.Bid;
-import com.rumantra.bidding.domain.BidImage;
-import com.rumantra.bidding.domain.BidImageType;
-import com.rumantra.bidding.dto.BidImageResponse;
-import com.rumantra.bidding.repository.BidImageRepository;
-import com.rumantra.shared.storage.FileStorageService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.rumantra.bidding.domain.Bid;
+import com.rumantra.bidding.domain.BidImage;
+import com.rumantra.bidding.domain.BidImageType;
+import com.rumantra.bidding.domain.BidStatus;
+import com.rumantra.bidding.dto.BidImageResponse;
+import com.rumantra.bidding.repository.BidImageRepository;
+import com.rumantra.shared.exception.BusinessException;
+import com.rumantra.shared.exception.ExceptionConstants;
+import com.rumantra.shared.storage.FileStorageService;
 
 @Service
 public class BidImageService {
@@ -24,6 +29,10 @@ public class BidImageService {
   @Transactional
   public List<BidImageResponse> uploadImages(
       Bid bid, BidImageType imageType, List<MultipartFile> images) {
+
+    if (bid.getStatus() != BidStatus.DRAFT) {
+      throw new BusinessException(ExceptionConstants.BID_NOT_DRAFT);
+    }
 
     if (imageType == BidImageType.CONCEPT_SKETCH) {
       long currentCount = bidImageRepository.countByBidIdAndImageType(bid.getId(), imageType);
@@ -44,7 +53,7 @@ public class BidImageService {
     for (int i = 0; i < images.size(); i++) {
       MultipartFile file = images.get(i);
       String storagePath = "bids/" + bid.getId() + "/" + imageType.name().toLowerCase();
-      String imageUrl = fileStorageService.store(file, storagePath);
+      String imageUrl = fileStorageService.uploadImage(file, storagePath);
 
       BidImage bidImage =
           BidImage.builder()
@@ -67,10 +76,14 @@ public class BidImageService {
     BidImage image =
         bidImageRepository
             .findById(imageId)
-            .orElseThrow(() -> new RuntimeException("Image not found"));
+            .orElseThrow(() -> new BusinessException(ExceptionConstants.BID_IMAGE_NOT_FOUND));
+
+    if (image.getBid().getStatus() != BidStatus.DRAFT) {
+      throw new BusinessException(ExceptionConstants.BID_NOT_DRAFT);
+    }
 
     try {
-      fileStorageService.delete(image.getImageUrl());
+      fileStorageService.deleteSingleImage(image.getImageUrl());
     } catch (Exception e) {
     }
 

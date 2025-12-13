@@ -50,20 +50,18 @@ public class LocalFileStorageService implements FileStorageService {
   }
 
   @Override
-  public Map<ImageSize, String> uploadImage(MultipartFile file, Long architectId, Long portoId) {
+  public Map<ImageSize, String> uploadImagePorto(
+      MultipartFile file, Long architectId, Long portoId) {
     validateImage(file);
 
     try {
-      // Generate unique filename
       String originalFilename = file.getOriginalFilename();
       String extension = getFileExtension(originalFilename);
       String uniqueId = UUID.randomUUID().toString();
 
-      // Create directory structure: uploads/{architectId}/{portoId}/
       Path targetDir = uploadPath.resolve(architectId.toString()).resolve(portoId.toString());
       Files.createDirectories(targetDir);
 
-      // Read original image
       BufferedImage originalImage = ImageIO.read(file.getInputStream());
       if (originalImage == null) {
         throw new StorageException("Failed to read image file");
@@ -71,7 +69,6 @@ public class LocalFileStorageService implements FileStorageService {
 
       Map<ImageSize, String> urlMap = new HashMap<>();
 
-      // Save all sizes
       for (ImageSize size : ImageSize.values()) {
         String filename = uniqueId + "_" + size.name().toLowerCase() + "." + extension;
         Path filePath = targetDir.resolve(filename);
@@ -79,7 +76,6 @@ public class LocalFileStorageService implements FileStorageService {
         BufferedImage resizedImage = resizeImage(originalImage, size);
         ImageIO.write(resizedImage, extension, filePath.toFile());
 
-        // Generate URL: {baseUrl}/{architectId}/{portoId}/{filename}
         String url = baseUrl + "/" + architectId + "/" + portoId + "/" + filename;
         urlMap.put(size, url);
 
@@ -94,10 +90,35 @@ public class LocalFileStorageService implements FileStorageService {
   }
 
   @Override
+  public String uploadImage(MultipartFile file, String path) {
+    validateImage(file);
+
+    try {
+      String originalFilename = file.getOriginalFilename();
+      String extension = getFileExtension(originalFilename);
+      String uniqueId = UUID.randomUUID().toString();
+      String filename = uniqueId + "." + extension;
+
+      Path targetDir = uploadPath.resolve(path);
+      Files.createDirectories(targetDir);
+
+      Path filePath = targetDir.resolve(filename);
+      file.transferTo(filePath.toFile());
+
+      String url = baseUrl + "/" + path + "/" + filename;
+      log.debug("Saved image to: {}", filePath);
+
+      return url;
+
+    } catch (IOException e) {
+      throw new StorageException("Failed to upload image", e);
+    }
+  }
+
+  @Override
   public void deleteImages(List<String> urls) {
     for (String url : urls) {
       try {
-        // Convert URL to file path
         String relativePath = url.replace(baseUrl + "/", "");
         Path filePath = uploadPath.resolve(relativePath);
 
@@ -107,8 +128,25 @@ public class LocalFileStorageService implements FileStorageService {
         }
       } catch (IOException e) {
         log.error("Failed to delete file: {}", url, e);
-        // Continue deleting other files even if one fails
       }
+    }
+  }
+
+  @Override
+  public void deleteSingleImage(String url) {
+    try {
+      String relativePath = url.replace(baseUrl + "/", "");
+      Path filePath = uploadPath.resolve(relativePath);
+
+      if (Files.exists(filePath)) {
+        Files.delete(filePath);
+        log.debug("Deleted file: {}", filePath);
+      } else {
+        throw new StorageException("File not found: " + url);
+      }
+    } catch (IOException e) {
+      log.error("Failed to delete file: {}", url, e);
+      throw new StorageException("Failed to delete image", e);
     }
   }
 

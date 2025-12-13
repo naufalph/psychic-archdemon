@@ -1,20 +1,3 @@
--- Create rmtr_architect table
-CREATE TABLE IF NOT EXISTS rmtr_architect (
-    id BIGSERIAL PRIMARY KEY,
-    user_id BIGINT NOT NULL UNIQUE REFERENCES rmtr_user(id) ON DELETE CASCADE ON UPDATE CASCADE,
-    company_name VARCHAR(255),
-    company_site VARCHAR(255),
-    contact_name VARCHAR(255),
-    category VARCHAR(10),
-    phone_num VARCHAR(16),
-    ktp_num VARCHAR(16),
-    is_ktp_verified BOOLEAN DEFAULT FALSE,
-    npwp VARCHAR(16),
-    is_npwp_verified BOOLEAN DEFAULT FALSE,
-    success_match INT DEFAULT 0 CHECK (success_match >= 0),
-    success_project INT DEFAULT 0 CHECK (success_project >= 0)
-);
-
 -- Create rmtr_user table based on JPA entity
 CREATE TABLE IF NOT EXISTS rmtr_user (
     id BIGSERIAL PRIMARY KEY,
@@ -32,6 +15,23 @@ CREATE TABLE IF NOT EXISTS rmtr_user (
     CONSTRAINT chk_email_format CHECK (email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
     CONSTRAINT chk_password_not_empty CHECK (length(password_hash) > 0),
     CONSTRAINT uk_user_email_social UNIQUE (email, social_type)
+);
+
+-- Create rmtr_architect table
+CREATE TABLE IF NOT EXISTS rmtr_architect (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL UNIQUE REFERENCES rmtr_user(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    company_name VARCHAR(255),
+    company_site VARCHAR(255),
+    contact_name VARCHAR(255),
+    category VARCHAR(10),
+    phone_num VARCHAR(16),
+    ktp_num VARCHAR(16),
+    is_ktp_verified BOOLEAN DEFAULT FALSE,
+    npwp VARCHAR(16),
+    is_npwp_verified BOOLEAN DEFAULT FALSE,
+    success_match INT DEFAULT 0 CHECK (success_match >= 0),
+    success_project INT DEFAULT 0 CHECK (success_project >= 0)
 );
 
 CREATE INDEX IF NOT EXISTS idx_user_email ON rmtr_user(email);

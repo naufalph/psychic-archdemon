@@ -1,13 +1,14 @@
 package com.rumantra.bidding.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.rumantra.bidding.domain.Bid;
 import com.rumantra.bidding.domain.BidDetail;
 import com.rumantra.bidding.dto.BidDetailRequest;
 import com.rumantra.bidding.dto.BidDetailResponse;
 import com.rumantra.bidding.repository.BidDetailRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class BidDetailService {
@@ -17,9 +18,7 @@ public class BidDetailService {
   @Transactional
   public BidDetail createOrUpdate(Bid bid, BidDetailRequest request) {
     BidDetail detail =
-        bidDetailRepository
-            .findByBidId(bid.getId())
-            .orElse(BidDetail.builder().bid(bid).build());
+        bidDetailRepository.findByBidId(bid.getId()).orElse(BidDetail.builder().bid(bid).build());
 
     if (request.getConceptStatement() != null) {
       validateConceptStatement(request.getConceptStatement());
@@ -58,7 +57,9 @@ public class BidDetailService {
   public boolean hasRequiredDetails(Long bidId) {
     return bidDetailRepository
         .findByBidId(bidId)
-        .map(detail -> detail.getConceptStatement() != null && !detail.getConceptStatement().isEmpty())
+        .map(
+            detail ->
+                detail.getConceptStatement() != null && !detail.getConceptStatement().isEmpty())
         .orElse(false);
   }
 }

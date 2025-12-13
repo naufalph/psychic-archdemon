@@ -1,8 +1,10 @@
 package com.rumantra.bidding.domain;
 
-import com.rumantra.architect.domain.Porto;
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
+
+import com.rumantra.architect.domain.Porto;
+
+import jakarta.persistence.*;
 import lombok.*;
 
 @Builder
@@ -14,7 +16,9 @@ import lombok.*;
 @Table(
     name = "rmtr_bid_portfolio_ref",
     uniqueConstraints = {
-      @UniqueConstraint(name = "uk_bid_portfolio", columnNames = {"bid_id", "porto_id"})
+      @UniqueConstraint(
+          name = "uk_bid_portfolio",
+          columnNames = {"bid_id", "porto_id"})
     })
 public class BidPortfolioRef {
 

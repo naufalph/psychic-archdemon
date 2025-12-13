@@ -1,5 +1,14 @@
 package com.rumantra.bidding.service;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.rumantra.architect.domain.Architect;
 import com.rumantra.architect.domain.Porto;
 import com.rumantra.architect.domain.PortoDetail;
@@ -23,13 +32,8 @@ import com.rumantra.client.domain.Project;
 import com.rumantra.client.domain.ProjectStatus;
 import com.rumantra.client.repository.ProjectRepository;
 import com.rumantra.security.SecurityUtils;
-import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import com.rumantra.shared.exception.BusinessException;
+import com.rumantra.shared.exception.ExceptionConstants;
 
 @Service
 public class BidService {
@@ -58,12 +62,12 @@ public class BidService {
     Architect architect =
         architectRepository
             .findByUserId(userId)
-            .orElseThrow(() -> new RuntimeException("Please activate architect role first"));
+            .orElseThrow(() -> new BusinessException(ExceptionConstants.ARCHITECT_NOT_FOUND));
 
     Project project =
         projectRepository
             .findById(request.getProjectId())
-            .orElseThrow(() -> new RuntimeException("Project not found"));
+            .orElseThrow(() -> new BusinessException(ExceptionConstants.PROJECT_NOT_FOUND));
 
     if (project.getStatus() != ProjectStatus.OPEN) {
       throw new RuntimeException(
@@ -92,10 +96,13 @@ public class BidService {
   @Transactional
   public BidResponse submitBid(Long bidId) {
     Long userId = SecurityUtils.getCurrentUserId();
-    Bid bid = bidRepository.findById(bidId).orElseThrow(() -> new RuntimeException("Bid not found"));
+    Bid bid =
+        bidRepository
+            .findById(bidId)
+            .orElseThrow(() -> new BusinessException(ExceptionConstants.BID_NOT_FOUND));
 
     if (!bid.getArchitect().getUser().getId().equals(userId)) {
-      throw new RuntimeException("Access denied: not your bid");
+      throw new BusinessException(ExceptionConstants.UNAUTHORIZED_BID_ACCESS);
     }
 
     if (bid.getStatus() != BidStatus.DRAFT) {
@@ -125,15 +132,17 @@ public class BidService {
   @Transactional
   public BidResponse updateDraftBid(Long bidId, UpdateBidRequest request) {
     Long userId = SecurityUtils.getCurrentUserId();
-    Bid bid = bidRepository.findById(bidId).orElseThrow(() -> new RuntimeException("Bid not found"));
+    Bid bid =
+        bidRepository
+            .findById(bidId)
+            .orElseThrow(() -> new BusinessException(ExceptionConstants.BID_NOT_FOUND));
 
     if (!bid.getArchitect().getUser().getId().equals(userId)) {
-      throw new RuntimeException("Access denied: not your bid");
+      throw new BusinessException(ExceptionConstants.UNAUTHORIZED_BID_ACCESS);
     }
 
     if (bid.getStatus() != BidStatus.DRAFT) {
-      throw new RuntimeException(
-          "Can only update draft bids. Current status: " + bid.getStatus());
+      throw new BusinessException(ExceptionConstants.BID_NOT_DRAFT);
     }
 
     if (request.getBidAmount() != null) {
@@ -153,15 +162,17 @@ public class BidService {
   @Transactional
   public BidResponse updateBidDetails(Long bidId, BidDetailRequest request) {
     Long userId = SecurityUtils.getCurrentUserId();
-    Bid bid = bidRepository.findById(bidId).orElseThrow(() -> new RuntimeException("Bid not found"));
+    Bid bid =
+        bidRepository
+            .findById(bidId)
+            .orElseThrow(() -> new BusinessException(ExceptionConstants.BID_NOT_FOUND));
 
     if (!bid.getArchitect().getUser().getId().equals(userId)) {
-      throw new RuntimeException("Access denied: not your bid");
+      throw new BusinessException(ExceptionConstants.UNAUTHORIZED_BID_ACCESS);
     }
 
     if (bid.getStatus() != BidStatus.DRAFT) {
-      throw new RuntimeException(
-          "Can only update details for draft bids. Current status: " + bid.getStatus());
+      throw new BusinessException(ExceptionConstants.BID_NOT_DRAFT);
     }
 
     bidDetailService.createOrUpdate(bid, request);
@@ -171,15 +182,17 @@ public class BidService {
   @Transactional
   public BidResponse linkPortfolios(Long bidId, LinkPortfoliosRequest request) {
     Long userId = SecurityUtils.getCurrentUserId();
-    Bid bid = bidRepository.findById(bidId).orElseThrow(() -> new RuntimeException("Bid not found"));
+    Bid bid =
+        bidRepository
+            .findById(bidId)
+            .orElseThrow(() -> new BusinessException(ExceptionConstants.BID_NOT_FOUND));
 
     if (!bid.getArchitect().getUser().getId().equals(userId)) {
-      throw new RuntimeException("Access denied: not your bid");
+      throw new BusinessException(ExceptionConstants.UNAUTHORIZED_BID_ACCESS);
     }
 
     if (bid.getStatus() != BidStatus.DRAFT) {
-      throw new RuntimeException(
-          "Can only link portfolios to draft bids. Current status: " + bid.getStatus());
+      throw new BusinessException(ExceptionConstants.BID_NOT_DRAFT);
     }
 
     bidPortfolioRefRepository.deleteByBidId(bidId);
@@ -196,11 +209,7 @@ public class BidService {
       }
 
       BidPortfolioRef ref =
-          BidPortfolioRef.builder()
-              .bid(bid)
-              .porto(porto)
-              .displayOrder(displayOrder++)
-              .build();
+          BidPortfolioRef.builder().bid(bid).porto(porto).displayOrder(displayOrder++).build();
 
       bidPortfolioRefRepository.save(ref);
     }
@@ -230,21 +239,26 @@ public class BidService {
 
   public BidResponse getBidById(Long bidId) {
     Bid bid =
-        bidRepository.findById(bidId).orElseThrow(() -> new RuntimeException("Bid not found"));
+        bidRepository
+            .findById(bidId)
+            .orElseThrow(() -> new BusinessException(ExceptionConstants.BID_NOT_FOUND));
 
     Long userId = SecurityUtils.getCurrentUserId();
     if (!bid.getArchitect().getUser().getId().equals(userId)) {
-      throw new RuntimeException("Access denied: not your bid");
+      throw new BusinessException(ExceptionConstants.UNAUTHORIZED_BID_ACCESS);
     }
 
     return mapToResponse(bid);
   }
 
   public Bid getBidEntityById(Long bidId, Long architectId) {
-    Bid bid = bidRepository.findById(bidId).orElseThrow(() -> new RuntimeException("Bid not found"));
+    Bid bid =
+        bidRepository
+            .findById(bidId)
+            .orElseThrow(() -> new BusinessException(ExceptionConstants.BID_NOT_FOUND));
 
     if (!bid.getArchitect().getId().equals(architectId)) {
-      throw new RuntimeException("Access denied: not your bid");
+      throw new BusinessException(ExceptionConstants.UNAUTHORIZED_BID_ACCESS);
     }
 
     return bid;
@@ -254,10 +268,12 @@ public class BidService {
   public void withdrawBid(Long bidId) {
     Long userId = SecurityUtils.getCurrentUserId();
     Bid bid =
-        bidRepository.findById(bidId).orElseThrow(() -> new RuntimeException("Bid not found"));
+        bidRepository
+            .findById(bidId)
+            .orElseThrow(() -> new BusinessException(ExceptionConstants.BID_NOT_FOUND));
 
     if (!bid.getArchitect().getUser().getId().equals(userId)) {
-      throw new RuntimeException("Access denied: not your bid");
+      throw new BusinessException(ExceptionConstants.UNAUTHORIZED_BID_ACCESS);
     }
 
     if (bid.getStatus() != BidStatus.DRAFT && bid.getStatus() != BidStatus.ACCEPTED) {

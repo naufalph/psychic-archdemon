@@ -280,10 +280,22 @@ curl --location 'http://localhost:8080/api/bids/1/concept-sketches' \
 - At least 1 concept sketch REQUIRED before bid submission
 - Only allowed for DRAFT status
 
+**Error Response (400 Bad Request) - Bid Not Draft:**
+```json
+{
+  "timestamp": "2025-12-08T10:15:00",
+  "status": 400,
+  "errorCode": "BID_NOT_DRAFT",
+  "path": "uri=/api/bids/1/concept-sketches"
+}
+```
+
 **Frontend Implementation Tip:**
 - Show error if trying to upload when already have 3 images
 - Display current count: "2/3 concept sketches uploaded"
 - Allow drag-and-drop upload
+- Disable upload button if bid status is not DRAFT
+- Translate errorCode "BID_NOT_DRAFT" to user-friendly message in appropriate language
 
 ---
 
@@ -340,6 +352,16 @@ curl --location 'http://localhost:8080/api/bids/1/mood-boards' \
 - No maximum limit
 - Optional for submission
 - Only allowed for DRAFT status
+
+**Error Response (400 Bad Request) - Bid Not Draft:**
+```json
+{
+  "timestamp": "2025-12-08T10:20:00",
+  "status": 400,
+  "errorCode": "BID_NOT_DRAFT",
+  "path": "uri=/api/bids/1/mood-boards"
+}
+```
 
 ---
 
@@ -499,6 +521,26 @@ curl --location --request DELETE 'http://localhost:8080/api/bids/images/4' \
 - Only allowed for DRAFT status bids
 - Image must belong to architect's bid (ownership check)
 - File deleted from storage
+
+**Error Response (400 Bad Request) - Bid Not Draft:**
+```json
+{
+  "timestamp": "2025-12-08T10:30:00",
+  "status": 400,
+  "errorCode": "BID_NOT_DRAFT",
+  "path": "uri=/api/bids/images/4"
+}
+```
+
+**Error Response (404 Not Found) - Image Not Found:**
+```json
+{
+  "timestamp": "2025-12-08T10:30:00",
+  "status": 404,
+  "errorCode": "BID_IMAGE_NOT_FOUND",
+  "path": "uri=/api/bids/images/999"
+}
+```
 
 ---
 
@@ -844,32 +886,42 @@ curl --location --request PUT 'http://localhost:8080/api/bids/1/withdraw' \
 
 ## Error Responses
 
-### 400 Bad Request
+All error responses with error codes use the following format for internationalization support:
+
 ```json
 {
-  "success": false,
-  "message": "Can only update draft bids. Current status: PENDING",
-  "timestamp": "2025-12-03T11:00:00"
+  "timestamp": "2025-12-08T11:00:00",
+  "status": 400,
+  "errorCode": "BID_NOT_DRAFT",
+  "path": "uri=/api/bids/1/details"
 }
 ```
 
-### 403 Forbidden
-```json
-{
-  "success": false,
-  "message": "Access denied: not your bid",
-  "timestamp": "2025-12-03T11:05:00"
-}
-```
+### Common Error Codes
 
-### 404 Not Found
-```json
-{
-  "success": false,
-  "message": "Bid not found",
-  "timestamp": "2025-12-03T11:10:00"
-}
-```
+| Error Code | HTTP Status | Description |
+|-----------|-------------|-------------|
+| `BID_NOT_DRAFT` | 400 | Operation only allowed for draft bids |
+| `BID_NOT_FOUND` | 404 | Bid does not exist |
+| `BID_DETAIL_NOT_FOUND` | 404 | Bid detail does not exist |
+| `BID_IMAGE_NOT_FOUND` | 404 | Image does not exist |
+| `UNAUTHORIZED_BID_ACCESS` | 403 | Not authorized to access this bid |
+| `ARCHITECT_NOT_FOUND` | 404 | Architect profile not found |
+| `PROJECT_NOT_FOUND` | 404 | Project does not exist |
+| `INVALID_BID_STATUS` | 400 | Invalid bid status for operation |
+
+### Frontend Error Handling
+
+Frontend should:
+1. Check for `errorCode` field in error response
+2. Translate error code to user-friendly message based on language
+3. Display appropriate error message to user
+
+Example translations:
+- `BID_NOT_DRAFT` (EN): "This bid has already been submitted and cannot be modified"
+- `BID_NOT_DRAFT` (ID): "Bid ini sudah disubmit dan tidak dapat diubah"
+- `BID_NOT_FOUND` (EN): "Bid not found"
+- `BID_NOT_FOUND` (ID): "Bid tidak ditemukan"
 
 ---
 

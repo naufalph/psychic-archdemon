@@ -127,6 +127,13 @@ backend/src/main/java/com/rumantra/
 - **Backend**: Spotless + Google Java Format (run `mvn spotless:apply`)
 - **Required**: Format code before committing
 
+### Code Style & Comments
+- **No Unnecessary Comments**: Do not add comments unless they explain critical business logic or complex algorithms
+- **Self-Documenting Code**: Write clear, readable code that explains itself through proper naming
+- **Business Logic Comments Only**: Comments should explain WHY something is done, not WHAT is being done
+- **Example of Good Comment**: `// Deduct quota only after bid validation succeeds to prevent race conditions`
+- **Example of Bad Comment**: `// Create bid object` or `// Save to database`
+
 ### Authentication & Authorization Flow
 
 #### User Registration & Login

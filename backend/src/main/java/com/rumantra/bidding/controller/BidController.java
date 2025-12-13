@@ -1,5 +1,13 @@
 package com.rumantra.bidding.controller;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.rumantra.architect.domain.Architect;
 import com.rumantra.architect.repository.ArchitectRepository;
 import com.rumantra.bidding.domain.BidImageType;
@@ -16,15 +24,10 @@ import com.rumantra.bidding.service.BidQuotaService;
 import com.rumantra.bidding.service.BidService;
 import com.rumantra.security.SecurityUtils;
 import com.rumantra.shared.dto.ApiResponse;
+
 import jakarta.validation.Valid;
-import java.time.LocalDateTime;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 @Slf4j
 @RestController
@@ -167,8 +170,7 @@ public class BidController {
               .findByUserId(userId)
               .orElseThrow(() -> new RuntimeException("Please activate architect role first"));
 
-      com.rumantra.bidding.domain.Bid bid =
-          bidService.getBidEntityById(bidId, architect.getId());
+      com.rumantra.bidding.domain.Bid bid = bidService.getBidEntityById(bidId, architect.getId());
 
       List<BidImageResponse> response =
           bidImageService.uploadImages(bid, BidImageType.CONCEPT_SKETCH, images);
@@ -206,8 +208,7 @@ public class BidController {
               .findByUserId(userId)
               .orElseThrow(() -> new RuntimeException("Please activate architect role first"));
 
-      com.rumantra.bidding.domain.Bid bid =
-          bidService.getBidEntityById(bidId, architect.getId());
+      com.rumantra.bidding.domain.Bid bid = bidService.getBidEntityById(bidId, architect.getId());
 
       List<BidImageResponse> response =
           bidImageService.uploadImages(bid, BidImageType.MOOD_BOARD, images);

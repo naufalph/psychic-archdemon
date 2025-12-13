@@ -33,6 +33,19 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
   }
 
+  @ExceptionHandler(BusinessException.class)
+  public ResponseEntity<?> handleBusinessException(BusinessException ex, WebRequest request) {
+    BusinessErrorResponse errorResponse =
+        BusinessErrorResponse.builder()
+            .timestamp(ZonedDateTime.now())
+            .status(ex.getExceptionCode().getHttpStatus().value())
+            .errorCode(ex.getExceptionCode().getCode())
+            .path(request.getDescription(false))
+            .build();
+
+    return new ResponseEntity<>(errorResponse, ex.getExceptionCode().getHttpStatus());
+  }
+
   @ExceptionHandler(MethodArgumentNotValidException.class)
   public ResponseEntity<?> handleValidationExceptions(
       MethodArgumentNotValidException ex, WebRequest request) {
@@ -127,4 +140,13 @@ class ValidationErrorResponse {
   String message;
   String path;
   Map<String, String> errors;
+}
+
+@lombok.Value
+@lombok.Builder
+class BusinessErrorResponse {
+  ZonedDateTime timestamp;
+  int status;
+  String errorCode;
+  String path;
 }

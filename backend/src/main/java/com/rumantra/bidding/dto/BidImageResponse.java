@@ -1,6 +1,7 @@
 package com.rumantra.bidding.dto;
 
 import com.rumantra.bidding.domain.BidImageType;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

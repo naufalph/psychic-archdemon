@@ -10,24 +10,13 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public interface FileStorageService {
 
-  /**
-   * Upload an image and generate multiple sizes.
-   *
-   * @param file The image file to upload
-   * @param architectId The architect ID (for organizing files)
-   * @param portoId The portfolio ID (for organizing files)
-   * @return Map of ImageSize to URL for each generated image size
-   * @throws StorageException if upload fails
-   */
-  Map<ImageSize, String> uploadImage(MultipartFile file, Long architectId, Long portoId);
+  Map<ImageSize, String> uploadImagePorto(MultipartFile file, Long architectId, Long portoId);
 
-  /**
-   * Delete images by their URLs.
-   *
-   * @param urls List of image URLs to delete
-   * @throws StorageException if deletion fails
-   */
+  String uploadImage(MultipartFile file, String path);
+
   void deleteImages(java.util.List<String> urls);
+
+  void deleteSingleImage(String url);
 
   /**
    * Get the public URL for an image path. For local storage, this converts file path to accessible
