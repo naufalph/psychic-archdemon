@@ -15,6 +15,5 @@ public class UserLoginRequestDto {
   @NotBlank(message = "Password is required")
   private String password;
 
-  @NotBlank(message = "Role is required") // this from FE to create architect / client profile
-  private String role;
+  @Builder.Default private String role = "ARCHITECT";
 }

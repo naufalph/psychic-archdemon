@@ -224,7 +224,37 @@ if (!resource.getOwner().getUser().getId().equals(userId)) {
 6. Update frontend API service
 7. Format code: `mvn spotless:apply`
 
+### Subscription & Payment Flow
+
+#### Subscription Tiers
+- **FREE**: IDR 0/year - 1 bid token per year
+- **BASIC**: IDR 1,500,000/year - 10 bid tokens per year
+- Tokens accumulate (unused tokens carry over until subscription ends)
+- Tokens are allocated once per subscription year, not monthly
+
+#### Yearly Subscription Cycle
+1. User initiates upgrade to BASIC tier
+2. Backend creates Xendit recurring payment plan (yearly interval)
+3. User redirects to Xendit checkout, completes payment
+4. Xendit sends webhook: `recurring.payment.succeeded`
+5. Backend allocates 10 bid tokens, activates subscription
+6. After 365 days: Xendit auto-charges payment method
+7. Webhook triggers another 10 tokens allocation
+8. Cycle repeats annually
+
+#### Bid Token System
+- Tokens are consumed when placing bids (1 token = 1 bid)
+- Tokens are refunded if project is cancelled before bid acceptance
+- Token balance tracked in `rmtr_bid_quota` table
+- All token changes logged in `rmtr_bid_usage_log` for audit trail
+
 ### Key API Endpoints
+
+#### Subscription Management (Architect Role Required)
+- `POST /api/subscriptions/upgrade` - Initiate upgrade to BASIC tier (returns Xendit payment link)
+- `GET /api/subscriptions/status` - Get current subscription status
+- `POST /api/subscriptions/cancel` - Cancel subscription (benefits continue until endDate)
+- `POST /api/subscriptions/webhook` - Xendit webhook handler (public, signature-verified)
 
 #### Authentication & User Management
 - `POST /rmtr/users/register` - Register new user (public)

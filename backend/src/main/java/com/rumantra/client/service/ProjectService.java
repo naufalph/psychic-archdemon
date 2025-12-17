@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -239,6 +240,23 @@ public class ProjectService {
   @Transactional(readOnly = true)
   public List<ProjectResponse> getAllProjects() {
     List<Project> projects = projectRepository.findAll();
+    return projects.stream().map(this::mapToProjectResponse).collect(Collectors.toList());
+  }
+
+  /**
+   * Get all OPEN projects for architects (Architect role required).
+   *
+   * @param sortBy The field to sort by (e.g., "createdAt", "budgetMax", "budgetMin")
+   * @param sortDirection The sort direction ("asc" or "desc")
+   * @return List of OPEN projects
+   */
+  @Transactional(readOnly = true)
+  public List<ProjectResponse> getOpenProjects(String sortBy, String sortDirection) {
+    Sort.Direction direction =
+        "asc".equalsIgnoreCase(sortDirection) ? Sort.Direction.ASC : Sort.Direction.DESC;
+    Sort sort = Sort.by(direction, sortBy != null ? sortBy : "createdAt");
+
+    List<Project> projects = projectRepository.findByStatusWithFiles(ProjectStatus.OPEN, sort);
     return projects.stream().map(this::mapToProjectResponse).collect(Collectors.toList());
   }
 

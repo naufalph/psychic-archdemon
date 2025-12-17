@@ -112,19 +112,19 @@ public class BidService {
     validateBidComplete(bidId);
 
     BidQuota quota = bidQuotaService.getQuotaByArchitectId(bid.getArchitect().getId());
-    if (quota.getBidsRemaining() <= 0) {
+    if (quota.getTokensRemaining() <= 0) {
       throw new RuntimeException(
-          "No bids remaining. Upgrade to premium or wait for reset on " + quota.getNextResetDate());
+          "No bid tokens remaining. Please upgrade to BASIC tier or purchase more tokens.");
     }
 
-    bidQuotaService.deductQuota(bid.getArchitect().getId());
+    bidQuotaService.consumeToken(bid.getArchitect().getId());
 
     bid.setStatus(BidStatus.PENDING);
     bid.setSubmittedAt(LocalDateTime.now());
     bid = bidRepository.save(bid);
 
     quota = bidQuotaService.getQuotaByArchitectId(bid.getArchitect().getId());
-    bidUsageLogService.logBidPlaced(bid.getArchitect(), bid, quota.getBidsRemaining());
+    bidUsageLogService.logBidPlaced(bid.getArchitect(), bid, quota.getTokensRemaining());
 
     return mapToResponse(bid);
   }
@@ -290,12 +290,10 @@ public class BidService {
     bid.setStatus(BidStatus.REFUNDED);
     bidRepository.save(bid);
 
-    // Refund quota
-    bidQuotaService.refundQuota(bid.getArchitect().getId());
+    bidQuotaService.refundToken(bid.getArchitect().getId());
 
-    // Log the refund
     BidQuota quota = bidQuotaService.getQuotaByArchitectId(bid.getArchitect().getId());
-    bidUsageLogService.logBidRefunded(bid.getArchitect(), bid, reason, quota.getBidsRemaining());
+    bidUsageLogService.logBidRefunded(bid.getArchitect(), bid, reason, quota.getTokensRemaining());
   }
 
   @Transactional

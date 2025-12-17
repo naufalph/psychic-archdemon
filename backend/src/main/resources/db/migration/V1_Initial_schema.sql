@@ -150,26 +150,20 @@ CREATE INDEX IF NOT EXISTS idx_dashboard_notif_user_id ON rmtr_dashboard_notif(u
 CREATE INDEX IF NOT EXISTS idx_dashboard_notif_user_read ON rmtr_dashboard_notif(user_id, is_read);
 CREATE INDEX IF NOT EXISTS idx_dashboard_notif_created_at ON rmtr_dashboard_notif(created_at DESC);
 
--- Create rmtr_bid_quota table (tracks bid usage for architects)
+-- Create rmtr_bid_quota table (tracks bid token balance for architects)
 CREATE TABLE IF NOT EXISTS rmtr_bid_quota (
     id BIGSERIAL PRIMARY KEY,
     architect_id BIGINT NOT NULL UNIQUE REFERENCES rmtr_architect(id) ON DELETE CASCADE ON UPDATE CASCADE,
     tier VARCHAR(20) NOT NULL DEFAULT 'FREE',
-    total_bids_allowed INTEGER NOT NULL DEFAULT 3,
-    bids_used INTEGER NOT NULL DEFAULT 0 CHECK (bids_used >= 0),
-    reset_interval VARCHAR(20) NOT NULL DEFAULT 'BI_WEEKLY',
-    last_reset_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    next_reset_date TIMESTAMP NOT NULL,
+    tokens_allocated INTEGER NOT NULL DEFAULT 0 CHECK (tokens_allocated >= 0),
+    tokens_remaining INTEGER NOT NULL DEFAULT 0 CHECK (tokens_remaining >= 0),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT NULL,
+    updated_at TIMESTAMP NULL DEFAULT NULL
 
-    CONSTRAINT chk_bid_quota_tier CHECK (tier IN ('FREE', 'PREMIUM')),
-    CONSTRAINT chk_bid_quota_reset_interval CHECK (reset_interval IN ('BI_WEEKLY', 'MONTHLY')),
-    CONSTRAINT chk_bid_quota_bids_used CHECK (bids_used <= total_bids_allowed)
+    CONSTRAINT chk_bid_quota_tier CHECK (tier IN ('FREE', 'BASIC'))
 );
 
 CREATE INDEX IF NOT EXISTS idx_bid_quota_architect_id ON rmtr_bid_quota(architect_id);
-CREATE INDEX IF NOT EXISTS idx_bid_quota_next_reset ON rmtr_bid_quota(next_reset_date);
 
 -- Create rmtr_subscription table (tracks subscription history for architects)
 CREATE TABLE IF NOT EXISTS rmtr_subscription (
@@ -178,19 +172,26 @@ CREATE TABLE IF NOT EXISTS rmtr_subscription (
     tier VARCHAR(20) NOT NULL DEFAULT 'FREE',
     start_date DATE NOT NULL,
     end_date DATE NULL,
-    payment_status VARCHAR(20) DEFAULT 'ACTIVE',
-    monthly_price DECIMAL(10, 2) NULL,
-    payment_method_id VARCHAR(255) NULL,
+    status VARCHAR(20) DEFAULT 'ACTIVE',
+    yearly_price DECIMAL(10, 2) NULL,
+    xendit_plan_id VARCHAR(255) NULL,
+    xendit_reference_id VARCHAR(255) NULL,
+    xendit_cycle_id VARCHAR(255) NULL,
+    payment_link TEXT NULL,
+    last_payment_date TIMESTAMP NULL,
+    next_billing_date DATE NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT NULL,
+    updated_at TIMESTAMP NULL DEFAULT NULL
 
-    CONSTRAINT chk_subscription_tier CHECK (tier IN ('FREE', 'PREMIUM')),
-    CONSTRAINT chk_subscription_payment_status CHECK (payment_status IN ('ACTIVE', 'EXPIRED', 'CANCELLED', 'PENDING'))
+    CONSTRAINT chk_subscription_tier CHECK (tier IN ('FREE', 'BASIC')),
+    CONSTRAINT chk_subscription_status CHECK (status IN ('ACTIVE', 'PENDING', 'EXPIRED', 'CANCELLED'))
 );
 
 CREATE INDEX IF NOT EXISTS idx_subscription_architect_id ON rmtr_subscription(architect_id);
 CREATE INDEX IF NOT EXISTS idx_subscription_active ON rmtr_subscription(architect_id, is_active);
+CREATE INDEX IF NOT EXISTS idx_subscription_xendit_ref ON rmtr_subscription(xendit_reference_id);
+CREATE INDEX IF NOT EXISTS idx_subscription_xendit_cycle ON rmtr_subscription(xendit_cycle_id);
 
 -- Create rmtr_bid table (architect bids on projects)
 CREATE TABLE IF NOT EXISTS rmtr_bid (
@@ -263,7 +264,7 @@ CREATE TABLE IF NOT EXISTS rmtr_bid_usage_log (
     description TEXT,
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT chk_bid_usage_action CHECK (action IN ('BID_PLACED', 'BID_REFUNDED', 'QUOTA_RESET', 'QUOTA_UPGRADED', 'QUOTA_DOWNGRADED', 'MANUAL_ADJUSTMENT'))
+    CONSTRAINT chk_bid_usage_action CHECK (action IN ('BID_PLACED', 'BID_REFUNDED', 'TOKEN_ALLOCATED', 'QUOTA_UPGRADED', 'QUOTA_DOWNGRADED', 'MANUAL_ADJUSTMENT'))
 );
 
 CREATE INDEX IF NOT EXISTS idx_bid_usage_log_architect_id ON rmtr_bid_usage_log(architect_id);

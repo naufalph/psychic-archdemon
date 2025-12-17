@@ -31,24 +31,13 @@ public class BidQuota {
   @Builder.Default
   private SubscriptionTier tier = SubscriptionTier.FREE;
 
-  @Column(name = "total_bids_allowed", nullable = false)
+  @Column(name = "tokens_allocated", nullable = false)
   @Builder.Default
-  private Integer totalBidsAllowed = 3;
+  private Integer tokensAllocated = 0;
 
-  @Column(name = "bids_used", nullable = false)
+  @Column(name = "tokens_remaining", nullable = false)
   @Builder.Default
-  private Integer bidsUsed = 0;
-
-  @Enumerated(EnumType.STRING)
-  @Column(name = "reset_interval", nullable = false)
-  @Builder.Default
-  private ResetInterval resetInterval = ResetInterval.BI_WEEKLY;
-
-  @Column(name = "last_reset_date", nullable = false)
-  private LocalDateTime lastResetDate;
-
-  @Column(name = "next_reset_date", nullable = false)
-  private LocalDateTime nextResetDate;
+  private Integer tokensRemaining = 0;
 
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
@@ -59,22 +48,10 @@ public class BidQuota {
   @PrePersist
   protected void onCreate() {
     createdAt = LocalDateTime.now();
-    if (lastResetDate == null) {
-      lastResetDate = LocalDateTime.now();
-    }
-    if (nextResetDate == null) {
-      // Default to 14 days for BI_WEEKLY
-      nextResetDate = LocalDateTime.now().plusDays(14);
-    }
   }
 
   @PreUpdate
   protected void onUpdate() {
     updatedAt = LocalDateTime.now();
-  }
-
-  // Computed getter for remaining bids
-  public Integer getBidsRemaining() {
-    return totalBidsAllowed - bidsUsed;
   }
 }

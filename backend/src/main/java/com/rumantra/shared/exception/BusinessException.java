@@ -10,5 +10,4 @@ public class BusinessException extends RuntimeException {
     super(exceptionCode.getCode());
     this.exceptionCode = exceptionCode;
   }
-
 }

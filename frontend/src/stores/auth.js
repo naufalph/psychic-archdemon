@@ -78,7 +78,8 @@ export const useAuthStore = defineStore('auth', {
         this.token = authResponse.token
         this.user = {
           id: authResponse.id,
-          email: authResponse.email
+          email: authResponse.email,
+          registeredRoles: authResponse.registeredRoles || []
         }
 
         // Persist token to localStorage
@@ -154,7 +155,8 @@ export const useAuthStore = defineStore('auth', {
         this.token = authResponse.token
         this.user = {
           id: authResponse.id,
-          email: authResponse.email
+          email: authResponse.email,
+          registeredRoles: authResponse.registeredRoles || []
         }
 
         // Persist token to localStorage
@@ -214,7 +216,8 @@ export const useAuthStore = defineStore('auth', {
         this.token = authResponse.token
         this.user = {
           id: authResponse.id,
-          email: authResponse.email
+          email: authResponse.email,
+          registeredRoles: authResponse.registeredRoles || []
         }
 
         // Persist token to localStorage
@@ -257,7 +260,8 @@ export const useAuthStore = defineStore('auth', {
         this.token = authResponse.token
         this.user = {
           id: authResponse.id,
-          email: authResponse.email
+          email: authResponse.email,
+          registeredRoles: authResponse.registeredRoles || []
         }
 
         // Persist token to localStorage

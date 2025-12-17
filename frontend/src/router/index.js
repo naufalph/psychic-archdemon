@@ -73,11 +73,13 @@ router.beforeEach(async (to, from, next) => {
 
         // Check role permissions
         if (to.meta.roles && to.meta.roles.length > 0) {
-          const userRole = authStore.user?.role
-          if (!userRole || !to.meta.roles.includes(userRole)) {
-            // Redirect to dashboard or show unauthorized
+          const userRoles = authStore.user?.registeredRoles || []
+          const hasRequiredRole = to.meta.roles.some(role => userRoles.includes(role))
+
+          if (!hasRequiredRole) {
+            // Redirect to home or show unauthorized
             next({
-              name: 'Dashboard',
+              path: '/',
               query: { error: 'unauthorized' }
             })
             return

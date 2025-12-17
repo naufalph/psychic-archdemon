@@ -1,12 +1,8 @@
 <template>
   <div class="relative w-full h-full overflow-hidden">
     <!-- Architectural Illustration SVG -->
-    <div class="absolute" style="left: -50.63px; top: 355px; width: 1539.64px; height: 571.16px;">
-      <img
-        src="@/assets/images/sign/background.svg"
-        alt="Background decoration"
-        class="w-full h-full"
-      />
+    <div class="absolute" style="left: -50.63px; top: 355px; width: 1539.64px; height: 571.16px">
+      <img src="@/assets/images/sign/background.svg" alt="Background decoration" class="w-full h-full" />
     </div>
 
     <!-- Hero Text Content -->

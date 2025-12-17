@@ -1,10 +1,7 @@
 <template>
   <div class="flex h-screen w-screen overflow-hidden relative">
     <!-- Background Gradient for entire page -->
-    <div
-      class="absolute inset-0"
-      style="background: linear-gradient(180deg, #9E9D99 0%, #6C6762 100%)"
-    ></div>
+    <div class="absolute inset-0" style="background: linear-gradient(180deg, #9e9d99 0%, #6c6762 100%)"></div>
 
     <!-- Angled Gradient Overlay Vector -->
     <div

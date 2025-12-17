@@ -6,6 +6,9 @@
 const Signup = () => import('@/views/v2/auth/Signup.vue')
 const Login = () => import('@/views/v2/auth/Login.vue')
 
+// Architect views
+const ProjectsPage = () => import('@/views/v2/architects/ProjectsPage.vue')
+
 export default [
   // Auth Routes
   {
@@ -27,6 +30,20 @@ export default [
       title: 'Login - Rumantra',
       description: 'Login to your Rumantra account',
       requiresGuest: true,
+      hideNavbar: true
+    }
+  },
+
+  // Architect Routes
+  {
+    path: '/architects/projects',
+    name: 'ArchitectProjects',
+    component: ProjectsPage,
+    meta: {
+      title: 'Browse Projects - Rumantra',
+      description: 'Browse and bid on open projects',
+      requiresAuth: true,
+      roles: ['ARCHITECT'],
       hideNavbar: true
     }
   },

@@ -30,14 +30,8 @@
 <template>
   <div class="relative w-full">
     <!-- Floating Label (positioned above border) -->
-    <label
-      :for="id"
-      class="absolute -top-[9px] left-[18px] bg-white px-[5px] z-10"
-    >
-      <span
-        class="text-sm font-normal leading-[18px] font-poppins"
-        :class="hasError ? 'text-red-500' : 'text-black'"
-      >
+    <label :for="id" class="absolute -top-[9px] left-[18px] bg-white px-[5px] z-10">
+      <span class="text-sm font-normal leading-[18px] font-poppins" :class="hasError ? 'text-red-500' : 'text-black'">
         {{ label }}
       </span>
     </label>
@@ -54,10 +48,7 @@
         :autocomplete="type === 'password' ? 'new-password' : 'off'"
         :name="id"
         class="w-full h-[40px] px-[18px] border rounded-lg text-xs font-normal leading-5 outline-none bg-white placeholder:text-slate-500 font-poppins disabled:text-gray-400 disabled:bg-gray-50 transition-colors autofill-white"
-        :class="[
-          disabled ? 'border-gray-300' : 'border-slate-700',
-          hasError ? 'border-red-500' : ''
-        ]"
+        :class="[disabled ? 'border-gray-300' : 'border-slate-700', hasError ? 'border-red-500' : '']"
         @input="handleInput"
         @blur="$emit('blur', $event)"
         @focus="$emit('focus', $event)"
@@ -71,11 +62,7 @@
         tabindex="-1"
         @click="togglePassword"
       >
-        <img
-          src="@/assets/images/sign/eye-icon.svg"
-          alt="Toggle password visibility"
-          class="w-[14px] h-[14px]"
-        />
+        <img src="@/assets/images/sign/eye-icon.svg" alt="Toggle password visibility" class="w-[14px] h-[14px]" />
       </button>
     </div>
 
@@ -115,7 +102,7 @@ const props = defineProps({
   type: {
     type: String,
     default: 'text',
-    validator: (value) => ['text', 'email', 'password', 'tel', 'number', 'url'].includes(value)
+    validator: value => ['text', 'email', 'password', 'tel', 'number', 'url'].includes(value)
   },
   placeholder: {
     type: String,
@@ -163,7 +150,7 @@ const togglePassword = () => {
 /**
  * Handles input event and emits update
  */
-const handleInput = (event) => {
+const handleInput = event => {
   emit('update:modelValue', event.target.value)
 }
 </script>

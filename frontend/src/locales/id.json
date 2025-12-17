@@ -1,6 +1,12 @@
 {
   "nav": {
     "logo": "rumantra",
+    "home": "Beranda",
+    "architect": "Arsitek",
+    "explore": "Jelajahi",
+    "becomeArchitect": "Jadi Arsitek",
+    "makeProject": "Buat Proyek",
+    "signIn": "Masuk/Login",
     "links": {
       "howItWorks": "Cara kerja",
       "designerSelection": "Pilihan designer",
@@ -214,5 +220,44 @@
       "getStarted": "Mulai Hari Ini",
       "browseProjects": "Jelajahi Proyek"
     }
+  },
+  "projects": {
+    "search": "Cari",
+    "searchPlaceholder": "Cari Kontes...",
+    "searchButton": "Cari",
+    "latestResults": "Hasil Terbaru",
+    "sortBy": "Urutkan Berdasarkan",
+    "sortLatest": "Terbaru",
+    "sortBudgetHigh": "Budget Tinggi ke Rendah",
+    "sortBudgetLow": "Budget Rendah ke Tinggi",
+    "entries": "Entri",
+    "featured": "Utama",
+    "guaranteed": "Terjamin",
+    "urgent": "Mendesak",
+    "untitledProject": "Proyek Tanpa Judul",
+    "noDescription": "Tidak ada deskripsi",
+    "noProjects": "Tidak ada proyek tersedia",
+    "errorFetching": "Gagal memuat proyek. Silakan coba lagi.",
+    "hoursAgo": "jam yang lalu",
+    "minutesAgo": "menit yang lalu",
+    "daysAgo": "hari yang lalu"
+  },
+  "footer": {
+    "home": "Beranda",
+    "architect": "Arsitek",
+    "explore": "Jelajahi",
+    "customerStories": "Cerita Pelanggan",
+    "article": "Artikel",
+    "faqs": "FAQ",
+    "knowledge": "Pengetahuan",
+    "tools": "Alat",
+    "aboutUs": "Tentang Kami",
+    "career": "Karir",
+    "contactUs": "Hubungi Kami",
+    "email": "Email: abcdefg1234@gmail.com",
+    "address": "Alamat: Jalan Sudirman No. 1",
+    "termsConditions": "Syarat dan Ketentuan",
+    "policy": "Kebijakan",
+    "privacy": "Privasi"
   }
 }

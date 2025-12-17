@@ -220,4 +220,33 @@ public class ProjectController {
                   .build());
     }
   }
+
+  @GetMapping("/open")
+  public ResponseEntity<ApiResponse<List<ProjectResponse>>> getOpenProjects(
+      @RequestParam(value = "sortBy", required = false, defaultValue = "createdAt") String sortBy,
+      @RequestParam(value = "sortDirection", required = false, defaultValue = "desc")
+          String sortDirection) {
+
+    try {
+      List<ProjectResponse> responses = projectService.getOpenProjects(sortBy, sortDirection);
+
+      return ResponseEntity.ok(
+          ApiResponse.<List<ProjectResponse>>builder()
+              .success(true)
+              .message("Open projects retrieved successfully")
+              .data(responses)
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+
+    } catch (Exception e) {
+      log.error("Error retrieving open projects", e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(
+              ApiResponse.<List<ProjectResponse>>builder()
+                  .success(false)
+                  .message("An error occurred while retrieving open projects")
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
+  }
 }

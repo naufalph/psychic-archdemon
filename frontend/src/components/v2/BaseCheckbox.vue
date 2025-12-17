@@ -28,23 +28,13 @@
 <template>
   <div class="flex items-start gap-3">
     <!-- Checkbox Input (Hidden) -->
-    <input
-      :id="id"
-      v-model="checked"
-      type="checkbox"
-      :disabled="disabled"
-      class="hidden"
-      @change="handleChange"
-    />
+    <input :id="id" v-model="checked" type="checkbox" :disabled="disabled" class="hidden" @change="handleChange" />
 
     <!-- Custom Checkbox Visual -->
     <label
       :for="id"
       class="flex-shrink-0 flex items-center justify-center border-2 rounded-sm cursor-pointer transition-all"
-      :class="[
-        sizeClasses,
-        disabled ? 'border-gray-300 bg-gray-100 cursor-not-allowed' : checkboxClasses
-      ]"
+      :class="[sizeClasses, disabled ? 'border-gray-300 bg-gray-100 cursor-not-allowed' : checkboxClasses]"
     >
       <!-- Checkmark SVG -->
       <svg
@@ -71,10 +61,7 @@
     <label
       :for="id"
       class="flex-1 font-poppins cursor-pointer select-none"
-      :class="[
-        labelClasses,
-        disabled ? 'text-gray-400 cursor-not-allowed' : 'text-[#ABABAB]'
-      ]"
+      :class="[labelClasses, disabled ? 'text-gray-400 cursor-not-allowed' : 'text-[#ABABAB]']"
     >
       {{ label }}
     </label>
@@ -109,7 +96,7 @@ const props = defineProps({
   size: {
     type: String,
     default: 'md',
-    validator: (value) => ['sm', 'md', 'lg'].includes(value)
+    validator: value => ['sm', 'md', 'lg'].includes(value)
   },
   colorScheme: {
     type: String,
@@ -130,7 +117,7 @@ const emit = defineEmits(['update:modelValue'])
 // Computed v-model
 const checked = computed({
   get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value)
+  set: value => emit('update:modelValue', value)
 })
 
 // Size classes for checkbox
@@ -155,9 +142,7 @@ const checkmarkSize = computed(() => {
 
 // Checkbox visual classes
 const checkboxClasses = computed(() => {
-  return checked.value
-    ? 'border-blue-500 bg-blue-50'
-    : 'border-[#E2E8F0] bg-white hover:border-blue-300'
+  return checked.value ? 'border-blue-500 bg-blue-50' : 'border-[#E2E8F0] bg-white hover:border-blue-300'
 })
 
 // Label text classes
@@ -173,7 +158,7 @@ const labelClasses = computed(() => {
 /**
  * Handles checkbox change
  */
-const handleChange = (event) => {
+const handleChange = event => {
   if (!props.disabled) {
     emit('update:modelValue', event.target.checked)
   }

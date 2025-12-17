@@ -16,5 +16,4 @@ public interface BidImageRepository extends JpaRepository<BidImage, Long> {
   List<BidImage> findByBidIdAndImageTypeOrderByDisplayOrder(Long bidId, BidImageType imageType);
 
   long countByBidIdAndImageType(Long bidId, BidImageType imageType);
-
 }

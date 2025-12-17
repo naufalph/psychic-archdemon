@@ -202,6 +202,7 @@ export const projectAPI = {
   createBid: (id, bidData) => api.post(`/projects/${id}/bids`, bidData),
   acceptBid: (projectId, bidId) => api.patch(`/projects/${projectId}/bids/${bidId}/accept`),
   rejectBid: (projectId, bidId) => api.patch(`/projects/${projectId}/bids/${bidId}/reject`),
+  getOpenProjects: params => api.get('/api/v1/projects/open', { params }),
   uploadFiles: (id, files, onProgress) => {
     const formData = new FormData()
     files.forEach(file => formData.append('files', file))

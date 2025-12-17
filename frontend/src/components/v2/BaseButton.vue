@@ -44,13 +44,7 @@
   >
     <!-- Loading Spinner -->
     <span v-if="loading" class="inline-block mr-2">
-      <svg
-        class="animate-spin"
-        :class="spinnerSize"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-      >
+      <svg class="animate-spin" :class="spinnerSize" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
         <path
           class="opacity-75"
@@ -84,17 +78,17 @@ const props = defineProps({
   type: {
     type: String,
     default: 'button',
-    validator: (value) => ['button', 'submit', 'reset'].includes(value)
+    validator: value => ['button', 'submit', 'reset'].includes(value)
   },
   variant: {
     type: String,
     default: 'solid',
-    validator: (value) => ['solid', 'outline'].includes(value)
+    validator: value => ['solid', 'outline'].includes(value)
   },
   size: {
     type: String,
     default: 'md',
-    validator: (value) => ['xs', 'sm', 'md', 'lg'].includes(value)
+    validator: value => ['xs', 'sm', 'md', 'lg'].includes(value)
   },
   disabled: {
     type: Boolean,
@@ -167,7 +161,7 @@ const spinnerSize = computed(() => {
 /**
  * Handles button click
  */
-const handleClick = (event) => {
+const handleClick = event => {
   if (!props.disabled && !props.loading) {
     emit('click', event)
   }

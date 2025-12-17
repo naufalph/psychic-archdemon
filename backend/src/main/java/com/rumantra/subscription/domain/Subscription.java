@@ -39,15 +39,30 @@ public class Subscription {
   private LocalDate endDate;
 
   @Enumerated(EnumType.STRING)
-  @Column(name = "payment_status")
+  @Column(name = "status")
   @Builder.Default
-  private PaymentStatus paymentStatus = PaymentStatus.ACTIVE;
+  private SubscriptionStatus status = SubscriptionStatus.ACTIVE;
 
-  @Column(name = "monthly_price", precision = 10, scale = 2)
-  private BigDecimal monthlyPrice;
+  @Column(name = "yearly_price", precision = 10, scale = 2)
+  private BigDecimal yearlyPrice;
 
-  @Column(name = "payment_method_id")
-  private String paymentMethodId;
+  @Column(name = "xendit_plan_id")
+  private String xenditPlanId;
+
+  @Column(name = "xendit_reference_id")
+  private String xenditReferenceId;
+
+  @Column(name = "xendit_cycle_id")
+  private String xenditCycleId;
+
+  @Column(name = "payment_link", columnDefinition = "TEXT")
+  private String paymentLink;
+
+  @Column(name = "last_payment_date")
+  private LocalDateTime lastPaymentDate;
+
+  @Column(name = "next_billing_date")
+  private LocalDate nextBillingDate;
 
   @Column(name = "is_active", nullable = false)
   @Builder.Default

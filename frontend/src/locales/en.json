@@ -1,6 +1,12 @@
 {
   "nav": {
     "logo": "rumantra",
+    "home": "Home",
+    "architect": "Architect",
+    "explore": "Explore",
+    "becomeArchitect": "Become an Arsitek",
+    "makeProject": "Make Project",
+    "signIn": "Sign In/Login",
     "links": {
       "howItWorks": "How it works",
       "designerSelection": "Designer selection",
@@ -216,5 +222,44 @@
       "getStarted": "Get Started Today",
       "browseProjects": "Browse Projects"
     }
+  },
+  "projects": {
+    "search": "Search",
+    "searchPlaceholder": "Search Contest...",
+    "searchButton": "Search",
+    "latestResults": "Latest Results",
+    "sortBy": "Sort By",
+    "sortLatest": "Latest",
+    "sortBudgetHigh": "Budget High to Low",
+    "sortBudgetLow": "Budget Low to High",
+    "entries": "Entries",
+    "featured": "Featured",
+    "guaranteed": "Guaranteed",
+    "urgent": "Urgent",
+    "untitledProject": "Untitled Project",
+    "noDescription": "No description available",
+    "noProjects": "No projects available",
+    "errorFetching": "Error fetching projects. Please try again.",
+    "hoursAgo": "hours ago",
+    "minutesAgo": "minutes ago",
+    "daysAgo": "days ago"
+  },
+  "footer": {
+    "home": "Home",
+    "architect": "Architect",
+    "explore": "Explore",
+    "customerStories": "Customer Stories",
+    "article": "Article",
+    "faqs": "FAQs",
+    "knowledge": "Knowledge",
+    "tools": "Tools",
+    "aboutUs": "About Us",
+    "career": "Career",
+    "contactUs": "Contact us",
+    "email": "Email: abcdefg1234@gmail.com",
+    "address": "Address: Jalan Sudirman No. 1",
+    "termsConditions": "Terms and Conditions",
+    "policy": "Policy",
+    "privacy": "Privacy"
   }
 }
