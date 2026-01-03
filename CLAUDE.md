@@ -248,6 +248,15 @@ if (!resource.getOwner().getUser().getId().equals(userId)) {
 - Token balance tracked in `rmtr_bid_quota` table
 - All token changes logged in `rmtr_bid_usage_log` for audit trail
 
+#### Individual Token Purchase
+1. Architect requests pricing (tier-based: FREE=IDR 400k, BASIC=IDR 250k per token)
+2. Architect initiates purchase (1-50 tokens)
+3. Backend creates Xendit one-time payment request
+4. User redirects to Xendit checkout, completes payment
+5. Xendit sends webhook: `payment.succeeded`
+6. Backend allocates purchased tokens immediately
+7. Tokens added to quota (no expiration)
+
 ### Key API Endpoints
 
 #### Subscription Management (Architect Role Required)
@@ -255,6 +264,13 @@ if (!resource.getOwner().getUser().getId().equals(userId)) {
 - `GET /api/subscriptions/status` - Get current subscription status
 - `POST /api/subscriptions/cancel` - Cancel subscription (benefits continue until endDate)
 - `POST /api/subscriptions/webhook` - Xendit webhook handler (public, signature-verified)
+
+#### Token Purchase (Architect Role Required)
+- `GET /tokens/purchases/pricing` - Get tier-based pricing info
+- `POST /tokens/purchases` - Initiate token purchase (returns Xendit payment link)
+- `GET /tokens/purchases/{id}` - Get purchase details (ownership verified)
+- `GET /tokens/purchases/history` - Get paginated purchase history
+- `POST /tokens/purchases/webhook` - Xendit payment webhook handler (public, signature-verified)
 
 #### Authentication & User Management
 - `POST /rmtr/users/register` - Register new user (public)
