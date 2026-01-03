@@ -1,5 +1,6 @@
 package com.rumantra.bidding.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -113,6 +114,22 @@ public class BidUsageLogService {
             .quotaChange(-quotaAfter)
             .quotaAfter(quotaAfter)
             .description(String.format("Downgraded to FREE: quota set to %d tokens", quotaAfter))
+            .timestamp(LocalDateTime.now())
+            .build();
+
+    bidUsageLogRepository.save(log);
+  }
+
+  @Transactional
+  public void logTokenPurchase(Architect architect, Integer quantity, BigDecimal amount) {
+    BidUsageLog log =
+        BidUsageLog.builder()
+            .architect(architect)
+            .bid(null)
+            .action(BidUsageAction.TOKEN_PURCHASED)
+            .quotaChange(quantity)
+            .quotaAfter(quantity)
+            .description(String.format("Purchased %d bid tokens for IDR %,.0f", quantity, amount))
             .timestamp(LocalDateTime.now())
             .build();
 

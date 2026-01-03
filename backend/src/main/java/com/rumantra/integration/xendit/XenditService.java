@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rumantra.integration.xendit.dto.XenditCreatePlanRequest;
 import com.rumantra.integration.xendit.dto.XenditCreatePlanResponse;
+import com.rumantra.integration.xendit.dto.XenditPaymentRequestRequest;
+import com.rumantra.integration.xendit.dto.XenditPaymentResponse;
+import com.rumantra.integration.xendit.dto.XenditPaymentWebhook;
 import com.rumantra.integration.xendit.dto.XenditWebhookEvent;
 
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +56,26 @@ public class XenditService {
     } catch (Exception e) {
       log.error("Failed to parse Xendit webhook", e);
       throw new XenditException("Invalid webhook payload", e);
+    }
+  }
+
+  public XenditPaymentResponse createPaymentRequest(XenditPaymentRequestRequest request) {
+    log.info("Creating Xendit payment request for {}", request.getReferenceId());
+    return xenditClient.post("/payment_requests", request, XenditPaymentResponse.class);
+  }
+
+  public XenditPaymentResponse getPaymentRequest(String paymentRequestId) {
+    log.info("Getting payment request: {}", paymentRequestId);
+    return xenditClient.get("/payment_requests/" + paymentRequestId, XenditPaymentResponse.class);
+  }
+
+  public XenditPaymentWebhook parsePaymentWebhook(String payload) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      return mapper.readValue(payload, XenditPaymentWebhook.class);
+    } catch (Exception e) {
+      log.error("Failed to parse Xendit payment webhook", e);
+      throw new XenditException("Invalid payment webhook payload", e);
     }
   }
 }

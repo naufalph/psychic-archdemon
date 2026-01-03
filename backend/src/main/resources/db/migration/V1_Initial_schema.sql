@@ -193,6 +193,34 @@ CREATE INDEX IF NOT EXISTS idx_subscription_active ON rmtr_subscription(architec
 CREATE INDEX IF NOT EXISTS idx_subscription_xendit_ref ON rmtr_subscription(xendit_reference_id);
 CREATE INDEX IF NOT EXISTS idx_subscription_xendit_cycle ON rmtr_subscription(xendit_cycle_id);
 
+CREATE TABLE IF NOT EXISTS rmtr_token_purchase (
+    id BIGSERIAL PRIMARY KEY,
+    architect_id BIGINT NOT NULL REFERENCES rmtr_architect(id) ON DELETE CASCADE ON UPDATE CASCADE,
+    quantity INTEGER NOT NULL CHECK (quantity >= 1 AND quantity <= 50),
+    price_per_token DECIMAL(10, 2) NOT NULL,
+    total_amount DECIMAL(15, 2) NOT NULL,
+    tier VARCHAR(20) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+    xendit_payment_request_id VARCHAR(255),
+    xendit_reference_id VARCHAR(255) NOT NULL UNIQUE,
+    payment_link TEXT,
+    payment_method VARCHAR(50),
+    payment_channel VARCHAR(50),
+    expires_at TIMESTAMP,
+    completed_at TIMESTAMP,
+    failure_reason TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NULL DEFAULT NULL
+
+    CONSTRAINT chk_token_purchase_tier CHECK (tier IN ('FREE', 'BASIC')),
+    CONSTRAINT chk_token_purchase_status CHECK (status IN ('PENDING', 'COMPLETED', 'FAILED', 'EXPIRED', 'CANCELLED'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_token_purchase_architect_id ON rmtr_token_purchase(architect_id);
+CREATE INDEX IF NOT EXISTS idx_token_purchase_status ON rmtr_token_purchase(status);
+CREATE INDEX IF NOT EXISTS idx_token_purchase_xendit_ref ON rmtr_token_purchase(xendit_reference_id);
+CREATE INDEX IF NOT EXISTS idx_token_purchase_created_at ON rmtr_token_purchase(created_at DESC);
+
 -- Create rmtr_bid table (architect bids on projects)
 CREATE TABLE IF NOT EXISTS rmtr_bid (
     id BIGSERIAL PRIMARY KEY,
@@ -264,7 +292,7 @@ CREATE TABLE IF NOT EXISTS rmtr_bid_usage_log (
     description TEXT,
     timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-    CONSTRAINT chk_bid_usage_action CHECK (action IN ('BID_PLACED', 'BID_REFUNDED', 'TOKEN_ALLOCATED', 'QUOTA_UPGRADED', 'QUOTA_DOWNGRADED', 'MANUAL_ADJUSTMENT'))
+    CONSTRAINT chk_bid_usage_action CHECK (action IN ('BID_PLACED', 'BID_REFUNDED', 'TOKEN_ALLOCATED', 'TOKEN_PURCHASED', 'QUOTA_UPGRADED', 'QUOTA_DOWNGRADED', 'MANUAL_ADJUSTMENT'))
 );
 
 CREATE INDEX IF NOT EXISTS idx_bid_usage_log_architect_id ON rmtr_bid_usage_log(architect_id);
