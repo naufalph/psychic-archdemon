@@ -422,4 +422,31 @@ public class BidController {
                   .build());
     }
   }
+
+  @PostMapping("/{bidId}/accept")
+  public ResponseEntity<ApiResponse<BidResponse>> acceptBid(@PathVariable Long bidId) {
+    try {
+      log.info("Accepting bid ID: {}", bidId);
+
+      BidResponse response = bidService.acceptBid(bidId);
+
+      return ResponseEntity.ok(
+          ApiResponse.<BidResponse>builder()
+              .success(true)
+              .message("Bid accepted successfully. Conversation created.")
+              .data(response)
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+
+    } catch (RuntimeException e) {
+      log.error("Error accepting bid: {}", e.getMessage());
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              ApiResponse.<BidResponse>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
+  }
 }

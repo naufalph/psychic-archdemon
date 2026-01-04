@@ -108,6 +108,39 @@ public class CloudinaryStorageService implements FileStorageService {
   }
 
   @Override
+  public String uploadFile(MultipartFile file, String path) {
+    validateFile(file);
+
+    try {
+      String uniqueId = UUID.randomUUID().toString();
+      String originalFilename = file.getOriginalFilename();
+      String publicId = path + "/" + uniqueId;
+
+      Map<String, Object> uploadResult =
+          cloudinary
+              .uploader()
+              .upload(
+                  file.getBytes(),
+                  ObjectUtils.asMap(
+                      "public_id",
+                      publicId,
+                      "resource_type",
+                      "auto",
+                      "use_filename",
+                      true,
+                      "unique_filename",
+                      true));
+
+      String url = (String) uploadResult.get("secure_url");
+      log.info("Uploaded file to Cloudinary: {} (original: {})", publicId, originalFilename);
+      return url;
+
+    } catch (IOException e) {
+      throw new StorageException("Failed to upload file to Cloudinary", e);
+    }
+  }
+
+  @Override
   public void deleteImages(List<String> urls) {
     for (String url : urls) {
       try {
@@ -168,6 +201,8 @@ public class CloudinaryStorageService implements FileStorageService {
       publicIdWithExt = afterUpload.substring(afterUpload.indexOf("portfolios/"));
     } else if (afterUpload.contains("bids/")) {
       publicIdWithExt = afterUpload.substring(afterUpload.indexOf("bids/"));
+    } else if (afterUpload.contains("chat/")) {
+      publicIdWithExt = afterUpload.substring(afterUpload.indexOf("chat/"));
     } else {
       int firstSlash = afterUpload.indexOf("/");
       publicIdWithExt = firstSlash > 0 ? afterUpload.substring(firstSlash + 1) : afterUpload;
@@ -194,6 +229,18 @@ public class CloudinaryStorageService implements FileStorageService {
     long maxSize = 10 * 1024 * 1024;
     if (file.getSize() > maxSize) {
       throw new StorageException("File size exceeds maximum allowed size of 10MB");
+    }
+  }
+
+  private void validateFile(MultipartFile file) {
+    if (file.isEmpty()) {
+      throw new StorageException("Cannot upload empty file");
+    }
+
+    // Max 20MB for general files
+    long maxSize = 20 * 1024 * 1024;
+    if (file.getSize() > maxSize) {
+      throw new StorageException("File size exceeds maximum allowed size of 20MB");
     }
   }
 }

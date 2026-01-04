@@ -14,6 +14,8 @@ public interface FileStorageService {
 
   String uploadImage(MultipartFile file, String path);
 
+  String uploadFile(MultipartFile file, String path);
+
   void deleteImages(java.util.List<String> urls);
 
   void deleteSingleImage(String url);

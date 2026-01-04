@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -61,7 +62,7 @@ public class SecurityConfig {
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
     http.cors(cors -> cors.configurationSource(corsConfigurationSource()))
-        .csrf(csrf -> csrf.disable())
+        .csrf(AbstractHttpConfigurer::disable)
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
@@ -82,6 +83,18 @@ public class SecurityConfig {
                     // Notification endpoints (authenticated)
                     .requestMatchers("/api/notifications/**")
                     .authenticated()
+
+                    // WebSocket endpoints (public for handshake, auth in WebSocketConfig)
+                    .requestMatchers("/ws/**")
+                    .permitAll()
+
+                    // Chat endpoints (authenticated)
+                    .requestMatchers("/api/chat/**")
+                    .authenticated()
+
+                    // Bid acceptance (CLIENT role)
+                    .requestMatchers("/api/projects/*/bids/*/accept")
+                    .hasRole("CLIENT")
 
                     // Protected endpoints
                     .requestMatchers("/api/v1/architects/profile", "/api/v1/architects/profile/**")

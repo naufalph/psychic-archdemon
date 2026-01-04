@@ -116,6 +116,32 @@ public class LocalFileStorageService implements FileStorageService {
   }
 
   @Override
+  public String uploadFile(MultipartFile file, String path) {
+    validateFile(file);
+
+    try {
+      String originalFilename = file.getOriginalFilename();
+      String extension = getFileExtension(originalFilename);
+      String uniqueId = UUID.randomUUID().toString();
+      String filename = uniqueId + "." + extension;
+
+      Path targetDir = uploadPath.resolve(path);
+      Files.createDirectories(targetDir);
+
+      Path filePath = targetDir.resolve(filename);
+      file.transferTo(filePath.toFile());
+
+      String url = baseUrl + "/" + path + "/" + filename;
+      log.debug("Saved file to: {}", filePath);
+
+      return url;
+
+    } catch (IOException e) {
+      throw new StorageException("Failed to upload file", e);
+    }
+  }
+
+  @Override
   public void deleteImages(List<String> urls) {
     for (String url : urls) {
       try {
@@ -174,6 +200,19 @@ public class LocalFileStorageService implements FileStorageService {
     long maxSize = 10 * 1024 * 1024;
     if (file.getSize() > maxSize) {
       throw new StorageException("File size exceeds maximum allowed size of 10MB");
+    }
+  }
+
+  private void validateFile(MultipartFile file) {
+    if (file.isEmpty()) {
+      log.error("Cannot upload empty file");
+      throw new StorageException("Cannot upload empty file");
+    }
+
+    // Max 20MB for general files
+    long maxSize = 20 * 1024 * 1024;
+    if (file.getSize() > maxSize) {
+      throw new StorageException("File size exceeds maximum allowed size of 20MB");
     }
   }
 

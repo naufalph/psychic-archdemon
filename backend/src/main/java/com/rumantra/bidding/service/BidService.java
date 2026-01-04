@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +29,7 @@ import com.rumantra.bidding.dto.LinkPortfoliosRequest;
 import com.rumantra.bidding.dto.UpdateBidRequest;
 import com.rumantra.bidding.repository.BidPortfolioRefRepository;
 import com.rumantra.bidding.repository.BidRepository;
+import com.rumantra.chat.event.BidAcceptedEvent;
 import com.rumantra.client.domain.Project;
 import com.rumantra.client.domain.ProjectStatus;
 import com.rumantra.client.repository.ProjectRepository;
@@ -55,6 +57,8 @@ public class BidService {
   @Autowired private BidImageService bidImageService;
 
   @Autowired private BidPortfolioRefRepository bidPortfolioRefRepository;
+
+  @Autowired private ApplicationEventPublisher eventPublisher;
 
   @Transactional
   public BidResponse createDraftBid(CreateBidRequest request) {
@@ -296,15 +300,6 @@ public class BidService {
     bidUsageLogService.logBidRefunded(bid.getArchitect(), bid, reason, quota.getTokensRemaining());
   }
 
-  @Transactional
-  public void refundAllPendingBids(Long projectId, String reason) {
-    List<Bid> pendingBids = bidRepository.findByProjectIdAndStatus(projectId, BidStatus.PENDING);
-
-    for (Bid bid : pendingBids) {
-      refundBid(bid, reason);
-    }
-  }
-
   private BidResponse mapToResponse(Bid bid) {
     return BidResponse.builder()
         .id(bid.getId())
@@ -367,5 +362,48 @@ public class BidService {
         .mediumUrl(detail.getMediumUrl())
         .displayOrder(detail.getDisplayOrder())
         .build();
+  }
+
+  @Transactional
+  public BidResponse acceptBid(Long bidId) {
+    Long userId = SecurityUtils.getCurrentUserId();
+
+    Bid bid =
+        bidRepository
+            .findById(bidId)
+            .orElseThrow(() -> new BusinessException(ExceptionConstants.BID_NOT_FOUND));
+
+    Project project = bid.getProject();
+
+    if (!project.getClient().getUser().getId().equals(userId)) {
+      throw new BusinessException(ExceptionConstants.UNAUTHORIZED_PROJECT_ACCESS);
+    }
+
+    if (bid.getStatus() != BidStatus.PENDING) {
+      throw new RuntimeException(
+          "Only pending bids can be accepted. Current status: " + bid.getStatus());
+    }
+
+    if (project.getStatus() != ProjectStatus.OPEN) {
+      throw new RuntimeException("Project is not open for bidding");
+    }
+
+    bid.setStatus(BidStatus.ACCEPTED);
+    bid.setAcceptedAt(LocalDateTime.now());
+    bid = bidRepository.save(bid);
+
+    project.setStatus(ProjectStatus.IN_PROGRESS);
+    projectRepository.save(project);
+
+    eventPublisher.publishEvent(
+        new BidAcceptedEvent(
+            this,
+            bid.getId(),
+            project.getId(),
+            bid.getArchitect().getId(),
+            project.getClient().getId(),
+            userId));
+
+    return mapToResponse(bid);
   }
 }

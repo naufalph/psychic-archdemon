@@ -298,3 +298,58 @@ CREATE TABLE IF NOT EXISTS rmtr_bid_usage_log (
 CREATE INDEX IF NOT EXISTS idx_bid_usage_log_architect_id ON rmtr_bid_usage_log(architect_id);
 CREATE INDEX IF NOT EXISTS idx_bid_usage_log_bid_id ON rmtr_bid_usage_log(bid_id);
 CREATE INDEX IF NOT EXISTS idx_bid_usage_log_timestamp ON rmtr_bid_usage_log(timestamp DESC);
+
+CREATE TABLE rmtr_conversation (
+                                   id BIGSERIAL PRIMARY KEY,
+                                   project_id BIGINT NOT NULL REFERENCES rmtr_project(id) ON DELETE CASCADE,
+                                   bid_id BIGINT NOT NULL UNIQUE REFERENCES rmtr_bid(id) ON DELETE CASCADE,
+                                   architect_id BIGINT NOT NULL REFERENCES rmtr_architect(id),
+                                   client_id BIGINT NOT NULL REFERENCES rmtr_client(id),
+                                   status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+                                   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                   updated_at TIMESTAMP,
+                                   last_message_at TIMESTAMP,
+
+                                   CONSTRAINT uk_conversation_bid UNIQUE(bid_id),
+                                   CONSTRAINT uk_conversation_project_architect UNIQUE(project_id, architect_id),
+                                   CONSTRAINT chk_conversation_status CHECK (status IN ('ACTIVE', 'ARCHIVED', 'CLOSED'))
+);
+
+CREATE INDEX idx_conversation_architect ON rmtr_conversation(architect_id);
+CREATE INDEX idx_conversation_client ON rmtr_conversation(client_id);
+CREATE INDEX idx_conversation_project ON rmtr_conversation(project_id);
+
+CREATE TABLE rmtr_message (
+                              id BIGSERIAL PRIMARY KEY,
+                              conversation_id BIGINT NOT NULL REFERENCES rmtr_conversation(id) ON DELETE CASCADE,
+                              sender_user_id BIGINT NOT NULL REFERENCES rmtr_user(id),
+                              sender_type VARCHAR(20) NOT NULL,
+                              content TEXT NOT NULL,
+                              message_type VARCHAR(20) NOT NULL DEFAULT 'TEXT',
+                              is_read BOOLEAN DEFAULT FALSE,
+                              read_at TIMESTAMP,
+                              created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                              updated_at TIMESTAMP,
+
+                              CONSTRAINT chk_sender_type CHECK (sender_type IN ('ARCHITECT', 'CLIENT')),
+                              CONSTRAINT chk_message_type CHECK (message_type IN ('TEXT', 'FILE', 'IMAGE'))
+);
+
+CREATE INDEX idx_message_conversation ON rmtr_message(conversation_id);
+CREATE INDEX idx_message_sender ON rmtr_message(sender_user_id);
+CREATE INDEX idx_message_created ON rmtr_message(conversation_id, created_at DESC);
+CREATE INDEX idx_message_unread ON rmtr_message(conversation_id, is_read) WHERE is_read = FALSE;
+
+CREATE TABLE rmtr_message_file (
+                                   id BIGSERIAL PRIMARY KEY,
+                                   message_id BIGINT NOT NULL REFERENCES rmtr_message(id) ON DELETE CASCADE,
+                                   file_name VARCHAR(255) NOT NULL,
+                                   file_url TEXT NOT NULL,
+                                   file_type VARCHAR(50),
+                                   file_size BIGINT,
+                                   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+                                   CONSTRAINT uk_message_file UNIQUE(message_id)
+);
+
+CREATE INDEX idx_message_file_message ON rmtr_message_file(message_id);
