@@ -28,7 +28,7 @@ public class UserController {
   private final UserService userService;
   private final JwtUtils jwtUtils;
 
-  @Value("${app.frontend.url:http://localhost:3000}")
+  @Value("${app.frontend.url:http://localhost:3001}")
   private String frontendUrl;
 
   @PostMapping("/login")
@@ -81,6 +81,7 @@ public class UserController {
       authResponse.setToken(jwtToken);
 
       // Redirect to frontend with success and token
+      String roles = String.join(",", authResponse.getRegisteredRoles());
       String callbackUrl =
           frontendUrl
               + "?"
@@ -90,7 +91,9 @@ public class UserController {
               + "&email="
               + authResponse.getEmail()
               + "&id="
-              + authResponse.getId();
+              + authResponse.getId()
+              + "&roles="
+              + roles;
 
       return new RedirectView(callbackUrl);
     } catch (Exception e) {
@@ -138,7 +141,7 @@ public class UserController {
       return ResponseEntity.ok(
           ApiResponse.<UserAuthResponseDto>builder()
               .success(true)
-              .message("Email verified successfully! You are now logged in.")
+              .message("Email verified successfully! You can now log in.")
               .timestamp(LocalDateTime.now().toString())
               .build());
     } catch (IllegalArgumentException e) {
@@ -213,6 +216,7 @@ public class UserController {
       authResponse.setToken(jwtToken);
 
       // Redirect to frontend with success and token
+      String roles = String.join(",", authResponse.getRegisteredRoles());
       String callbackUrl =
           frontendUrl
               + "/auth/callback?"
@@ -222,7 +226,9 @@ public class UserController {
               + "&email="
               + authResponse.getEmail()
               + "&id="
-              + authResponse.getId();
+              + authResponse.getId()
+              + "&roles="
+              + roles;
 
       return new RedirectView(callbackUrl);
     } catch (Exception e) {

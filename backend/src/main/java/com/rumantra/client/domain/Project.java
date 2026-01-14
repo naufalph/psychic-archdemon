@@ -30,11 +30,20 @@ public class Project {
   @ToString.Exclude
   private Client client;
 
-  @Column(name = "budget_min", nullable = false)
-  private Long budgetMin; // Minimum budget in cents/smallest currency unit
+  @Column(name = "title", nullable = false)
+  private String title;
 
-  @Column(name = "budget_max", nullable = false)
-  private Long budgetMax; // Maximum budget in cents/smallest currency unit
+  @Column(name = "location", nullable = false)
+  private String location;
+
+  @Column(name = "budget_total")
+  private Long budgetTotal;
+
+  @Column(name = "design_budget_min")
+  private Long designBudgetMin;
+
+  @Column(name = "design_budget_max")
+  private Long designBudgetMax;
 
   @Column(name = "project_category", length = 255)
   private String projectCategory;

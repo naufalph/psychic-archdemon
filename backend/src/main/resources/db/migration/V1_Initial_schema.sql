@@ -93,8 +93,11 @@ CREATE INDEX IF NOT EXISTS idx_porto_dtl_porto_id ON rmtr_porto_dtl(porto_id);
 CREATE TABLE IF NOT EXISTS rmtr_project (
     id BIGSERIAL PRIMARY KEY,
     client_id BIGINT NOT NULL REFERENCES rmtr_client(id) ON DELETE CASCADE ON UPDATE CASCADE,
-    budget_min BIGINT NOT NULL CHECK (budget_min >= 0),
-    budget_max BIGINT NOT NULL CHECK (budget_max >= budget_min),
+    title VARCHAR(255) NOT NULL,
+    location VARCHAR(255) NOT NULL,
+    budget_total BIGINT,
+    design_budget_min BIGINT CHECK (design_budget_min >= 0),
+    design_budget_max BIGINT CHECK (design_budget_max >= design_budget_min),
     project_category VARCHAR(255),
     building_function VARCHAR(255),
     estimated_build_area INTEGER CHECK (estimated_build_area > 0),
@@ -114,7 +117,6 @@ CREATE TABLE IF NOT EXISTS rmtr_project (
 );
 
 CREATE INDEX IF NOT EXISTS idx_project_client_id ON rmtr_project(client_id);
-CREATE INDEX IF NOT EXISTS idx_project_budget ON rmtr_project(budget_min, budget_max);
 CREATE INDEX IF NOT EXISTS idx_project_created_at ON rmtr_project(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_project_status ON rmtr_project(status);
 

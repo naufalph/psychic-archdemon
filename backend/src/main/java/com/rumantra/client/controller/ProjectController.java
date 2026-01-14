@@ -30,11 +30,10 @@ public class ProjectController {
 
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<ApiResponse<ProjectResponse>> createProject(
-      @Valid @ModelAttribute CreateProjectRequest request,
+      @Valid @RequestPart("project") CreateProjectRequest request,
       @RequestParam(value = "files", required = false) List<MultipartFile> files) {
 
     try {
-      log.info("Creating project with {} files", files != null ? files.size() : 0);
 
       ProjectResponse response = projectService.createProject(request, files);
 

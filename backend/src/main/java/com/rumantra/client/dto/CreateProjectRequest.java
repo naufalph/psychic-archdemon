@@ -15,16 +15,22 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateProjectRequest {
 
-  @NotNull(message = "Client ID is required")
-  private Long clientId;
+  @NotNull(message = "Title is required")
+  @Size(max = 255, message = "Title must not exceed 255 characters")
+  private String title;
 
-  @NotNull(message = "Minimum budget is required")
-  @Min(value = 0, message = "Minimum budget must be greater than or equal to 0")
-  private Long budgetMin;
+  @NotNull(message = "Location is required")
+  @Size(max = 255, message = "Location must not exceed 255 characters")
+  private String location;
 
-  @NotNull(message = "Maximum budget is required")
-  @Min(value = 0, message = "Maximum budget must be greater than or equal to 0")
-  private Long budgetMax;
+  @Min(value = 0, message = "Budget total must be greater than or equal to 0")
+  private Long budgetTotal;
+
+  @Min(value = 0, message = "Design budget minimum must be greater than or equal to 0")
+  private Long designBudgetMin;
+
+  @Min(value = 0, message = "Design budget maximum must be greater than or equal to 0")
+  private Long designBudgetMax;
 
   @Size(max = 255, message = "Project category must not exceed 255 characters")
   private String projectCategory;

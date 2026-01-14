@@ -108,17 +108,23 @@ public class ProjectService {
             .orElseThrow(
                 () -> new ResourceNotFoundException("Client not found with id: " + clientId));
 
-    // Validate budget range
-    if (request.getBudgetMax() < request.getBudgetMin()) {
-      throw new IllegalArgumentException("Maximum budget must be greater than minimum budget");
+    // Validate design budget range if provided
+    if (request.getDesignBudgetMin() != null && request.getDesignBudgetMax() != null) {
+      if (request.getDesignBudgetMax() < request.getDesignBudgetMin()) {
+        throw new IllegalArgumentException(
+            "Maximum design budget must be greater than minimum design budget");
+      }
     }
 
     // Build project entity
     Project project =
         Project.builder()
             .client(client)
-            .budgetMin(request.getBudgetMin())
-            .budgetMax(request.getBudgetMax())
+            .title(request.getTitle())
+            .location(request.getLocation())
+            .budgetTotal(request.getBudgetTotal())
+            .designBudgetMin(request.getDesignBudgetMin())
+            .designBudgetMax(request.getDesignBudgetMax())
             .projectCategory(request.getProjectCategory())
             .buildingFunction(request.getBuildingFunction())
             .estimatedBuildArea(request.getEstimatedBuildArea())
@@ -334,8 +340,11 @@ public class ProjectService {
     return ProjectResponse.builder()
         .id(project.getId())
         .clientId(project.getClient().getId())
-        .budgetMin(project.getBudgetMin())
-        .budgetMax(project.getBudgetMax())
+        .title(project.getTitle())
+        .location(project.getLocation())
+        .budgetTotal(project.getBudgetTotal())
+        .designBudgetMin(project.getDesignBudgetMin())
+        .designBudgetMax(project.getDesignBudgetMax())
         .projectCategory(project.getProjectCategory())
         .buildingFunction(project.getBuildingFunction())
         .estimatedBuildArea(project.getEstimatedBuildArea())
@@ -350,8 +359,8 @@ public class ProjectService {
         .status(project.getStatus())
         .isValid(
             project.getStatus() == ProjectStatus.OPEN
-                ? true
-                : (project.getStatus() == ProjectStatus.REJECTED ? false : null))
+                ? Boolean.TRUE
+                : Boolean.FALSE)
         .validationNotes(project.getValidationNotes())
         .files(fileDtos)
         .createdAt(project.getCreatedAt())
@@ -377,7 +386,9 @@ public class ProjectService {
    * @return A descriptive title
    */
   private String buildProjectTitle(Project project) {
-    if (project.getBuildingFunction() != null && !project.getBuildingFunction().isBlank()) {
+    if (project.getTitle() != null && !project.getTitle().isBlank()) {
+      return project.getTitle();
+    } else if (project.getBuildingFunction() != null && !project.getBuildingFunction().isBlank()) {
       return project.getBuildingFunction() + " (Project #" + project.getId() + ")";
     } else if (project.getProjectCategory() != null && !project.getProjectCategory().isBlank()) {
       return project.getProjectCategory() + " (Project #" + project.getId() + ")";

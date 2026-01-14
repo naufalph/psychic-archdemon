@@ -19,8 +19,11 @@ public class ProjectResponse {
 
   private Long id;
   private Long clientId;
-  private Long budgetMin;
-  private Long budgetMax;
+  private String title;
+  private String location;
+  private Long budgetTotal;
+  private Long designBudgetMin;
+  private Long designBudgetMax;
   private String projectCategory;
   private String buildingFunction;
   private Integer estimatedBuildArea;
@@ -32,8 +35,8 @@ public class ProjectResponse {
   private String designPreferences;
   private String contactPerson;
   private LocalDate expectedStartDate;
-  private ProjectStatus status; // New field
-  private Boolean isValid; // Deprecated - computed from status for backward compatibility
+  private ProjectStatus status;
+  private Boolean isValid;
   private String validationNotes;
   private List<ProjectFileDto> files;
   private LocalDateTime createdAt;

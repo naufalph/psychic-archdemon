@@ -1,0 +1,48 @@
+{
+  "name": "rumantra-frontend2",
+  "version": "0.0.1",
+  "description": "Frontend for Architecture Marketplace - connecting architects and clients",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore",
+    "format": "prettier --write src/"
+  },
+  "dependencies": {
+    "@google/genai": "^1.30.0",
+    "@headlessui/vue": "^1.7.16",
+    "@heroicons/vue": "^2.0.18",
+    "@vee-validate/rules": "^4.12.4",
+    "@vueuse/core": "^10.7.0",
+    "@vueuse/motion": "^2.0.0",
+    "axios": "^1.6.2",
+    "chart.js": "^4.4.0",
+    "defu": "^6.1.4",
+    "lucide-vue-next": "^0.344.0",
+    "pinia": "^2.1.7",
+    "vee-validate": "^4.12.4",
+    "vue": "^3.3.8",
+    "vue-chartjs": "^5.2.0",
+    "vue-confetti-explosion": "^1.0.0",
+    "vue-router": "^4.2.5",
+    "vue3-carousel": "^0.3.1"
+  },
+  "devDependencies": {
+    "@tailwindcss/forms": "^0.5.7",
+    "@vitejs/plugin-vue": "^4.5.0",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.54.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-vue": "^9.18.1",
+    "postcss": "^8.4.32",
+    "prettier": "^3.1.0",
+    "tailwindcss": "^3.3.6",
+    "vite": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  }
+}
