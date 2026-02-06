@@ -59,6 +59,9 @@ public class User {
   @Column(name = "updated_at")
   private Timestamp updatedAt;
 
+  @Column(name = "last_login_role", length = 20)
+  private String lastLoginRole;
+
   // Role relationships - eagerly fetched for security checks
   @OneToOne(mappedBy = "user", fetch = FetchType.EAGER)
   private Architect architect;

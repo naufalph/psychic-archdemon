@@ -1,9 +1,12 @@
 <template>
   <div class="min-h-screen bg-[#F4F5F7] py-12">
     <div class="max-w-7xl mx-auto px-6">
-      <button @click="router.push({ name: 'ClientDashboard' })" class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition">
+      <button
+        @click="router.push({ name: 'ClientDashboard' })"
+        class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition"
+      >
         <ArrowLeft :size="20" />
-        Back to Projects
+        {{ t.clientDashboard.backToProjects }}
       </button>
 
       <div v-if="loading" class="bg-white rounded-3xl border border-gray-200 p-12 animate-pulse">
@@ -29,26 +32,26 @@
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div class="bg-gray-50 rounded-2xl p-6">
-              <p class="text-xs text-gray-500 uppercase font-bold mb-2">Lot Size</p>
+              <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.clientDashboard.lotSize }}</p>
               <p class="text-2xl font-bold text-black">{{ currentProject.lotSize }} m²</p>
             </div>
             <div class="bg-gray-50 rounded-2xl p-6">
-              <p class="text-xs text-gray-500 uppercase font-bold mb-2">Design Budget</p>
+              <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.clientDashboard.designBudget }}</p>
               <p class="text-2xl font-bold text-black">{{ formatCurrency(currentProject.designBudget) }}</p>
             </div>
             <div class="bg-gray-50 rounded-2xl p-6">
-              <p class="text-xs text-gray-500 uppercase font-bold mb-2">Proposals</p>
+              <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.clientDashboard.proposalPlural }}</p>
               <p class="text-2xl font-bold text-[#7C4728]">{{ proposalCount }}</p>
             </div>
           </div>
 
           <div class="mb-8">
-            <h2 class="text-lg font-bold text-black mb-3">Description</h2>
+            <h2 class="text-lg font-bold text-black mb-3">{{ t.clientDashboard.description }}</h2>
             <p class="text-gray-700 leading-relaxed">{{ currentProject.description }}</p>
           </div>
 
           <div v-if="currentProject.deliverables && currentProject.deliverables.length > 0">
-            <h2 class="text-lg font-bold text-black mb-3">Required Deliverables</h2>
+            <h2 class="text-lg font-bold text-black mb-3">{{ t.clientDashboard.deliverables }}</h2>
             <div class="flex flex-wrap gap-2">
               <span
                 v-for="deliverable in currentProject.deliverables"
@@ -60,23 +63,28 @@
             </div>
           </div>
 
-          <div v-if="currentProject.biddingDeadline && currentProject.status === 'OPEN'" class="mt-8 pt-6 border-t border-gray-100">
+          <div
+            v-if="currentProject.biddingDeadline && currentProject.status === 'OPEN'"
+            class="mt-8 pt-6 border-t border-gray-100"
+          >
             <BiddingCountdown :deadline="currentProject.biddingDeadline" size="md" />
           </div>
         </div>
 
         <div class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
-          <h2 class="text-2xl font-bold text-black mb-6">Received Proposals ({{ proposalCount }})</h2>
+          <h2 class="text-2xl font-bold text-black mb-6">
+            {{ t.clientDashboard.receivedProposals }} ({{ proposalCount }})
+          </h2>
 
           <div v-if="proposalCount === 0" class="text-center py-12">
             <FileText :size="64" class="text-gray-300 mx-auto mb-4" />
-            <h3 class="text-xl font-bold text-gray-900 mb-2">No proposals yet</h3>
-            <p class="text-gray-500">Architects will submit their proposals soon</p>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">{{ t.clientDashboard.noProposalsYet }}</h3>
+            <p class="text-gray-500">{{ t.clientDashboard.noProposalsMessage }}</p>
           </div>
 
           <div v-else class="space-y-4">
             <div
-              v-for="proposal in currentProject.bids"
+              v-for="proposal in projectBids"
               :key="proposal.id"
               class="bg-gray-50 rounded-2xl p-6 border border-gray-200"
             >
@@ -85,23 +93,26 @@
                   <h3 class="text-lg font-bold text-black">{{ proposal.architectName || 'Architect' }}</h3>
                   <p v-if="proposal.firmName" class="text-sm text-gray-500">{{ proposal.firmName }}</p>
                 </div>
-                <span v-if="proposal.status === 'ACCEPTED'" class="bg-[#7C4728] text-white px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2">
+                <span
+                  v-if="proposal.status === 'ACCEPTED'"
+                  class="bg-[#7C4728] text-white px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2"
+                >
                   <Trophy :size="14" />
-                  Winner
+                  {{ t.clientDashboard.winner }}
                 </span>
               </div>
 
               <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                 <div>
-                  <p class="text-xs text-gray-500 mb-1">Proposed Cost</p>
+                  <p class="text-xs text-gray-500 mb-1">{{ t.clientDashboard.proposedCost }}</p>
                   <p class="font-bold text-gray-900">{{ formatCurrency(proposal.proposedCost) }}</p>
                 </div>
                 <div>
-                  <p class="text-xs text-gray-500 mb-1">Duration</p>
-                  <p class="font-bold text-gray-900">{{ proposal.estimatedDuration }} days</p>
+                  <p class="text-xs text-gray-500 mb-1">{{ t.clientDashboard.duration }}</p>
+                  <p class="font-bold text-gray-900">{{ proposal.estimatedDuration }} {{ t.clientDashboard.days }}</p>
                 </div>
                 <div>
-                  <p class="text-xs text-gray-500 mb-1">Status</p>
+                  <p class="text-xs text-gray-500 mb-1">{{ t.clientDashboard.status }}</p>
                   <p class="font-bold text-gray-900">{{ proposal.status }}</p>
                 </div>
               </div>
@@ -115,7 +126,7 @@
                 @click="handleAcceptBid(proposal.id)"
                 class="bg-[#7C4728] hover:bg-black text-white px-6 py-2 rounded-full text-sm font-medium transition"
               >
-                Accept Proposal
+                {{ t.clientDashboard.acceptProposal }}
               </button>
             </div>
           </div>
@@ -129,20 +140,23 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
+import { useI18n } from '@/composables/useI18n'
 import { ArrowLeft, FileText, Trophy } from 'lucide-vue-next'
 import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
 import ProjectStatusBadge from '@/components/project/ProjectStatusBadge.vue'
 import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const projectsStore = useProjectsStore()
 const bidsStore = useBidsStore()
 
 const { currentProject, loading, error } = storeToRefs(projectsStore)
+const { projectBids } = storeToRefs(bidsStore)
 
-const proposalCount = computed(() => currentProject.value?.bids?.length || 0)
+const proposalCount = computed(() => projectBids.value?.length || 0)
 
 const formatCurrency = value => {
   if (!value) return 'N/A'
@@ -157,13 +171,14 @@ const formatCurrency = value => {
 const fetchProject = async () => {
   try {
     await projectsStore.fetchProjectById(route.params.id)
+    await bidsStore.fetchProjectBids(route.params.id)
   } catch (err) {
     console.error('Failed to fetch project:', err)
   }
 }
 
 const handleAcceptBid = async bidId => {
-  if (!confirm('Are you sure you want to accept this proposal?')) return
+  if (!confirm(t.clientDashboard.acceptConfirm)) return
 
   try {
     await bidsStore.acceptBid(route.params.id, bidId)

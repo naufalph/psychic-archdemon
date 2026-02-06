@@ -12,7 +12,7 @@ const messages = {
 export function useI18n() {
   const t = computed(() => messages[locale.value])
 
-  const setLocale = (newLocale) => {
+  const setLocale = newLocale => {
     if (messages[newLocale]) {
       locale.value = newLocale
       localStorage.setItem('locale', newLocale)

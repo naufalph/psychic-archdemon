@@ -3,8 +3,11 @@ package com.rumantra.architect.domain;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.Type;
+
 import com.rumantra.user.domain.User;
 
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -71,4 +74,24 @@ public class Architect {
   @Column(name = "success_project")
   @Builder.Default()
   private int successProject = 0;
+
+  @Column(name = "needs_onboarding")
+  @Builder.Default
+  private Boolean needsOnboarding = true;
+
+  @Column(name = "onboarding_completed_at")
+  private java.sql.Timestamp onboardingCompletedAt;
+
+  @Column(name = "city", length = 255)
+  private String city;
+
+  @Column(name = "experience_range", length = 50)
+  private String experienceRange;
+
+  @Column(name = "philosophy", columnDefinition = "TEXT")
+  private String philosophy;
+
+  @Type(JsonType.class)
+  @Column(name = "expertise", columnDefinition = "jsonb")
+  private java.util.List<String> expertise;
 }

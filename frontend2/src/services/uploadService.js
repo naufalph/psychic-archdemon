@@ -10,9 +10,7 @@ export const validateFile = (file, options = {}) => {
   }
 
   if (!allowedTypes.includes(file.type)) {
-    const typesString = allowedTypes
-      .map(type => type.split('/')[1].toUpperCase())
-      .join(', ')
+    const typesString = allowedTypes.map(type => type.split('/')[1].toUpperCase()).join(', ')
     throw new Error(`Invalid file type. Allowed types: ${typesString}`)
   }
 

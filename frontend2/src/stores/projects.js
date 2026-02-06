@@ -1,6 +1,19 @@
 import { defineStore } from 'pinia'
 import { projectAPI } from '@/services/api'
 
+const transformProjectData = backendProject => ({
+  ...backendProject,
+  buildingType: backendProject.buildingFunction,
+  description: backendProject.scopeOfWork,
+  lotSize: backendProject.estimatedBuildArea,
+  totalBudget: backendProject.budgetTotal,
+  designBudget: backendProject.designBudgetMax,
+  buildingFunction: backendProject.buildingFunction,
+  scopeOfWork: backendProject.scopeOfWork,
+  estimatedBuildArea: backendProject.estimatedBuildArea,
+  budgetTotal: backendProject.budgetTotal
+})
+
 export const useProjectsStore = defineStore('projects', {
   state: () => ({
     projects: [],
@@ -22,7 +35,8 @@ export const useProjectsStore = defineStore('projects', {
       this.error = null
       try {
         const response = await projectAPI.getAll()
-        this.projects = response.data.data || []
+        const projects = response.data.data || []
+        this.projects = projects.map(transformProjectData)
       } catch (error) {
         this.error = error.response?.data?.message || 'Failed to fetch projects'
         console.error('Failed to fetch projects:', error)
@@ -37,7 +51,8 @@ export const useProjectsStore = defineStore('projects', {
       this.error = null
       try {
         const response = await projectAPI.getOpenProjects()
-        this.openProjects = response.data.data || []
+        const projects = response.data.data || []
+        this.openProjects = projects.map(transformProjectData)
       } catch (error) {
         this.error = error.response?.data?.message || 'Failed to fetch open projects'
         console.error('Failed to fetch open projects:', error)
@@ -52,7 +67,7 @@ export const useProjectsStore = defineStore('projects', {
       this.error = null
       try {
         const response = await projectAPI.getById(id)
-        this.currentProject = response.data.data
+        this.currentProject = transformProjectData(response.data.data)
         return this.currentProject
       } catch (error) {
         this.error = error.response?.data?.message || 'Failed to fetch project'

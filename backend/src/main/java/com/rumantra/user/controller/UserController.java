@@ -12,6 +12,7 @@ import com.rumantra.security.JwtUtils;
 import com.rumantra.security.SecurityUtils;
 import com.rumantra.shared.RumantraConstants;
 import com.rumantra.shared.dto.ApiResponse;
+import com.rumantra.shared.exception.ResourceNotFoundException;
 import com.rumantra.user.dto.UserAuthResponseDto;
 import com.rumantra.user.dto.UserDto;
 import com.rumantra.user.dto.UserLoginRequestDto;
@@ -20,7 +21,9 @@ import com.rumantra.user.service.UserService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RestController
 @RequestMapping("/rmtr/users")
 @RequiredArgsConstructor
@@ -66,25 +69,25 @@ public class UserController {
   }
 
   @GetMapping("/oauth2/google")
-  public ResponseEntity<String> googleLogin() {
-    // Return the Google OAuth2 authorization URL
-    return ResponseEntity.ok(userService.getGoogleAuthorizationUrl());
+  public ResponseEntity<String> googleLogin(
+      @RequestParam(value = "role", required = false) String role) {
+    return ResponseEntity.ok(userService.getGoogleAuthorizationUrl(role));
   }
 
   @GetMapping("/oauth2/callback/google")
-  public RedirectView googleCallback(@RequestParam("code") String code) {
+  public RedirectView googleCallback(
+      @RequestParam("code") String code,
+      @RequestParam(value = "state", required = false) String state) {
     try {
-      UserAuthResponseDto authResponse = userService.processGoogleCallback(code);
+      UserAuthResponseDto authResponse = userService.processGoogleCallback(code, state);
 
-      // Generate JWT token and add it to the response
       String jwtToken = jwtUtils.generateJwtToken(authResponse.getEmail());
       authResponse.setToken(jwtToken);
 
-      // Redirect to frontend with success and token
       String roles = String.join(",", authResponse.getRegisteredRoles());
       String callbackUrl =
           frontendUrl
-              + "?"
+              + "/auth/callback?"
               + "success=true"
               + "&token="
               + jwtToken
@@ -93,11 +96,20 @@ public class UserController {
               + "&id="
               + authResponse.getId()
               + "&roles="
-              + roles;
+              + roles
+              + "&needsArchitectOnboarding="
+              + (authResponse.getNeedsArchitectOnboarding() != null
+                  ? authResponse.getNeedsArchitectOnboarding()
+                  : "")
+              + "&needsClientOnboarding="
+              + (authResponse.getNeedsClientOnboarding() != null
+                  ? authResponse.getNeedsClientOnboarding()
+                  : "")
+              + "&lastLoginRole="
+              + (authResponse.getLastLoginRole() != null ? authResponse.getLastLoginRole() : "");
 
       return new RedirectView(callbackUrl);
     } catch (Exception e) {
-      // Redirect to frontend with error
       String callbackUrl =
           frontendUrl + "/auth/callback?" + "success=false" + "&error=" + e.getMessage();
 
@@ -136,6 +148,9 @@ public class UserController {
   public ResponseEntity<ApiResponse<UserAuthResponseDto>> verifyEmail(
       @RequestParam("token") String token) {
     try {
+      log.info(
+          "Verifying email with token: {}",
+          token.substring(0, Math.min(10, token.length())) + "...");
       userService.verifyEmail(token);
 
       return ResponseEntity.ok(
@@ -145,18 +160,28 @@ public class UserController {
               .timestamp(LocalDateTime.now().toString())
               .build());
     } catch (IllegalArgumentException e) {
+      log.error("Email verification failed: {}", e.getMessage());
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(
               ApiResponse.<UserAuthResponseDto>builder()
                   .success(false)
                   .message(e.getMessage())
                   .build());
+    } catch (ResourceNotFoundException e) {
+      log.error("User not found during email verification: {}", e.getMessage());
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .body(
+              ApiResponse.<UserAuthResponseDto>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .build());
     } catch (Exception e) {
+      log.error("Error during email verification: {}", e.getMessage(), e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(
               ApiResponse.<UserAuthResponseDto>builder()
                   .success(false)
-                  .message("An error occurred during email verification")
+                  .message("An error occurred during email verification: " + e.getMessage())
                   .build());
     }
   }
@@ -165,6 +190,7 @@ public class UserController {
   public ResponseEntity<ApiResponse<String>> resendVerificationEmail(
       @RequestParam("email") String email) {
     try {
+      log.info("Resending verification email to: {}", email);
       userService.resendVerificationEmail(email);
       return ResponseEntity.ok(
           ApiResponse.<String>builder()
@@ -173,49 +199,53 @@ public class UserController {
               .data("Please check your email for the new verification link")
               .timestamp(LocalDateTime.now().toString())
               .build());
+    } catch (ResourceNotFoundException e) {
+      log.error("User not found for email: {}", email);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .body(ApiResponse.<String>builder().success(false).message(e.getMessage()).build());
     } catch (IllegalArgumentException e) {
+      log.error("Invalid argument for resend verification: {}", e.getMessage());
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(ApiResponse.<String>builder().success(false).message(e.getMessage()).build());
     } catch (Exception e) {
+      log.error("Error resending verification email to {}: {}", email, e.getMessage(), e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(
               ApiResponse.<String>builder()
                   .success(false)
-                  .message("An error occurred while resending verification email")
+                  .message(
+                      "An error occurred while resending verification email: " + e.getMessage())
                   .build());
     }
   }
 
   @GetMapping("/oauth2/linkedin")
-  public ResponseEntity<String> linkedinLogin() {
-    // Return the LinkedIn OAuth2 authorization URL
-    return ResponseEntity.ok(userService.getLinkedInAuthorizationUrl());
+  public ResponseEntity<String> linkedinLogin(
+      @RequestParam(value = "role", required = false) String role) {
+    return ResponseEntity.ok(userService.getLinkedInAuthorizationUrl(role));
   }
 
   @GetMapping("/oauth2/callback/linkedin")
   public RedirectView linkedinCallback(
       @RequestParam(value = "code", required = false) String code,
+      @RequestParam(value = "state", required = false) String state,
       @RequestParam(value = "error", required = false) String error,
       @RequestParam(value = "error_description", required = false) String errorDescription) {
     try {
-      // Check if LinkedIn sent an error instead of code
       if (error != null) {
         String errorMsg = errorDescription != null ? errorDescription : error;
         throw new IllegalArgumentException("LinkedIn OAuth error: " + errorMsg);
       }
 
-      // Check if code is present
       if (code == null || code.trim().isEmpty()) {
         throw new IllegalArgumentException("Authorization code is missing from LinkedIn callback");
       }
 
-      UserAuthResponseDto authResponse = userService.processLinkedInCallback(code);
+      UserAuthResponseDto authResponse = userService.processLinkedInCallback(code, state);
 
-      // Generate JWT token and add it to the response
       String jwtToken = jwtUtils.generateJwtToken(authResponse.getEmail());
       authResponse.setToken(jwtToken);
 
-      // Redirect to frontend with success and token
       String roles = String.join(",", authResponse.getRegisteredRoles());
       String callbackUrl =
           frontendUrl
@@ -228,15 +258,54 @@ public class UserController {
               + "&id="
               + authResponse.getId()
               + "&roles="
-              + roles;
+              + roles
+              + "&needsArchitectOnboarding="
+              + (authResponse.getNeedsArchitectOnboarding() != null
+                  ? authResponse.getNeedsArchitectOnboarding()
+                  : "")
+              + "&needsClientOnboarding="
+              + (authResponse.getNeedsClientOnboarding() != null
+                  ? authResponse.getNeedsClientOnboarding()
+                  : "")
+              + "&lastLoginRole="
+              + (authResponse.getLastLoginRole() != null ? authResponse.getLastLoginRole() : "");
 
       return new RedirectView(callbackUrl);
     } catch (Exception e) {
-      // Redirect to frontend with error
       String callbackUrl =
           frontendUrl + "/auth/callback?" + "success=false" + "&error=" + e.getMessage();
 
       return new RedirectView(callbackUrl);
+    }
+  }
+
+  @GetMapping("/me")
+  public ResponseEntity<ApiResponse<UserDto>> getCurrentUser() {
+    try {
+      UserDto userDto = userService.getCurrentUser();
+
+      return ResponseEntity.ok(
+          ApiResponse.<UserDto>builder()
+              .success(true)
+              .data(userDto)
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+    } catch (ResourceNotFoundException e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .body(
+              ApiResponse.<UserDto>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(
+              ApiResponse.<UserDto>builder()
+                  .success(false)
+                  .message("Failed to fetch user data")
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
     }
   }
 
@@ -284,6 +353,50 @@ public class UserController {
               ApiResponse.<UserDto>builder()
                   .success(false)
                   .message("An error occurred while activating role")
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
+  }
+
+  @PutMapping("/me/last-login-role")
+  public ResponseEntity<ApiResponse<String>> updateLastLoginRole(
+      @RequestParam("role") String role) {
+    try {
+      if (!RumantraConstants.ARCH_ROLE.equals(role)
+          && !RumantraConstants.CLIENT_ROLE.equals(role)) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+            .body(
+                ApiResponse.<String>builder()
+                    .success(false)
+                    .message("Invalid role. Must be 'ARCHITECT' or 'CLIENT'")
+                    .timestamp(LocalDateTime.now().toString())
+                    .build());
+      }
+
+      Long userId = SecurityUtils.getCurrentUserId();
+      userService.updateLastLoginRole(userId, role);
+
+      return ResponseEntity.ok(
+          ApiResponse.<String>builder()
+              .success(true)
+              .message("Last login role updated successfully")
+              .data(role)
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              ApiResponse.<String>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(
+              ApiResponse.<String>builder()
+                  .success(false)
+                  .message("An error occurred while updating last login role")
                   .timestamp(LocalDateTime.now().toString())
                   .build());
     }

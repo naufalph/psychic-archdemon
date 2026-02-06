@@ -69,22 +69,45 @@
 
 ## Local Development Setup
 
-### Database Configuration
+### Quick Start (Recommended)
 
-#### Option 1: Docker Compose (Recommended)
+Start all services (database, backend, frontend) with a single command:
+```bash
+# Start all services
+./start-dev.sh
+
+# Check status
+./status-dev.sh
+
+# Stop all services
+./stop-dev.sh
+```
+
+The `start-dev.sh` script will:
+- Start PostgreSQL database via Docker Compose
+- Start Spring Boot backend on port 8080
+- Start Vue 3 frontend on port 3000
+- Display logs from all services
+- Press `Ctrl+C` to stop all services
+
+### Manual Setup
+
+#### Database Configuration
+
+##### Option 1: Docker Compose (Recommended)
 ```bash
 # Start PostgreSQL database
 docker compose -f docker/dev-database.yml up -d
 ```
 
-#### Option 2: Manual PostgreSQL Setup
+##### Option 2: Manual PostgreSQL Setup
 1. Install PostgreSQL locally
 2. Create database: `architecture_marketplace`
 3. Use credentials from `backend/src/main/resources/application.properties`
 
-### Running the Application
+#### Running the Application
 
-#### Backend (Spring Boot)
+##### Backend (Spring Boot)
 ```bash
 # Navigate to backend directory
 cd backend
@@ -98,7 +121,19 @@ mvn spring-boot:run
 mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
 ```
 
-#### Full Stack with Docker Compose
+##### Frontend (Vue 3)
+```bash
+# Navigate to frontend directory
+cd frontend2
+
+# Install dependencies (first time only)
+npm install
+
+# Start development server
+npm run dev
+```
+
+##### Full Stack with Docker Compose
 ```bash
 # Start entire application stack
 docker compose up --build

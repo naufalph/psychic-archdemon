@@ -51,6 +51,11 @@ public class SecurityConfig {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.addAllowedOriginPattern("http://localhost:3000");
     configuration.addAllowedOriginPattern("http://localhost:3001");
+    configuration.addAllowedOriginPattern("http://*:3001");
+    configuration.addAllowedOriginPattern("http://*:8080");
+    configuration.addAllowedOriginPattern("http://*.ts.net:3000");
+    configuration.addAllowedOriginPattern("http://*.ts.net:3001");
+    configuration.addAllowedOriginPattern("http://*.ts.net:8080");
     configuration.addAllowedMethod("*");
     configuration.addAllowedHeader("*");
     configuration.setAllowCredentials(true);

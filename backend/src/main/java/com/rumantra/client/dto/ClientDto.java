@@ -14,6 +14,8 @@ public class ClientDto {
   private Long id;
   private long userId;
   private String userName;
+  private String firstName;
+  private String lastName;
   private String email;
   private String phoneNumber;
   private String ktpNum;

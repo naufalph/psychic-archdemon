@@ -23,4 +23,10 @@ public class ArchitectDto {
   private int bidLeft;
   private int successMatch;
   private int successProject;
+  private String city;
+  private String experienceRange;
+  private String philosophy;
+  private java.util.List<String> expertise;
+  private Boolean needsOnboarding;
+  private java.sql.Timestamp onboardingCompletedAt;
 }

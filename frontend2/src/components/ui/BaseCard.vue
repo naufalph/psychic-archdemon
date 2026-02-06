@@ -1,10 +1,5 @@
 <template>
-  <div
-    v-motion
-    :initial="{ opacity: 1, y: 0 }"
-    :hover="hoverEffect ? { y: -5 } : {}"
-    :class="cardClasses"
-  >
+  <div v-motion :initial="{ opacity: 1, y: 0 }" :hover="hoverEffect ? { y: -5 } : {}" :class="cardClasses">
     <slot />
   </div>
 </template>

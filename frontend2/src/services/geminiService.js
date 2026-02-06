@@ -4,12 +4,16 @@ const apiKey = import.meta.env.VITE_GEMINI_API_KEY || ''
 const ai = new GoogleGenAI({ apiKey })
 
 const sanitizeProposals = proposals => {
-  return proposals.map(({ pdfUrl, coverImage, facadeImage, interiorImages, layoutImages, ...rest }) => rest)
+  return proposals.map(
+    ({ pdfUrl, coverImage, facadeImage, interiorImages, layoutImages, ...rest }) => rest
+  )
 }
 
 export const analyzeProposals = async (project, proposals) => {
   if (!apiKey) {
-    throw new Error('Gemini API Key is missing. Please set VITE_GEMINI_API_KEY in your .env.local file')
+    throw new Error(
+      'Gemini API Key is missing. Please set VITE_GEMINI_API_KEY in your .env.local file'
+    )
   }
 
   const model = 'gemini-2.5-flash'
@@ -119,4 +123,75 @@ export const chatWithData = async (history, project, proposals, newMessage) => {
 
   const result = await chat.sendMessage({ message: newMessage })
   return result.text
+}
+
+export const polishPhilosophy = async text => {
+  if (!apiKey) {
+    console.warn('Gemini API key not configured')
+    return text
+  }
+
+  try {
+    const model = 'gemini-2.5-flash'
+    const prompt = `You are an editorial assistant for architects. Rewrite this architectural philosophy to be more elegant and professional while preserving the core meaning. Keep it concise (2-3 sentences maximum). Use sophisticated but accessible language.
+
+Original philosophy: "${text}"
+
+Rewrite:`
+
+    const response = await ai.models.generateContent({
+      model,
+      contents: prompt,
+      config: {
+        temperature: 0.7,
+        maxOutputTokens: 200
+      }
+    })
+
+    const polishedText = response.text
+
+    if (!polishedText) {
+      throw new Error('No response from API')
+    }
+
+    return polishedText.trim()
+  } catch (error) {
+    console.error('Philosophy polishing error:', error)
+    return text
+  }
+}
+
+export const getArchitecturalAdvice = async context => {
+  if (!apiKey) {
+    return 'Continue crafting your architectural narrative.'
+  }
+
+  const prompts = {
+    IDENTITY: 'Share advice about establishing a professional architectural practice identity.',
+    PHILOSOPHY: 'Share a brief insight about developing a strong architectural design philosophy.',
+    EXPERTISE: 'Share advice about specializing in architectural domains.',
+    PORTFOLIO: 'Share advice about showcasing architectural projects effectively.',
+    default: 'Share a brief architectural design insight.'
+  }
+
+  const prompt = prompts[context] || prompts.default
+
+  try {
+    const model = 'gemini-2.5-flash'
+    const response = await ai.models.generateContent({
+      model,
+      contents: `${prompt} Respond in one elegant sentence. Be inspiring but concise.`,
+      config: {
+        temperature: 0.8,
+        maxOutputTokens: 100
+      }
+    })
+
+    const advice = response.text
+
+    return advice?.trim() || 'Continue crafting your architectural narrative.'
+  } catch (error) {
+    console.error('AI advice error:', error)
+    return 'Continue crafting your architectural narrative.'
+  }
 }

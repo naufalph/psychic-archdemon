@@ -1,7 +1,10 @@
 <template>
   <div class="min-h-screen bg-[#F4F5F7] py-12">
     <div class="max-w-4xl mx-auto px-6">
-      <button @click="router.push({ name: 'OpportunityList' })" class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition">
+      <button
+        @click="router.push({ name: 'OpportunityList' })"
+        class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition"
+      >
         <ArrowLeft :size="20" />
         Back to Opportunities
       </button>
@@ -18,9 +21,11 @@
         <form @submit.prevent="handleSubmit" class="p-8 space-y-8">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Proposed Cost (IDR)<span class="text-red-500">*</span></label>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Bid Amount (IDR)<span class="text-red-500">*</span></label
+              >
               <input
-                v-model.number="formData.proposedCost"
+                v-model.number="formData.bidAmount"
                 required
                 type="number"
                 placeholder="e.g., 50000000"
@@ -29,10 +34,9 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Estimated Duration (days)<span class="text-red-500">*</span></label>
+              <label class="block text-sm font-medium text-gray-700 mb-2">Proposed Timeline (days)</label>
               <input
-                v-model.number="formData.estimatedDuration"
-                required
+                v-model.number="formData.proposedTimelineDays"
                 type="number"
                 placeholder="e.g., 60"
                 class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#7C4728] focus:border-[#7C4728] outline-none"
@@ -41,22 +45,11 @@
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Concept Description<span class="text-red-500">*</span></label>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Proposal</label>
             <textarea
-              v-model="formData.conceptDescription"
-              required
+              v-model="formData.proposal"
               rows="6"
               placeholder="Describe your design concept, approach, and key features..."
-              class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#7C4728] focus:border-[#7C4728] outline-none"
-            />
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Materials Strategy</label>
-            <textarea
-              v-model="formData.materialsStrategy"
-              rows="4"
-              placeholder="Describe materials you plan to use and sustainability considerations..."
               class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#7C4728] focus:border-[#7C4728] outline-none"
             />
           </div>
@@ -122,10 +115,9 @@ const bidsStore = useBidsStore()
 const { loading, uploadProgress } = storeToRefs(bidsStore)
 
 const formData = ref({
-  proposedCost: null,
-  estimatedDuration: null,
-  conceptDescription: '',
-  materialsStrategy: ''
+  bidAmount: null,
+  proposedTimelineDays: null,
+  proposal: ''
 })
 
 const coverImage = ref(null)
@@ -138,13 +130,13 @@ const handleSubmit = async () => {
 
   try {
     const bidData = {
-      proposedCost: formData.value.proposedCost,
-      estimatedDuration: formData.value.estimatedDuration,
-      conceptDescription: formData.value.conceptDescription,
-      materialsStrategy: formData.value.materialsStrategy
+      projectId: route.params.projectId,
+      bidAmount: formData.value.bidAmount,
+      proposedTimelineDays: formData.value.proposedTimelineDays,
+      proposal: formData.value.proposal
     }
 
-    const bid = await bidsStore.createDraftBid(route.params.projectId, bidData)
+    const bid = await bidsStore.createDraftBid(bidData)
 
     if (conceptSketches.value.length > 0) {
       await bidsStore.uploadConceptSketches(bid.id, conceptSketches.value)

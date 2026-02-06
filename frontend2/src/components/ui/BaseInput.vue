@@ -46,7 +46,8 @@ const props = defineProps({
 defineEmits(['update:modelValue'])
 
 const inputClasses = computed(() => {
-  const baseClasses = 'w-full px-4 py-3 rounded-2xl border-2 bg-white text-gray-900 placeholder-gray-400 focus:outline-none transition-all duration-200'
+  const baseClasses =
+    'w-full px-4 py-3 rounded-2xl border-2 bg-white text-gray-900 placeholder-gray-400 focus:outline-none transition-all duration-200'
   const errorClasses = props.error ? 'border-red-300 focus:border-red-500' : 'border-gray-200 focus:border-brand-green'
   const iconPadding = props.icon ? 'pl-10' : ''
   return `${baseClasses} ${errorClasses} ${iconPadding}`

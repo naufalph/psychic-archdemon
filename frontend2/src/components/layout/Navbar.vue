@@ -5,9 +5,19 @@
         <Logo />
 
         <div class="hidden md:flex items-center gap-10">
-          <router-link to="/" class="text-sm font-bold text-gray-900 hover:text-brand-brown transition-colors">{{ t.nav.home }}</router-link>
-          <router-link to="/how-it-works" class="text-sm font-bold text-gray-900 hover:text-brand-brown transition-colors">{{ t.nav.howItWorks }}</router-link>
-          <router-link to="/signup?role=ARCHITECT" class="text-sm font-bold text-gray-900 hover:text-brand-brown transition-colors">{{ t.nav.forArchitects }}</router-link>
+          <router-link to="/" class="text-sm font-bold text-gray-900 hover:text-brand-brown transition-colors">{{
+            t.nav.home
+          }}</router-link>
+          <router-link
+            to="/how-it-works"
+            class="text-sm font-bold text-gray-900 hover:text-brand-brown transition-colors"
+            >{{ t.nav.howItWorks }}</router-link
+          >
+          <router-link
+            to="/signup?role=ARCHITECT"
+            class="text-sm font-bold text-gray-900 hover:text-brand-brown transition-colors"
+            >{{ t.nav.forArchitects }}</router-link
+          >
         </div>
       </div>
 
@@ -26,7 +36,10 @@
       </button>
     </div>
 
-    <div v-if="isMobileMenuOpen" class="absolute top-full left-0 w-full bg-white shadow-xl p-8 flex flex-col gap-6 md:hidden border-b border-gray-100">
+    <div
+      v-if="isMobileMenuOpen"
+      class="absolute top-full left-0 w-full bg-white shadow-xl p-8 flex flex-col gap-6 md:hidden border-b border-gray-100"
+    >
       <router-link to="/" class="text-lg font-bold">{{ t.nav.home }}</router-link>
       <router-link to="/how-it-works" class="text-lg font-bold">{{ t.nav.howItWorks }}</router-link>
       <router-link to="/signup?role=ARCHITECT" class="text-lg font-bold">{{ t.nav.forArchitects }}</router-link>
@@ -61,18 +74,19 @@ const isMobileMenuOpen = ref(false)
 
 const navClasses = computed(() => {
   const base = 'fixed w-full z-50 transition-all duration-300 py-4'
-  return isScrolled.value
-    ? `${base} bg-white/95 backdrop-blur-md shadow-sm`
-    : `${base} bg-transparent`
+  return isScrolled.value ? `${base} bg-white/95 backdrop-blur-md shadow-sm` : `${base} bg-transparent`
 })
 
 const handleScroll = () => {
   isScrolled.value = window.scrollY > 20
 }
 
-watch(() => route.path, () => {
-  isMobileMenuOpen.value = false
-})
+watch(
+  () => route.path,
+  () => {
+    isMobileMenuOpen.value = false
+  }
+)
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)

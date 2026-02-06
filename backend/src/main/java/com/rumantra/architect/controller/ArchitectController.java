@@ -95,6 +95,32 @@ public class ArchitectController {
     }
   }
 
+  @PutMapping("/onboarding-profile")
+  public ResponseEntity<ApiResponse<ArchitectDto>> updateOnboardingProfile(
+      @Valid @RequestBody UpdateArchitectProfileRequest request, Authentication authentication) {
+    try {
+      Long userId = getUserIdFromAuthentication(authentication);
+
+      ArchitectDto updatedArchitect = architectService.updateProfile(userId, request);
+      return ResponseEntity.ok(
+          ApiResponse.<ArchitectDto>builder()
+              .success(true)
+              .message("Onboarding profile updated successfully!")
+              .data(updatedArchitect)
+              .build());
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(ApiResponse.<ArchitectDto>builder().success(false).message(e.getMessage()).build());
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(
+              ApiResponse.<ArchitectDto>builder()
+                  .success(false)
+                  .message("An error occurred while updating onboarding profile")
+                  .build());
+    }
+  }
+
   private Long getUserIdFromAuthentication(Authentication authentication) {
     if (authentication == null || !authentication.isAuthenticated()) {
       throw new IllegalStateException("User is not authenticated");

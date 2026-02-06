@@ -44,9 +44,7 @@ export const useAuthStore = defineStore('auth', {
 
       try {
         if (this.token) {
-          // Token validation will be handled by the request interceptor
-          // For now, just mark as initialized if token exists
-          // TODO: Add a proper token validation endpoint
+          await this.fetchUserData()
           this.isInitialized = true
         }
       } catch (error) {
@@ -55,6 +53,23 @@ export const useAuthStore = defineStore('auth', {
       } finally {
         this.isLoading = false
         this.isInitialized = true
+      }
+    },
+
+    // Fetch user data from backend using token
+    async fetchUserData() {
+      if (!this.token) return null
+
+      try {
+        const response = await authAPI.getCurrentUser()
+        const { data: userData } = response.data
+
+        this.user = userData
+        return this.user
+      } catch (error) {
+        console.error('Failed to fetch user data:', error)
+        this.clearAuth()
+        throw error
       }
     },
 
@@ -79,10 +94,15 @@ export const useAuthStore = defineStore('auth', {
         this.user = {
           id: authResponse.id,
           email: authResponse.email,
-          registeredRoles: authResponse.registeredRoles || []
+          firstName: authResponse.firstName,
+          lastName: authResponse.lastName,
+          registeredRoles: authResponse.registeredRoles || [],
+          needsArchitectOnboarding: authResponse.needsArchitectOnboarding,
+          needsClientOnboarding: authResponse.needsClientOnboarding,
+          lastLoginRole: authResponse.lastLoginRole
         }
 
-        // Persist token to localStorage
+        // Persist only token to localStorage (NOT user data)
         localStorage.setItem('auth_token', authResponse.token)
 
         // Reset login attempts on successful login
@@ -181,12 +201,11 @@ export const useAuthStore = defineStore('auth', {
     },
 
     // Handle Google OAuth login
-    async loginWithGoogle() {
+    async loginWithGoogle(role = 'CLIENT') {
       try {
-        const response = await authAPI.getGoogleAuthUrl()
+        const response = await authAPI.getGoogleAuthUrl(role)
         const authUrl = response.data
 
-        // Redirect to Google OAuth
         window.location.href = authUrl
       } catch (error) {
         console.error('Google login failed:', error)
@@ -209,10 +228,15 @@ export const useAuthStore = defineStore('auth', {
         this.user = {
           id: authResponse.id,
           email: authResponse.email,
-          registeredRoles: authResponse.registeredRoles || []
+          firstName: authResponse.firstName,
+          lastName: authResponse.lastName,
+          registeredRoles: authResponse.registeredRoles || [],
+          needsArchitectOnboarding: authResponse.needsArchitectOnboarding,
+          needsClientOnboarding: authResponse.needsClientOnboarding,
+          lastLoginRole: authResponse.lastLoginRole
         }
 
-        // Persist token to localStorage
+        // Persist only token to localStorage (NOT user data)
         localStorage.setItem('auth_token', authResponse.token)
 
         return { success: true, user: this.user }
@@ -225,12 +249,11 @@ export const useAuthStore = defineStore('auth', {
     },
 
     // Handle LinkedIn OAuth login
-    async loginWithLinkedIn() {
+    async loginWithLinkedIn(role = 'CLIENT') {
       try {
-        const response = await authAPI.getLinkedInAuthUrl()
+        const response = await authAPI.getLinkedInAuthUrl(role)
         const authUrl = response.data
 
-        // Redirect to LinkedIn OAuth
         window.location.href = authUrl
       } catch (error) {
         console.error('LinkedIn login failed:', error)
@@ -253,10 +276,15 @@ export const useAuthStore = defineStore('auth', {
         this.user = {
           id: authResponse.id,
           email: authResponse.email,
-          registeredRoles: authResponse.registeredRoles || []
+          firstName: authResponse.firstName,
+          lastName: authResponse.lastName,
+          registeredRoles: authResponse.registeredRoles || [],
+          needsArchitectOnboarding: authResponse.needsArchitectOnboarding,
+          needsClientOnboarding: authResponse.needsClientOnboarding,
+          lastLoginRole: authResponse.lastLoginRole
         }
 
-        // Persist token to localStorage
+        // Persist only token to localStorage (NOT user data)
         localStorage.setItem('auth_token', authResponse.token)
 
         return { success: true, user: this.user }
@@ -273,11 +301,24 @@ export const useAuthStore = defineStore('auth', {
       this.user = null
       this.token = null
 
-      // Remove from localStorage
+      // Remove only token from localStorage
       localStorage.removeItem('auth_token')
 
       // Reset state
       this.isInitialized = false
+    },
+
+    // Update last login role
+    async updateLastLoginRole(role) {
+      try {
+        await authAPI.updateLastLoginRole(role)
+
+        if (this.user) {
+          this.user.lastLoginRole = role
+        }
+      } catch (error) {
+        console.error('Failed to update last login role:', error)
+      }
     },
 
     // Handle login failure attempts
@@ -326,15 +367,32 @@ export const useAuthStore = defineStore('auth', {
         const { data } = response.data
 
         if (this.user) {
-          this.user.registeredRoles = data.registeredRoles || []
+          Object.assign(this.user, data)
         }
 
         return { success: true, user: this.user }
       } catch (error) {
         console.error('Role activation failed:', error)
+        if (error.response?.data?.message?.includes('already has')) {
+          await this.fetchUserData()
+          return { success: true, user: this.user, alreadyActivated: true }
+        }
         throw error
       } finally {
         this.isLoading = false
+      }
+    },
+
+    // Force refresh user data from backend (useful for debugging and recovery)
+    async refreshUserData() {
+      if (!this.token) return null
+
+      try {
+        await this.fetchUserData()
+        return { success: true, user: this.user }
+      } catch (error) {
+        console.error('Failed to refresh user data:', error)
+        throw error
       }
     }
   }

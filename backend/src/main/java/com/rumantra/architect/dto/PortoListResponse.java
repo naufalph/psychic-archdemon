@@ -1,6 +1,7 @@
 package com.rumantra.architect.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,5 +23,5 @@ public class PortoListResponse {
   private String location;
   private String projectType;
   private boolean isBuilt;
-  private PortoDetailResponse firstImage; // First image for card thumbnail
+  private List<PortoDetailResponse> images; // Images array (usually just first image for list view)
 }

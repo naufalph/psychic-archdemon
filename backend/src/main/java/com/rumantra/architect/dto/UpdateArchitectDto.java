@@ -31,15 +31,4 @@ public class UpdateArchitectDto {
 
   @Pattern(regexp = "^[0-9]{15,16}$", message = "NPWP must be 15 or 16 digits")
   private String npwp;
-
-  // User-related fields that can be updated
-  @Email(message = "Email must be valid")
-  private String email;
-
-  @Size(min = 8, message = "Password must be at least 8 characters long")
-  @Pattern(
-      regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=]).*$",
-      message =
-          "Password must contain at least one digit, one lowercase, one uppercase, and one special character")
-  private String password;
 }

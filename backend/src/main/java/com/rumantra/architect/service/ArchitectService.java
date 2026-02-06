@@ -1,7 +1,5 @@
 package com.rumantra.architect.service;
 
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -83,24 +81,6 @@ public class ArchitectService {
             .orElseThrow(
                 () -> new ResourceNotFoundException("Architect not found for user ID: " + userId));
 
-    User user = architect.getUser();
-
-    // Update user fields if provided
-    if (updateRequest.getEmail() != null && !updateRequest.getEmail().equals(user.getEmail())) {
-      // Check if new email is already taken
-      if (userRepository.existsByEmail(updateRequest.getEmail())) {
-        throw new IllegalArgumentException("Email is already in use!");
-      }
-      user.setEmail(updateRequest.getEmail());
-    }
-
-    if (updateRequest.getPassword() != null) {
-      user.setPassword(passwordEncoder.encode(updateRequest.getPassword()));
-    }
-
-    user.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
-    userRepository.save(user);
-
     // Update architect fields if provided
     if (updateRequest.getCompanyName() != null) {
       architect.setCompanyName(updateRequest.getCompanyName());
@@ -153,6 +133,39 @@ public class ArchitectService {
     return mapToDto(architect);
   }
 
+  @Transactional
+  public ArchitectDto updateProfile(Long userId, UpdateArchitectProfileRequest request) {
+    Architect architect =
+        architectRepository
+            .findByUserId(userId)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Architect not found for user ID: " + userId));
+
+    if (request.getCompanyName() != null) {
+      architect.setCompanyName(request.getCompanyName());
+    }
+
+    if (request.getCity() != null) {
+      architect.setCity(request.getCity());
+    }
+
+    if (request.getExperienceRange() != null) {
+      architect.setExperienceRange(request.getExperienceRange());
+    }
+
+    if (request.getPhilosophy() != null) {
+      architect.setPhilosophy(request.getPhilosophy());
+    }
+
+    if (request.getExpertise() != null) {
+      architect.setExpertise(request.getExpertise());
+    }
+
+    architect = architectRepository.save(architect);
+
+    return mapToDto(architect);
+  }
+
   private ArchitectDto mapToDto(Architect architect) {
     return ArchitectDto.builder()
         .id(architect.getId())
@@ -169,6 +182,12 @@ public class ArchitectService {
         .npwpVerified(architect.isNpwpVerified())
         .successMatch(architect.getSuccessMatch())
         .successProject(architect.getSuccessProject())
+        .city(architect.getCity())
+        .experienceRange(architect.getExperienceRange())
+        .philosophy(architect.getPhilosophy())
+        .expertise(architect.getExpertise())
+        .needsOnboarding(architect.getNeedsOnboarding())
+        .onboardingCompletedAt(architect.getOnboardingCompletedAt())
         .build();
   }
 }

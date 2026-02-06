@@ -17,4 +17,8 @@ public class UserDto {
   private String lastName;
   private boolean isEmailVerified;
   private boolean isActive;
+  private java.util.List<String> registeredRoles;
+  private Boolean needsArchitectOnboarding;
+  private Boolean needsClientOnboarding;
+  private String lastLoginRole;
 }

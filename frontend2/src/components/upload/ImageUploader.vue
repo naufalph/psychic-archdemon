@@ -12,13 +12,7 @@
       @drop="handleDrop"
       :class="dropzoneClasses"
     >
-      <input
-        ref="fileInput"
-        type="file"
-        accept="image/*"
-        @change="handleFileSelect"
-        class="hidden"
-      />
+      <input ref="fileInput" type="file" accept="image/*" @change="handleFileSelect" class="hidden" />
       <div @click="$refs.fileInput.click()" class="text-center py-8">
         <Upload :size="32" class="text-gray-400 mx-auto mb-3" />
         <p class="text-sm text-gray-600 font-medium mb-1">Drop image here or click to upload</p>
@@ -56,7 +50,17 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
-const { files, previews, isDragging, error, addFiles, clear: clearFiles, handleDrop: dropHandler, handleDragOver, handleDragLeave } = useFileUpload({
+const {
+  files,
+  previews,
+  isDragging,
+  error,
+  addFiles,
+  clear: clearFiles,
+  handleDrop: dropHandler,
+  handleDragOver,
+  handleDragLeave
+} = useFileUpload({
   multiple: false,
   maxFiles: 1
 })
@@ -97,11 +101,14 @@ watch(previews, newPreviews => {
   preview.value = newPreviews.length > 0 ? newPreviews[0] : null
 })
 
-watch(() => props.modelValue, newValue => {
-  if (!newValue && preview.value) {
-    clear()
+watch(
+  () => props.modelValue,
+  newValue => {
+    if (!newValue && preview.value) {
+      clear()
+    }
   }
-})
+)
 
 const dropzoneClasses = ref([
   'border-2 border-dashed rounded-xl cursor-pointer transition-all',

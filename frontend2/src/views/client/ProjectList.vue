@@ -2,13 +2,15 @@
   <div class="space-y-6">
     <div class="flex justify-between items-center">
       <div>
-        <h2 class="text-3xl font-bold text-black">My Projects</h2>
-        <p class="text-gray-500 mt-1">Manage and track your architecture projects</p>
+        <h2 class="text-3xl font-bold text-black">{{ t.clientDashboard.myProjects }}</h2>
+        <p class="text-gray-500 mt-1">{{ t.clientDashboard.myProjectsSubtitle }}</p>
       </div>
       <router-link :to="{ name: 'ProjectCreate' }">
-        <button class="bg-[#7C4728] hover:bg-black text-white px-6 py-3 rounded-full font-medium transition flex items-center gap-2">
+        <button
+          class="bg-[#7C4728] hover:bg-black text-white px-6 py-3 rounded-full font-medium transition flex items-center gap-2"
+        >
           <Plus :size="20" />
-          New Project
+          {{ t.clientDashboard.newProject }}
         </button>
       </router-link>
     </div>
@@ -32,11 +34,11 @@
 
     <div v-else-if="projects.length === 0" class="text-center py-20">
       <Building2 :size="64" class="text-gray-300 mx-auto mb-4" />
-      <h3 class="text-xl font-bold text-gray-900 mb-2">No projects yet</h3>
-      <p class="text-gray-500 mb-6">Create your first project to get started with finding architects</p>
+      <h3 class="text-xl font-bold text-gray-900 mb-2">{{ t.clientDashboard.noProjectsYet }}</h3>
+      <p class="text-gray-500 mb-6">{{ t.clientDashboard.noProjectsMessage }}</p>
       <router-link :to="{ name: 'ProjectCreate' }">
         <button class="bg-[#7C4728] hover:bg-black text-white px-6 py-3 rounded-full font-medium transition">
-          Create Project
+          {{ t.clientDashboard.createProject }}
         </button>
       </router-link>
     </div>
@@ -50,10 +52,12 @@
 <script setup>
 import { onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
+import { useI18n } from '@/composables/useI18n'
 import { Plus, Building2 } from 'lucide-vue-next'
 import { useProjectsStore } from '@/stores/projects'
 import ProjectCard from '@/components/project/ProjectCard.vue'
 
+const { t } = useI18n()
 const projectsStore = useProjectsStore()
 const { projects, loading, error } = storeToRefs(projectsStore)
 

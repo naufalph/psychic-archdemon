@@ -1,10 +1,9 @@
 <template>
-  <button
-    :class="buttonClasses"
-    :disabled="isLoading || disabled"
-    v-bind="$attrs"
-  >
-    <div v-if="isLoading" class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
+  <button :class="buttonClasses" :disabled="isLoading || disabled" v-bind="$attrs">
+    <div
+      v-if="isLoading"
+      class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"
+    ></div>
     <slot />
   </button>
 </template>
@@ -16,7 +15,7 @@ const props = defineProps({
   variant: {
     type: String,
     default: 'primary',
-    validator: (value) => ['primary', 'secondary', 'success', 'ghost'].includes(value)
+    validator: value => ['primary', 'secondary', 'success', 'ghost'].includes(value)
   },
   fullWidth: {
     type: Boolean,
@@ -32,16 +31,17 @@ const props = defineProps({
   }
 })
 
-const baseStyles = "inline-flex items-center justify-center font-bold tracking-tight transition-all duration-300 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+const baseStyles =
+  'inline-flex items-center justify-center font-bold tracking-tight transition-all duration-300 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
 
 const variants = {
-  primary: "bg-black text-white hover:bg-gray-800 shadow-lg hover:shadow-xl focus:ring-black",
-  secondary: "bg-white text-black border-2 border-black hover:bg-black hover:text-white focus:ring-gray-500",
-  success: "bg-brand-green text-white hover:bg-green-600 focus:ring-green-500 shadow-glow",
-  ghost: "bg-transparent text-gray-600 hover:text-black hover:bg-gray-100"
+  primary: 'bg-black text-white hover:bg-gray-800 shadow-lg hover:shadow-xl focus:ring-black',
+  secondary: 'bg-white text-black border-2 border-black hover:bg-black hover:text-white focus:ring-gray-500',
+  success: 'bg-brand-green text-white hover:bg-green-600 focus:ring-green-500 shadow-glow',
+  ghost: 'bg-transparent text-gray-600 hover:text-black hover:bg-gray-100'
 }
 
-const sizes = "px-10 py-3.5 text-base"
+const sizes = 'px-10 py-3.5 text-base'
 
 const buttonClasses = computed(() => {
   const classes = [baseStyles, variants[props.variant], sizes]

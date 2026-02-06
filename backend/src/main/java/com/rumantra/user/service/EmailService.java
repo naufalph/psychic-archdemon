@@ -3,6 +3,7 @@ package com.rumantra.user.service;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -21,7 +22,11 @@ public class EmailService {
   @Value("${spring.mail.username}")
   private String fromEmail;
 
+  @Async
   public void sendVerificationEmail(String toEmail, String token) {
+    long startTime = System.currentTimeMillis();
+    log.info("Starting email send to: {}", toEmail);
+
     try {
       String verificationLink = frontendUrl + "/verify-email?token=" + token;
 
@@ -34,16 +39,28 @@ public class EmailService {
       message.setSubject(subject);
       message.setText(body);
 
+      long smtpStartTime = System.currentTimeMillis();
       mailSender.send(message);
-      log.info("Verification email sent successfully to: {}", toEmail);
+      long smtpDuration = System.currentTimeMillis() - smtpStartTime;
+
+      long totalDuration = System.currentTimeMillis() - startTime;
+      log.info(
+          "Verification email sent successfully to: {} (SMTP: {}ms, Total: {}ms)",
+          toEmail,
+          smtpDuration,
+          totalDuration);
 
     } catch (Exception e) {
-      log.error("Failed to send verification email to: {}", toEmail, e);
-      throw new IllegalStateException("Failed to send verification email: " + e.getMessage());
+      long totalDuration = System.currentTimeMillis() - startTime;
+      log.error("Failed to send verification email to: {} after {}ms", toEmail, totalDuration, e);
+      // Don't throw exception in async method - it won't be caught by caller
     }
   }
 
+  @Async
   public void sendWelcomeEmail(String toEmail, String firstName) {
+    long startTime = System.currentTimeMillis();
+
     try {
       String subject = "Welcome to Rumantra!";
       String body = buildWelcomeEmailBody(firstName);
@@ -54,12 +71,20 @@ public class EmailService {
       message.setSubject(subject);
       message.setText(body);
 
+      long smtpStartTime = System.currentTimeMillis();
       mailSender.send(message);
-      log.info("Welcome email sent successfully to: {}", toEmail);
+      long smtpDuration = System.currentTimeMillis() - smtpStartTime;
+
+      long totalDuration = System.currentTimeMillis() - startTime;
+      log.info(
+          "Welcome email sent successfully to: {} (SMTP: {}ms, Total: {}ms)",
+          toEmail,
+          smtpDuration,
+          totalDuration);
 
     } catch (Exception e) {
-      log.error("Failed to send welcome email to: {}", toEmail, e);
-      // Don't throw exception for welcome email failure
+      long totalDuration = System.currentTimeMillis() - startTime;
+      log.error("Failed to send welcome email to: {} after {}ms", toEmail, totalDuration, e);
     }
   }
 
@@ -93,7 +118,10 @@ public class EmailService {
         firstName != null ? firstName : "there", frontendUrl);
   }
 
+  @Async
   public void sendProjectValidationEmail(String toEmail, String subject, String message) {
+    long startTime = System.currentTimeMillis();
+
     try {
       SimpleMailMessage mailMessage = new SimpleMailMessage();
       mailMessage.setFrom(fromEmail);
@@ -101,12 +129,21 @@ public class EmailService {
       mailMessage.setSubject(subject);
       mailMessage.setText(message);
 
+      long smtpStartTime = System.currentTimeMillis();
       mailSender.send(mailMessage);
-      log.info("Project validation email sent successfully to: {}", toEmail);
+      long smtpDuration = System.currentTimeMillis() - smtpStartTime;
+
+      long totalDuration = System.currentTimeMillis() - startTime;
+      log.info(
+          "Project validation email sent successfully to: {} (SMTP: {}ms, Total: {}ms)",
+          toEmail,
+          smtpDuration,
+          totalDuration);
 
     } catch (Exception e) {
-      log.error("Failed to send project validation email to: {}", toEmail, e);
-      // Don't throw exception - email failure shouldn't break the flow
+      long totalDuration = System.currentTimeMillis() - startTime;
+      log.error(
+          "Failed to send project validation email to: {} after {}ms", toEmail, totalDuration, e);
     }
   }
 }

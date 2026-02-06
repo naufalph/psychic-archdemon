@@ -87,6 +87,9 @@ public class Project {
   @Column(name = "validation_notes", columnDefinition = "TEXT")
   private String validationNotes;
 
+  @Column(name = "bidding_deadline")
+  private LocalDateTime biddingDeadline;
+
   @OneToMany(
       mappedBy = "project",
       cascade = CascadeType.ALL,

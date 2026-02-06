@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.rumantra.bidding.dto.BidResponse;
 import com.rumantra.client.dto.CreateProjectRequest;
 import com.rumantra.client.dto.ProjectResponse;
 import com.rumantra.client.dto.UpdateValidationRequest;
@@ -244,6 +245,33 @@ public class ProjectController {
               ApiResponse.<List<ProjectResponse>>builder()
                   .success(false)
                   .message("An error occurred while retrieving open projects")
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
+  }
+
+  @GetMapping("/{projectId}/bids")
+  public ResponseEntity<ApiResponse<List<BidResponse>>> getProjectBids(
+      @PathVariable Long projectId) {
+
+    try {
+      List<BidResponse> responses = projectService.getProjectBids(projectId);
+
+      return ResponseEntity.ok(
+          ApiResponse.<List<BidResponse>>builder()
+              .success(true)
+              .message("Project bids retrieved successfully")
+              .data(responses)
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+
+    } catch (Exception e) {
+      log.error("Error retrieving bids for project {}", projectId, e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(
+              ApiResponse.<List<BidResponse>>builder()
+                  .success(false)
+                  .message("An error occurred while retrieving project bids")
                   .timestamp(LocalDateTime.now().toString())
                   .build());
     }

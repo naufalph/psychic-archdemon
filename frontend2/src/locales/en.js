@@ -12,6 +12,8 @@ export default {
     clientMode: 'Client Mode',
     activateArchitect: 'Activate as Architect',
     activateClient: 'Activate as Client',
+    profile: 'My Profile',
+    portfolios: 'My Portfolios',
     language: 'Language',
     logout: 'Logout'
   },
@@ -19,7 +21,8 @@ export default {
     title1: 'Get the best',
     title2: 'Architectural design',
     title3: 'Through Comparison!',
-    subtitle: 'Empowering homeowners with data-driven architect selection. Compare designs, budgets, and track your project with precision.',
+    subtitle:
+      'Empowering homeowners with data-driven architect selection. Compare designs, budgets, and track your project with precision.',
     cta: 'Get Started'
   },
   solutions: {
@@ -43,11 +46,11 @@ export default {
     features: {
       transparent: {
         title: 'Transparent Costs & Schedule',
-        desc: 'Every cost is outlined upfront. No hidden fees, no sudden extensions. You know exactly what you\'re paying for.'
+        desc: "Every cost is outlined upfront. No hidden fees, no sudden extensions. You know exactly what you're paying for."
       },
       ai: {
         title: 'AI-Based Architecture Brief',
-        desc: 'Our AI assistant helps you formulate your vision into a professional brief that\'s easy for architects to execute.'
+        desc: "Our AI assistant helps you formulate your vision into a professional brief that's easy for architects to execute."
       },
       analysis: {
         title: 'Pragmatic Price Analysis',
@@ -74,7 +77,8 @@ export default {
     searchNow: 'Search Now'
   },
   footer: {
-    description: 'Indonesia\'s premium architecture marketplace platform. Connecting your vision with the best professionals.',
+    description:
+      "Indonesia's premium architecture marketplace platform. Connecting your vision with the best professionals.",
     platform: 'Platform',
     company: 'Company',
     legal: 'Legal',
@@ -106,7 +110,7 @@ export default {
       orContinueWith: 'Or continue with',
       roleSelection: {
         title: 'I want to',
-        subtitle: 'Choose how you\'ll use Rumantra',
+        subtitle: "Choose how you'll use Rumantra",
         client: {
           title: 'Hire an Architect',
           desc: 'Post projects, compare proposals, and manage your architectural designs'
@@ -120,7 +124,8 @@ export default {
       success: {
         title: 'Account Created Successfully!',
         subtitle: 'Welcome to Rumantra',
-        message: 'A verification email has been sent to your email. Please check your inbox or spam folder.',
+        message:
+          'A verification email has been sent to your email. Please check your inbox or spam folder.',
         redirecting: 'Redirecting you...'
       },
       errors: {
@@ -139,7 +144,7 @@ export default {
       rememberMe: 'Remember me',
       forgotPassword: 'Forgot password?',
       signIn: 'Sign In',
-      noAccount: 'Don\'t have an account?',
+      noAccount: "Don't have an account?",
       signUpHere: 'Sign up here',
       orContinueWith: 'Or continue with',
       errors: {
@@ -151,7 +156,8 @@ export default {
       verifying: 'Verifying your email...',
       pleaseWait: 'Please wait a moment',
       success: 'Email Verified!',
-      successMessage: 'Your email has been verified successfully. You can now sign in to your account.',
+      successMessage:
+        'Your email has been verified successfully. You can now sign in to your account.',
       continueToLogin: 'Continue to Sign In',
       failed: 'Verification Failed',
       failedMessage: 'The verification link is invalid or has expired.',
@@ -159,12 +165,252 @@ export default {
       resend: 'Resend Verification Email',
       resendSuccess: 'Verification email sent! Please check your inbox.',
       backToLogin: 'Back to Sign In'
+    },
+    callback: {
+      processing: 'Signing you in...',
+      pleaseWait: 'Please wait while we complete your login',
+      success: 'Login Successful!',
+      redirecting: 'You have been signed in successfully.',
+      takingYou: 'Taking you to your dashboard...',
+      error: 'Login Failed',
+      genericError: 'Something went wrong during login. Please try again.',
+      returnToLogin: 'Return to Login'
     }
   },
   notFound: {
     title: 'Page Not Found',
-    message: 'The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.',
+    message:
+      'The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.',
     backHome: 'Back to Home',
     goBack: 'Go Back'
+  },
+  profile: {
+    title: 'My Profile',
+    editProfile: 'Edit Profile',
+    saveProfile: 'Save Profile',
+    cancel: 'Cancel',
+    viewMode: {
+      practiceName: 'Practice Name',
+      city: 'City',
+      experience: 'Years of Experience',
+      philosophy: 'Design Philosophy',
+      expertise: 'Areas of Expertise',
+      ktpNum: 'KTP Number',
+      ktpVerified: 'KTP Verified',
+      npwp: 'NPWP',
+      npwpVerified: 'NPWP Verified',
+      verified: 'Verified',
+      notVerified: 'Not Verified'
+    },
+    form: {
+      practiceName: 'Practice Name',
+      practiceNamePlaceholder: 'e.g., Studio Archipelago',
+      city: 'City',
+      cityPlaceholder: 'e.g., Jakarta',
+      experience: 'Years of Experience',
+      experiencePlaceholder: 'Select experience range',
+      philosophy: 'Design Philosophy',
+      philosophyPlaceholder: 'Describe your design philosophy...',
+      expertise: 'Areas of Expertise',
+      expertisePlaceholder: 'Select at least one area',
+      enhanceWithAI: 'Enhance with AI',
+      ktpNum: 'KTP Number',
+      ktpNumPlaceholder: 'Enter 16-digit KTP number',
+      npwp: 'NPWP',
+      npwpPlaceholder: 'Enter 15-16 digit NPWP'
+    },
+    validation: {
+      nameRequired: 'Practice name is required',
+      nameMinLength: 'Practice name must be at least 2 characters',
+      cityRequired: 'City is required',
+      cityMinLength: 'City must be at least 2 characters',
+      experienceRequired: 'Experience range is required',
+      philosophyRequired: 'Design philosophy is required',
+      philosophyMinLength: 'Philosophy must be at least 50 characters',
+      expertiseRequired: 'At least one expertise area is required',
+      ktpNumRequired: 'KTP number is required',
+      ktpNumInvalid: 'KTP number must be exactly 16 digits',
+      npwpRequired: 'NPWP is required',
+      npwpInvalid: 'NPWP must be 15 or 16 digits'
+    },
+    toast: {
+      updateSuccess: 'Profile updated successfully',
+      updateError: 'Failed to update profile. Please try again.',
+      loadError: 'Failed to load profile. Please try again.'
+    }
+  },
+  portfolio: {
+    title: 'My Portfolios',
+    addPortfolio: 'Add Portfolio',
+    editPortfolio: 'Edit Portfolio',
+    deletePortfolio: 'Delete Portfolio',
+    emptyState: {
+      title: 'No portfolios yet',
+      description: 'Create your first portfolio to showcase your work',
+      cta: 'Create Portfolio'
+    },
+    card: {
+      photos: 'photos',
+      edit: 'Edit',
+      delete: 'Delete'
+    },
+    modal: {
+      createTitle: 'Create Portfolio',
+      editTitle: 'Edit Portfolio',
+      save: 'Save Portfolio',
+      cancel: 'Cancel',
+      close: 'Close',
+      unsavedChanges: 'You have unsaved changes. Are you sure you want to close?'
+    },
+    form: {
+      title: 'Project Title',
+      titlePlaceholder: 'e.g., Tropical House Jakarta',
+      description: 'Description',
+      descriptionPlaceholder: 'Describe the project...',
+      projectDate: 'Project Date',
+      projectDatePlaceholder: 'Select date',
+      location: 'Location',
+      locationPlaceholder: 'e.g., Jakarta, Indonesia',
+      projectType: 'Project Type',
+      projectTypePlaceholder: 'Select type',
+      isBuilt: 'This project has been built',
+      images: 'Project Images'
+    },
+    imageManager: {
+      uploadZone: 'Click or drag images here',
+      maxImages: 'Maximum 8 images',
+      maxSize: 'Maximum 10MB per image',
+      currentCount: 'images uploaded',
+      addMore: 'Add more images',
+      deleteImage: 'Delete image',
+      uploading: 'Uploading...'
+    },
+    validation: {
+      titleRequired: 'Project title is required',
+      projectDateRequired: 'Project date is required',
+      projectTypeRequired: 'Project type is required',
+      imagesRequired: 'At least one image is required',
+      maxImagesReached: 'Maximum 8 images allowed',
+      fileTooLarge: 'Image must be less than 10MB',
+      invalidFileType: 'Only image files are allowed'
+    },
+    toast: {
+      createSuccess: 'Portfolio created successfully',
+      updateSuccess: 'Portfolio updated successfully',
+      deleteSuccess: 'Portfolio deleted successfully',
+      createError: 'Failed to create portfolio. Please try again.',
+      updateError: 'Failed to update portfolio. Please try again.',
+      deleteError: 'Failed to delete portfolio. Please try again.',
+      imageUploadSuccess: 'Images uploaded successfully',
+      imageUploadError: 'Failed to upload images. Please try again.',
+      imageDeleteSuccess: 'Image deleted successfully',
+      imageDeleteError: 'Failed to delete image. Please try again.'
+    },
+    deleteConfirm: {
+      title: 'Delete Portfolio',
+      message: 'Are you sure you want to delete this portfolio? This action cannot be undone.',
+      confirm: 'Delete',
+      cancel: 'Cancel'
+    }
+  },
+  clientDashboard: {
+    title: 'Client Dashboard',
+    subtitle: 'Welcome to your workspace',
+    myProjects: 'My Projects',
+    myProjectsSubtitle: 'Manage and track your architecture projects',
+    newProject: 'New Project',
+    noProjectsYet: 'No projects yet',
+    noProjectsMessage: 'Create your first project to get started with finding architects',
+    createProject: 'Create Project',
+    proposalSingular: 'Proposal',
+    proposalPlural: 'Proposals',
+    backToProjects: 'Back to Projects',
+    receivedProposals: 'Received Proposals',
+    noProposalsYet: 'No proposals yet',
+    noProposalsMessage: 'Architects will submit their proposals soon',
+    acceptProposal: 'Accept Proposal',
+    acceptConfirm: 'Are you sure you want to accept this proposal?',
+    lotSize: 'Lot Size',
+    designBudget: 'Design Budget',
+    totalBudget: 'Total Budget',
+    description: 'Description',
+    deliverables: 'Required Deliverables',
+    proposedCost: 'Proposed Cost',
+    duration: 'Duration',
+    days: 'days',
+    status: 'Status',
+    winner: 'Winner',
+    biddingDeadline: 'Bidding Deadline',
+    deadline: 'Deadline'
+  },
+  clientProfile: {
+    title: 'My Profile',
+    subtitle: 'Manage your personal information',
+    editProfile: 'Edit Profile',
+    saveProfile: 'Save Changes',
+    cancel: 'Cancel',
+    viewMode: {
+      title: 'Profile Information',
+      firstName: 'First Name',
+      lastName: 'Last Name',
+      fullName: 'Full Name',
+      email: 'Email Address',
+      phoneNumber: 'Phone Number',
+      ktpNumber: 'KTP Number',
+      verified: 'Verified',
+      city: 'City',
+      companyName: 'Company Name',
+      projectStats: 'Project Statistics',
+      projectsMatched: 'Projects Matched',
+      projectsCompleted: 'Projects Completed'
+    },
+    form: {
+      firstName: 'First Name',
+      firstNamePlaceholder: 'Enter your first name',
+      lastName: 'Last Name',
+      lastNamePlaceholder: 'Enter your last name',
+      phoneNumber: 'Phone Number',
+      phoneNumberPlaceholder: '+62 812 3456 7890',
+      ktpNumber: 'KTP Number',
+      ktpNumberPlaceholder: '1234567890123456',
+      ktpReadOnly: 'This field cannot be edited after verification',
+      nameReadOnly: 'Name cannot be edited after KTP verification',
+      locked: 'Locked',
+      verified: 'Verified',
+      city: 'City',
+      cityPlaceholder: 'e.g., Jakarta, Bandung, Surabaya',
+      companyName: 'Company Name (Optional)',
+      companyNamePlaceholder: 'Your company or organization',
+      readOnly: 'This field cannot be edited'
+    },
+    validation: {
+      firstNameRequired: 'First name is required',
+      lastNameRequired: 'Last name is required',
+      phoneRequired: 'Phone number is required',
+      phoneInvalid: 'Please enter a valid phone number',
+      ktpRequired: 'KTP number is required',
+      ktpInvalid: 'KTP number must be exactly 16 digits',
+      cityRequired: 'City is required'
+    },
+    toast: {
+      loadError: 'Failed to load profile',
+      updateSuccess: 'Profile updated successfully!',
+      updateError: 'Failed to update profile'
+    }
+  },
+  common: {
+    saving: 'Saving...',
+    notSet: 'Not set',
+    backToDashboard: 'Back to Dashboard'
+  },
+  errors: {
+    'firstName.required': 'First name is required',
+    'lastName.required': 'Last name is required',
+    'name.verified.cannot.modify': 'Cannot modify name after KTP verification',
+    'phone.required': 'Phone number is required',
+    'phone.invalid.format': 'Invalid phone number format. Must be 10-16 digits.',
+    'ktp.required': 'KTP number is required',
+    'ktp.invalid.format': 'KTP number must be exactly 16 digits',
+    'ktp.verified.cannot.modify': 'Cannot modify KTP number after verification'
   }
 }

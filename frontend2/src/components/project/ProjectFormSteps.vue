@@ -1,11 +1,7 @@
 <template>
   <div class="flex items-center justify-center mb-12">
     <div class="flex items-center gap-4">
-      <div
-        v-for="step in steps"
-        :key="step.number"
-        class="flex items-center gap-4"
-      >
+      <div v-for="step in steps" :key="step.number" class="flex items-center gap-4">
         <div class="flex flex-col items-center gap-2">
           <div :class="stepCircleClasses(step.number)">
             <Check v-if="step.number < currentStep" :size="20" class="text-white" />
@@ -15,10 +11,7 @@
             {{ step.label }}
           </span>
         </div>
-        <div
-          v-if="step.number < steps.length"
-          :class="stepLineClasses(step.number)"
-        />
+        <div v-if="step.number < steps.length" :class="stepLineClasses(step.number)" />
       </div>
     </div>
   </div>
@@ -53,15 +46,11 @@ const stepCircleClasses = stepNumber => {
 
 const stepLabelClasses = stepNumber => {
   const baseClasses = 'text-xs font-medium'
-  return stepNumber <= props.currentStep
-    ? `${baseClasses} text-gray-900`
-    : `${baseClasses} text-gray-400`
+  return stepNumber <= props.currentStep ? `${baseClasses} text-gray-900` : `${baseClasses} text-gray-400`
 }
 
 const stepLineClasses = stepNumber => {
   const baseClasses = 'w-16 h-1 transition-all'
-  return stepNumber < props.currentStep
-    ? `${baseClasses} bg-[#7C4728]`
-    : `${baseClasses} bg-gray-200`
+  return stepNumber < props.currentStep ? `${baseClasses} bg-[#7C4728]` : `${baseClasses} bg-gray-200`
 }
 </script>

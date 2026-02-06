@@ -27,13 +27,19 @@ const routes = [
   {
     path: '/auth/callback',
     name: 'AuthCallback',
-    component: () => import('@/views/auth/Login.vue')
+    component: () => import('@/views/auth/AuthCallback.vue')
   },
   {
     path: '/client/dashboard',
     name: 'ClientDashboard',
     component: () => import('@/views/client/ClientDashboard.vue'),
     meta: { requiresAuth: true }
+  },
+  {
+    path: '/architect/onboarding',
+    name: 'ArchitectOnboarding',
+    component: () => import('@/views/architect/ArchitectOnboarding.vue'),
+    meta: { requiresAuth: true, requiresOnboarding: true, role: 'ARCHITECT' }
   },
   {
     path: '/architect/dashboard',
@@ -72,6 +78,24 @@ const routes = [
     meta: { requiresAuth: true, requiresRole: 'ARCHITECT' }
   },
   {
+    path: '/architect/profile',
+    name: 'ArchitectProfile',
+    component: () => import('@/views/architect/ArchitectProfile.vue'),
+    meta: { requiresAuth: true, requiresRole: 'ARCHITECT' }
+  },
+  {
+    path: '/architect/portfolios',
+    name: 'ArchitectPortfolios',
+    component: () => import('@/views/architect/ArchitectPortfolios.vue'),
+    meta: { requiresAuth: true, requiresRole: 'ARCHITECT' }
+  },
+  {
+    path: '/client/profile',
+    name: 'ClientProfile',
+    component: () => import('@/views/client/ClientProfile.vue'),
+    meta: { requiresAuth: true, requiresRole: 'CLIENT' }
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/NotFound.vue')
@@ -86,24 +110,62 @@ const router = createRouter({
   }
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
+
+  // Initialize auth from token if not already done
+  if (authStore.token && !authStore.user) {
+    try {
+      await authStore.fetchUserData()
+    } catch (error) {
+      console.error('Failed to fetch user data:', error)
+      authStore.clearAuth()
+      if (to.meta.requiresAuth) {
+        next({ name: 'Login', query: { redirect: to.fullPath } })
+        return
+      }
+    }
+  }
 
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next({ name: 'Login', query: { redirect: to.fullPath } })
-  } else if (to.meta.requiresGuest && authStore.isAuthenticated) {
+    return
+  }
+
+  if (to.meta.requiresGuest && authStore.isAuthenticated) {
     next({ name: 'Landing' })
-  } else if (to.meta.requiresRole) {
+    return
+  }
+
+  // Check if architect needs onboarding before accessing architect routes
+  if (to.name === 'ArchitectDashboard' && authStore.user?.needsArchitectOnboarding === true) {
+    next({ name: 'ArchitectOnboarding' })
+    return
+  }
+
+  if (to.meta.requiresOnboarding) {
+    // Check backend data, not localStorage
+    const needsOnboarding =
+      to.meta.role === 'ARCHITECT' ? authStore.user?.needsArchitectOnboarding : false
+
+    if (!needsOnboarding) {
+      // Already completed onboarding, redirect to dashboard
+      const dashboardRoute = to.meta.role === 'ARCHITECT' ? 'ArchitectDashboard' : 'ClientDashboard'
+      next({ name: dashboardRoute })
+      return
+    }
+  }
+
+  if (to.meta.requiresRole) {
     const requiredRole = to.meta.requiresRole
     if (!authStore.hasRole(requiredRole)) {
       const redirectRoute = requiredRole === 'CLIENT' ? 'ClientDashboard' : 'ArchitectDashboard'
       next({ name: redirectRoute })
-    } else {
-      next()
+      return
     }
-  } else {
-    next()
   }
+
+  next()
 })
 
 export default router

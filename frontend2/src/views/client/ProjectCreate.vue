@@ -18,7 +18,9 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Project Title<span class="text-red-500">*</span></label>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Project Title<span class="text-red-500">*</span></label
+              >
               <input
                 v-model="formData.title"
                 required
@@ -30,7 +32,9 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Location<span class="text-red-500">*</span></label>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Location<span class="text-red-500">*</span></label
+                >
                 <input
                   v-model="formData.location"
                   required
@@ -41,7 +45,9 @@
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Lot Size (m²)<span class="text-red-500">*</span></label>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Lot Size (m²)<span class="text-red-500">*</span></label
+                >
                 <input
                   v-model.number="formData.lotSize"
                   required
@@ -53,7 +59,9 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Building Type<span class="text-red-500">*</span></label>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Building Type<span class="text-red-500">*</span></label
+              >
               <select
                 v-model="formData.buildingType"
                 class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#7C4728] focus:border-[#7C4728] outline-none"
@@ -67,7 +75,9 @@
             </div>
 
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Detailed Requirements<span class="text-red-500">*</span></label>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Detailed Requirements<span class="text-red-500">*</span></label
+              >
               <textarea
                 v-model="formData.description"
                 required
@@ -96,7 +106,9 @@
             <div class="space-y-8">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">Total Construction Budget</label>
-                <p class="text-xs text-gray-500 mb-2">Estimate for construction, material, and labor (Fisik Bangunan)</p>
+                <p class="text-xs text-gray-500 mb-2">
+                  Estimate for construction, material, and labor (Fisik Bangunan)
+                </p>
                 <div class="relative">
                   <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">IDR</span>
                   <input
@@ -178,7 +190,7 @@ const formData = ref({
 const loading = ref(false)
 const error = ref(null)
 
-const formatConstructionBudget = (event) => {
+const formatConstructionBudget = event => {
   const value = event.target.value.replace(/[^0-9]/g, '')
   if (value) {
     formData.value.constructionBudget = parseInt(value, 10).toLocaleString('id-ID')
@@ -208,12 +220,6 @@ const handleSubmit = async () => {
       scopeOfWork: formData.value.description,
       deliverables: formData.value.deliverables
     }
-
-    console.log('=== Form Data ===')
-    console.log('Raw form data:', formData.value)
-    console.log('=== Project Data to Submit ===')
-    console.log('Project data:', projectData)
-    console.log('Design budget object:', formData.value.designBudget)
 
     await projectsStore.createProject(projectData, [])
     router.push({ name: 'ClientDashboard' })

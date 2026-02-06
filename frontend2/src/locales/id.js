@@ -12,6 +12,8 @@ export default {
     clientMode: 'Mode Klien',
     activateArchitect: 'Aktifkan sebagai Arsitek',
     activateClient: 'Aktifkan sebagai Klien',
+    profile: 'Profil Saya',
+    portfolios: 'Portofolio Saya',
     language: 'Bahasa',
     logout: 'Keluar'
   },
@@ -19,7 +21,8 @@ export default {
     title1: 'Dapatkan desain',
     title2: 'Arsitektur terbaik',
     title3: 'Melalui Perbandingan!',
-    subtitle: 'Memberdayakan pemilik rumah dengan pemilihan arsitek berbasis data. Bandingkan desain, anggaran, dan lacak proyek Anda dengan presisi.',
+    subtitle:
+      'Memberdayakan pemilik rumah dengan pemilihan arsitek berbasis data. Bandingkan desain, anggaran, dan lacak proyek Anda dengan presisi.',
     cta: 'Mari Memulai'
   },
   solutions: {
@@ -61,11 +64,13 @@ export default {
   },
   gallery: {
     title: 'Inspirasi Tanpa Batas',
-    subtitle: 'Temukan keajaiban arsitektur modern yang dikurasi dari para profesional terbaik kami.'
+    subtitle:
+      'Temukan keajaiban arsitektur modern yang dikurasi dari para profesional terbaik kami.'
   },
   cta: {
     title: 'Siap menyewa Arsitek Ahli Anda?',
-    subtitle: 'Bergabunglah dengan ribuan pemilik rumah yang membangun impian mereka melalui platform Rumantra.',
+    subtitle:
+      'Bergabunglah dengan ribuan pemilik rumah yang membangun impian mereka melalui platform Rumantra.',
     startNow: 'Mulai Sekarang',
     learnMore: 'Pelajari Lebih Lanjut',
     hirePro: 'Sewa Pro',
@@ -74,7 +79,8 @@ export default {
     searchNow: 'Cari Sekarang'
   },
   footer: {
-    description: 'Platform marketplace arsitektur premium Indonesia. Menghubungkan visi Anda dengan para profesional terbaik.',
+    description:
+      'Platform marketplace arsitektur premium Indonesia. Menghubungkan visi Anda dengan para profesional terbaik.',
     platform: 'Platform',
     company: 'Perusahaan',
     legal: 'Legal',
@@ -120,7 +126,8 @@ export default {
       success: {
         title: 'Akun Berhasil Dibuat!',
         subtitle: 'Selamat datang di Rumantra',
-        message: 'Email verifikasi telah dikirim ke email Anda. Silakan cek inbox atau folder spam Anda.',
+        message:
+          'Email verifikasi telah dikirim ke email Anda. Silakan cek inbox atau folder spam Anda.',
         redirecting: 'Mengarahkan Anda...'
       },
       errors: {
@@ -151,7 +158,8 @@ export default {
       verifying: 'Memverifikasi email Anda...',
       pleaseWait: 'Mohon tunggu sebentar',
       success: 'Email Terverifikasi!',
-      successMessage: 'Email Anda telah berhasil diverifikasi. Sekarang Anda dapat masuk ke akun Anda.',
+      successMessage:
+        'Email Anda telah berhasil diverifikasi. Sekarang Anda dapat masuk ke akun Anda.',
       continueToLogin: 'Lanjut ke Masuk',
       failed: 'Verifikasi Gagal',
       failedMessage: 'Link verifikasi tidak valid atau telah kadaluarsa.',
@@ -159,12 +167,252 @@ export default {
       resend: 'Kirim Ulang Email Verifikasi',
       resendSuccess: 'Email verifikasi terkirim! Silakan cek inbox Anda.',
       backToLogin: 'Kembali ke Masuk'
+    },
+    callback: {
+      processing: 'Sedang masuk...',
+      pleaseWait: 'Mohon tunggu sementara kami menyelesaikan login Anda',
+      success: 'Login Berhasil!',
+      redirecting: 'Anda telah berhasil masuk.',
+      takingYou: 'Mengarahkan ke dashboard Anda...',
+      error: 'Login Gagal',
+      genericError: 'Terjadi kesalahan saat login. Silakan coba lagi.',
+      returnToLogin: 'Kembali ke Login'
     }
   },
   notFound: {
     title: 'Halaman Tidak Ditemukan',
-    message: 'Halaman yang Anda cari mungkin telah dihapus, namanya diubah, atau sementara tidak tersedia.',
+    message:
+      'Halaman yang Anda cari mungkin telah dihapus, namanya diubah, atau sementara tidak tersedia.',
     backHome: 'Kembali ke Beranda',
     goBack: 'Kembali'
+  },
+  profile: {
+    title: 'Profil Saya',
+    editProfile: 'Edit Profil',
+    saveProfile: 'Simpan Profil',
+    cancel: 'Batal',
+    viewMode: {
+      practiceName: 'Nama Praktik',
+      city: 'Kota',
+      experience: 'Tahun Pengalaman',
+      philosophy: 'Filosofi Desain',
+      expertise: 'Bidang Keahlian',
+      ktpNum: 'Nomor KTP',
+      ktpVerified: 'KTP Terverifikasi',
+      npwp: 'NPWP',
+      npwpVerified: 'NPWP Terverifikasi',
+      verified: 'Terverifikasi',
+      notVerified: 'Belum Terverifikasi'
+    },
+    form: {
+      practiceName: 'Nama Praktik',
+      practiceNamePlaceholder: 'contoh: Studio Archipelago',
+      city: 'Kota',
+      cityPlaceholder: 'contoh: Jakarta',
+      experience: 'Tahun Pengalaman',
+      experiencePlaceholder: 'Pilih rentang pengalaman',
+      philosophy: 'Filosofi Desain',
+      philosophyPlaceholder: 'Jelaskan filosofi desain Anda...',
+      expertise: 'Bidang Keahlian',
+      expertisePlaceholder: 'Pilih minimal satu bidang',
+      enhanceWithAI: 'Tingkatkan dengan AI',
+      ktpNum: 'Nomor KTP',
+      ktpNumPlaceholder: 'Masukkan nomor KTP 16 digit',
+      npwp: 'NPWP',
+      npwpPlaceholder: 'Masukkan NPWP 15-16 digit'
+    },
+    validation: {
+      nameRequired: 'Nama praktik wajib diisi',
+      nameMinLength: 'Nama praktik minimal 2 karakter',
+      cityRequired: 'Kota wajib diisi',
+      cityMinLength: 'Kota minimal 2 karakter',
+      experienceRequired: 'Rentang pengalaman wajib diisi',
+      philosophyRequired: 'Filosofi desain wajib diisi',
+      philosophyMinLength: 'Filosofi minimal 50 karakter',
+      expertiseRequired: 'Minimal satu bidang keahlian wajib dipilih',
+      ktpNumRequired: 'Nomor KTP wajib diisi',
+      ktpNumInvalid: 'Nomor KTP harus tepat 16 digit',
+      npwpRequired: 'NPWP wajib diisi',
+      npwpInvalid: 'NPWP harus 15 atau 16 digit'
+    },
+    toast: {
+      updateSuccess: 'Profil berhasil diperbarui',
+      updateError: 'Gagal memperbarui profil. Silakan coba lagi.',
+      loadError: 'Gagal memuat profil. Silakan coba lagi.'
+    }
+  },
+  portfolio: {
+    title: 'Portofolio Saya',
+    addPortfolio: 'Tambah Portofolio',
+    editPortfolio: 'Edit Portofolio',
+    deletePortfolio: 'Hapus Portofolio',
+    emptyState: {
+      title: 'Belum ada portofolio',
+      description: 'Buat portofolio pertama Anda untuk menampilkan karya',
+      cta: 'Buat Portofolio'
+    },
+    card: {
+      photos: 'foto',
+      edit: 'Edit',
+      delete: 'Hapus'
+    },
+    modal: {
+      createTitle: 'Buat Portofolio',
+      editTitle: 'Edit Portofolio',
+      save: 'Simpan Portofolio',
+      cancel: 'Batal',
+      close: 'Tutup',
+      unsavedChanges: 'Anda memiliki perubahan yang belum disimpan. Yakin ingin menutup?'
+    },
+    form: {
+      title: 'Judul Proyek',
+      titlePlaceholder: 'contoh: Rumah Tropis Jakarta',
+      description: 'Deskripsi',
+      descriptionPlaceholder: 'Jelaskan proyek ini...',
+      projectDate: 'Tanggal Proyek',
+      projectDatePlaceholder: 'Pilih tanggal',
+      location: 'Lokasi',
+      locationPlaceholder: 'contoh: Jakarta, Indonesia',
+      projectType: 'Tipe Proyek',
+      projectTypePlaceholder: 'Pilih tipe',
+      isBuilt: 'Proyek ini sudah dibangun',
+      images: 'Gambar Proyek'
+    },
+    imageManager: {
+      uploadZone: 'Klik atau seret gambar ke sini',
+      maxImages: 'Maksimal 8 gambar',
+      maxSize: 'Maksimal 10MB per gambar',
+      currentCount: 'gambar terunggah',
+      addMore: 'Tambah gambar',
+      deleteImage: 'Hapus gambar',
+      uploading: 'Mengunggah...'
+    },
+    validation: {
+      titleRequired: 'Judul proyek wajib diisi',
+      projectDateRequired: 'Tanggal proyek wajib diisi',
+      projectTypeRequired: 'Tipe proyek wajib diisi',
+      imagesRequired: 'Minimal satu gambar wajib diunggah',
+      maxImagesReached: 'Maksimal 8 gambar diperbolehkan',
+      fileTooLarge: 'Gambar harus kurang dari 10MB',
+      invalidFileType: 'Hanya file gambar yang diperbolehkan'
+    },
+    toast: {
+      createSuccess: 'Portofolio berhasil dibuat',
+      updateSuccess: 'Portofolio berhasil diperbarui',
+      deleteSuccess: 'Portofolio berhasil dihapus',
+      createError: 'Gagal membuat portofolio. Silakan coba lagi.',
+      updateError: 'Gagal memperbarui portofolio. Silakan coba lagi.',
+      deleteError: 'Gagal menghapus portofolio. Silakan coba lagi.',
+      imageUploadSuccess: 'Gambar berhasil diunggah',
+      imageUploadError: 'Gagal mengunggah gambar. Silakan coba lagi.',
+      imageDeleteSuccess: 'Gambar berhasil dihapus',
+      imageDeleteError: 'Gagal menghapus gambar. Silakan coba lagi.'
+    },
+    deleteConfirm: {
+      title: 'Hapus Portofolio',
+      message: 'Yakin ingin menghapus portofolio ini? Tindakan ini tidak dapat dibatalkan.',
+      confirm: 'Hapus',
+      cancel: 'Batal'
+    }
+  },
+  clientDashboard: {
+    title: 'Dashboard Klien',
+    subtitle: 'Selamat datang di ruang kerja Anda',
+    myProjects: 'Proyek Saya',
+    myProjectsSubtitle: 'Kelola dan lacak proyek arsitektur Anda',
+    newProject: 'Proyek Baru',
+    noProjectsYet: 'Belum ada proyek',
+    noProjectsMessage: 'Buat proyek pertama Anda untuk mulai mencari arsitek',
+    createProject: 'Buat Proyek',
+    proposalSingular: 'Proposal',
+    proposalPlural: 'Proposal',
+    backToProjects: 'Kembali ke Proyek',
+    receivedProposals: 'Proposal yang Diterima',
+    noProposalsYet: 'Belum ada proposal',
+    noProposalsMessage: 'Arsitek akan mengirimkan proposal mereka segera',
+    acceptProposal: 'Terima Proposal',
+    acceptConfirm: 'Apakah Anda yakin ingin menerima proposal ini?',
+    lotSize: 'Luas Lahan',
+    designBudget: 'Anggaran Desain',
+    totalBudget: 'Total Anggaran',
+    description: 'Deskripsi',
+    deliverables: 'Deliverables yang Diperlukan',
+    proposedCost: 'Biaya yang Diajukan',
+    duration: 'Durasi',
+    days: 'hari',
+    status: 'Status',
+    winner: 'Pemenang',
+    biddingDeadline: 'Batas Waktu Bidding',
+    deadline: 'Batas Waktu'
+  },
+  clientProfile: {
+    title: 'Profil Saya',
+    subtitle: 'Kelola informasi pribadi Anda',
+    editProfile: 'Edit Profil',
+    saveProfile: 'Simpan Perubahan',
+    cancel: 'Batal',
+    viewMode: {
+      title: 'Informasi Profil',
+      firstName: 'Nama Depan',
+      lastName: 'Nama Belakang',
+      fullName: 'Nama Lengkap',
+      email: 'Alamat Email',
+      phoneNumber: 'Nomor Telepon',
+      ktpNumber: 'Nomor KTP',
+      verified: 'Terverifikasi',
+      city: 'Kota',
+      companyName: 'Nama Perusahaan',
+      projectStats: 'Statistik Proyek',
+      projectsMatched: 'Proyek Dicocokkan',
+      projectsCompleted: 'Proyek Selesai'
+    },
+    form: {
+      firstName: 'Nama Depan',
+      firstNamePlaceholder: 'Masukkan nama depan Anda',
+      lastName: 'Nama Belakang',
+      lastNamePlaceholder: 'Masukkan nama belakang Anda',
+      phoneNumber: 'Nomor Telepon',
+      phoneNumberPlaceholder: '+62 812 3456 7890',
+      ktpNumber: 'Nomor KTP',
+      ktpNumberPlaceholder: '1234567890123456',
+      ktpReadOnly: 'Field ini tidak dapat diedit setelah verifikasi',
+      nameReadOnly: 'Nama tidak dapat diedit setelah verifikasi KTP',
+      locked: 'Terkunci',
+      verified: 'Terverifikasi',
+      city: 'Kota',
+      cityPlaceholder: 'contoh: Jakarta, Bandung, Surabaya',
+      companyName: 'Nama Perusahaan (Opsional)',
+      companyNamePlaceholder: 'Perusahaan atau organisasi Anda',
+      readOnly: 'Field ini tidak dapat diedit'
+    },
+    validation: {
+      firstNameRequired: 'Nama depan wajib diisi',
+      lastNameRequired: 'Nama belakang wajib diisi',
+      phoneRequired: 'Nomor telepon wajib diisi',
+      phoneInvalid: 'Masukkan nomor telepon yang valid',
+      ktpRequired: 'Nomor KTP wajib diisi',
+      ktpInvalid: 'Nomor KTP harus 16 digit angka',
+      cityRequired: 'Kota wajib diisi'
+    },
+    toast: {
+      loadError: 'Gagal memuat profil',
+      updateSuccess: 'Profil berhasil diperbarui!',
+      updateError: 'Gagal memperbarui profil'
+    }
+  },
+  common: {
+    saving: 'Menyimpan...',
+    notSet: 'Belum diatur',
+    backToDashboard: 'Kembali ke Dashboard'
+  },
+  errors: {
+    'firstName.required': 'Nama depan wajib diisi',
+    'lastName.required': 'Nama belakang wajib diisi',
+    'name.verified.cannot.modify': 'Tidak dapat mengubah nama setelah verifikasi KTP',
+    'phone.required': 'Nomor telepon wajib diisi',
+    'phone.invalid.format': 'Format nomor telepon tidak valid. Harus 10-16 digit.',
+    'ktp.required': 'Nomor KTP wajib diisi',
+    'ktp.invalid.format': 'Nomor KTP harus tepat 16 digit',
+    'ktp.verified.cannot.modify': 'Tidak dapat mengubah nomor KTP setelah verifikasi'
   }
 }

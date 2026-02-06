@@ -34,7 +34,7 @@
             class="absolute h-2 bg-[#7C4728] rounded-full"
             :style="{
               left: minPercent + '%',
-              width: (maxPercent - minPercent) + '%'
+              width: maxPercent - minPercent + '%'
             }"
           />
 
@@ -53,7 +53,7 @@
           v-model.number="localMin"
           @input="handleMinChange"
           class="absolute w-full h-2 bg-transparent appearance-none top-6"
-          style="z-index: 3; pointer-events: auto;"
+          style="z-index: 3; pointer-events: auto"
         />
 
         <input
@@ -64,7 +64,7 @@
           v-model.number="localMax"
           @input="handleMaxChange"
           class="absolute w-full h-2 bg-transparent appearance-none top-6"
-          style="z-index: 4; pointer-events: auto;"
+          style="z-index: 4; pointer-events: auto"
         />
       </div>
 
@@ -124,23 +124,27 @@ const localMin = ref(props.modelValue.min || 0)
 const localMax = ref(props.modelValue.max || 0)
 const totalDisplay = ref(formatNumberWithCommas(props.modelValue.total || 0))
 
-watch(() => props.modelValue, (newValue) => {
-  if (newValue) {
-    localTotal.value = newValue.total || 0
-    localMin.value = newValue.min || 0
-    localMax.value = newValue.max || 0
-    totalDisplay.value = formatNumberWithCommas(newValue.total || 0)
-  }
-}, { deep: true })
+watch(
+  () => props.modelValue,
+  newValue => {
+    if (newValue) {
+      localTotal.value = newValue.total || 0
+      localMin.value = newValue.min || 0
+      localMax.value = newValue.max || 0
+      totalDisplay.value = formatNumberWithCommas(newValue.total || 0)
+    }
+  },
+  { deep: true }
+)
 
 const sliderMin = computed(() => {
   if (localTotal.value === 0) return 0
-  return Math.max(0, Math.floor(localTotal.value * (1 - props.rangePercent / 100) / props.step) * props.step)
+  return Math.max(0, Math.floor((localTotal.value * (1 - props.rangePercent / 100)) / props.step) * props.step)
 })
 
 const sliderMax = computed(() => {
   if (localTotal.value === 0) return 0
-  return Math.ceil(localTotal.value * (1 + props.rangePercent / 100) / props.step) * props.step
+  return Math.ceil((localTotal.value * (1 + props.rangePercent / 100)) / props.step) * props.step
 })
 
 const minPercent = computed(() => {
@@ -216,42 +220,42 @@ function emitValue() {
   })
 }
 
-const formatCurrency = (value) => {
+const formatCurrency = value => {
   if (!value && value !== 0) return 'IDR 0'
   return 'IDR ' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
 }
 </script>
 
 <style scoped>
-input[type="range"]::-webkit-slider-thumb {
+input[type='range']::-webkit-slider-thumb {
   appearance: none;
   pointer-events: all;
   width: 20px;
   height: 20px;
-  background-color: #7C4728;
+  background-color: #7c4728;
   border-radius: 50%;
   cursor: pointer;
   border: 3px solid white;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
-input[type="range"]::-moz-range-thumb {
+input[type='range']::-moz-range-thumb {
   appearance: none;
   pointer-events: all;
   width: 20px;
   height: 20px;
-  background-color: #7C4728;
+  background-color: #7c4728;
   border-radius: 50%;
   cursor: pointer;
   border: 3px solid white;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
-input[type="range"]::-webkit-slider-thumb:hover {
+input[type='range']::-webkit-slider-thumb:hover {
   background-color: #5a3319;
 }
 
-input[type="range"]::-moz-range-thumb:hover {
+input[type='range']::-moz-range-thumb:hover {
   background-color: #5a3319;
 }
 </style>

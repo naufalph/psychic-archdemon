@@ -8,9 +8,7 @@
       <ProjectStatusBadge :status="project.status" />
     </div>
 
-    <p class="text-gray-500 text-sm mb-4">
-      {{ project.location }} • {{ project.buildingType }}
-    </p>
+    <p class="text-gray-500 text-sm mb-4">{{ project.location }} • {{ project.buildingType }}</p>
 
     <p v-if="project.description" class="text-gray-600 text-sm mb-6 line-clamp-3">
       {{ project.description }}
@@ -20,10 +18,16 @@
       <span class="bg-gray-100 px-3 py-1.5 rounded-full text-xs font-medium border border-gray-200">
         {{ project.lotSize }} m²
       </span>
-      <span v-if="project.totalBudget" class="bg-gray-100 px-3 py-1.5 rounded-full text-xs font-medium border border-gray-200">
+      <span
+        v-if="project.totalBudget"
+        class="bg-gray-100 px-3 py-1.5 rounded-full text-xs font-medium border border-gray-200"
+      >
         IDR {{ formatCurrency(project.totalBudget) }}
       </span>
-      <span v-if="showProposalCount && proposalCount > 0" class="bg-[#7C4728] text-white px-3 py-1.5 rounded-full text-xs font-bold">
+      <span
+        v-if="showProposalCount && proposalCount > 0"
+        class="bg-[#7C4728] text-white px-3 py-1.5 rounded-full text-xs font-bold"
+      >
         {{ proposalCount }} {{ proposalCount === 1 ? 'Proposal' : 'Proposals' }}
       </span>
     </div>

@@ -333,11 +333,11 @@ public class BidService {
         .map(
             ref -> {
               Porto porto = ref.getPorto();
-              PortoDetailResponse firstImage =
+              List<PortoDetailResponse> images =
                   porto.getDetails().stream()
-                      .min(Comparator.comparingInt(PortoDetail::getDisplayOrder))
+                      .sorted(Comparator.comparingInt(PortoDetail::getDisplayOrder))
                       .map(this::mapToPortoDetailResponse)
-                      .orElse(null);
+                      .collect(Collectors.toList());
 
               return PortoListResponse.builder()
                   .id(porto.getId())
@@ -348,7 +348,7 @@ public class BidService {
                   .location(porto.getLocation())
                   .projectType(porto.getProjectType())
                   .isBuilt(porto.isBuilt())
-                  .firstImage(firstImage)
+                  .images(images)
                   .build();
             })
         .collect(Collectors.toList());

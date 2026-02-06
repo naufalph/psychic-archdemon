@@ -107,6 +107,19 @@ public class PortoService {
     // Get architect reference
     Architect architect = entityManager.getReference(Architect.class, architectId);
 
+    // Mark onboarding as complete on first portfolio
+    Architect fullArchitect =
+        architectRepository
+            .findById(architectId)
+            .orElseThrow(() -> new RuntimeException("Architect not found"));
+
+    if (fullArchitect.getNeedsOnboarding() != null && fullArchitect.getNeedsOnboarding()) {
+      fullArchitect.setNeedsOnboarding(false);
+      fullArchitect.setOnboardingCompletedAt(java.sql.Timestamp.from(java.time.Instant.now()));
+      architectRepository.save(fullArchitect);
+      log.info("Architect {} completed onboarding", architectId);
+    }
+
     // Create Porto entity
     Porto porto =
         Porto.builder()
@@ -142,12 +155,12 @@ public class PortoService {
     return portos.stream()
         .map(
             porto -> {
-              // Get first image (lowest display order)
-              PortoDetailResponse firstImage =
+              // Get all images sorted by display order
+              List<PortoDetailResponse> images =
                   porto.getDetails().stream()
-                      .min(Comparator.comparingInt(PortoDetail::getDisplayOrder))
+                      .sorted(Comparator.comparingInt(PortoDetail::getDisplayOrder))
                       .map(this::mapToPortoDetailResponse)
-                      .orElse(null);
+                      .collect(Collectors.toList());
 
               return PortoListResponse.builder()
                   .id(porto.getId())
@@ -158,7 +171,7 @@ public class PortoService {
                   .location(porto.getLocation())
                   .projectType(porto.getProjectType())
                   .isBuilt(porto.isBuilt())
-                  .firstImage(firstImage)
+                  .images(images)
                   .build();
             })
         .collect(Collectors.toList());

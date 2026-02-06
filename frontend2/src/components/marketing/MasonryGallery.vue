@@ -27,7 +27,7 @@ defineProps({
   }
 })
 
-const getImageClasses = (index) => {
+const getImageClasses = index => {
   const heights = ['h-64', 'h-80', 'h-72', 'h-64', 'h-72', 'h-80', 'h-64', 'h-72']
   return heights[index % heights.length]
 }

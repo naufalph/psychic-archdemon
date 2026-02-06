@@ -17,5 +17,10 @@ public class UserAuthResponseDto {
   @Builder.Default private String type = "Bearer";
   private Long id;
   private String email;
+  private String firstName;
+  private String lastName;
   private List<String> registeredRoles;
+  private Boolean needsArchitectOnboarding;
+  private Boolean needsClientOnboarding;
+  private String lastLoginRole;
 }

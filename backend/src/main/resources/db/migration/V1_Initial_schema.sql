@@ -1,8 +1,8 @@
 -- Create rmtr_user table based on JPA entity
 CREATE TABLE IF NOT EXISTS rmtr_user (
-    id BIGSERIAL PRIMARY KEY,
-    password_hash TEXT,
-    email VARCHAR(255) NOT NULL,
+                                         id BIGSERIAL PRIMARY KEY,
+                                         password_hash TEXT,
+                                         email VARCHAR(255) NOT NULL,
     social_type VARCHAR(20) NOT NULL DEFAULT 'EMAIL',
     first_nm VARCHAR(255),
     last_nm VARCHAR(255),
@@ -11,11 +11,15 @@ CREATE TABLE IF NOT EXISTS rmtr_user (
     is_superuser BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL DEFAULT NULL,
+    last_login_role VARCHAR(20) NULL,
 
     CONSTRAINT chk_email_format CHECK (email ~ '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$'),
     CONSTRAINT chk_password_not_empty CHECK (length(password_hash) > 0),
+    CONSTRAINT chk_last_login_role CHECK (last_login_role IS NULL OR last_login_role IN ('ARCHITECT', 'CLIENT')),
     CONSTRAINT uk_user_email_social UNIQUE (email, social_type)
 );
+
+CREATE INDEX idx_user_last_login_role ON rmtr_user(last_login_role);
 
 -- Create rmtr_architect table
 CREATE TABLE IF NOT EXISTS rmtr_architect (
@@ -31,7 +35,13 @@ CREATE TABLE IF NOT EXISTS rmtr_architect (
     npwp VARCHAR(16),
     is_npwp_verified BOOLEAN DEFAULT FALSE,
     success_match INT DEFAULT 0 CHECK (success_match >= 0),
-    success_project INT DEFAULT 0 CHECK (success_project >= 0)
+    city VARCHAR(255),
+    experience_range VARCHAR(50),
+    philosophy TEXT,
+    expertise JSONB,
+    success_project INT DEFAULT 0 CHECK (success_project >= 0),
+    needs_onboarding BOOLEAN DEFAULT TRUE,
+    onboarding_completed_at TIMESTAMP
 );
 
 CREATE INDEX IF NOT EXISTS idx_user_email ON rmtr_user(email);
@@ -111,6 +121,7 @@ CREATE TABLE IF NOT EXISTS rmtr_project (
     expected_start_date DATE,
     status VARCHAR(50) NOT NULL DEFAULT 'PENDING_APPROVAL',
     validation_notes TEXT,
+    bidding_deadline TIMESTAMP DEFAULT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL DEFAULT NULL,
     CONSTRAINT chk_project_status CHECK (status IN ('PENDING_APPROVAL', 'REJECTED', 'OPEN', 'BIDDING_CLOSED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'))
@@ -119,6 +130,7 @@ CREATE TABLE IF NOT EXISTS rmtr_project (
 CREATE INDEX IF NOT EXISTS idx_project_client_id ON rmtr_project(client_id);
 CREATE INDEX IF NOT EXISTS idx_project_created_at ON rmtr_project(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_project_status ON rmtr_project(status);
+CREATE INDEX IF NOT EXISTS idx_project_bidding_deadline ON rmtr_project(bidding_deadline) WHERE bidding_deadline IS NOT NULL;
 
 -- Create rmtr_project_file table (project file uploads)
 CREATE TABLE IF NOT EXISTS rmtr_project_file (

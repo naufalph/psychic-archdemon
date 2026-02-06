@@ -38,6 +38,7 @@ public class ProjectResponse {
   private ProjectStatus status;
   private Boolean isValid;
   private String validationNotes;
+  private LocalDateTime biddingDeadline;
   private List<ProjectFileDto> files;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;

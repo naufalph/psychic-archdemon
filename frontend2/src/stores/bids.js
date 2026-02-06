@@ -1,15 +1,27 @@
 import { defineStore } from 'pinia'
 import { bidAPI } from '@/services/api'
 
+const transformBidData = backendBid => ({
+  ...backendBid,
+  proposedCost: backendBid.bidAmount,
+  estimatedDuration: backendBid.proposedTimelineDays,
+  conceptDescription: backendBid.proposal,
+  firmName: backendBid.architectCompany,
+  bidAmount: backendBid.bidAmount,
+  proposedTimelineDays: backendBid.proposedTimelineDays,
+  proposal: backendBid.proposal,
+  architectCompany: backendBid.architectCompany
+})
+
 export const useBidsStore = defineStore('bids', {
   state: () => ({
     myBids: [],
     projectBids: [],
     currentBid: null,
     quota: {
-      available: 0,
-      total: 0,
-      expiresAt: null
+      tokensRemaining: 0,
+      tokensAllocated: 0,
+      tier: null
     },
     loading: false,
     uploadProgress: 0,
@@ -20,7 +32,7 @@ export const useBidsStore = defineStore('bids', {
     pendingBids: state => state.myBids.filter(b => b.status === 'PENDING'),
     acceptedBids: state => state.myBids.filter(b => b.status === 'ACCEPTED'),
     rejectedBids: state => state.myBids.filter(b => b.status === 'REJECTED'),
-    hasQuota: state => state.quota.available > 0
+    hasQuota: state => state.quota.tokensRemaining > 0
   },
 
   actions: {
@@ -44,7 +56,8 @@ export const useBidsStore = defineStore('bids', {
       this.error = null
       try {
         const response = await bidAPI.getProjectBids(projectId)
-        this.projectBids = response.data.data || []
+        const bids = response.data.data || []
+        this.projectBids = bids.map(transformBidData)
       } catch (error) {
         this.error = error.response?.data?.message || 'Failed to fetch project bids'
         console.error('Failed to fetch project bids:', error)
@@ -57,18 +70,18 @@ export const useBidsStore = defineStore('bids', {
     async fetchQuota() {
       try {
         const response = await bidAPI.getQuota()
-        this.quota = response.data.data || { available: 0, total: 0, expiresAt: null }
+        this.quota = response.data.data || { tokensRemaining: 0, tokensAllocated: 0, tier: null }
       } catch (error) {
         console.error('Failed to fetch quota:', error)
         throw error
       }
     },
 
-    async createDraftBid(projectId, bidData) {
+    async createDraftBid(bidData) {
       this.loading = true
       this.error = null
       try {
-        const response = await bidAPI.createDraftBid(projectId, bidData)
+        const response = await bidAPI.createDraftBid(bidData)
         this.currentBid = response.data.data
         return this.currentBid
       } catch (error) {

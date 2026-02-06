@@ -1,6 +1,12 @@
 <template>
   <div class="min-h-screen bg-[#F4F5F7] flex items-center justify-center p-6">
-    <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px); background-size: 50px 50px"></div>
+    <div
+      class="absolute inset-0 opacity-[0.03] pointer-events-none"
+      style="
+        background-image: linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px);
+        background-size: 50px 50px;
+      "
+    ></div>
 
     <div v-motion :initial="{ opacity: 0, y: 20 }" :enter="{ opacity: 1, y: 0 }" class="w-full max-w-md relative z-10">
       <div class="bg-white rounded-3xl shadow-2xl p-12 border border-gray-100 text-center">
@@ -9,7 +15,9 @@
         </router-link>
 
         <div v-if="isLoading" class="py-12">
-          <div class="w-16 h-16 border-4 border-[#C5A17A] border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+          <div
+            class="w-16 h-16 border-4 border-[#C5A17A] border-t-transparent rounded-full animate-spin mx-auto mb-6"
+          ></div>
           <h2 class="text-2xl font-bold text-black mb-3">
             {{ t.auth?.verifyEmail?.verifying || 'Verifying your email...' }}
           </h2>
@@ -18,7 +26,12 @@
           </p>
         </div>
 
-        <div v-else-if="verificationSuccess" v-motion :initial="{ opacity: 0, scale: 0.9 }" :enter="{ opacity: 1, scale: 1 }">
+        <div
+          v-else-if="verificationSuccess"
+          v-motion
+          :initial="{ opacity: 0, scale: 0.9 }"
+          :enter="{ opacity: 1, scale: 1 }"
+        >
           <ConfettiExplosion
             v-if="showConfetti"
             :particleCount="80"
@@ -35,7 +48,10 @@
             {{ t.auth?.verifyEmail?.success || 'Email Verified!' }}
           </h2>
           <p class="text-gray-600 mb-8 leading-relaxed">
-            {{ t.auth?.verifyEmail?.successMessage || 'Your email has been verified successfully. You can now sign in to your account.' }}
+            {{
+              t.auth?.verifyEmail?.successMessage ||
+              'Your email has been verified successfully. You can now sign in to your account.'
+            }}
           </p>
 
           <router-link to="/login">
@@ -54,7 +70,9 @@
             {{ t.auth?.verifyEmail?.failed || 'Verification Failed' }}
           </h2>
           <p class="text-gray-600 mb-2 leading-relaxed">
-            {{ errorMessage || t.auth?.verifyEmail?.failedMessage || 'The verification link is invalid or has expired.' }}
+            {{
+              errorMessage || t.auth?.verifyEmail?.failedMessage || 'The verification link is invalid or has expired.'
+            }}
           </p>
 
           <div class="mt-8 space-y-4">
@@ -82,7 +100,9 @@
             </div>
 
             <router-link to="/login">
-              <button class="w-full px-10 py-3.5 text-base font-bold tracking-tight rounded-full border-2 border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all">
+              <button
+                class="w-full px-10 py-3.5 text-base font-bold tracking-tight rounded-full border-2 border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all"
+              >
                 {{ t.auth?.verifyEmail?.backToLogin || 'Back to Sign In' }}
               </button>
             </router-link>

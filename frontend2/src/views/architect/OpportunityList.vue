@@ -1,10 +1,19 @@
 <template>
   <div class="min-h-screen bg-[#F4F5F7]">
-    <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px); background-size: 50px 50px"></div>
+    <div
+      class="absolute inset-0 opacity-[0.03] pointer-events-none"
+      style="
+        background-image: linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px);
+        background-size: 50px 50px;
+      "
+    ></div>
 
     <div class="relative z-10 max-w-7xl mx-auto px-6 py-12">
       <div class="mb-8">
-        <button @click="router.push({ name: 'ArchitectDashboard' })" class="mb-4 flex items-center gap-2 text-gray-600 hover:text-black transition">
+        <button
+          @click="router.push({ name: 'ArchitectDashboard' })"
+          class="mb-4 flex items-center gap-2 text-gray-600 hover:text-black transition"
+        >
           <ArrowLeft :size="20" />
           Back to Dashboard
         </button>
@@ -19,7 +28,7 @@
           </div>
           <div>
             <p class="text-sm text-gray-500">Bid Tokens Available</p>
-            <p class="text-2xl font-bold text-[#7C4728]">{{ quota.available }} / {{ quota.total }}</p>
+            <p class="text-2xl font-bold text-[#7C4728]">{{ quota.tokensRemaining }} / {{ quota.tokensAllocated }}</p>
           </div>
         </div>
         <button class="bg-[#7C4728] hover:bg-black text-white px-6 py-2 rounded-full text-sm font-medium transition">
@@ -77,10 +86,7 @@ const handleSubmitProposal = projectId => {
 
 onMounted(async () => {
   try {
-    await Promise.all([
-      projectsStore.fetchOpenProjects(),
-      bidsStore.fetchQuota()
-    ])
+    await Promise.all([projectsStore.fetchOpenProjects(), bidsStore.fetchQuota()])
   } catch (err) {
     console.error('Failed to fetch data:', err)
   }

@@ -5,7 +5,13 @@
       <span v-if="required" class="text-red-500">*</span>
     </label>
 
-    <div v-if="files.length === 0" @dragover="handleDragOver" @dragleave="handleDragLeave" @drop="handleDrop" :class="dropzoneClasses">
+    <div
+      v-if="files.length === 0"
+      @dragover="handleDragOver"
+      @dragleave="handleDragLeave"
+      @drop="handleDrop"
+      :class="dropzoneClasses"
+    >
       <input ref="fileInput" type="file" accept="image/*" multiple @change="handleFileSelect" class="hidden" />
       <div @click="$refs.fileInput.click()" class="text-center py-8">
         <Upload :size="32" class="text-gray-400 mx-auto mb-3" />
@@ -24,7 +30,11 @@
         <Plus :size="32" class="text-gray-400" />
       </div>
 
-      <div v-for="(preview, index) in previews" :key="index" class="aspect-square relative rounded-xl overflow-hidden border border-gray-200 group">
+      <div
+        v-for="(preview, index) in previews"
+        :key="index"
+        class="aspect-square relative rounded-xl overflow-hidden border border-gray-200 group"
+      >
         <img :src="preview" class="w-full h-full object-cover" />
         <button
           @click="removeFile(index)"
@@ -59,7 +69,17 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
-const { files, previews, isDragging, error, addFiles, removeFile: removeFileFromComposable, handleDrop: dropHandler, handleDragOver, handleDragLeave } = useFileUpload({
+const {
+  files,
+  previews,
+  isDragging,
+  error,
+  addFiles,
+  removeFile: removeFileFromComposable,
+  handleDrop: dropHandler,
+  handleDragOver,
+  handleDragLeave
+} = useFileUpload({
   multiple: true,
   maxFiles: props.maxFiles
 })
@@ -85,9 +105,13 @@ const removeFile = index => {
   removeFileFromComposable(index)
 }
 
-watch(files, newFiles => {
-  emit('update:modelValue', newFiles)
-}, { deep: true })
+watch(
+  files,
+  newFiles => {
+    emit('update:modelValue', newFiles)
+  },
+  { deep: true }
+)
 
 const dropzoneClasses = ref([
   'border-2 border-dashed rounded-xl cursor-pointer transition-all',

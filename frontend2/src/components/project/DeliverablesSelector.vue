@@ -20,11 +20,7 @@
         </label>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <label
-          v-for="item in group.items"
-          :key="item.value"
-          :class="labelClasses(item.value)"
-        >
+        <label v-for="item in group.items" :key="item.value" :class="labelClasses(item.value)">
           <input
             type="checkbox"
             :value="item.value"
@@ -99,7 +95,11 @@ const deliverableGroups = [
   {
     category: 'Construction Support',
     items: [
-      { value: 'SUPERVISION', label: 'Construction Supervision', description: 'On-site supervision during construction' },
+      {
+        value: 'SUPERVISION',
+        label: 'Construction Supervision',
+        description: 'On-site supervision during construction'
+      },
       { value: 'AS_BUILT', label: 'As-Built Drawings', description: 'Final drawings reflecting construction changes' }
     ]
   }
@@ -128,9 +128,7 @@ const labelClasses = value => {
 
 const checkboxClasses = value => {
   const baseClasses = 'w-5 h-5 rounded flex items-center justify-center flex-shrink-0'
-  return isSelected(value)
-    ? `${baseClasses} bg-[#7C4728]`
-    : `${baseClasses} border-2 border-gray-300`
+  return isSelected(value) ? `${baseClasses} bg-[#7C4728]` : `${baseClasses} border-2 border-gray-300`
 }
 
 const isAllSelected = category => {
@@ -166,8 +164,6 @@ const selectAllLabelClasses = category => {
 
 const selectAllCheckboxClasses = category => {
   const baseClasses = 'w-4 h-4 rounded flex items-center justify-center flex-shrink-0'
-  return isAllSelected(category)
-    ? `${baseClasses} bg-[#7C4728]`
-    : `${baseClasses} border-2 border-gray-400`
+  return isAllSelected(category) ? `${baseClasses} bg-[#7C4728]` : `${baseClasses} border-2 border-gray-400`
 }
 </script>

@@ -1,8 +1,10 @@
 package com.rumantra.user.service;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -99,8 +101,13 @@ public class UserService {
 
     // Collect user's current roles
     List<String> registeredRoles = new ArrayList<>();
+    Boolean needsArchitectOnboarding = null;
+    Boolean needsClientOnboarding = null;
+
     if (architectRepository.findByUserId(user.getId()).isPresent()) {
       registeredRoles.add(RumantraConstants.ARCH_ROLE);
+      Architect architect = architectRepository.findByUserId(user.getId()).get();
+      needsArchitectOnboarding = architect.getNeedsOnboarding();
     }
     if (clientRepository.findByUserId(user.getId()).isPresent()) {
       registeredRoles.add(RumantraConstants.CLIENT_ROLE);
@@ -114,11 +121,40 @@ public class UserService {
         .type("Bearer")
         .id(user.getId())
         .email(user.getEmail())
+        .firstName(user.getFirstName())
+        .lastName(user.getLastName())
         .registeredRoles(registeredRoles)
+        .needsArchitectOnboarding(needsArchitectOnboarding)
+        .needsClientOnboarding(needsClientOnboarding)
+        .lastLoginRole(user.getLastLoginRole())
         .build();
   }
 
+  public UserDto getCurrentUser() {
+    Long userId = com.rumantra.security.SecurityUtils.getCurrentUserId();
+
+    User user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+    return mapToDto(user);
+  }
+
   private UserDto mapToDto(User user) {
+    List<String> registeredRoles = new ArrayList<>();
+    Boolean needsArchitectOnboarding = null;
+    Boolean needsClientOnboarding = null;
+
+    if (architectRepository.findByUserId(user.getId()).isPresent()) {
+      registeredRoles.add(RumantraConstants.ARCH_ROLE);
+      Architect architect = architectRepository.findByUserId(user.getId()).get();
+      needsArchitectOnboarding = architect.getNeedsOnboarding();
+    }
+    if (clientRepository.findByUserId(user.getId()).isPresent()) {
+      registeredRoles.add(RumantraConstants.CLIENT_ROLE);
+    }
+
     return UserDto.builder()
         .id(user.getId())
         .email(user.getEmail())
@@ -126,6 +162,10 @@ public class UserService {
         .lastName(user.getLastName())
         .isEmailVerified(user.isEmailVerified())
         .isActive(user.isActive())
+        .registeredRoles(registeredRoles)
+        .needsArchitectOnboarding(needsArchitectOnboarding)
+        .needsClientOnboarding(needsClientOnboarding)
+        .lastLoginRole(user.getLastLoginRole())
         .build();
   }
 
@@ -164,18 +204,35 @@ public class UserService {
     return mapToDto(user);
   }
 
-  public String getGoogleAuthorizationUrl() {
+  public String getGoogleAuthorizationUrl(String role) {
     String baseUrl = "https://accounts.google.com/o/oauth2/v2/auth";
     String scope = "email profile";
+    String state = encodeOAuthState(role);
 
     return String.format(
-        "%s?client_id=%s&response_type=code&scope=%s&redirect_uri=%s&access_type=offline",
-        baseUrl, googleClientId, scope, redirectUri);
+        "%s?client_id=%s&response_type=code&scope=%s&redirect_uri=%s&access_type=offline&state=%s",
+        baseUrl, googleClientId, scope, redirectUri, state);
   }
 
-  public UserAuthResponseDto processGoogleCallback(String code) {
+  private String encodeOAuthState(String role) {
+    String roleToEncode = (role != null && !role.isEmpty()) ? role : RumantraConstants.CLIENT_ROLE;
+    return Base64.getUrlEncoder().encodeToString(roleToEncode.getBytes(StandardCharsets.UTF_8));
+  }
+
+  private String decodeOAuthState(String state) {
+    if (state == null || state.isEmpty()) {
+      return RumantraConstants.CLIENT_ROLE;
+    }
     try {
-      // 1. Exchange code for tokens
+      return new String(Base64.getUrlDecoder().decode(state), StandardCharsets.UTF_8);
+    } catch (IllegalArgumentException e) {
+      return RumantraConstants.CLIENT_ROLE;
+    }
+  }
+
+  @Transactional
+  public UserAuthResponseDto processGoogleCallback(String code, String state) {
+    try {
       String tokenUrl = "https://oauth2.googleapis.com/token";
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
@@ -192,7 +249,6 @@ public class UserService {
       JsonNode tokenNode = objectMapper.readTree(tokenResponse.getBody());
       String accessToken = tokenNode.get("access_token").asText();
 
-      // 2. Get user info using access token
       HttpHeaders userInfoHeaders = new HttpHeaders();
       userInfoHeaders.setBearerAuth(accessToken);
 
@@ -220,26 +276,60 @@ public class UserService {
 
       String jwt = jwtUtils.generateJwtToken(user.getEmail());
       List<String> registeredRoles = new ArrayList<>();
+      Boolean needsArchitectOnboarding = null;
+      Boolean needsClientOnboarding = null;
 
-      // Add default client role for Google users
-      if (clientRepository.findByUserId(user.getId()).isEmpty()) {
-        Client client =
-            Client.builder()
-                .user(user)
-                .ktpVerified(false)
-                .projectMatch(0)
-                .projectFinished(0)
-                .build();
-        clientRepository.save(client);
+      String requestedRole = decodeOAuthState(state);
+
+      if (RumantraConstants.ARCH_ROLE.equals(requestedRole)) {
+        if (architectRepository.findByUserId(user.getId()).isEmpty()) {
+          Architect architect =
+              Architect.builder()
+                  .user(user)
+                  .ktpVerified(false)
+                  .npwpVerified(false)
+                  .successMatch(0)
+                  .successProject(0)
+                  .needsOnboarding(true)
+                  .build();
+          architect = architectRepository.save(architect);
+
+          bidQuotaService.initializeBidQuota(architect);
+          subscriptionService.initializeFreeTier(architect);
+        }
+      } else if (RumantraConstants.CLIENT_ROLE.equals(requestedRole)) {
+        if (clientRepository.findByUserId(user.getId()).isEmpty()) {
+          Client client =
+              Client.builder()
+                  .user(user)
+                  .ktpVerified(false)
+                  .projectMatch(0)
+                  .projectFinished(0)
+                  .build();
+          clientRepository.save(client);
+        }
       }
-      registeredRoles.add(RumantraConstants.CLIENT_ROLE);
+
+      if (architectRepository.findByUserId(user.getId()).isPresent()) {
+        registeredRoles.add(RumantraConstants.ARCH_ROLE);
+        Architect architect = architectRepository.findByUserId(user.getId()).get();
+        needsArchitectOnboarding = architect.getNeedsOnboarding();
+      }
+      if (clientRepository.findByUserId(user.getId()).isPresent()) {
+        registeredRoles.add(RumantraConstants.CLIENT_ROLE);
+      }
 
       return UserAuthResponseDto.builder()
           .token(jwt)
           .type("Bearer")
           .id(user.getId())
           .email(user.getEmail())
+          .firstName(user.getFirstName())
+          .lastName(user.getLastName())
           .registeredRoles(registeredRoles)
+          .needsArchitectOnboarding(needsArchitectOnboarding)
+          .needsClientOnboarding(needsClientOnboarding)
+          .lastLoginRole(user.getLastLoginRole())
           .build();
 
     } catch (Exception e) {
@@ -271,23 +361,23 @@ public class UserService {
     return userRepository.save(newUser);
   }
 
-  public String getLinkedInAuthorizationUrl() {
+  public String getLinkedInAuthorizationUrl(String role) {
     String baseUrl = "https://www.linkedin.com/oauth/v2/authorization";
     String scope = "openid profile email";
+    String state = encodeOAuthState(role);
 
     return String.format(
-        "%s?response_type=code&client_id=%s&redirect_uri=%s&scope=%s",
-        baseUrl, linkedinClientId, linkedinRedirectUri, scope);
+        "%s?response_type=code&client_id=%s&redirect_uri=%s&scope=%s&state=%s",
+        baseUrl, linkedinClientId, linkedinRedirectUri, scope, state);
   }
 
-  public UserAuthResponseDto processLinkedInCallback(String code) {
+  @Transactional
+  public UserAuthResponseDto processLinkedInCallback(String code, String state) {
     try {
-      // 1. Exchange code for access token
       String tokenUrl = "https://www.linkedin.com/oauth/v2/accessToken";
       HttpHeaders headers = new HttpHeaders();
       headers.setContentType(org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED);
 
-      // URL encode parameters to handle special characters
       String encodedCode = java.net.URLEncoder.encode(code, "UTF-8");
       String encodedRedirectUri = java.net.URLEncoder.encode(linkedinRedirectUri, "UTF-8");
       String encodedClientId = java.net.URLEncoder.encode(linkedinClientId, "UTF-8");
@@ -323,7 +413,6 @@ public class UserService {
       }
       String accessToken = tokenNode.get("access_token").asText();
 
-      // 2. Get user profile info using OpenID Connect userinfo endpoint
       HttpHeaders profileHeaders = new HttpHeaders();
       profileHeaders.setBearerAuth(accessToken);
 
@@ -337,13 +426,11 @@ public class UserService {
       JsonNode profileInfo = objectMapper.readTree(profileResponse.getBody());
       String email = profileInfo.get("email").asText();
 
-      // 4. Extract profile picture from userinfo response
       String profilePicture = "";
       if (profileInfo.has("picture")) {
         profilePicture = profileInfo.get("picture").asText();
       }
 
-      // 5. Parse name from userinfo response
       String firstName = "";
       String lastName = "";
       if (profileInfo.has("given_name")) {
@@ -353,7 +440,6 @@ public class UserService {
         lastName = profileInfo.get("family_name").asText();
       }
 
-      // Fallback to name field if given_name/family_name not available
       if (firstName.isEmpty() && profileInfo.has("name")) {
         String fullName = profileInfo.get("name").asText();
         String[] nameParts = fullName.split(" ", 2);
@@ -363,12 +449,12 @@ public class UserService {
 
       LinkedInUserInfoDto linkedinUser =
           LinkedInUserInfoDto.builder()
-              .id(profileInfo.get("sub").asText()) // 'sub' is the user ID in OpenID Connect
+              .id(profileInfo.get("sub").asText())
               .firstName(firstName)
               .lastName(lastName)
               .email(email)
               .profilePicture(profilePicture)
-              .emailVerified(true) // LinkedIn emails are considered verified
+              .emailVerified(true)
               .build();
 
       User user =
@@ -378,26 +464,60 @@ public class UserService {
 
       String jwt = jwtUtils.generateJwtToken(user.getEmail());
       List<String> registeredRoles = new ArrayList<>();
+      Boolean needsArchitectOnboarding = null;
+      Boolean needsClientOnboarding = null;
 
-      // Add default client role for LinkedIn users
-      if (clientRepository.findByUserId(user.getId()).isEmpty()) {
-        Client client =
-            Client.builder()
-                .user(user)
-                .ktpVerified(false)
-                .projectMatch(0)
-                .projectFinished(0)
-                .build();
-        clientRepository.save(client);
+      String requestedRole = decodeOAuthState(state);
+
+      if (RumantraConstants.ARCH_ROLE.equals(requestedRole)) {
+        if (architectRepository.findByUserId(user.getId()).isEmpty()) {
+          Architect architect =
+              Architect.builder()
+                  .user(user)
+                  .ktpVerified(false)
+                  .npwpVerified(false)
+                  .successMatch(0)
+                  .successProject(0)
+                  .needsOnboarding(true)
+                  .build();
+          architect = architectRepository.save(architect);
+
+          bidQuotaService.initializeBidQuota(architect);
+          subscriptionService.initializeFreeTier(architect);
+        }
+      } else if (RumantraConstants.CLIENT_ROLE.equals(requestedRole)) {
+        if (clientRepository.findByUserId(user.getId()).isEmpty()) {
+          Client client =
+              Client.builder()
+                  .user(user)
+                  .ktpVerified(false)
+                  .projectMatch(0)
+                  .projectFinished(0)
+                  .build();
+          clientRepository.save(client);
+        }
       }
-      registeredRoles.add(RumantraConstants.CLIENT_ROLE);
+
+      if (architectRepository.findByUserId(user.getId()).isPresent()) {
+        registeredRoles.add(RumantraConstants.ARCH_ROLE);
+        Architect architect = architectRepository.findByUserId(user.getId()).get();
+        needsArchitectOnboarding = architect.getNeedsOnboarding();
+      }
+      if (clientRepository.findByUserId(user.getId()).isPresent()) {
+        registeredRoles.add(RumantraConstants.CLIENT_ROLE);
+      }
 
       return UserAuthResponseDto.builder()
           .token(jwt)
           .type("Bearer")
           .id(user.getId())
           .email(user.getEmail())
+          .firstName(user.getFirstName())
+          .lastName(user.getLastName())
           .registeredRoles(registeredRoles)
+          .needsArchitectOnboarding(needsArchitectOnboarding)
+          .needsClientOnboarding(needsClientOnboarding)
+          .lastLoginRole(user.getLastLoginRole())
           .build();
 
     } catch (Exception e) {
@@ -519,6 +639,7 @@ public class UserService {
               .npwpVerified(false)
               .successMatch(0)
               .successProject(0)
+              .needsOnboarding(true)
               .build();
       architect = architectRepository.save(architect);
 
@@ -548,5 +669,31 @@ public class UserService {
     }
 
     return mapToDto(user);
+  }
+
+  @Transactional
+  public void updateLastLoginRole(Long userId, String role) {
+    User user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+    if (!RumantraConstants.ARCH_ROLE.equals(role) && !RumantraConstants.CLIENT_ROLE.equals(role)) {
+      throw new IllegalArgumentException("Invalid role. Must be ARCHITECT or CLIENT");
+    }
+
+    if (RumantraConstants.ARCH_ROLE.equals(role)) {
+      if (architectRepository.findByUserId(userId).isEmpty()) {
+        throw new IllegalArgumentException("User does not have ARCHITECT role");
+      }
+    } else if (RumantraConstants.CLIENT_ROLE.equals(role)) {
+      if (clientRepository.findByUserId(userId).isEmpty()) {
+        throw new IllegalArgumentException("User does not have CLIENT role");
+      }
+    }
+
+    user.setLastLoginRole(role);
+    user.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+    userRepository.save(user);
   }
 }

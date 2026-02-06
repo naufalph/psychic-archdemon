@@ -174,15 +174,21 @@ export const authAPI = {
   resendVerification: email => api.post(`/rmtr/users/resend-verification?email=${email}`),
 
   // Google OAuth endpoints
-  getGoogleAuthUrl: () => api.get('/rmtr/users/oauth2/google'),
+  getGoogleAuthUrl: role => api.get('/rmtr/users/oauth2/google', { params: { role } }),
   googleCallback: code => api.get(`/rmtr/users/oauth2/callback/google?code=${code}`),
 
   // LinkedIn OAuth endpoints
-  getLinkedInAuthUrl: () => api.get('/rmtr/users/oauth2/linkedin'),
+  getLinkedInAuthUrl: role => api.get('/rmtr/users/oauth2/linkedin', { params: { role } }),
   linkedinCallback: code => api.get(`/rmtr/users/oauth2/callback/linkedin?code=${code}`),
 
+  // Get current authenticated user
+  getCurrentUser: () => api.get('/rmtr/users/me'),
+
   // Role activation
-  activateRole: role => api.post(`/rmtr/users/me/activate-role?role=${role}`)
+  activateRole: role => api.post(`/rmtr/users/me/activate-role?role=${role}`),
+
+  // Update last login role
+  updateLastLoginRole: role => api.put('/rmtr/users/me/last-login-role', null, { params: { role } })
 }
 
 export const userAPI = {
@@ -198,9 +204,10 @@ export const userAPI = {
 export const projectAPI = {
   getAll: params => api.get('/api/v1/projects', { params }),
   getById: id => api.get(`/api/v1/projects/${id}`),
-  create: formData => api.post('/api/v1/projects', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }),
+  create: formData =>
+    api.post('/api/v1/projects', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    }),
   update: (id, projectData) => api.put(`/api/v1/projects/${id}`, projectData),
   delete: id => api.delete(`/api/v1/projects/${id}`),
   getOpenProjects: params => api.get('/api/v1/projects/open', { params }),
@@ -222,23 +229,52 @@ export const projectAPI = {
 export const architectAPI = {
   getAll: params => api.get('/architects', { params }),
   getById: id => api.get(`/architects/${id}`),
+  getProfile: () => api.get('/rmtr/architects/profile'),
   getPortfolio: id => api.get(`/architects/${id}/portfolio`),
   updatePortfolio: portfolioData => api.put('/architects/portfolio', portfolioData),
+  updateOnboardingProfile: profileData =>
+    api.put('/rmtr/architects/onboarding-profile', profileData),
+  updateFullProfile: profileData => api.put('/rmtr/architects/profile', profileData),
   getReviews: id => api.get(`/architects/${id}/reviews`),
   addReview: (id, reviewData) => api.post(`/architects/${id}/reviews`, reviewData)
+}
+
+export const portfolioAPI = {
+  getAll: () => api.get('/api/portos'),
+  getById: id => api.get(`/api/portos/${id}`),
+  create: formData =>
+    api.post('/api/portos', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    }),
+  update: (id, data) => api.put(`/api/portos/${id}`, data),
+  delete: id => api.delete(`/api/portos/${id}`),
+  addImages: (id, images) => {
+    const formData = new FormData()
+    images.forEach(file => formData.append('images', file))
+    return api.post(`/api/portos/${id}/images`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+  },
+  deleteImage: imageId => api.delete(`/api/portos/images/${imageId}`)
+}
+
+export const clientAPI = {
+  getProfile: () => api.get('/api/v1/clients/profile'),
+  updateProfile: profileData => api.put('/api/v1/clients/profile', profileData)
 }
 
 export const bidAPI = {
   getMyBids: () => api.get('/api/bids/my-bids'),
   getBid: id => api.get(`/api/bids/${id}`),
   getProjectBids: projectId => api.get(`/api/v1/projects/${projectId}/bids`),
-  createDraftBid: (projectId, bidData) => api.post(`/api/v1/projects/${projectId}/bids`, bidData),
+  createDraftBid: bidData => api.post('/api/bids', bidData),
   updateBidDetails: (bidId, detailsData) => api.put(`/api/bids/${bidId}/details`, detailsData),
   submitBid: bidId => api.post(`/api/bids/${bidId}/submit`),
   withdrawBid: bidId => api.put(`/api/bids/${bidId}/withdraw`),
   acceptBid: (projectId, bidId) => api.post(`/api/bids/${bidId}/accept`),
   getQuota: () => api.get('/api/bids/quota'),
-  linkPortfolios: (bidId, portfolioIds) => api.post(`/api/bids/${bidId}/portfolios`, { portfolioIds }),
+  linkPortfolios: (bidId, portfolioIds) =>
+    api.post(`/api/bids/${bidId}/portfolios`, { portfolioIds }),
   uploadConceptSketches: (bidId, files, onProgress) => {
     const formData = new FormData()
     files.forEach(file => formData.append('files', file))

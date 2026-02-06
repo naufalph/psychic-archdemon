@@ -17,6 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.rumantra.bidding.dto.BidResponse;
+import com.rumantra.bidding.service.BidService;
 import com.rumantra.client.domain.Client;
 import com.rumantra.client.domain.Project;
 import com.rumantra.client.domain.ProjectFile;
@@ -45,6 +47,7 @@ public class ProjectService {
   private final ProjectFileRepository projectFileRepository;
   private final ClientRepository clientRepository;
   private final ApplicationEventPublisher eventPublisher;
+  private final BidService bidService;
 
   @PersistenceContext private EntityManager entityManager;
 
@@ -98,17 +101,14 @@ public class ProjectService {
   @Transactional
   public ProjectResponse createProject(CreateProjectRequest request, List<MultipartFile> files) {
 
-    // Get current user's client ID
     Long clientId = getCurrentUserClientId();
 
-    // Get client entity
     Client client =
         clientRepository
             .findById(clientId)
             .orElseThrow(
                 () -> new ResourceNotFoundException("Client not found with id: " + clientId));
 
-    // Validate design budget range if provided
     if (request.getDesignBudgetMin() != null && request.getDesignBudgetMax() != null) {
       if (request.getDesignBudgetMax() < request.getDesignBudgetMin()) {
         throw new IllegalArgumentException(
@@ -116,7 +116,6 @@ public class ProjectService {
       }
     }
 
-    // Build project entity
     Project project =
         Project.builder()
             .client(client)
@@ -213,8 +212,13 @@ public class ProjectService {
             .orElseThrow(
                 () -> new ResourceNotFoundException("Project not found with id: " + projectId));
 
-    // Map boolean to ProjectStatus
-    project.setStatus(isValid ? ProjectStatus.OPEN : ProjectStatus.REJECTED);
+    if (isValid) {
+      project.setStatus(ProjectStatus.OPEN);
+      project.setBiddingDeadline(java.time.LocalDateTime.now().plusWeeks(2));
+    } else {
+      project.setStatus(ProjectStatus.REJECTED);
+      project.setBiddingDeadline(null);
+    }
     project.setValidationNotes(validationNotes);
     project = projectRepository.save(project);
 
@@ -357,11 +361,9 @@ public class ProjectService {
         .contactPerson(project.getContactPerson())
         .expectedStartDate(project.getExpectedStartDate())
         .status(project.getStatus())
-        .isValid(
-            project.getStatus() == ProjectStatus.OPEN
-                ? Boolean.TRUE
-                : Boolean.FALSE)
+        .isValid(project.getStatus() == ProjectStatus.OPEN ? Boolean.TRUE : Boolean.FALSE)
         .validationNotes(project.getValidationNotes())
+        .biddingDeadline(project.getBiddingDeadline())
         .files(fileDtos)
         .createdAt(project.getCreatedAt())
         .updatedAt(project.getUpdatedAt())
@@ -385,6 +387,11 @@ public class ProjectService {
    * @param project The project entity
    * @return A descriptive title
    */
+  public List<BidResponse> getProjectBids(Long projectId) {
+    verifyProjectOwnership(projectId);
+    return bidService.getBidsByProject(projectId);
+  }
+
   private String buildProjectTitle(Project project) {
     if (project.getTitle() != null && !project.getTitle().isBlank()) {
       return project.getTitle();

@@ -1,9 +1,18 @@
 <template>
   <div class="min-h-screen bg-[#F4F5F7]">
-    <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px); background-size: 50px 50px"></div>
+    <div
+      class="absolute inset-0 opacity-[0.03] pointer-events-none"
+      style="
+        background-image: linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px);
+        background-size: 50px 50px;
+      "
+    ></div>
 
     <div class="relative z-10 max-w-7xl mx-auto px-6 py-12">
-      <button @click="router.push({ name: 'ArchitectDashboard' })" class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition">
+      <button
+        @click="router.push({ name: 'ArchitectDashboard' })"
+        class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition"
+      >
         <ArrowLeft :size="20" />
         Back to Dashboard
       </button>
@@ -32,11 +41,7 @@
       </div>
 
       <div v-else class="space-y-4">
-        <div
-          v-for="bid in myBids"
-          :key="bid.id"
-          class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft"
-        >
+        <div v-for="bid in myBids" :key="bid.id" class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
           <div class="flex justify-between items-start mb-4">
             <div>
               <h3 class="text-xl font-bold text-black">{{ bid.project?.title || 'Project' }}</h3>
@@ -49,12 +54,12 @@
 
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
             <div>
-              <p class="text-xs text-gray-500 mb-1">Proposed Cost</p>
-              <p class="font-bold text-gray-900">IDR {{ formatNumber(bid.proposedCost) }}</p>
+              <p class="text-xs text-gray-500 mb-1">Bid Amount</p>
+              <p class="font-bold text-gray-900">IDR {{ formatNumber(bid.bidAmount) }}</p>
             </div>
             <div>
-              <p class="text-xs text-gray-500 mb-1">Duration</p>
-              <p class="font-bold text-gray-900">{{ bid.estimatedDuration }} days</p>
+              <p class="text-xs text-gray-500 mb-1">Timeline</p>
+              <p class="font-bold text-gray-900">{{ bid.proposedTimelineDays }} days</p>
             </div>
             <div>
               <p class="text-xs text-gray-500 mb-1">Submitted</p>
@@ -62,8 +67,8 @@
             </div>
           </div>
 
-          <p v-if="bid.conceptDescription" class="text-sm text-gray-700">
-            {{ bid.conceptDescription }}
+          <p v-if="bid.proposal" class="text-sm text-gray-700">
+            {{ bid.proposal }}
           </p>
         </div>
       </div>
