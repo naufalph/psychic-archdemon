@@ -103,7 +103,13 @@ public class LocalFileStorageService implements FileStorageService {
       Files.createDirectories(targetDir);
 
       Path filePath = targetDir.resolve(filename);
-      file.transferTo(filePath.toFile());
+
+      BufferedImage image = ImageIO.read(file.getInputStream());
+      if (image == null) {
+        throw new StorageException("Failed to read image file");
+      }
+
+      ImageIO.write(image, extension, filePath.toFile());
 
       String url = baseUrl + "/" + path + "/" + filename;
       log.debug("Saved image to: {}", filePath);
@@ -129,7 +135,9 @@ public class LocalFileStorageService implements FileStorageService {
       Files.createDirectories(targetDir);
 
       Path filePath = targetDir.resolve(filename);
-      file.transferTo(filePath.toFile());
+
+      byte[] fileBytes = file.getBytes();
+      Files.write(filePath, fileBytes);
 
       String url = baseUrl + "/" + path + "/" + filename;
       log.debug("Saved file to: {}", filePath);

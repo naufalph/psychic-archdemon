@@ -35,6 +35,12 @@ public class DashboardNotification {
   @Column(name = "message", nullable = false, columnDefinition = "TEXT")
   private String message;
 
+  @Column(name = "message_code", length = 100)
+  private String messageCode;
+
+  @Column(name = "message_data", columnDefinition = "TEXT")
+  private String messageData;
+
   @Column(name = "reference_type", length = 50)
   private String referenceType;
 

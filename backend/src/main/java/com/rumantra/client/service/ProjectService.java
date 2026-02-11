@@ -258,16 +258,43 @@ public class ProjectService {
    *
    * @param sortBy The field to sort by (e.g., "createdAt", "budgetMax", "budgetMin")
    * @param sortDirection The sort direction ("asc" or "desc")
+   * @param excludeOwnProjects If true, filter out projects created by the current user
    * @return List of OPEN projects
    */
   @Transactional(readOnly = true)
-  public List<ProjectResponse> getOpenProjects(String sortBy, String sortDirection) {
+  public List<ProjectResponse> getOpenProjects(
+      String sortBy, String sortDirection, boolean excludeOwnProjects) {
     Sort.Direction direction =
         "asc".equalsIgnoreCase(sortDirection) ? Sort.Direction.ASC : Sort.Direction.DESC;
     Sort sort = Sort.by(direction, sortBy != null ? sortBy : "createdAt");
 
     List<Project> projects = projectRepository.findByStatusWithFiles(ProjectStatus.OPEN, sort);
+
+    if (excludeOwnProjects) {
+      Long currentUserId = SecurityUtils.getCurrentUserId();
+      projects =
+          projects.stream()
+              .filter(project -> !project.getClient().getUser().getId().equals(currentUserId))
+              .collect(Collectors.toList());
+    }
+
     return projects.stream().map(this::mapToProjectResponse).collect(Collectors.toList());
+  }
+
+  @Transactional(readOnly = true)
+  public ProjectResponse getProjectForArchitect(Long projectId) {
+    Project project =
+        projectRepository
+            .findByIdWithFiles(projectId)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Project not found with id: " + projectId));
+
+    if (project.getStatus() != ProjectStatus.OPEN) {
+      throw new org.springframework.security.access.AccessDeniedException(
+          "This project is not accepting bids");
+    }
+
+    return mapToProjectResponse(project);
   }
 
   private void addFilesToProject(Project project, List<MultipartFile> files) {

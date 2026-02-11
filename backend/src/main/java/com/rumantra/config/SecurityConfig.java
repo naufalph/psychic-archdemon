@@ -124,6 +124,13 @@ public class SecurityConfig {
                     .requestMatchers("/api/subscriptions/**")
                     .hasRole("ARCHITECT")
 
+                    // Token purchase endpoints - require ARCHITECT role (except webhooks)
+                    .requestMatchers(
+                        "/tokens/purchases/webhook", "/tokens/purchases/webhook/invoice")
+                    .permitAll()
+                    .requestMatchers("/tokens/purchases/**")
+                    .hasRole("ARCHITECT")
+
                     // Client project endpoints - require CLIENT role
                     .requestMatchers("/api/clients/*/projects/**")
                     .hasRole("CLIENT")
@@ -133,6 +140,8 @@ public class SecurityConfig {
                     .hasRole("SUPERUSER")
                     .requestMatchers("/api/v1/projects/all")
                     .hasRole("SUPERUSER")
+                    .requestMatchers("/api/v1/projects/*/for-architect")
+                    .hasRole("ARCHITECT")
                     .requestMatchers("/api/v1/projects/open")
                     .hasRole("ARCHITECT")
                     .requestMatchers("/api/projects/**")

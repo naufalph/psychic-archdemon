@@ -37,6 +37,8 @@ public class DashboardNotificationService {
    * @param type The notification type
    * @param title The notification title
    * @param message The notification message
+   * @param messageCode The i18n message code
+   * @param messageData The JSON string with dynamic data for i18n
    * @param referenceType The type of referenced entity (e.g., "PROJECT", "BID")
    * @param referenceId The ID of referenced entity
    * @return The created notification
@@ -47,6 +49,8 @@ public class DashboardNotificationService {
       NotificationType type,
       String title,
       String message,
+      String messageCode,
+      String messageData,
       String referenceType,
       Long referenceId) {
 
@@ -61,6 +65,8 @@ public class DashboardNotificationService {
             .type(type)
             .title(title)
             .message(message)
+            .messageCode(messageCode)
+            .messageData(messageData)
             .referenceType(referenceType)
             .referenceId(referenceId)
             .isRead(false)
@@ -199,6 +205,8 @@ public class DashboardNotificationService {
         .type(notification.getType())
         .title(notification.getTitle())
         .message(notification.getMessage())
+        .messageCode(notification.getMessageCode())
+        .messageData(notification.getMessageData())
         .referenceType(notification.getReferenceType())
         .referenceId(notification.getReferenceId())
         .isRead(notification.getIsRead())

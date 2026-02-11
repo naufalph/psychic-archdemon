@@ -10,7 +10,14 @@ const messages = {
 }
 
 export function useI18n() {
-  const t = computed(() => messages[locale.value])
+  const t = computed(() => {
+    return messages[locale.value] || {}
+  })
+
+  const getT = key => {
+    const localeMessages = messages[locale.value] || {}
+    return key.split('.').reduce((obj, k) => (obj && obj[k] ? obj[k] : null), localeMessages) || key
+  }
 
   const setLocale = newLocale => {
     if (messages[newLocale]) {
@@ -22,6 +29,7 @@ export function useI18n() {
   return {
     t,
     locale,
-    setLocale
+    setLocale,
+    getT
   }
 }

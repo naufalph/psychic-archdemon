@@ -1,5 +1,7 @@
 package com.rumantra.bidding.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,5 +14,5 @@ import lombok.NoArgsConstructor;
 public class BidDetailRequest {
 
   private String conceptStatement;
-  private String projectRisks;
+  private List<String> deliverables;
 }

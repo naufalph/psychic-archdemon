@@ -32,7 +32,7 @@
         <button
           @click="$emit('edit')"
           class="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-amber-50 transition-colors"
-          :title="t('portfolio.card.edit')"
+          :title="t.portfolio.card.edit"
         >
           <svg class="w-4 h-4 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
@@ -46,7 +46,7 @@
         <button
           @click="$emit('delete')"
           class="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-red-50 transition-colors"
-          :title="t('portfolio.card.delete')"
+          :title="t.portfolio.card.delete"
         >
           <svg class="w-4 h-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
@@ -84,7 +84,7 @@
               d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
             />
           </svg>
-          <span>{{ imageCount }} {{ t('portfolio.card.photos') }}</span>
+          <span>{{ imageCount }} {{ t.portfolio.card.photos }}</span>
         </div>
       </div>
     </div>

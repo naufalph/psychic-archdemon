@@ -62,7 +62,7 @@
                   <textarea
                     v-model="formData.description"
                     rows="4"
-                    :placeholder="t('portfolio.form.descriptionPlaceholder')"
+                    :placeholder="t.portfolio.form.descriptionPlaceholder"
                     class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all resize-none"
                   />
                 </div>
@@ -207,7 +207,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'save'])
 
-const { t } = useI18n()
+const { t, getT } = useI18n()
 
 const formData = ref({
   title: '',
@@ -247,6 +247,26 @@ const isFormValid = computed(() => {
   return hasTitle && hasDate && hasType && hasImages
 })
 
+const resetForm = () => {
+  formData.value = {
+    title: '',
+    description: '',
+    projectDate: '',
+    location: '',
+    projectType: '',
+    isBuilt: true
+  }
+  existingImages.value = []
+  newFiles.value = []
+  errors.value = {
+    title: '',
+    projectDate: '',
+    projectType: '',
+    images: ''
+  }
+  hasUnsavedChanges.value = false
+}
+
 watch(
   () => props.portfolio,
   portfolio => {
@@ -277,26 +297,6 @@ watch(
   { deep: true }
 )
 
-const resetForm = () => {
-  formData.value = {
-    title: '',
-    description: '',
-    projectDate: '',
-    location: '',
-    projectType: '',
-    isBuilt: true
-  }
-  existingImages.value = []
-  newFiles.value = []
-  errors.value = {
-    title: '',
-    projectDate: '',
-    projectType: '',
-    images: ''
-  }
-  hasUnsavedChanges.value = false
-}
-
 const validateForm = () => {
   errors.value = {
     title: '',
@@ -308,22 +308,22 @@ const validateForm = () => {
   let isValid = true
 
   if (!formData.value.title.trim()) {
-    errors.value.title = t.portfolio.validation.titleRequired
+    errors.value.title = getT('portfolio.validation.titleRequired')
     isValid = false
   }
 
   if (!formData.value.projectDate) {
-    errors.value.projectDate = t.portfolio.validation.projectDateRequired
+    errors.value.projectDate = getT('portfolio.validation.projectDateRequired')
     isValid = false
   }
 
   if (!formData.value.projectType) {
-    errors.value.projectType = t.portfolio.validation.projectTypeRequired
+    errors.value.projectType = getT('portfolio.validation.projectTypeRequired')
     isValid = false
   }
 
   if (totalImageCount.value === 0) {
-    errors.value.images = t.portfolio.validation.imagesRequired
+    errors.value.images = getT('portfolio.validation.imagesRequired')
     isValid = false
   }
 
@@ -400,7 +400,7 @@ const handleBackdropClick = () => {
 
 const handleClose = () => {
   if (hasUnsavedChanges.value) {
-    if (confirm(t.portfolio.modal.unsavedChanges)) {
+    if (confirm(getT('portfolio.modal.unsavedChanges'))) {
       emit('close')
       resetForm()
     }

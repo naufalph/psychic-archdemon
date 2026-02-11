@@ -24,8 +24,8 @@ public class BidDetailService {
       validateConceptStatement(request.getConceptStatement());
       detail.setConceptStatement(request.getConceptStatement());
     }
-    if (request.getProjectRisks() != null) {
-      detail.setProjectRisks(request.getProjectRisks());
+    if (request.getDeliverables() != null) {
+      detail.setDeliverables(request.getDeliverables());
     }
 
     return bidDetailRepository.save(detail);
@@ -39,7 +39,7 @@ public class BidDetailService {
                 BidDetailResponse.builder()
                     .id(detail.getId())
                     .conceptStatement(detail.getConceptStatement())
-                    .projectRisks(detail.getProjectRisks())
+                    .deliverables(detail.getDeliverables())
                     .build())
         .orElse(null);
   }

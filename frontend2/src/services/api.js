@@ -195,22 +195,30 @@ export const userAPI = {
   getProfile: () => api.get('/user/profile'),
   updateProfile: profileData => api.put('/user/profile', profileData),
   uploadAvatar: (file, onProgress) => uploadFile('/user/avatar', file, onProgress),
-  getNotifications: () => api.get('/user/notifications'),
-  markNotificationRead: id => api.patch(`/user/notifications/${id}/read`),
   getSettings: () => api.get('/user/settings'),
   updateSettings: settings => api.put('/user/settings', settings)
+}
+
+export const notificationAPI = {
+  getAll: () => api.get('/api/notifications'),
+  getUnread: () => api.get('/api/notifications/unread'),
+  getUnreadCount: () => api.get('/api/notifications/unread-count'),
+  markAsRead: notificationId => api.put(`/api/notifications/${notificationId}/read`),
+  markAllAsRead: () => api.put('/api/notifications/read-all')
 }
 
 export const projectAPI = {
   getAll: params => api.get('/api/v1/projects', { params }),
   getById: id => api.get(`/api/v1/projects/${id}`),
+  getProjectForArchitect: id => api.get(`/api/v1/projects/${id}/for-architect`),
   create: formData =>
     api.post('/api/v1/projects', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     }),
   update: (id, projectData) => api.put(`/api/v1/projects/${id}`, projectData),
   delete: id => api.delete(`/api/v1/projects/${id}`),
-  getOpenProjects: params => api.get('/api/v1/projects/open', { params }),
+  getOpenProjects: (params = {}) =>
+    api.get('/api/v1/projects/open', { params: { ...params, excludeOwnProjects: true } }),
   uploadFiles: (id, files, onProgress) => {
     const formData = new FormData()
     files.forEach(file => formData.append('files', file))
@@ -277,7 +285,7 @@ export const bidAPI = {
     api.post(`/api/bids/${bidId}/portfolios`, { portfolioIds }),
   uploadConceptSketches: (bidId, files, onProgress) => {
     const formData = new FormData()
-    files.forEach(file => formData.append('files', file))
+    files.forEach(file => formData.append('images', file))
     return api.post(`/api/bids/${bidId}/concept-sketches`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       onUploadProgress: progressEvent => {
@@ -290,7 +298,7 @@ export const bidAPI = {
   },
   uploadMoodBoards: (bidId, files, onProgress) => {
     const formData = new FormData()
-    files.forEach(file => formData.append('files', file))
+    files.forEach(file => formData.append('images', file))
     return api.post(`/api/bids/${bidId}/mood-boards`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       onUploadProgress: progressEvent => {
@@ -315,6 +323,12 @@ export const adminAPI = {
   getReports: () => api.get('/admin/reports'),
   generateReport: (reportType, params) =>
     api.post('/admin/reports/generate', { type: reportType, ...params })
+}
+
+export const tokenPurchaseAPI = {
+  getPricing: () => api.get('/tokens/purchases/pricing'),
+  initiatePurchase: quantity => api.post('/tokens/purchases', { quantity }),
+  getPurchaseStatus: purchaseId => api.get(`/tokens/purchases/${purchaseId}`)
 }
 
 // Default export

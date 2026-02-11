@@ -153,7 +153,7 @@ import PortfolioCard from '@/components/architect/PortfolioCard.vue'
 import PortfolioModal from '@/components/architect/PortfolioModal.vue'
 
 const store = usePortfoliosStore()
-const { t } = useI18n()
+const { t, getT } = useI18n()
 
 const showToast = ref(false)
 const toastMessage = ref('')
@@ -188,9 +188,9 @@ const confirmDelete = async () => {
 
   try {
     await store.deletePortfolio(portfolioToDelete.value.id)
-    displayToast(t, portfolio.toast.deleteSuccess, 'success')
+    displayToast(getT('portfolio.toast.deleteSuccess'), 'success')
   } catch (error) {
-    displayToast(t, portfolio.toast.deleteError, 'error')
+    displayToast(getT('portfolio.toast.deleteError'), 'error')
   } finally {
     showDeleteConfirm.value = false
     portfolioToDelete.value = null
@@ -206,7 +206,7 @@ const handleSavePortfolio = async ({ action, portfolioId, data, formData, newIma
   try {
     if (action === 'create') {
       await store.createPortfolio(formData)
-      displayToast(t.portfolio.toast.createSuccess, 'success')
+      displayToast(getT('portfolio.toast.createSuccess'), 'success')
     } else if (action === 'update') {
       await store.updatePortfolio(portfolioId, data)
 
@@ -214,25 +214,25 @@ const handleSavePortfolio = async ({ action, portfolioId, data, formData, newIma
         await store.addImages(portfolioId, newImages)
       }
 
-      displayToast(t('portfolio.toast.updateSuccess'), 'success')
+      displayToast(getT('portfolio.toast.updateSuccess'), 'success')
     } else if (action === 'uploadImages') {
       await store.addImages(portfolioId, files)
-      displayToast(t('portfolio.toast.imageUploadSuccess'), 'success')
+      displayToast(getT('portfolio.toast.imageUploadSuccess'), 'success')
     } else if (action === 'deleteImage') {
       await store.deleteImage(imageId)
-      displayToast(t('portfolio.toast.imageDeleteSuccess'), 'success')
+      displayToast(getT('portfolio.toast.imageDeleteSuccess'), 'success')
 
       await store.fetchPortfolios()
     }
   } catch (error) {
     if (action === 'create') {
-      displayToast(t('portfolio.toast.createError'), 'error')
+      displayToast(getT('portfolio.toast.createError'), 'error')
     } else if (action === 'update') {
-      displayToast(t('portfolio.toast.updateError'), 'error')
+      displayToast(getT('portfolio.toast.updateError'), 'error')
     } else if (action === 'uploadImages') {
-      displayToast(t('portfolio.toast.imageUploadError'), 'error')
+      displayToast(getT('portfolio.toast.imageUploadError'), 'error')
     } else if (action === 'deleteImage') {
-      displayToast(t('portfolio.toast.imageDeleteError'), 'error')
+      displayToast(getT('portfolio.toast.imageDeleteError'), 'error')
     }
   }
 }

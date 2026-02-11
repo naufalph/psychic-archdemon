@@ -56,6 +56,8 @@ public class BidService {
 
   @Autowired private BidImageService bidImageService;
 
+  @Autowired private BidAttachmentService bidAttachmentService;
+
   @Autowired private BidPortfolioRefRepository bidPortfolioRefRepository;
 
   @Autowired private ApplicationEventPublisher eventPublisher;
@@ -323,6 +325,7 @@ public class BidService {
         .conceptSketches(bidImageService.getImagesByType(bid.getId(), BidImageType.CONCEPT_SKETCH))
         .moodBoards(bidImageService.getImagesByType(bid.getId(), BidImageType.MOOD_BOARD))
         .portfolioReferences(getPortfolioReferences(bid.getId()))
+        .attachments(bidAttachmentService.getAttachments(bid.getId()))
         .build();
   }
 

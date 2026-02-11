@@ -5,7 +5,10 @@
   >
     <div class="flex justify-between items-start mb-4">
       <h3 class="text-xl font-bold text-black line-clamp-2">{{ project.title }}</h3>
-      <ProjectStatusBadge :status="project.status" />
+      <div class="flex gap-2">
+        <ProjectStatusBadge :status="project.status" />
+        <BidStatusBadge v-if="bidStatus" :status="bidStatus" />
+      </div>
     </div>
 
     <p class="text-gray-500 text-sm mb-4">{{ project.location }} • {{ project.buildingType }}</p>
@@ -42,12 +45,6 @@
           <span class="font-semibold text-gray-700">Design Budget:</span>
           IDR {{ formatCurrency(project.designBudget) }}
         </div>
-        <button
-          @click.stop="$emit('submit-proposal', project.id)"
-          class="bg-[#7C4728] hover:bg-black text-white px-6 py-2 rounded-full text-sm font-medium transition"
-        >
-          Submit Proposal
-        </button>
       </div>
     </div>
   </div>
@@ -57,6 +54,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import ProjectStatusBadge from './ProjectStatusBadge.vue'
+import BidStatusBadge from './BidStatusBadge.vue'
 import BiddingCountdown from '../bidding/BiddingCountdown.vue'
 
 const props = defineProps({
@@ -72,6 +70,10 @@ const props = defineProps({
   showProposalCount: {
     type: Boolean,
     default: true
+  },
+  bidStatus: {
+    type: String,
+    default: null
   }
 })
 
@@ -91,6 +93,8 @@ const formatCurrency = value => {
 const handleClick = () => {
   if (props.variant === 'client') {
     router.push({ name: 'ProjectDetail', params: { id: props.project.id } })
+  } else if (props.variant === 'architect') {
+    router.push({ name: 'ProjectDetailForArchitect', params: { projectId: props.project.id } })
   }
 }
 </script>

@@ -11,6 +11,8 @@
             CLIENT MODE
           </div>
 
+          <NotificationDropdown variant="client" />
+
           <div class="relative" ref="dropdownRef">
             <button
               @click="toggleDropdown"
@@ -138,6 +140,7 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useI18n } from '@/composables/useI18n'
 import Logo from '@/components/ui/Logo.vue'
+import NotificationDropdown from '@/components/notifications/NotificationDropdown.vue'
 import {
   ChevronDownIcon,
   BriefcaseIcon,

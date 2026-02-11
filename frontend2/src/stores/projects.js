@@ -78,6 +78,22 @@ export const useProjectsStore = defineStore('projects', {
       }
     },
 
+    async fetchProjectForArchitect(id) {
+      this.loading = true
+      this.error = null
+      try {
+        const response = await projectAPI.getProjectForArchitect(id)
+        this.currentProject = transformProjectData(response.data.data)
+        return this.currentProject
+      } catch (error) {
+        this.error = error.response?.data?.message || 'Failed to fetch project details'
+        console.error('Failed to fetch project for architect:', error)
+        throw error
+      } finally {
+        this.loading = false
+      }
+    },
+
     async createProject(projectData, files) {
       this.loading = true
       this.error = null

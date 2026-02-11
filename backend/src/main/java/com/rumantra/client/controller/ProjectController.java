@@ -225,10 +225,13 @@ public class ProjectController {
   public ResponseEntity<ApiResponse<List<ProjectResponse>>> getOpenProjects(
       @RequestParam(value = "sortBy", required = false, defaultValue = "createdAt") String sortBy,
       @RequestParam(value = "sortDirection", required = false, defaultValue = "desc")
-          String sortDirection) {
+          String sortDirection,
+      @RequestParam(value = "excludeOwnProjects", required = false, defaultValue = "false")
+          boolean excludeOwnProjects) {
 
     try {
-      List<ProjectResponse> responses = projectService.getOpenProjects(sortBy, sortDirection);
+      List<ProjectResponse> responses =
+          projectService.getOpenProjects(sortBy, sortDirection, excludeOwnProjects);
 
       return ResponseEntity.ok(
           ApiResponse.<List<ProjectResponse>>builder()
@@ -245,6 +248,43 @@ public class ProjectController {
               ApiResponse.<List<ProjectResponse>>builder()
                   .success(false)
                   .message("An error occurred while retrieving open projects")
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
+  }
+
+  @GetMapping("/{projectId}/for-architect")
+  public ResponseEntity<ApiResponse<ProjectResponse>> getProjectForArchitect(
+      @PathVariable Long projectId) {
+
+    try {
+      ProjectResponse response = projectService.getProjectForArchitect(projectId);
+
+      return ResponseEntity.ok(
+          ApiResponse.<ProjectResponse>builder()
+              .success(true)
+              .message("Project details retrieved successfully")
+              .data(response)
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+
+    } catch (ResourceNotFoundException e) {
+      log.error("Project not found: {}", projectId, e);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .body(
+              ApiResponse.<ProjectResponse>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+
+    } catch (org.springframework.security.access.AccessDeniedException e) {
+      log.error("Project not open for bidding: {}", projectId, e);
+      return ResponseEntity.status(HttpStatus.FORBIDDEN)
+          .body(
+              ApiResponse.<ProjectResponse>builder()
+                  .success(false)
+                  .message(e.getMessage())
                   .timestamp(LocalDateTime.now().toString())
                   .build());
     }

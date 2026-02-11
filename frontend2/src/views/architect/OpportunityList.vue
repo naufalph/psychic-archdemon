@@ -31,7 +31,10 @@
             <p class="text-2xl font-bold text-[#7C4728]">{{ quota.tokensRemaining }} / {{ quota.tokensAllocated }}</p>
           </div>
         </div>
-        <button class="bg-[#7C4728] hover:bg-black text-white px-6 py-2 rounded-full text-sm font-medium transition">
+        <button
+          @click="tokenPurchaseStore.openModal()"
+          class="bg-[#7C4728] hover:bg-black text-white px-6 py-2 rounded-full text-sm font-medium transition"
+        >
           Purchase Tokens
         </button>
       </div>
@@ -52,33 +55,51 @@
 
       <div v-else class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         <ProjectCard
-          v-for="project in openProjects"
+          v-for="project in projectsWithBidStatus"
           :key="project.id"
           :project="project"
           variant="architect"
           :show-proposal-count="false"
+          :bid-status="project.bidStatus"
           @submit-proposal="handleSubmitProposal"
         />
       </div>
     </div>
+
+    <TokenPurchaseModal />
   </div>
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { ArrowLeft, Search, Coins } from 'lucide-vue-next'
 import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
+import { useTokenPurchaseStore } from '@/stores/tokenPurchase'
 import ProjectCard from '@/components/project/ProjectCard.vue'
+import TokenPurchaseModal from '@/components/architect/TokenPurchaseModal.vue'
 
 const router = useRouter()
 const projectsStore = useProjectsStore()
 const bidsStore = useBidsStore()
+const tokenPurchaseStore = useTokenPurchaseStore()
 
 const { openProjects, loading } = storeToRefs(projectsStore)
-const { quota } = storeToRefs(bidsStore)
+const { quota, myBids } = storeToRefs(bidsStore)
+
+const projectsWithBidStatus = computed(() => {
+  const bidStatusMap = new Map()
+  myBids.value.forEach(bid => {
+    bidStatusMap.set(bid.projectId, bid.status)
+  })
+
+  return openProjects.value.map(project => ({
+    ...project,
+    bidStatus: bidStatusMap.get(project.id) || null
+  }))
+})
 
 const handleSubmitProposal = projectId => {
   router.push({ name: 'ProposalCreate', params: { projectId } })
@@ -86,7 +107,7 @@ const handleSubmitProposal = projectId => {
 
 onMounted(async () => {
   try {
-    await Promise.all([projectsStore.fetchOpenProjects(), bidsStore.fetchQuota()])
+    await Promise.all([projectsStore.fetchOpenProjects(), bidsStore.fetchQuota(), bidsStore.fetchMyBids()])
   } catch (err) {
     console.error('Failed to fetch data:', err)
   }

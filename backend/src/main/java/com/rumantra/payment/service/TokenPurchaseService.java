@@ -2,10 +2,15 @@ package com.rumantra.payment.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -15,7 +20,9 @@ import com.rumantra.architect.domain.Architect;
 import com.rumantra.bidding.service.BidQuotaService;
 import com.rumantra.bidding.service.BidUsageLogService;
 import com.rumantra.integration.xendit.XenditService;
-import com.rumantra.integration.xendit.dto.XenditPaymentRequestRequest;
+import com.rumantra.integration.xendit.dto.XenditInvoiceRequest;
+import com.rumantra.integration.xendit.dto.XenditInvoiceResponse;
+import com.rumantra.integration.xendit.dto.XenditInvoiceWebhook;
 import com.rumantra.integration.xendit.dto.XenditPaymentResponse;
 import com.rumantra.integration.xendit.dto.XenditPaymentWebhook;
 import com.rumantra.payment.domain.PurchaseStatus;
@@ -42,6 +49,9 @@ public class TokenPurchaseService {
 
   @Autowired private XenditService xenditService;
 
+  @Value("${app.frontend.url:http://localhost:3000}")
+  private String frontendUrl;
+
   private static final BigDecimal FREE_TIER_PRICE_PER_TOKEN = new BigDecimal("400000");
   private static final BigDecimal BASIC_TIER_PRICE_PER_TOKEN = new BigDecimal("250000");
   private static final int MIN_QUANTITY = 1;
@@ -60,20 +70,50 @@ public class TokenPurchaseService {
 
     String referenceId = generateReferenceId(architect.getId());
 
-    Map<String, String> metadata = new HashMap<>();
-    metadata.put("architect_id", architect.getId().toString());
-    metadata.put("quantity", quantity.toString());
-    metadata.put("tier", tier.name());
+    String givenNames = architect.getUser().getFirstName();
+    String surname = architect.getUser().getLastName();
 
-    XenditPaymentRequestRequest xenditRequest =
-        XenditPaymentRequestRequest.builder()
-            .referenceId(referenceId)
-            .requestAmount(totalAmount)
-            .description(String.format("Purchase %d bid token(s)", quantity))
-            .metadata(metadata)
+    XenditInvoiceRequest.Customer customer =
+        XenditInvoiceRequest.Customer.builder()
+            .givenNames(givenNames)
+            .surname(surname)
+            .email(architect.getUser().getEmail())
             .build();
 
-    XenditPaymentResponse xenditResponse = xenditService.createPaymentRequest(xenditRequest);
+    XenditInvoiceRequest.InvoiceItem item =
+        XenditInvoiceRequest.InvoiceItem.builder()
+            .name("Bid Token")
+            .quantity(quantity)
+            .price(pricePerToken)
+            .category("Digital Service")
+            .build();
+
+    XenditInvoiceRequest.CustomerNotificationPreference notificationPref =
+        XenditInvoiceRequest.CustomerNotificationPreference.builder()
+            .invoiceCreated(new ArrayList<>())
+            .invoiceReminder(new ArrayList<>())
+            .invoicePaid(Arrays.asList("email"))
+            .build();
+
+    XenditInvoiceRequest xenditRequest =
+        XenditInvoiceRequest.builder()
+            .externalId(referenceId)
+            .amount(totalAmount)
+            .description(String.format("Purchase %d bid token(s)", quantity))
+            .currency("IDR")
+            .invoiceDuration(86400)
+            .successRedirectUrl(frontendUrl + "/architect/opportunities")
+            .failureRedirectUrl(frontendUrl + "/architect/opportunities")
+            .customer(customer)
+            .customerNotificationPreference(notificationPref)
+            .items(Arrays.asList(item))
+            .build();
+
+    XenditInvoiceResponse xenditResponse = xenditService.createInvoice(xenditRequest);
+
+    LocalDateTime expiryDate =
+        ZonedDateTime.parse(xenditResponse.getExpiryDate(), DateTimeFormatter.ISO_DATE_TIME)
+            .toLocalDateTime();
 
     TokenPurchase purchase =
         TokenPurchase.builder()
@@ -85,8 +125,8 @@ public class TokenPurchaseService {
             .status(PurchaseStatus.PENDING)
             .xenditPaymentRequestId(xenditResponse.getId())
             .xenditReferenceId(referenceId)
-            .paymentLink(extractPaymentLink(xenditResponse))
-            .expiresAt(LocalDateTime.now().plusHours(24))
+            .paymentLink(xenditResponse.getInvoiceUrl())
+            .expiresAt(expiryDate)
             .build();
 
     return tokenPurchaseRepository.save(purchase);
@@ -160,6 +200,55 @@ public class TokenPurchaseService {
     tokenPurchaseRepository.save(purchase);
 
     log.info("Payment expired for purchase {}", purchase.getId());
+  }
+
+  @Transactional
+  public void handleInvoicePaid(XenditInvoiceWebhook webhook) {
+    String externalId = webhook.getExternalId();
+    TokenPurchase purchase =
+        tokenPurchaseRepository
+            .findByXenditReferenceId(externalId)
+            .orElseThrow(() -> new RuntimeException("Purchase not found: " + externalId));
+
+    if (purchase.getStatus() == PurchaseStatus.COMPLETED) {
+      log.info("Purchase already completed, skipping: {}", purchase.getId());
+      return;
+    }
+
+    purchase.setStatus(PurchaseStatus.COMPLETED);
+    purchase.setXenditPaymentRequestId(webhook.getId());
+
+    LocalDateTime completedAt =
+        ZonedDateTime.parse(webhook.getPaidAt(), DateTimeFormatter.ISO_DATE_TIME).toLocalDateTime();
+    purchase.setCompletedAt(completedAt);
+
+    purchase.setPaymentMethod(webhook.getPaymentMethod());
+    purchase.setPaymentChannel(webhook.getPaymentChannel());
+
+    tokenPurchaseRepository.save(purchase);
+
+    bidQuotaService.allocateTokens(purchase.getArchitect().getId(), purchase.getQuantity());
+    bidUsageLogService.logTokenPurchase(
+        purchase.getArchitect(), purchase.getQuantity(), purchase.getTotalAmount());
+
+    log.info(
+        "Token purchase completed: {} tokens allocated to architect {}",
+        purchase.getQuantity(),
+        purchase.getArchitect().getId());
+  }
+
+  @Transactional
+  public void handleInvoiceExpired(XenditInvoiceWebhook webhook) {
+    String externalId = webhook.getExternalId();
+    TokenPurchase purchase =
+        tokenPurchaseRepository
+            .findByXenditReferenceId(externalId)
+            .orElseThrow(() -> new RuntimeException("Purchase not found: " + externalId));
+
+    purchase.setStatus(PurchaseStatus.EXPIRED);
+    tokenPurchaseRepository.save(purchase);
+
+    log.info("Invoice expired for purchase {}", purchase.getId());
   }
 
   public TokenPurchase getPurchaseById(Long architectId, Long purchaseId) {

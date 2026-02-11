@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.rumantra.architect.domain.Architect;
 import com.rumantra.architect.repository.ArchitectRepository;
 import com.rumantra.bidding.domain.BidImageType;
+import com.rumantra.bidding.dto.BidAttachmentResponse;
 import com.rumantra.bidding.dto.BidDetailRequest;
 import com.rumantra.bidding.dto.BidImageResponse;
 import com.rumantra.bidding.dto.BidQuotaResponse;
@@ -39,6 +40,7 @@ public class BidController {
   private final BidQuotaService bidQuotaService;
   private final BidDetailService bidDetailService;
   private final BidImageService bidImageService;
+  private final com.rumantra.bidding.service.BidAttachmentService bidAttachmentService;
   private final ArchitectRepository architectRepository;
 
   @PostMapping
@@ -443,6 +445,97 @@ public class BidController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(
               ApiResponse.<BidResponse>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
+  }
+
+  @PostMapping("/{bidId}/attachments")
+  public ResponseEntity<ApiResponse<BidAttachmentResponse>> uploadAttachment(
+      @PathVariable Long bidId, @RequestParam("file") MultipartFile file) {
+
+    try {
+      log.info("Uploading PDF attachment for bid ID: {}", bidId);
+
+      Long userId = SecurityUtils.getCurrentUserId();
+      Architect architect =
+          architectRepository
+              .findByUserId(userId)
+              .orElseThrow(() -> new RuntimeException("Please activate architect role first"));
+
+      com.rumantra.bidding.domain.Bid bid = bidService.getBidEntityById(bidId, architect.getId());
+
+      BidAttachmentResponse response = bidAttachmentService.uploadAttachment(bid, file);
+
+      return ResponseEntity.ok(
+          ApiResponse.<BidAttachmentResponse>builder()
+              .success(true)
+              .message("Attachment uploaded successfully")
+              .data(response)
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+
+    } catch (RuntimeException e) {
+      log.error("Error uploading attachment: {}", e.getMessage());
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              ApiResponse.<BidAttachmentResponse>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
+  }
+
+  @DeleteMapping("/attachments/{attachmentId}")
+  public ResponseEntity<ApiResponse<Void>> deleteAttachment(@PathVariable Long attachmentId) {
+
+    try {
+      log.info("Deleting bid attachment ID: {}", attachmentId);
+
+      bidAttachmentService.deleteAttachment(attachmentId);
+
+      return ResponseEntity.ok(
+          ApiResponse.<Void>builder()
+              .success(true)
+              .message("Attachment deleted successfully")
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+
+    } catch (RuntimeException e) {
+      log.error("Error deleting attachment: {}", e.getMessage());
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              ApiResponse.<Void>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
+  }
+
+  @GetMapping("/{bidId}/attachments")
+  public ResponseEntity<ApiResponse<List<BidAttachmentResponse>>> getAttachments(
+      @PathVariable Long bidId) {
+
+    try {
+      List<BidAttachmentResponse> attachments = bidAttachmentService.getAttachments(bidId);
+
+      return ResponseEntity.ok(
+          ApiResponse.<List<BidAttachmentResponse>>builder()
+              .success(true)
+              .message("Attachments retrieved successfully")
+              .data(attachments)
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+
+    } catch (RuntimeException e) {
+      log.error("Error retrieving attachments: {}", e.getMessage());
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              ApiResponse.<List<BidAttachmentResponse>>builder()
                   .success(false)
                   .message(e.getMessage())
                   .timestamp(LocalDateTime.now().toString())

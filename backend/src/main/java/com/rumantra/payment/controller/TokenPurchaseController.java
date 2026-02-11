@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import com.rumantra.architect.domain.Architect;
 import com.rumantra.architect.repository.ArchitectRepository;
 import com.rumantra.integration.xendit.XenditService;
+import com.rumantra.integration.xendit.dto.XenditInvoiceWebhook;
 import com.rumantra.integration.xendit.dto.XenditPaymentWebhook;
 import com.rumantra.payment.domain.TokenPurchase;
 import com.rumantra.payment.dto.TokenPurchaseDetailResponse;
@@ -209,6 +210,37 @@ public class TokenPurchaseController {
         break;
       default:
         log.info("Unhandled payment webhook event: {}", event);
+    }
+
+    return ResponseEntity.ok().build();
+  }
+
+  @PostMapping("/webhook/invoice")
+  public ResponseEntity<Void> handleXenditInvoiceWebhook(
+      @RequestHeader("x-callback-token") String callbackToken, @RequestBody String payload) {
+
+    if (!xenditService.verifyWebhookToken(callbackToken)) {
+      log.warn("Invalid webhook token received for invoice");
+      return ResponseEntity.status(403).build();
+    }
+
+    XenditInvoiceWebhook webhook = xenditService.parseInvoiceWebhook(payload);
+
+    String status = webhook.getStatus();
+    log.info(
+        "Received invoice webhook - Status: {} for external_id: {}",
+        status,
+        webhook.getExternalId());
+
+    switch (status) {
+      case "PAID":
+        tokenPurchaseService.handleInvoicePaid(webhook);
+        break;
+      case "EXPIRED":
+        tokenPurchaseService.handleInvoiceExpired(webhook);
+        break;
+      default:
+        log.info("Unhandled invoice status: {}", status);
     }
 
     return ResponseEntity.ok().build();

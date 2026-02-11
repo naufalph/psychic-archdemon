@@ -36,4 +36,5 @@ public class BidResponse {
   private List<BidImageResponse> conceptSketches;
   private List<BidImageResponse> moodBoards;
   private List<PortoListResponse> portfolioReferences;
+  private List<BidAttachmentResponse> attachments;
 }

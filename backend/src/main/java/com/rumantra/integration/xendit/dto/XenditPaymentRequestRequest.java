@@ -38,4 +38,20 @@ public class XenditPaymentRequestRequest {
 
   @JsonProperty("metadata")
   private Map<String, String> metadata;
+
+  @JsonProperty("channel_properties")
+  private ChannelProperties channelProperties;
+
+  @Data
+  @Builder
+  public static class ChannelProperties {
+    @JsonProperty("success_return_url")
+    private String successReturnUrl;
+
+    @JsonProperty("failure_return_url")
+    private String failureReturnUrl;
+
+    @JsonProperty("pending_return_url")
+    private String pendingReturnUrl;
+  }
 }

@@ -313,6 +313,21 @@ export default {
       cancel: 'Cancel'
     }
   },
+  proposal: {
+    aboutStudio: 'About your studio',
+    aboutStudioPlaceholder:
+      "Tell the client about your studio's expertise, experience, and approach...",
+    conceptStatement: 'Concept Statement',
+    conceptStatementRequired: 'required',
+    conceptStatementPlaceholder:
+      "Explain your design concept, key features, and how you'll address the client's needs...",
+    conceptStatementHelp:
+      'Describe your design plan, concept, and approach for this specific project (max 200 words)',
+    attachPortfolios: 'Attach Relevant Portfolios',
+    attachPortfoliosHelp: 'Select portfolios that demonstrate your relevant experience',
+    wordCount: '{count}/200 words',
+    wordCountExceeded: 'Concept statement must not exceed 200 words'
+  },
   clientDashboard: {
     title: 'Client Dashboard',
     subtitle: 'Welcome to your workspace',
@@ -412,5 +427,67 @@ export default {
     'ktp.required': 'KTP number is required',
     'ktp.invalid.format': 'KTP number must be exactly 16 digits',
     'ktp.verified.cannot.modify': 'Cannot modify KTP number after verification'
+  },
+  tokenPurchase: {
+    modal: {
+      title: 'Purchase Bid Tokens',
+      currentQuota: 'Your Current Tokens',
+      tier: 'Subscription Tier',
+      pricePerToken: 'Price per Token',
+      quantity: 'Token Quantity',
+      total: 'Total Payment',
+      confirm: 'Proceed to Payment',
+      cancel: 'Cancel',
+      redirectInfo: 'You will be redirected to Xendit payment page to complete the transaction',
+      quantityRange: 'Select 1-50 tokens'
+    },
+    error: {
+      default: 'Failed to process token purchase',
+      fetchPricing: 'Failed to fetch pricing information',
+      invalidQuantity: 'Token quantity must be between 1-50',
+      purchaseFailed: 'Failed to create payment request'
+    }
+  },
+  notifications: {
+    title: 'Notifications',
+    markAllRead: 'Mark all as read',
+    viewAll: 'View all notifications',
+    loading: 'Loading notifications...',
+    emptyTitle: 'No notifications yet',
+    emptyMessage: "You'll be notified about project updates and bids here",
+    justNow: 'Just now',
+    minutesAgo: '{n} minutes ago',
+    hoursAgo: '{n} hours ago',
+    daysAgo: '{n} days ago',
+    messages: {
+      NOTIFICATION_PROJECT_VALIDATED: {
+        title: 'Project Approved',
+        message: 'Your project "{projectName}" has been validated and is now live'
+      },
+      NOTIFICATION_PROJECT_REJECTED: {
+        title: 'Project Review',
+        message: 'Your project "{projectName}" needs review: {reason}'
+      },
+      NOTIFICATION_BID_RECEIVED: {
+        title: 'New Bid Received',
+        message: '{architectName} submitted a bid of Rp {amount} on "{projectName}"'
+      },
+      NOTIFICATION_BID_ACCEPTED: {
+        title: 'Bid Accepted',
+        message: 'Your bid on "{projectName}" has been accepted!'
+      },
+      NOTIFICATION_BID_REJECTED: {
+        title: 'Bid Update',
+        message: 'Your bid on "{projectName}" was not selected'
+      },
+      NOTIFICATION_TOKEN_PURCHASE_SUCCESS: {
+        title: 'Purchase Complete',
+        message: '{tokenCount} bid tokens have been added to your account'
+      },
+      NOTIFICATION_SUBSCRIPTION_ACTIVATED: {
+        title: 'Subscription Active',
+        message: 'Your {tier} subscription is now active with {tokenCount} tokens'
+      }
+    }
   }
 }

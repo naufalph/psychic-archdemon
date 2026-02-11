@@ -36,6 +36,8 @@ public class NotificationEventListener {
           NotificationType.PROJECT_VALIDATED,
           title,
           message,
+          null,
+          null,
           "PROJECT",
           event.getProjectId());
 

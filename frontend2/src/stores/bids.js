@@ -220,6 +220,34 @@ export const useBidsStore = defineStore('bids', {
       }
     },
 
+    async deleteConceptSketch(imageId) {
+      this.loading = true
+      this.error = null
+      try {
+        await bidAPI.deleteImage(imageId)
+      } catch (error) {
+        this.error = error.response?.data?.message || 'Failed to delete concept sketch'
+        console.error('Failed to delete concept sketch:', error)
+        throw error
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async deleteMoodBoard(imageId) {
+      this.loading = true
+      this.error = null
+      try {
+        await bidAPI.deleteImage(imageId)
+      } catch (error) {
+        this.error = error.response?.data?.message || 'Failed to delete mood board'
+        console.error('Failed to delete mood board:', error)
+        throw error
+      } finally {
+        this.loading = false
+      }
+    },
+
     clearCurrentBid() {
       this.currentBid = null
     },

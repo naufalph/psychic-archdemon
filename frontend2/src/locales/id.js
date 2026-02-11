@@ -315,6 +315,21 @@ export default {
       cancel: 'Batal'
     }
   },
+  proposal: {
+    aboutStudio: 'Tentang studio Anda',
+    aboutStudioPlaceholder:
+      'Ceritakan kepada klien tentang keahlian, pengalaman, dan pendekatan studio Anda...',
+    conceptStatement: 'Pernyataan Konsep',
+    conceptStatementRequired: 'wajib diisi',
+    conceptStatementPlaceholder:
+      'Jelaskan konsep desain Anda, fitur utama, dan bagaimana Anda akan memenuhi kebutuhan klien...',
+    conceptStatementHelp:
+      'Jelaskan rencana desain, konsep, dan pendekatan Anda untuk proyek ini (maksimal 200 kata)',
+    attachPortfolios: 'Lampirkan Portofolio yang Relevan',
+    attachPortfoliosHelp: 'Pilih portofolio yang menunjukkan pengalaman relevan Anda',
+    wordCount: '{count}/200 kata',
+    wordCountExceeded: 'Pernyataan konsep tidak boleh melebihi 200 kata'
+  },
   clientDashboard: {
     title: 'Dashboard Klien',
     subtitle: 'Selamat datang di ruang kerja Anda',
@@ -414,5 +429,68 @@ export default {
     'ktp.required': 'Nomor KTP wajib diisi',
     'ktp.invalid.format': 'Nomor KTP harus tepat 16 digit',
     'ktp.verified.cannot.modify': 'Tidak dapat mengubah nomor KTP setelah verifikasi'
+  },
+  tokenPurchase: {
+    modal: {
+      title: 'Beli Token Bid',
+      currentQuota: 'Sisa Token Anda',
+      tier: 'Tier Langganan',
+      pricePerToken: 'Harga per Token',
+      quantity: 'Jumlah Token',
+      total: 'Total Pembayaran',
+      confirm: 'Lanjut ke Pembayaran',
+      cancel: 'Batal',
+      redirectInfo:
+        'Anda akan diarahkan ke halaman pembayaran Xendit untuk menyelesaikan transaksi',
+      quantityRange: 'Pilih 1-50 token'
+    },
+    error: {
+      default: 'Gagal memproses pembelian token',
+      fetchPricing: 'Gagal mengambil informasi harga',
+      invalidQuantity: 'Jumlah token harus antara 1-50',
+      purchaseFailed: 'Gagal membuat permintaan pembayaran'
+    }
+  },
+  notifications: {
+    title: 'Notifikasi',
+    markAllRead: 'Tandai semua sudah dibaca',
+    viewAll: 'Lihat semua notifikasi',
+    loading: 'Memuat notifikasi...',
+    emptyTitle: 'Belum ada notifikasi',
+    emptyMessage: 'Anda akan diberitahu tentang pembaruan proyek dan tawaran di sini',
+    justNow: 'Baru saja',
+    minutesAgo: '{n} menit yang lalu',
+    hoursAgo: '{n} jam yang lalu',
+    daysAgo: '{n} hari yang lalu',
+    messages: {
+      NOTIFICATION_PROJECT_VALIDATED: {
+        title: 'Proyek Disetujui',
+        message: 'Proyek Anda "{projectName}" telah divalidasi dan sekarang aktif'
+      },
+      NOTIFICATION_PROJECT_REJECTED: {
+        title: 'Tinjauan Proyek',
+        message: 'Proyek Anda "{projectName}" memerlukan peninjauan: {reason}'
+      },
+      NOTIFICATION_BID_RECEIVED: {
+        title: 'Tawaran Baru Diterima',
+        message: '{architectName} mengajukan tawaran sebesar Rp {amount} untuk "{projectName}"'
+      },
+      NOTIFICATION_BID_ACCEPTED: {
+        title: 'Tawaran Diterima',
+        message: 'Tawaran Anda untuk "{projectName}" telah diterima!'
+      },
+      NOTIFICATION_BID_REJECTED: {
+        title: 'Update Tawaran',
+        message: 'Tawaran Anda untuk "{projectName}" tidak terpilih'
+      },
+      NOTIFICATION_TOKEN_PURCHASE_SUCCESS: {
+        title: 'Pembelian Selesai',
+        message: '{tokenCount} token bid telah ditambahkan ke akun Anda'
+      },
+      NOTIFICATION_SUBSCRIPTION_ACTIVATED: {
+        title: 'Langganan Aktif',
+        message: 'Langganan {tier} Anda sekarang aktif dengan {tokenCount} token'
+      }
+    }
   }
 }

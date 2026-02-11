@@ -1,7 +1,11 @@
 package com.rumantra.bidding.domain;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
+import org.hibernate.annotations.Type;
+
+import io.hypersistence.utils.hibernate.type.json.JsonType;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,8 +30,9 @@ public class BidDetail {
   @Column(name = "concept_statement", columnDefinition = "TEXT")
   private String conceptStatement;
 
-  @Column(name = "project_risks", columnDefinition = "TEXT")
-  private String projectRisks;
+  @Type(JsonType.class)
+  @Column(name = "deliverables", columnDefinition = "jsonb")
+  private List<String> deliverables;
 
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;

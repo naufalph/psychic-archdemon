@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-4">
     <label class="block text-sm font-semibold text-black/70 tracking-tight">
-      {{ t('portfolio.form.images') }}
+      {{ t.portfolio.form.images }}
     </label>
 
     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -65,14 +65,14 @@
           />
         </svg>
         <span class="text-xs text-black/60 text-center px-2">
-          {{ isUploading ? t('portfolio.imageManager.uploading') : t('portfolio.imageManager.uploadZone') }}
+          {{ isUploading ? t.portfolio.imageManager.uploading : t.portfolio.imageManager.uploadZone }}
         </span>
       </label>
     </div>
 
     <div class="text-xs text-black/40 space-y-1">
-      <p>{{ displayImages.length }}/8 {{ t('portfolio.imageManager.currentCount') }}</p>
-      <p>{{ t('portfolio.imageManager.maxSize') }}</p>
+      <p>{{ displayImages.length }}/8 {{ t.portfolio.imageManager.currentCount }}</p>
+      <p>{{ t.portfolio.imageManager.maxSize }}</p>
     </div>
 
     <div v-if="uploadError" class="p-3 bg-red-50 border border-red-200 rounded-2xl text-sm text-red-600">
@@ -120,7 +120,7 @@ const props = defineProps({
 
 const emit = defineEmits(['update:images', 'update:newFiles', 'deleteImage', 'uploadImages'])
 
-const { t } = useI18n()
+const { t, getT } = useI18n()
 
 const fileInput = ref(null)
 const uploadError = ref('')
@@ -151,11 +151,11 @@ const validateFiles = files => {
 
   for (const file of files) {
     if (!file.type.startsWith('image/')) {
-      uploadError.value = t('portfolio.validation.invalidFileType')
+      uploadError.value = getT('portfolio.validation.invalidFileType')
       continue
     }
     if (file.size > 10 * 1024 * 1024) {
-      uploadError.value = t('portfolio.validation.fileTooLarge')
+      uploadError.value = getT('portfolio.validation.fileTooLarge')
       continue
     }
     validFiles.push(file)
@@ -184,7 +184,7 @@ const addFiles = files => {
   const filesToAdd = validFiles.slice(0, remainingSlots)
 
   if (filesToAdd.length < validFiles.length) {
-    uploadError.value = t('portfolio.validation.maxImagesReached')
+    uploadError.value = getT('portfolio.validation.maxImagesReached')
   }
 
   if (filesToAdd.length > 0) {
@@ -210,7 +210,7 @@ const handleDeleteImage = async (image, index) => {
       emit('deleteImage', image.id)
     } catch (error) {
       console.error('Delete image error:', error)
-      uploadError.value = t('portfolio.toast.imageDeleteError')
+      uploadError.value = getT('portfolio.toast.imageDeleteError')
     } finally {
       isDeleting.value = false
     }

@@ -157,6 +157,8 @@ CREATE TABLE IF NOT EXISTS rmtr_dashboard_notif (
     is_read BOOLEAN DEFAULT FALSE,
     read_at TIMESTAMP NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    message_code VARCHAR(100),
+    message_data TEXT,
     CONSTRAINT chk_dashboard_notif_type CHECK (type IN ('PROJECT_VALIDATED', 'PROJECT_UPDATED', 'BID_RECEIVED', 'BID_ACCEPTED', 'PAYMENT_RECEIVED'))
 );
 
@@ -261,12 +263,13 @@ CREATE TABLE IF NOT EXISTS rmtr_bid_detail (
     id BIGSERIAL PRIMARY KEY,
     bid_id BIGINT NOT NULL UNIQUE REFERENCES rmtr_bid(id) ON DELETE CASCADE,
     concept_statement TEXT,
-    project_risks TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL
+    updated_at TIMESTAMP NULL,
+    deliverables JSONB
 );
 
 CREATE INDEX IF NOT EXISTS idx_bid_detail_bid_id ON rmtr_bid_detail(bid_id);
+CREATE INDEX idx_bid_detail_deliverables ON rmtr_bid_detail USING GIN (deliverables);
 
 CREATE TABLE IF NOT EXISTS rmtr_bid_image (
     id BIGSERIAL PRIMARY KEY,
@@ -367,3 +370,18 @@ CREATE TABLE rmtr_message_file (
 );
 
 CREATE INDEX idx_message_file_message ON rmtr_message_file(message_id);
+
+-- Add PDF attachment support for bids
+CREATE TABLE IF NOT EXISTS rmtr_bid_attachment (
+                                                   id BIGSERIAL PRIMARY KEY,
+                                                   bid_id BIGINT NOT NULL REFERENCES rmtr_bid(id) ON DELETE CASCADE,
+    file_url TEXT NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    file_size BIGINT,
+    file_type VARCHAR(20) NOT NULL,
+    display_order INTEGER DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT chk_attachment_file_type CHECK (file_type IN ('PDF', 'DOCUMENT'))
+    );
+
+CREATE INDEX IF NOT EXISTS idx_bid_attachment_bid_id ON rmtr_bid_attachment(bid_id);

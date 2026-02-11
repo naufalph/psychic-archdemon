@@ -66,6 +66,12 @@ const routes = [
     meta: { requiresAuth: true, requiresRole: 'ARCHITECT' }
   },
   {
+    path: '/architect/opportunities/:projectId',
+    name: 'ProjectDetailForArchitect',
+    component: () => import('@/views/architect/ProjectDetailForArchitect.vue'),
+    meta: { requiresAuth: true, requiresRole: 'ARCHITECT' }
+  },
+  {
     path: '/architect/opportunities/:projectId/propose',
     name: 'ProposalCreate',
     component: () => import('@/views/architect/ProposalCreate.vue'),
