@@ -242,5 +242,12 @@ export const adminAPI = {
     api.post('/admin/reports/generate', { type: reportType, ...params })
 }
 
+export const adminProjectAPI = {
+  getAllProjects: () => api.get('/api/v1/projects/all'),
+  getProjectById: id => api.get(`/api/v1/projects/${id}`),
+  updateValidation: (projectId, validationData) =>
+    api.put(`/api/v1/projects/${projectId}/validate`, validationData)
+}
+
 // Default export
 export default api

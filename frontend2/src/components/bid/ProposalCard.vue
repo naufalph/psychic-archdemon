@@ -56,6 +56,14 @@
         </button>
 
         <button
+          @click="$emit('view-details', proposal.id)"
+          class="w-full px-4 py-2 bg-white border-2 border-[#C5A17A] text-[#7C4728] rounded-full text-sm font-medium hover:bg-[#C5A17A] hover:text-white transition flex items-center justify-center gap-2"
+        >
+          <Eye :size="16" />
+          View Full Details
+        </button>
+
+        <button
           v-if="hasPdfAttachment"
           @click="$emit('view-pdf', proposal)"
           class="w-full px-4 py-2 bg-white border-2 border-[#7C4728] text-[#7C4728] rounded-full text-sm font-medium hover:bg-[#7C4728] hover:text-white transition flex items-center justify-center gap-2"
@@ -80,7 +88,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from '@/composables/useI18n'
-import { Building, Trophy, Sparkles, FileText, Check } from 'lucide-vue-next'
+import { Building, Trophy, Sparkles, FileText, Check, Eye } from 'lucide-vue-next'
 
 const props = defineProps({
   proposal: {
@@ -93,7 +101,7 @@ const props = defineProps({
   }
 })
 
-defineEmits(['accept', 'view-pdf'])
+defineEmits(['accept', 'view-pdf', 'view-details'])
 
 const { t } = useI18n()
 

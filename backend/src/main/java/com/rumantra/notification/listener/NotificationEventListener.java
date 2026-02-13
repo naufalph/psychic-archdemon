@@ -4,6 +4,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import com.rumantra.bidding.event.BidSubmittedEvent;
 import com.rumantra.notification.domain.NotificationType;
 import com.rumantra.notification.event.ProjectValidatedEvent;
 import com.rumantra.notification.service.DashboardNotificationService;
@@ -20,12 +21,12 @@ public class NotificationEventListener {
 
   /**
    * Handle ProjectValidatedEvent by creating a dashboard notification.
-   * Uses @TransactionalEventListener to ensure notification is only created after the project
-   * validation transaction commits successfully.
+   * Uses @TransactionalEventListener to ensure notification is created within the same transaction
+   * as the project validation.
    *
    * @param event The project validated event
    */
-  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+  @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
   public void handleProjectValidated(ProjectValidatedEvent event) {
     try {
       String title = event.getIsValid() ? "Project Approved" : "Project Needs Changes";
@@ -69,6 +70,40 @@ public class NotificationEventListener {
         return baseMessage + " Reason: " + event.getValidationNotes();
       }
       return baseMessage + " Please review and update your project.";
+    }
+  }
+
+  @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
+  public void handleBidSubmitted(BidSubmittedEvent event) {
+    try {
+      String title = "New Bid Received";
+      String message =
+          String.format(
+              "Architect %s has submitted a bid for your project '%s'. Review the proposal and portfolio in your dashboard.",
+              event.getArchitectName(), event.getProjectTitle());
+
+      dashboardNotificationService.createNotification(
+          event.getClientUserId(),
+          NotificationType.BID_RECEIVED,
+          title,
+          message,
+          null,
+          null,
+          "PROJECT",
+          event.getProjectId());
+
+      log.info(
+          "Dashboard notification created for bid submission: bidId={}, projectId={}, clientUserId={}",
+          event.getBidId(),
+          event.getProjectId(),
+          event.getClientUserId());
+
+    } catch (Exception e) {
+      log.error(
+          "Failed to create dashboard notification for bid {}: {}",
+          event.getBidId(),
+          e.getMessage(),
+          e);
     }
   }
 }

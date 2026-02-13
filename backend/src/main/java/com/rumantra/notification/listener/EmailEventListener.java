@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import com.rumantra.bidding.event.BidSubmittedEvent;
 import com.rumantra.notification.event.ProjectValidatedEvent;
 import com.rumantra.user.domain.User;
 import com.rumantra.user.repository.UserRepository;
@@ -102,5 +103,54 @@ public class EmailEventListener {
             + "Best regards,\n"
             + "The Rumantra Team",
         firstName != null ? firstName : "there", projectTitle, notesSection);
+  }
+
+  @Async
+  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+  public void handleBidSubmitted(BidSubmittedEvent event) {
+    try {
+      User client =
+          userRepository
+              .findById(event.getClientUserId())
+              .orElseThrow(
+                  () -> new RuntimeException("Client user not found: " + event.getClientUserId()));
+
+      String subject = "New Bid for Your Project: " + event.getProjectTitle();
+
+      String message =
+          buildBidReceivedEmailBody(
+              client.getFirstName(), event.getArchitectName(), event.getProjectTitle());
+
+      emailService.sendBidNotificationEmail(client.getEmail(), subject, message);
+
+      log.info(
+          "Bid notification email sent to {} for project {}: bidId={}",
+          client.getEmail(),
+          event.getProjectId(),
+          event.getBidId());
+
+    } catch (Exception e) {
+      log.error(
+          "Failed to send bid notification email for bid {}: {}",
+          event.getBidId(),
+          e.getMessage(),
+          e);
+    }
+  }
+
+  private String buildBidReceivedEmailBody(
+      String firstName, String architectName, String projectTitle) {
+    return String.format(
+        "Hello %s,\n\n"
+            + "Great news! Architect %s has submitted a bid for your project '%s'.\n\n"
+            + "Next steps:\n"
+            + "• Review the bid proposal and pricing\n"
+            + "• View the architect's portfolio and previous work\n"
+            + "• Compare with other bids if you have multiple\n"
+            + "• Accept the bid that best fits your needs\n\n"
+            + "Visit your dashboard to review the proposal and connect with the architect.\n\n"
+            + "Best regards,\n"
+            + "The Rumantra Team",
+        firstName != null ? firstName : "there", architectName, projectTitle);
   }
 }

@@ -246,6 +246,43 @@
                 </div>
               </div>
 
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"> Proposal Document (PDF) </label>
+                <p class="text-xs text-gray-500 mb-3">Upload a detailed proposal document (optional, max 10MB)</p>
+
+                <div v-if="existingAttachments.length > 0" class="mb-4">
+                  <p class="text-xs text-gray-500 mb-2">Existing attachments</p>
+                  <div class="space-y-2">
+                    <div
+                      v-for="attachment in existingAttachments"
+                      :key="attachment.id"
+                      class="border border-gray-200 rounded-xl p-4 flex items-center gap-3"
+                    >
+                      <FileText :size="24" class="text-[#7C4728]" />
+                      <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-gray-900 truncate">{{ attachment.fileName }}</p>
+                        <p class="text-xs text-gray-500">{{ (attachment.fileSize / 1024 / 1024).toFixed(2) }} MB</p>
+                      </div>
+                      <button
+                        type="button"
+                        @click="deleteExistingAttachment(attachment.id)"
+                        class="p-1 rounded-full hover:bg-red-50 transition"
+                        :title="'Delete ' + attachment.fileName"
+                      >
+                        <X :size="20" class="text-red-600" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div v-if="existingAttachments.length === 0">
+                  <FileUploader v-model="pdfAttachment" label="" />
+                </div>
+                <p v-else class="text-sm text-amber-600 mt-2">
+                  Only one PDF attachment allowed. Delete existing to upload new one.
+                </p>
+              </div>
+
               <div v-if="uploadProgress > 0" class="bg-gray-50 rounded-2xl p-6">
                 <UploadProgress :progress="uploadProgress" label="Uploading files..." />
               </div>
@@ -284,10 +321,11 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { ArrowLeft, FileText, Loader, Send } from 'lucide-vue-next'
+import { ArrowLeft, FileText, Loader, Send, X } from 'lucide-vue-next'
 import { useBidsStore } from '@/stores/bids'
 import { useProjectsStore } from '@/stores/projects'
 import MultiImageUploader from '@/components/upload/MultiImageUploader.vue'
+import FileUploader from '@/components/upload/FileUploader.vue'
 import UploadProgress from '@/components/upload/UploadProgress.vue'
 import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
 import DeliverablesSelector from '@/components/project/DeliverablesSelector.vue'
@@ -313,6 +351,8 @@ const conceptSketches = ref([])
 const moodBoards = ref([])
 const existingConceptSketches = ref([])
 const existingMoodBoards = ref([])
+const pdfAttachment = ref(null)
+const existingAttachments = ref([])
 const error = ref(null)
 const existingBidId = ref(null)
 
@@ -361,6 +401,16 @@ const deleteExistingImage = async (imageId, type) => {
   }
 }
 
+const deleteExistingAttachment = async attachmentId => {
+  try {
+    await bidsStore.deleteAttachment(attachmentId)
+    existingAttachments.value = existingAttachments.value.filter(att => att.id !== attachmentId)
+  } catch (err) {
+    error.value = err.response?.data?.message || 'Failed to delete attachment'
+    console.error('Failed to delete attachment:', err)
+  }
+}
+
 const handleSubmit = async () => {
   error.value = null
 
@@ -400,6 +450,10 @@ const handleSubmit = async () => {
     const newMoodBoards = moodBoards.value.filter(file => file instanceof File)
     if (newMoodBoards.length > 0) {
       await bidsStore.uploadMoodBoards(bid.id, newMoodBoards)
+    }
+
+    if (pdfAttachment.value instanceof File) {
+      await bidsStore.uploadAttachment(bid.id, pdfAttachment.value)
     }
 
     await bidsStore.submitBid(bid.id)
@@ -445,6 +499,10 @@ onMounted(async () => {
           url: board.imageUrl,
           name: board.fileName || 'Mood Board'
         }))
+      }
+
+      if (existingDraft.attachments && existingDraft.attachments.length > 0) {
+        existingAttachments.value = existingDraft.attachments
       }
 
       conceptSketches.value = []

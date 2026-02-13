@@ -72,6 +72,31 @@ DOCKER_BUILDKIT=1 docker compose build
 - **Code Formatting**: Spotless with Google Java Format
 - **Object Mapping**: MapStruct for DTOs
 
+### File Storage
+The application supports multiple storage backends via the `FileStorageService` interface:
+
+- **Local Storage** (Development): Stores files in the local filesystem (`uploads/` directory)
+  - Enabled with `file.storage.type=local`
+  - Best for local development
+
+- **Railway Storage** (Production): S3-compatible storage with direct public URLs
+  - Enabled with `file.storage.type=railway`
+  - Cost-effective: $0.015/GB-month with free egress
+  - Region: `ap-southeast-1` (Singapore) for optimal Indonesia performance
+  - Physical resize approach: Uploads 3 sizes per image (ORIGINAL, LARGE 1920px, MEDIUM 800px)
+  - Configuration via environment variables:
+    - `RAILWAY_BUCKET_NAME` - Bucket name
+    - `RAILWAY_ACCESS_KEY_ID` - Access key
+    - `RAILWAY_SECRET_ACCESS_KEY` - Secret key
+    - `RAILWAY_REGION` - AWS region (default: ap-southeast-1)
+    - `RAILWAY_ENDPOINT` - Storage endpoint (default: https://storage.railway.app)
+
+- **Cloudinary** (Fallback): Cloud image storage with transformation URLs
+  - Enabled with `file.storage.type=cloudinary`
+  - Kept as fallback option for easy switching
+
+**Implementation**: `RailwayStorageService`, `CloudinaryStorageService`, `LocalFileStorageService`
+
 ### Domain Architecture
 The backend follows domain-driven design with these modules:
 - **User**: Base user authentication and profile management

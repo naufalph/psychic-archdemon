@@ -112,6 +112,9 @@ public class UserService {
     if (clientRepository.findByUserId(user.getId()).isPresent()) {
       registeredRoles.add(RumantraConstants.CLIENT_ROLE);
     }
+    if (user.isSuperuser()) {
+      registeredRoles.add(RumantraConstants.SUPERUSER_ROLE);
+    }
 
     // Generate JWT token
     String jwt = jwtUtils.generateJwtToken(user.getEmail());
@@ -153,6 +156,9 @@ public class UserService {
     }
     if (clientRepository.findByUserId(user.getId()).isPresent()) {
       registeredRoles.add(RumantraConstants.CLIENT_ROLE);
+    }
+    if (user.isSuperuser()) {
+      registeredRoles.add(RumantraConstants.SUPERUSER_ROLE);
     }
 
     return UserDto.builder()
@@ -317,6 +323,9 @@ public class UserService {
       }
       if (clientRepository.findByUserId(user.getId()).isPresent()) {
         registeredRoles.add(RumantraConstants.CLIENT_ROLE);
+      }
+      if (user.isSuperuser()) {
+        registeredRoles.add(RumantraConstants.SUPERUSER_ROLE);
       }
 
       return UserAuthResponseDto.builder()
@@ -505,6 +514,9 @@ public class UserService {
       }
       if (clientRepository.findByUserId(user.getId()).isPresent()) {
         registeredRoles.add(RumantraConstants.CLIENT_ROLE);
+      }
+      if (user.isSuperuser()) {
+        registeredRoles.add(RumantraConstants.SUPERUSER_ROLE);
       }
 
       return UserAuthResponseDto.builder()

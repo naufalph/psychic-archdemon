@@ -13,7 +13,6 @@ import lombok.*;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 @Table(name = "rmtr_dashboard_notif")
 public class DashboardNotification {
 

@@ -67,6 +67,22 @@ export const useBidsStore = defineStore('bids', {
       }
     },
 
+    async fetchBidById(bidId) {
+      this.loading = true
+      this.error = null
+      try {
+        const response = await bidAPI.getBid(bidId)
+        this.currentBid = response.data.data
+        return this.currentBid
+      } catch (error) {
+        this.error = error.response?.data?.message || 'Failed to fetch bid details'
+        console.error('Failed to fetch bid:', error)
+        throw error
+      } finally {
+        this.loading = false
+      }
+    },
+
     async fetchQuota() {
       try {
         const response = await bidAPI.getQuota()
@@ -242,6 +258,38 @@ export const useBidsStore = defineStore('bids', {
       } catch (error) {
         this.error = error.response?.data?.message || 'Failed to delete mood board'
         console.error('Failed to delete mood board:', error)
+        throw error
+      } finally {
+        this.loading = false
+      }
+    },
+
+    async uploadAttachment(bidId, file) {
+      this.uploadProgress = 0
+      this.error = null
+      try {
+        const onProgress = progress => {
+          this.uploadProgress = progress
+        }
+        const response = await bidAPI.uploadAttachment(bidId, file, onProgress)
+        return response.data.data
+      } catch (error) {
+        this.error = error.response?.data?.message || 'Failed to upload attachment'
+        console.error('Failed to upload attachment:', error)
+        throw error
+      } finally {
+        this.uploadProgress = 0
+      }
+    },
+
+    async deleteAttachment(attachmentId) {
+      this.loading = true
+      this.error = null
+      try {
+        await bidAPI.deleteAttachment(attachmentId)
+      } catch (error) {
+        this.error = error.response?.data?.message || 'Failed to delete attachment'
+        console.error('Failed to delete attachment:', error)
         throw error
       } finally {
         this.loading = false

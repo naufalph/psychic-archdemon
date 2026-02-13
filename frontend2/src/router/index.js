@@ -36,6 +36,12 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
+    path: '/client/projects/:projectId/bids/:bidId',
+    name: 'BidDetail',
+    component: () => import('@/views/client/BidDetail.vue'),
+    meta: { requiresAuth: true, requiresRole: 'CLIENT' }
+  },
+  {
     path: '/architect/onboarding',
     name: 'ArchitectOnboarding',
     component: () => import('@/views/architect/ArchitectOnboarding.vue'),

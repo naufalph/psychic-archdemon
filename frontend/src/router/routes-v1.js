@@ -119,6 +119,39 @@ export default [
     }
   },
 
+  // Admin Routes (Superuser Only)
+  {
+    path: '/admin',
+    name: 'AdminDashboard',
+    component: () => import('@/views/v1/admin/AdminDashboard.vue'),
+    meta: {
+      title: 'Admin Dashboard - Rumantra',
+      requiresAuth: true,
+      roles: ['SUPERUSER']
+    }
+  },
+  {
+    path: '/admin/projects',
+    name: 'AdminProjects',
+    component: () => import('@/views/v1/admin/AdminProjects.vue'),
+    meta: {
+      title: 'Project Validation - Rumantra',
+      requiresAuth: true,
+      roles: ['SUPERUSER']
+    }
+  },
+  {
+    path: '/admin/projects/:id',
+    name: 'AdminProjectDetail',
+    component: () => import('@/views/v1/admin/AdminProjectDetail.vue'),
+    props: true,
+    meta: {
+      title: 'Project Details - Admin - Rumantra',
+      requiresAuth: true,
+      roles: ['SUPERUSER']
+    }
+  },
+
   // Email Verification Route
   {
     path: '/verify-email',

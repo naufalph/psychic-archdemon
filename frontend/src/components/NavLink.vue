@@ -53,10 +53,27 @@
         </select>
       </div>
 
-      <!-- Auth Buttons -->
+      <!-- Auth Buttons / User Menu -->
       <div class="flex space-x-2">
-        <Button :text="$t('auth.signIn')" variant="filled" @click="openSignIn" />
-        <Button :text="$t('auth.signUp')" variant="outlined" @click="openSignUp" />
+        <template v-if="isAuthenticated">
+          <!-- Admin Link (Superuser Only) -->
+          <router-link
+            v-if="isSuperuser"
+            to="/admin/projects"
+            class="flex items-center px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition"
+          >
+            Admin Dashboard
+          </router-link>
+
+          <!-- User Profile/Logout -->
+          <Button :text="userName" variant="filled" @click="$router.push('/profile')" />
+          <Button text="Logout" variant="outlined" @click="handleLogout" />
+        </template>
+
+        <template v-else>
+          <Button :text="$t('auth.signIn')" variant="filled" @click="openSignIn" />
+          <Button :text="$t('auth.signUp')" variant="outlined" @click="openSignUp" />
+        </template>
       </div>
     </div>
   </nav>
@@ -64,6 +81,8 @@
 
 <script>
 import Button from './ui/Button.vue'
+import { useAuthStore } from '@/stores/auth'
+import { mapState } from 'pinia'
 
 export default {
   name: 'NavLink',
@@ -75,12 +94,20 @@ export default {
       isHovered: false
     }
   },
+  computed: {
+    ...mapState(useAuthStore, ['isAuthenticated', 'isSuperuser', 'userName'])
+  },
   methods: {
     openSignIn() {
       this.$emit('open-signin')
     },
     openSignUp() {
       this.$emit('open-signup')
+    },
+    handleLogout() {
+      const authStore = useAuthStore()
+      authStore.logout()
+      this.$router.push('/')
     },
     changeLanguage(event) {
       const selectedLanguage = event.target.value.toLowerCase()

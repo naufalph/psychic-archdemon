@@ -19,6 +19,8 @@ import com.rumantra.shared.exception.ResourceNotFoundException;
 import com.rumantra.user.domain.User;
 import com.rumantra.user.repository.UserRepository;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,6 +31,8 @@ public class DashboardNotificationService {
 
   private final DashboardNotificationRepository notificationRepository;
   private final UserRepository userRepository;
+
+  @PersistenceContext private EntityManager entityManager;
 
   /**
    * Create a new dashboard notification for a user.
@@ -43,7 +47,6 @@ public class DashboardNotificationService {
    * @param referenceId The ID of referenced entity
    * @return The created notification
    */
-  @Transactional
   public DashboardNotification createNotification(
       Long userId,
       NotificationType type,
@@ -74,6 +77,7 @@ public class DashboardNotificationService {
             .build();
 
     DashboardNotification saved = notificationRepository.save(notification);
+    entityManager.flush();
     log.info("Created dashboard notification {} for user {}", saved.getId(), userId);
     return saved;
   }

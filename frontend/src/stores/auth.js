@@ -18,8 +18,10 @@ export const useAuthStore = defineStore('auth', {
     isAdmin: state => state.user?.registeredRoles?.includes('ADMIN') || false,
     isArchitect: state => state.user?.registeredRoles?.includes('ARCHITECT') || false,
     isClient: state => state.user?.registeredRoles?.includes('CLIENT') || false,
+    isSuperuser: state => state.user?.registeredRoles?.includes('SUPERUSER') || false,
     primaryRole: state => {
       const roles = state.user?.registeredRoles || []
+      if (roles.includes('SUPERUSER')) return 'SUPERUSER'
       if (roles.includes('ADMIN')) return 'ADMIN'
       if (roles.includes('ARCHITECT')) return 'ARCHITECT'
       if (roles.includes('CLIENT')) return 'CLIENT'

@@ -27,6 +27,7 @@ import com.rumantra.bidding.dto.BidResponse;
 import com.rumantra.bidding.dto.CreateBidRequest;
 import com.rumantra.bidding.dto.LinkPortfoliosRequest;
 import com.rumantra.bidding.dto.UpdateBidRequest;
+import com.rumantra.bidding.event.BidSubmittedEvent;
 import com.rumantra.bidding.repository.BidPortfolioRefRepository;
 import com.rumantra.bidding.repository.BidRepository;
 import com.rumantra.chat.event.BidAcceptedEvent;
@@ -131,6 +132,29 @@ public class BidService {
 
     quota = bidQuotaService.getQuotaByArchitectId(bid.getArchitect().getId());
     bidUsageLogService.logBidPlaced(bid.getArchitect(), bid, quota.getTokensRemaining());
+
+    Project project = bid.getProject();
+    com.rumantra.client.domain.Client client = project.getClient();
+    com.rumantra.user.domain.User clientUser = client.getUser();
+    com.rumantra.user.domain.User architectUser = bid.getArchitect().getUser();
+
+    String architectName;
+    if (architectUser.getFirstName() != null && architectUser.getLastName() != null) {
+      architectName = architectUser.getFirstName() + " " + architectUser.getLastName();
+    } else {
+      architectName = architectUser.getEmail().split("@")[0];
+    }
+
+    eventPublisher.publishEvent(
+        new BidSubmittedEvent(
+            this,
+            bid.getId(),
+            project.getId(),
+            bid.getArchitect().getId(),
+            client.getId(),
+            clientUser.getId(),
+            project.getTitle(),
+            architectName));
 
     return mapToResponse(bid);
   }

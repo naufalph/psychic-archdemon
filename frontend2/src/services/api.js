@@ -309,7 +309,22 @@ export const bidAPI = {
       }
     })
   },
-  deleteImage: imageId => api.delete(`/api/bids/images/${imageId}`)
+  deleteImage: imageId => api.delete(`/api/bids/images/${imageId}`),
+  uploadAttachment: (bidId, file, onProgress) => {
+    const formData = new FormData()
+    formData.append('file', file)
+    return api.post(`/api/bids/${bidId}/attachments`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+      onUploadProgress: progressEvent => {
+        if (onProgress && progressEvent.total) {
+          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+          onProgress(progress)
+        }
+      }
+    })
+  },
+  deleteAttachment: attachmentId => api.delete(`/api/bids/attachments/${attachmentId}`),
+  getAttachments: bidId => api.get(`/api/bids/${bidId}/attachments`)
 }
 
 export const adminAPI = {

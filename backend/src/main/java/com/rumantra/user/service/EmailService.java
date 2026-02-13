@@ -146,4 +146,33 @@ public class EmailService {
           "Failed to send project validation email to: {} after {}ms", toEmail, totalDuration, e);
     }
   }
+
+  @Async
+  public void sendBidNotificationEmail(String toEmail, String subject, String message) {
+    long startTime = System.currentTimeMillis();
+
+    try {
+      SimpleMailMessage mailMessage = new SimpleMailMessage();
+      mailMessage.setFrom(fromEmail);
+      mailMessage.setTo(toEmail);
+      mailMessage.setSubject(subject);
+      mailMessage.setText(message);
+
+      long smtpStartTime = System.currentTimeMillis();
+      mailSender.send(mailMessage);
+      long smtpDuration = System.currentTimeMillis() - smtpStartTime;
+
+      long totalDuration = System.currentTimeMillis() - startTime;
+      log.info(
+          "Bid notification email sent successfully to: {} (SMTP: {}ms, Total: {}ms)",
+          toEmail,
+          smtpDuration,
+          totalDuration);
+
+    } catch (Exception e) {
+      long totalDuration = System.currentTimeMillis() - startTime;
+      log.error(
+          "Failed to send bid notification email to: {} after {}ms", toEmail, totalDuration, e);
+    }
+  }
 }

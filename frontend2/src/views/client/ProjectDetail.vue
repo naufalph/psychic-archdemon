@@ -82,53 +82,16 @@
             <p class="text-gray-500">{{ t.clientDashboard.noProposalsMessage }}</p>
           </div>
 
-          <div v-else class="space-y-4">
-            <div
+          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <ProposalCard
               v-for="proposal in projectBids"
               :key="proposal.id"
-              class="bg-gray-50 rounded-2xl p-6 border border-gray-200"
-            >
-              <div class="flex justify-between items-start mb-4">
-                <div>
-                  <h3 class="text-lg font-bold text-black">{{ proposal.architectName || 'Architect' }}</h3>
-                  <p v-if="proposal.firmName" class="text-sm text-gray-500">{{ proposal.firmName }}</p>
-                </div>
-                <span
-                  v-if="proposal.status === 'ACCEPTED'"
-                  class="bg-[#7C4728] text-white px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2"
-                >
-                  <Trophy :size="14" />
-                  {{ t.clientDashboard.winner }}
-                </span>
-              </div>
-
-              <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                <div>
-                  <p class="text-xs text-gray-500 mb-1">{{ t.clientDashboard.proposedCost }}</p>
-                  <p class="font-bold text-gray-900">{{ formatCurrency(proposal.proposedCost) }}</p>
-                </div>
-                <div>
-                  <p class="text-xs text-gray-500 mb-1">{{ t.clientDashboard.duration }}</p>
-                  <p class="font-bold text-gray-900">{{ proposal.estimatedDuration }} {{ t.clientDashboard.days }}</p>
-                </div>
-                <div>
-                  <p class="text-xs text-gray-500 mb-1">{{ t.clientDashboard.status }}</p>
-                  <p class="font-bold text-gray-900">{{ proposal.status }}</p>
-                </div>
-              </div>
-
-              <p v-if="proposal.conceptDescription" class="text-sm text-gray-700 mb-4">
-                {{ proposal.conceptDescription }}
-              </p>
-
-              <button
-                v-if="proposal.status === 'PENDING' && currentProject.status === 'OPEN'"
-                @click="handleAcceptBid(proposal.id)"
-                class="bg-[#7C4728] hover:bg-black text-white px-6 py-2 rounded-full text-sm font-medium transition"
-              >
-                {{ t.clientDashboard.acceptProposal }}
-              </button>
-            </div>
+              :proposal="proposal"
+              :project-status="currentProject.status"
+              @accept="handleAcceptBid"
+              @view-pdf="handleViewPDF"
+              @view-details="handleViewDetails"
+            />
           </div>
         </div>
       </div>
@@ -146,6 +109,7 @@ import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
 import ProjectStatusBadge from '@/components/project/ProjectStatusBadge.vue'
 import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
+import ProposalCard from '@/components/bid/ProposalCard.vue'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -186,6 +150,19 @@ const handleAcceptBid = async bidId => {
   } catch (err) {
     alert(err.response?.data?.message || 'Failed to accept proposal')
   }
+}
+
+const handleViewPDF = proposal => {
+  if (proposal.attachments && proposal.attachments.length > 0) {
+    window.open(proposal.attachments[0].fileUrl, '_blank')
+  }
+}
+
+const handleViewDetails = bidId => {
+  router.push({
+    name: 'BidDetail',
+    params: { projectId: route.params.id, bidId }
+  })
 }
 
 onMounted(() => {
