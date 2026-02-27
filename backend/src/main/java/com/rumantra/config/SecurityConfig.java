@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -98,10 +99,6 @@ public class SecurityConfig {
                     .requestMatchers("/api/chat/**")
                     .authenticated()
 
-                    // Bid acceptance (CLIENT role)
-                    .requestMatchers("/api/projects/*/bids/*/accept")
-                    .hasRole("CLIENT")
-
                     // Protected endpoints
                     .requestMatchers("/api/v1/architects/profile", "/api/v1/architects/profile/**")
                     .authenticated()
@@ -114,7 +111,12 @@ public class SecurityConfig {
                     .requestMatchers("/api/portos/**")
                     .hasRole("ARCHITECT")
 
-                    // Bid endpoints - require ARCHITECT role
+                    // Bid endpoints — CLIENT-specific actions first
+                    .requestMatchers(HttpMethod.POST, "/api/bids/*/accept")
+                    .hasRole("CLIENT")
+                    .requestMatchers(HttpMethod.GET, "/api/bids/*")
+                    .authenticated()
+                    // All other bid operations — ARCHITECT only
                     .requestMatchers("/api/bids/**")
                     .hasRole("ARCHITECT")
 

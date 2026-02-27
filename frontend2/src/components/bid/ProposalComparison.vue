@@ -262,17 +262,12 @@ const IMAGE_TYPE_FIELD = {
 
 const getImages = (bid, type) => bid?.[IMAGE_TYPE_FIELD[type]] ?? []
 
-const imageIndexA = ref(0)
-const imageIndexB = ref(0)
-
-const imageAUrl = computed(() => getImages(props.bidA, activeImageType.value)[imageIndexA.value]?.imageUrl ?? null)
-const imageBUrl = computed(() => getImages(props.bidB, activeImageType.value)[imageIndexB.value]?.imageUrl ?? null)
+const imageAUrl = computed(() => getImages(props.bidA, activeImageType.value)[0]?.imageUrl ?? null)
+const imageBUrl = computed(() => getImages(props.bidB, activeImageType.value)[0]?.imageUrl ?? null)
 
 const switchType = type => {
   activeImageType.value = type
   sliderPosition.value = 50
-  imageIndexA.value = 0
-  imageIndexB.value = 0
 }
 
 const startDrag = () => { isDragging.value = true }
