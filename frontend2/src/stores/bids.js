@@ -1,18 +1,6 @@
 import { defineStore } from 'pinia'
 import { bidAPI } from '@/services/api'
 
-const transformBidData = backendBid => ({
-  ...backendBid,
-  proposedCost: backendBid.bidAmount,
-  estimatedDuration: backendBid.proposedTimelineDays,
-  conceptDescription: backendBid.proposal,
-  firmName: backendBid.architectCompany,
-  bidAmount: backendBid.bidAmount,
-  proposedTimelineDays: backendBid.proposedTimelineDays,
-  proposal: backendBid.proposal,
-  architectCompany: backendBid.architectCompany
-})
-
 export const useBidsStore = defineStore('bids', {
   state: () => ({
     myBids: [],
@@ -30,9 +18,7 @@ export const useBidsStore = defineStore('bids', {
 
   getters: {
     pendingBids: state => state.myBids.filter(b => b.status === 'PENDING'),
-    acceptedBids: state => state.myBids.filter(b => b.status === 'ACCEPTED'),
-    rejectedBids: state => state.myBids.filter(b => b.status === 'REJECTED'),
-    hasQuota: state => state.quota.tokensRemaining > 0
+    acceptedBids: state => state.myBids.filter(b => b.status === 'ACCEPTED')
   },
 
   actions: {
@@ -57,7 +43,7 @@ export const useBidsStore = defineStore('bids', {
       try {
         const response = await bidAPI.getProjectBids(projectId)
         const bids = response.data.data || []
-        this.projectBids = bids.map(transformBidData)
+        this.projectBids = bids
       } catch (error) {
         this.error = error.response?.data?.message || 'Failed to fetch project bids'
         console.error('Failed to fetch project bids:', error)
@@ -125,38 +111,18 @@ export const useBidsStore = defineStore('bids', {
       }
     },
 
-    async uploadConceptSketches(bidId, files) {
+    async uploadBidImages(bidId, imageType, files) {
       this.uploadProgress = 0
       this.error = null
       try {
         const onProgress = progress => {
           this.uploadProgress = progress
         }
-        const response = await bidAPI.uploadConceptSketches(bidId, files, onProgress)
-        this.currentBid = response.data.data
-        return this.currentBid
+        const response = await bidAPI.uploadBidImages(bidId, imageType, files, onProgress)
+        return response.data.data
       } catch (error) {
-        this.error = error.response?.data?.message || 'Failed to upload concept sketches'
-        console.error('Failed to upload concept sketches:', error)
-        throw error
-      } finally {
-        this.uploadProgress = 0
-      }
-    },
-
-    async uploadMoodBoards(bidId, files) {
-      this.uploadProgress = 0
-      this.error = null
-      try {
-        const onProgress = progress => {
-          this.uploadProgress = progress
-        }
-        const response = await bidAPI.uploadMoodBoards(bidId, files, onProgress)
-        this.currentBid = response.data.data
-        return this.currentBid
-      } catch (error) {
-        this.error = error.response?.data?.message || 'Failed to upload mood boards'
-        console.error('Failed to upload mood boards:', error)
+        this.error = error.response?.data?.message || 'Failed to upload images'
+        console.error('Failed to upload bid images:', error)
         throw error
       } finally {
         this.uploadProgress = 0
@@ -216,11 +182,11 @@ export const useBidsStore = defineStore('bids', {
       }
     },
 
-    async acceptBid(projectId, bidId) {
+    async acceptBid(bidId) {
       this.loading = true
       this.error = null
       try {
-        const response = await bidAPI.acceptBid(projectId, bidId)
+        const response = await bidAPI.acceptBid(bidId)
         const acceptedBid = response.data.data
         const bidIndex = this.projectBids.findIndex(b => b.id === bidId)
         if (bidIndex !== -1) {
@@ -236,60 +202,14 @@ export const useBidsStore = defineStore('bids', {
       }
     },
 
-    async deleteConceptSketch(imageId) {
+    async deleteBidImage(imageId) {
       this.loading = true
       this.error = null
       try {
         await bidAPI.deleteImage(imageId)
       } catch (error) {
-        this.error = error.response?.data?.message || 'Failed to delete concept sketch'
-        console.error('Failed to delete concept sketch:', error)
-        throw error
-      } finally {
-        this.loading = false
-      }
-    },
-
-    async deleteMoodBoard(imageId) {
-      this.loading = true
-      this.error = null
-      try {
-        await bidAPI.deleteImage(imageId)
-      } catch (error) {
-        this.error = error.response?.data?.message || 'Failed to delete mood board'
-        console.error('Failed to delete mood board:', error)
-        throw error
-      } finally {
-        this.loading = false
-      }
-    },
-
-    async uploadAttachment(bidId, file) {
-      this.uploadProgress = 0
-      this.error = null
-      try {
-        const onProgress = progress => {
-          this.uploadProgress = progress
-        }
-        const response = await bidAPI.uploadAttachment(bidId, file, onProgress)
-        return response.data.data
-      } catch (error) {
-        this.error = error.response?.data?.message || 'Failed to upload attachment'
-        console.error('Failed to upload attachment:', error)
-        throw error
-      } finally {
-        this.uploadProgress = 0
-      }
-    },
-
-    async deleteAttachment(attachmentId) {
-      this.loading = true
-      this.error = null
-      try {
-        await bidAPI.deleteAttachment(attachmentId)
-      } catch (error) {
-        this.error = error.response?.data?.message || 'Failed to delete attachment'
-        console.error('Failed to delete attachment:', error)
+        this.error = error.response?.data?.message || 'Failed to delete image'
+        console.error('Failed to delete bid image:', error)
         throw error
       } finally {
         this.loading = false

@@ -55,57 +55,76 @@
         </div>
 
         <div class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
+          <BidImageGallery :images="currentBid.facadeImages" title="Facade" empty-message="No facade images available" />
+        </div>
+
+        <div class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
           <BidImageGallery
-            :images="currentBid.conceptSketches"
-            title="Concept Sketches"
-            empty-message="No concept sketches available"
+            :images="currentBid.interiorImages"
+            title="Interior"
+            empty-message="No interior images available"
           />
         </div>
 
         <div class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
           <BidImageGallery
-            :images="currentBid.moodBoards"
-            title="Mood Boards"
-            empty-message="No mood boards available"
+            :images="currentBid.massingImages"
+            title="Massing"
+            empty-message="No massing images available"
           />
         </div>
 
+        <div class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
+          <BidImageGallery :images="currentBid.zoningImages" title="Zoning" empty-message="No zoning images available" />
+        </div>
+
         <div
-          v-if="currentBid.attachments && currentBid.attachments.length > 0"
+          v-if="hasRevisions"
           class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft"
         >
-          <h2 class="text-2xl font-bold text-black mb-4">Proposal Documents</h2>
-          <div class="space-y-3">
-            <div
-              v-for="attachment in currentBid.attachments"
-              :key="attachment.id"
-              class="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-200"
-            >
-              <div class="flex items-center gap-3">
-                <FileText :size="24" class="text-[#7C4728]" />
-                <div>
-                  <p class="font-medium text-gray-900">{{ attachment.fileName }}</p>
-                  <p class="text-sm text-gray-500">{{ formatFileSize(attachment.fileSize) }}</p>
-                </div>
-              </div>
-              <button
-                @click="openPDF(attachment.fileUrl)"
-                class="px-4 py-2 bg-[#7C4728] text-white rounded-full text-sm font-medium hover:bg-black transition"
-              >
-                View PDF
-              </button>
+          <h2 class="text-2xl font-bold text-black mb-4">Revision Commitments</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div v-if="currentBid.details?.siteAnalysisRevisions != null" class="bg-gray-50 rounded-2xl p-4">
+              <p class="text-xs text-gray-500 uppercase font-bold mb-1">Site Analysis & Planning</p>
+              <p class="text-2xl font-bold text-black">{{ currentBid.details.siteAnalysisRevisions }}
+                <span class="text-sm font-normal text-gray-500">revisions</span>
+              </p>
+            </div>
+            <div v-if="currentBid.details?.designRevisions != null" class="bg-gray-50 rounded-2xl p-4">
+              <p class="text-xs text-gray-500 uppercase font-bold mb-1">Design Phases</p>
+              <p class="text-2xl font-bold text-black">{{ currentBid.details.designRevisions }}
+                <span class="text-sm font-normal text-gray-500">revisions</span>
+              </p>
+            </div>
+            <div v-if="currentBid.details?.permitsDocRevisions != null" class="bg-gray-50 rounded-2xl p-4">
+              <p class="text-xs text-gray-500 uppercase font-bold mb-1">Permits & Documentation</p>
+              <p class="text-2xl font-bold text-black">{{ currentBid.details.permitsDocRevisions }}
+                <span class="text-sm font-normal text-gray-500">revisions</span>
+              </p>
+            </div>
+            <div v-if="currentBid.details?.specializedServicesRevisions != null" class="bg-gray-50 rounded-2xl p-4">
+              <p class="text-xs text-gray-500 uppercase font-bold mb-1">Specialized Services</p>
+              <p class="text-2xl font-bold text-black">{{ currentBid.details.specializedServicesRevisions }}
+                <span class="text-sm font-normal text-gray-500">revisions</span>
+              </p>
+            </div>
+            <div v-if="currentBid.details?.constructionSupportRevisions != null" class="bg-gray-50 rounded-2xl p-4">
+              <p class="text-xs text-gray-500 uppercase font-bold mb-1">Construction Support</p>
+              <p class="text-2xl font-bold text-black">{{ currentBid.details.constructionSupportRevisions }}
+                <span class="text-sm font-normal text-gray-500">revisions</span>
+              </p>
             </div>
           </div>
         </div>
 
         <div
-          v-if="currentBid.portfolios && currentBid.portfolios.length > 0"
+          v-if="currentBid.portfolioReferences && currentBid.portfolioReferences.length > 0"
           class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft"
         >
           <h2 class="text-2xl font-bold text-black mb-4">Related Portfolio Projects</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <div
-              v-for="portfolio in currentBid.portfolios"
+              v-for="portfolio in currentBid.portfolioReferences"
               :key="portfolio.id"
               class="bg-gray-50 rounded-2xl p-4 border border-gray-200 hover:border-[#C5A17A] transition"
             >
@@ -143,10 +162,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { ArrowLeft, FileText, Check, Trophy } from 'lucide-vue-next'
+import { ArrowLeft, Check, Trophy } from 'lucide-vue-next'
 import { useBidsStore } from '@/stores/bids'
 import BidImageGallery from '@/components/bid/BidImageGallery.vue'
 import BidStatusBadge from '@/components/project/BidStatusBadge.vue'
@@ -156,6 +175,18 @@ const router = useRouter()
 const bidsStore = useBidsStore()
 
 const { currentBid, loading, error } = storeToRefs(bidsStore)
+
+const hasRevisions = computed(() => {
+  const d = currentBid.value?.details
+  if (!d) return false
+  return (
+    d.siteAnalysisRevisions != null ||
+    d.designRevisions != null ||
+    d.permitsDocRevisions != null ||
+    d.specializedServicesRevisions != null ||
+    d.constructionSupportRevisions != null
+  )
+})
 
 const formatCurrency = value => {
   if (!value) return 'N/A'
@@ -167,12 +198,6 @@ const formatCurrency = value => {
   }).format(value)
 }
 
-const formatFileSize = bytes => {
-  if (!bytes) return 'N/A'
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
-  return (bytes / (1024 * 1024)).toFixed(2) + ' MB'
-}
-
 const formatDate = dateString => {
   if (!dateString) return 'N/A'
   return new Date(dateString).toLocaleDateString('id-ID', {
@@ -180,10 +205,6 @@ const formatDate = dateString => {
     month: 'long',
     day: 'numeric'
   })
-}
-
-const openPDF = url => {
-  window.open(url, '_blank')
 }
 
 const fetchBid = async () => {
@@ -198,8 +219,8 @@ const handleAcceptBid = async () => {
   if (!confirm('Are you sure you want to accept this proposal?')) return
 
   try {
-    await bidsStore.acceptBid(route.params.projectId, route.params.bidId)
-    await fetchBid()
+    await bidsStore.acceptBid(route.params.bidId)
+    router.push(`/client/projects/${route.params.projectId}/finalization`)
   } catch (err) {
     alert(err.response?.data?.message || 'Failed to accept proposal')
   }

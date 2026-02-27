@@ -64,9 +64,6 @@ public class Bid {
   @Column(name = "accepted_at")
   private LocalDateTime acceptedAt;
 
-  @Column(name = "rejected_at")
-  private LocalDateTime rejectedAt;
-
   @PrePersist
   protected void onCreate() {
     createdAt = LocalDateTime.now();

@@ -71,12 +71,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useOnboardingStore } from '@/stores/onboarding'
+import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
 const store = useOnboardingStore()
+const authStore = useAuthStore()
 const countdown = ref(5)
 
 const confettiStyle = index => {
@@ -93,13 +95,15 @@ const confettiStyle = index => {
   }
 }
 
-const goToDashboard = () => {
+const goToDashboard = async () => {
   store.clearOnboardingData()
+  await authStore.fetchUserData()
   router.push('/architect/dashboard')
 }
 
-onMounted(() => {
+onMounted(async () => {
   store.clearOnboardingData()
+  await authStore.fetchUserData()
 
   const interval = setInterval(() => {
     countdown.value--

@@ -59,14 +59,25 @@
 
           <div v-if="project.deliverables && project.deliverables.length > 0" class="mb-8">
             <h2 class="text-lg font-bold text-black mb-3">Deliverables</h2>
-            <div class="flex flex-wrap gap-2">
-              <span
-                v-for="deliverable in project.deliverables"
-                :key="deliverable"
-                class="bg-[#F5E6D3] text-[#7C4728] px-4 py-2 rounded-full text-sm font-medium border border-[#C5A17A]/20"
-              >
-                {{ deliverable.replace(/_/g, ' ') }}
-              </span>
+            <div class="space-y-4">
+              <div v-for="group in groupedDeliverables" :key="group.category" class="bg-gray-50 rounded-2xl p-5">
+                <h4 class="font-bold text-sm text-gray-700 uppercase mb-3">{{ group.category }}</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div
+                    v-for="item in group.matched"
+                    :key="item.value"
+                    class="flex items-start gap-3 p-3 bg-white rounded-xl border border-[#C5A17A]/30"
+                  >
+                    <div class="w-5 h-5 rounded bg-[#7C4728] flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <Check :size="12" class="text-white" />
+                    </div>
+                    <div>
+                      <div class="font-medium text-gray-900 text-sm">{{ item.label }}</div>
+                      <div class="text-xs text-gray-500 mt-0.5">{{ item.description }}</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -155,16 +166,34 @@
           </button>
         </div>
 
-        <div
-          v-if="project.files && project.files.length > 0"
-          class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft"
-        >
-          <h2 class="text-2xl font-bold text-black mb-6">Project Files</h2>
+        <div v-if="imageFiles.length > 0" class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
+          <h2 class="text-2xl font-bold text-black mb-6">Visual References</h2>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div
+              v-for="file in imageFiles"
+              :key="file.id"
+              class="relative aspect-square rounded-2xl overflow-hidden cursor-pointer group"
+              @click="window.open(file.filePath, '_blank')"
+            >
+              <img
+                :src="file.filePath"
+                :alt="file.fileName"
+                class="w-full h-full object-cover transition group-hover:scale-105"
+              />
+              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition flex items-center justify-center">
+                <ExternalLink :size="24" class="text-white opacity-0 group-hover:opacity-100 transition" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div v-if="documentFiles.length > 0" class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
+          <h2 class="text-2xl font-bold text-black mb-6">Project Documents</h2>
           <div class="space-y-3">
             <a
-              v-for="file in project.files"
+              v-for="file in documentFiles"
               :key="file.id"
-              :href="file.fileUrl"
+              :href="file.filePath"
               target="_blank"
               class="flex items-center gap-3 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition border border-gray-200"
             >
@@ -182,9 +211,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft, Send, FileText, AlertCircle } from 'lucide-vue-next'
+import { ArrowLeft, Send, FileText, AlertCircle, Check, ExternalLink } from 'lucide-vue-next'
 import ProjectStatusBadge from '@/components/project/ProjectStatusBadge.vue'
 import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
 import { useProjectsStore } from '@/stores/projects'
@@ -195,10 +224,71 @@ const router = useRouter()
 const projectsStore = useProjectsStore()
 const bidsStore = useBidsStore()
 
+const deliverableGroups = [
+  {
+    category: 'Site Analysis & Planning',
+    items: [
+      { value: 'SITE_ANALYSIS', label: 'Site Analysis', description: 'Land survey and environmental assessment' },
+      { value: 'ZONING_STUDY', label: 'Zoning Study', description: 'Local regulations and building codes' }
+    ]
+  },
+  {
+    category: 'Design Phases',
+    items: [
+      { value: 'CONCEPT_DESIGN', label: 'Concept Design', description: 'Initial design concepts and sketches' },
+      { value: 'SCHEMATIC_DESIGN', label: 'Schematic Design', description: 'Preliminary floor plans and elevations' },
+      { value: 'DESIGN_DEVELOPMENT', label: 'Design Development', description: 'Detailed design drawings' },
+      { value: 'CONSTRUCTION_DOCS', label: 'Construction Documents', description: 'Complete technical drawings' }
+    ]
+  },
+  {
+    category: 'Permits & Documentation',
+    items: [
+      { value: 'IMB_PERMIT', label: 'IMB (Building Permit)', description: 'Building construction permit' },
+      { value: 'SLF_CERT', label: 'SLF Certificate', description: 'Building feasibility certificate' },
+      { value: 'ENVIRONMENTAL_PERMIT', label: 'Environmental Permit', description: 'Environmental impact assessment' }
+    ]
+  },
+  {
+    category: 'Specialized Services',
+    items: [
+      { value: 'INTERIOR_DESIGN', label: 'Interior Design', description: 'Interior layout and finishes' },
+      { value: 'LANDSCAPE_DESIGN', label: 'Landscape Design', description: 'Garden and outdoor spaces' },
+      { value: 'MEP_DESIGN', label: 'MEP Design', description: 'Mechanical, electrical, and plumbing' },
+      { value: 'STRUCTURAL_DESIGN', label: 'Structural Design', description: 'Structural engineering drawings' }
+    ]
+  },
+  {
+    category: 'Construction Support',
+    items: [
+      { value: 'SUPERVISION', label: 'Construction Supervision', description: 'On-site supervision during construction' },
+      { value: 'AS_BUILT', label: 'As-Built Drawings', description: 'Final drawings reflecting construction changes' }
+    ]
+  }
+]
+
 const project = ref(null)
 const loading = ref(false)
 const error = ref(null)
 const existingBid = ref(null)
+
+const imageFiles = computed(() =>
+  (project.value?.files ?? []).filter(f => f.fileType?.startsWith('image/'))
+)
+
+const documentFiles = computed(() =>
+  (project.value?.files ?? []).filter(f => !f.fileType?.startsWith('image/'))
+)
+
+const groupedDeliverables = computed(() => {
+  if (!project.value?.deliverables) return []
+  return deliverableGroups
+    .map(group => ({
+      ...group,
+      matched: group.items.filter(item => project.value.deliverables.includes(item.value))
+    }))
+    .filter(group => group.matched.length > 0)
+})
 
 const formatCurrency = value => {
   if (!value) return 'N/A'

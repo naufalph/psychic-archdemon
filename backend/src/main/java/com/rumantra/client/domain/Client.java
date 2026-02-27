@@ -22,6 +22,7 @@ public class Client {
   @OneToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id", nullable = false, unique = true)
   @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   private User user;
 
   @Column(name = "phone_num", nullable = false, length = 16)

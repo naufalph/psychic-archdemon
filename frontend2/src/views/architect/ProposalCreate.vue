@@ -145,9 +145,10 @@
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2"> Deliverables You'll Provide </label>
                 <p class="text-xs text-gray-500 mb-3">
-                  Select the services and documents you commit to deliver for this project
+                  Select the services and documents you commit to deliver for this project. Set revision rounds inline
+                  per phase.
                 </p>
-                <DeliverablesSelector v-model="formData.deliverables" />
+                <DeliverablesSelector v-model="formData.deliverables" v-model:revisions="formData.revisions" />
               </div>
 
               <div>
@@ -157,30 +158,25 @@
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Concept Sketches</label>
-
-                <div v-if="existingConceptSketches.length > 0" class="mb-4">
-                  <p class="text-xs text-gray-500 mb-2">Existing images ({{ existingConceptSketches.length }}/3)</p>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Facade Images <span class="text-gray-400 font-normal">(exterior views, max 5)</span></label
+                >
+                <div v-if="existingFacade.length > 0" class="mb-4">
+                  <p class="text-xs text-gray-500 mb-2">Existing ({{ existingFacade.length }}/5)</p>
                   <div class="grid grid-cols-3 gap-3">
                     <div
-                      v-for="image in existingConceptSketches"
+                      v-for="image in existingFacade"
                       :key="image.id"
                       class="relative group rounded-lg overflow-hidden border-2 border-gray-200"
                     >
                       <img :src="image.url" :alt="image.name" class="w-full h-24 object-cover" />
                       <button
                         type="button"
-                        @click="deleteExistingImage(image.id, 'concept')"
+                        @click="deleteExistingImage(image.id, 'facade')"
                         class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition hover:bg-red-600"
-                        :title="'Delete ' + image.name"
                       >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"
-                          />
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       </button>
                       <p class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs px-2 py-1 truncate">
@@ -189,48 +185,35 @@
                     </div>
                   </div>
                 </div>
-
-                <div v-if="existingConceptSketches.length < 3">
+                <div v-if="existingFacade.length < 5">
                   <p class="text-xs text-gray-500 mb-2">
-                    Upload new images ({{ conceptSketches.length }}/{{ 3 - existingConceptSketches.length }} slots
-                    available)
+                    Upload new ({{ facadeImages.length }}/{{ 5 - existingFacade.length }} slots available)
                   </p>
-                  <MultiImageUploader
-                    v-model="conceptSketches"
-                    label=""
-                    :max-files="3 - existingConceptSketches.length"
-                  />
+                  <MultiImageUploader v-model="facadeImages" label="" :max-files="5 - existingFacade.length" />
                 </div>
-                <p v-else class="text-sm text-amber-600 mt-2">
-                  Limit reached. Delete existing images to upload new ones.
-                </p>
+                <p v-else class="text-sm text-amber-600 mt-2">Limit reached. Delete existing images to upload new ones.</p>
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Mood Boards & Inspiration</label>
-
-                <div v-if="existingMoodBoards.length > 0" class="mb-4">
-                  <p class="text-xs text-gray-500 mb-2">Existing images ({{ existingMoodBoards.length }})</p>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Interior Images <span class="text-gray-400 font-normal">(interior spaces, max 5)</span></label
+                >
+                <div v-if="existingInterior.length > 0" class="mb-4">
+                  <p class="text-xs text-gray-500 mb-2">Existing ({{ existingInterior.length }}/5)</p>
                   <div class="grid grid-cols-3 gap-3">
                     <div
-                      v-for="image in existingMoodBoards"
+                      v-for="image in existingInterior"
                       :key="image.id"
                       class="relative group rounded-lg overflow-hidden border-2 border-gray-200"
                     >
                       <img :src="image.url" :alt="image.name" class="w-full h-24 object-cover" />
                       <button
                         type="button"
-                        @click="deleteExistingImage(image.id, 'mood')"
+                        @click="deleteExistingImage(image.id, 'interior')"
                         class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition hover:bg-red-600"
-                        :title="'Delete ' + image.name"
                       >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"
-                          />
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>
                       </button>
                       <p class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs px-2 py-1 truncate">
@@ -239,48 +222,87 @@
                     </div>
                   </div>
                 </div>
-
-                <div>
-                  <p class="text-xs text-gray-500 mb-2">Upload new images</p>
-                  <MultiImageUploader v-model="moodBoards" label="" :max-files="5" />
+                <div v-if="existingInterior.length < 5">
+                  <p class="text-xs text-gray-500 mb-2">
+                    Upload new ({{ interiorImages.length }}/{{ 5 - existingInterior.length }} slots available)
+                  </p>
+                  <MultiImageUploader v-model="interiorImages" label="" :max-files="5 - existingInterior.length" />
                 </div>
+                <p v-else class="text-sm text-amber-600 mt-2">Limit reached. Delete existing images to upload new ones.</p>
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"> Proposal Document (PDF) </label>
-                <p class="text-xs text-gray-500 mb-3">Upload a detailed proposal document (optional, max 10MB)</p>
-
-                <div v-if="existingAttachments.length > 0" class="mb-4">
-                  <p class="text-xs text-gray-500 mb-2">Existing attachments</p>
-                  <div class="space-y-2">
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Massing Images <span class="text-gray-400 font-normal">(3D form studies, max 5)</span></label
+                >
+                <div v-if="existingMassing.length > 0" class="mb-4">
+                  <p class="text-xs text-gray-500 mb-2">Existing ({{ existingMassing.length }}/5)</p>
+                  <div class="grid grid-cols-3 gap-3">
                     <div
-                      v-for="attachment in existingAttachments"
-                      :key="attachment.id"
-                      class="border border-gray-200 rounded-xl p-4 flex items-center gap-3"
+                      v-for="image in existingMassing"
+                      :key="image.id"
+                      class="relative group rounded-lg overflow-hidden border-2 border-gray-200"
                     >
-                      <FileText :size="24" class="text-[#7C4728]" />
-                      <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-gray-900 truncate">{{ attachment.fileName }}</p>
-                        <p class="text-xs text-gray-500">{{ (attachment.fileSize / 1024 / 1024).toFixed(2) }} MB</p>
-                      </div>
+                      <img :src="image.url" :alt="image.name" class="w-full h-24 object-cover" />
                       <button
                         type="button"
-                        @click="deleteExistingAttachment(attachment.id)"
-                        class="p-1 rounded-full hover:bg-red-50 transition"
-                        :title="'Delete ' + attachment.fileName"
+                        @click="deleteExistingImage(image.id, 'massing')"
+                        class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition hover:bg-red-600"
                       >
-                        <X :size="20" class="text-red-600" />
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
                       </button>
+                      <p class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs px-2 py-1 truncate">
+                        {{ image.name }}
+                      </p>
                     </div>
                   </div>
                 </div>
-
-                <div v-if="existingAttachments.length === 0">
-                  <FileUploader v-model="pdfAttachment" label="" />
+                <div v-if="existingMassing.length < 5">
+                  <p class="text-xs text-gray-500 mb-2">
+                    Upload new ({{ massingImages.length }}/{{ 5 - existingMassing.length }} slots available)
+                  </p>
+                  <MultiImageUploader v-model="massingImages" label="" :max-files="5 - existingMassing.length" />
                 </div>
-                <p v-else class="text-sm text-amber-600 mt-2">
-                  Only one PDF attachment allowed. Delete existing to upload new one.
-                </p>
+                <p v-else class="text-sm text-amber-600 mt-2">Limit reached. Delete existing images to upload new ones.</p>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Zoning Images <span class="text-gray-400 font-normal">(site plan diagrams, max 5)</span></label
+                >
+                <div v-if="existingZoning.length > 0" class="mb-4">
+                  <p class="text-xs text-gray-500 mb-2">Existing ({{ existingZoning.length }}/5)</p>
+                  <div class="grid grid-cols-3 gap-3">
+                    <div
+                      v-for="image in existingZoning"
+                      :key="image.id"
+                      class="relative group rounded-lg overflow-hidden border-2 border-gray-200"
+                    >
+                      <img :src="image.url" :alt="image.name" class="w-full h-24 object-cover" />
+                      <button
+                        type="button"
+                        @click="deleteExistingImage(image.id, 'zoning')"
+                        class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition hover:bg-red-600"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                      <p class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs px-2 py-1 truncate">
+                        {{ image.name }}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div v-if="existingZoning.length < 5">
+                  <p class="text-xs text-gray-500 mb-2">
+                    Upload new ({{ zoningImages.length }}/{{ 5 - existingZoning.length }} slots available)
+                  </p>
+                  <MultiImageUploader v-model="zoningImages" label="" :max-files="5 - existingZoning.length" />
+                </div>
+                <p v-else class="text-sm text-amber-600 mt-2">Limit reached. Delete existing images to upload new ones.</p>
               </div>
 
               <div v-if="uploadProgress > 0" class="bg-gray-50 rounded-2xl p-6">
@@ -321,11 +343,10 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { ArrowLeft, FileText, Loader, Send, X } from 'lucide-vue-next'
+import { ArrowLeft, FileText, Loader, Send } from 'lucide-vue-next'
 import { useBidsStore } from '@/stores/bids'
 import { useProjectsStore } from '@/stores/projects'
 import MultiImageUploader from '@/components/upload/MultiImageUploader.vue'
-import FileUploader from '@/components/upload/FileUploader.vue'
 import UploadProgress from '@/components/upload/UploadProgress.vue'
 import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
 import DeliverablesSelector from '@/components/project/DeliverablesSelector.vue'
@@ -344,15 +365,24 @@ const formData = ref({
   proposal: '',
   conceptStatement: '',
   deliverables: [],
-  portfolioIds: []
+  portfolioIds: [],
+  revisions: {
+    siteAnalysisRevisions: null,
+    designRevisions: null,
+    permitsDocRevisions: null,
+    specializedServicesRevisions: null,
+    constructionSupportRevisions: null
+  }
 })
 
-const conceptSketches = ref([])
-const moodBoards = ref([])
-const existingConceptSketches = ref([])
-const existingMoodBoards = ref([])
-const pdfAttachment = ref(null)
-const existingAttachments = ref([])
+const facadeImages = ref([])
+const interiorImages = ref([])
+const massingImages = ref([])
+const zoningImages = ref([])
+const existingFacade = ref([])
+const existingInterior = ref([])
+const existingMassing = ref([])
+const existingZoning = ref([])
 const error = ref(null)
 const existingBidId = ref(null)
 
@@ -388,26 +418,19 @@ const validateWordCount = () => {
 
 const deleteExistingImage = async (imageId, type) => {
   try {
-    if (type === 'concept') {
-      await bidsStore.deleteConceptSketch(imageId)
-      existingConceptSketches.value = existingConceptSketches.value.filter(img => img.id !== imageId)
-    } else {
-      await bidsStore.deleteMoodBoard(imageId)
-      existingMoodBoards.value = existingMoodBoards.value.filter(img => img.id !== imageId)
+    await bidsStore.deleteBidImage(imageId)
+    if (type === 'facade') {
+      existingFacade.value = existingFacade.value.filter(img => img.id !== imageId)
+    } else if (type === 'interior') {
+      existingInterior.value = existingInterior.value.filter(img => img.id !== imageId)
+    } else if (type === 'massing') {
+      existingMassing.value = existingMassing.value.filter(img => img.id !== imageId)
+    } else if (type === 'zoning') {
+      existingZoning.value = existingZoning.value.filter(img => img.id !== imageId)
     }
   } catch (err) {
     error.value = err.response?.data?.message || 'Failed to delete image'
     console.error('Failed to delete image:', err)
-  }
-}
-
-const deleteExistingAttachment = async attachmentId => {
-  try {
-    await bidsStore.deleteAttachment(attachmentId)
-    existingAttachments.value = existingAttachments.value.filter(att => att.id !== attachmentId)
-  } catch (err) {
-    error.value = err.response?.data?.message || 'Failed to delete attachment'
-    console.error('Failed to delete attachment:', err)
   }
 }
 
@@ -434,7 +457,8 @@ const handleSubmit = async () => {
 
     const bidDetailData = {
       conceptStatement: formData.value.conceptStatement,
-      deliverables: formData.value.deliverables
+      deliverables: formData.value.deliverables,
+      ...formData.value.revisions
     }
     await bidsStore.updateBidDetails(bid.id, bidDetailData)
 
@@ -442,18 +466,24 @@ const handleSubmit = async () => {
       await bidsStore.linkPortfolios(bid.id, formData.value.portfolioIds)
     }
 
-    const newConceptSketches = conceptSketches.value.filter(file => file instanceof File)
-    if (newConceptSketches.length > 0) {
-      await bidsStore.uploadConceptSketches(bid.id, newConceptSketches)
+    const newFacade = facadeImages.value.filter(f => f instanceof File)
+    if (newFacade.length > 0) {
+      await bidsStore.uploadBidImages(bid.id, 'FACADE', newFacade)
     }
 
-    const newMoodBoards = moodBoards.value.filter(file => file instanceof File)
-    if (newMoodBoards.length > 0) {
-      await bidsStore.uploadMoodBoards(bid.id, newMoodBoards)
+    const newInterior = interiorImages.value.filter(f => f instanceof File)
+    if (newInterior.length > 0) {
+      await bidsStore.uploadBidImages(bid.id, 'INTERIOR', newInterior)
     }
 
-    if (pdfAttachment.value instanceof File) {
-      await bidsStore.uploadAttachment(bid.id, pdfAttachment.value)
+    const newMassing = massingImages.value.filter(f => f instanceof File)
+    if (newMassing.length > 0) {
+      await bidsStore.uploadBidImages(bid.id, 'MASSING', newMassing)
+    }
+
+    const newZoning = zoningImages.value.filter(f => f instanceof File)
+    if (newZoning.length > 0) {
+      await bidsStore.uploadBidImages(bid.id, 'ZONING', newZoning)
     }
 
     await bidsStore.submitBid(bid.id)
@@ -484,29 +514,34 @@ onMounted(async () => {
       formData.value.conceptStatement = existingDraft.details?.conceptStatement || ''
       formData.value.deliverables = existingDraft.details?.deliverables || []
       formData.value.portfolioIds = existingDraft.portfolios?.map(p => p.id) || []
-
-      if (existingDraft.conceptSketches && existingDraft.conceptSketches.length > 0) {
-        existingConceptSketches.value = existingDraft.conceptSketches.map(sketch => ({
-          id: sketch.id,
-          url: sketch.imageUrl,
-          name: sketch.fileName || 'Concept Sketch'
-        }))
+      formData.value.revisions = {
+        siteAnalysisRevisions: existingDraft.details?.siteAnalysisRevisions ?? null,
+        designRevisions: existingDraft.details?.designRevisions ?? null,
+        permitsDocRevisions: existingDraft.details?.permitsDocRevisions ?? null,
+        specializedServicesRevisions: existingDraft.details?.specializedServicesRevisions ?? null,
+        constructionSupportRevisions: existingDraft.details?.constructionSupportRevisions ?? null
       }
 
-      if (existingDraft.moodBoards && existingDraft.moodBoards.length > 0) {
-        existingMoodBoards.value = existingDraft.moodBoards.map(board => ({
-          id: board.id,
-          url: board.imageUrl,
-          name: board.fileName || 'Mood Board'
-        }))
-      }
-
-      if (existingDraft.attachments && existingDraft.attachments.length > 0) {
-        existingAttachments.value = existingDraft.attachments
-      }
-
-      conceptSketches.value = []
-      moodBoards.value = []
+      existingFacade.value = (existingDraft.facadeImages || []).map(img => ({
+        id: img.id,
+        url: img.imageUrl,
+        name: img.fileName || 'Facade'
+      }))
+      existingInterior.value = (existingDraft.interiorImages || []).map(img => ({
+        id: img.id,
+        url: img.imageUrl,
+        name: img.fileName || 'Interior'
+      }))
+      existingMassing.value = (existingDraft.massingImages || []).map(img => ({
+        id: img.id,
+        url: img.imageUrl,
+        name: img.fileName || 'Massing'
+      }))
+      existingZoning.value = (existingDraft.zoningImages || []).map(img => ({
+        id: img.id,
+        url: img.imageUrl,
+        name: img.fileName || 'Zoning'
+      }))
     }
   } catch (err) {
     projectError.value = err.response?.data?.message || 'Failed to load project details'

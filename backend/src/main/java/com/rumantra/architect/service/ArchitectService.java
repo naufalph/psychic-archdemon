@@ -161,6 +161,9 @@ public class ArchitectService {
       architect.setExpertise(request.getExpertise());
     }
 
+    architect.setNeedsOnboarding(false);
+    architect.setOnboardingCompletedAt(new java.sql.Timestamp(System.currentTimeMillis()));
+
     architect = architectRepository.save(architect);
 
     return mapToDto(architect);

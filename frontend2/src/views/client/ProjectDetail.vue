@@ -21,6 +21,7 @@
       </div>
 
       <div v-else-if="currentProject" class="space-y-6">
+        <!-- Project Header -->
         <div class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
           <div class="flex justify-between items-start mb-6">
             <div>
@@ -69,30 +70,100 @@
           >
             <BiddingCountdown :deadline="currentProject.biddingDeadline" size="md" />
           </div>
+
+          <div
+            v-if="currentProject.status === 'NEGOTIATION'"
+            class="mt-8 pt-6 border-t border-gray-100"
+          >
+            <div class="bg-amber-50 rounded-2xl p-5 flex items-center justify-between">
+              <div>
+                <p class="font-bold text-amber-800">Bid Accepted — Finalizing Terms</p>
+                <p class="text-sm text-amber-600 mt-0.5">Review the winning bid terms and confirm before work begins.</p>
+              </div>
+              <button
+                @click="router.push(`/client/projects/${currentProject.id}/finalization`)"
+                class="flex-shrink-0 px-5 py-2.5 bg-[#7C4728] text-white rounded-full font-bold text-sm hover:bg-black transition ml-4"
+              >
+                Continue to Finalization
+              </button>
+            </div>
+          </div>
         </div>
 
+        <!-- Comparative Analysis Zone (always visible) -->
         <div class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
-          <h2 class="text-2xl font-bold text-black mb-6">
-            {{ t.clientDashboard.receivedProposals }} ({{ proposalCount }})
-          </h2>
+          <h2 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-6">Comparative Analysis</h2>
 
-          <div v-if="proposalCount === 0" class="text-center py-12">
-            <FileText :size="64" class="text-gray-300 mx-auto mb-4" />
-            <h3 class="text-xl font-bold text-gray-900 mb-2">{{ t.clientDashboard.noProposalsYet }}</h3>
-            <p class="text-gray-500">{{ t.clientDashboard.noProposalsMessage }}</p>
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div
+              v-for="(slot, idx) in [{ bid: bidA, label: 'Subject A' }, { bid: bidB, label: 'Subject B' }]"
+              :key="idx"
+              class="rounded-2xl border-2 border-dashed p-6 transition"
+              :class="slot.bid ? 'border-[#7C4728] bg-[#F5E6D3]/20' : 'border-gray-200 bg-gray-50'"
+            >
+              <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">{{ slot.label }}</p>
+
+              <div v-if="slot.bid" class="flex items-start justify-between">
+                <div>
+                  <p class="font-bold text-black">{{ slot.bid.architectName || 'Architect' }}</p>
+                  <p v-if="slot.bid.architectCompany" class="text-sm text-gray-500 mt-0.5">{{ slot.bid.architectCompany }}</p>
+                  <p class="text-sm font-medium text-[#7C4728] mt-2">{{ formatCurrency(slot.bid.bidAmount) }}</p>
+                  <p class="text-xs text-gray-500 mt-0.5">{{ slot.bid.proposedTimelineDays || '—' }} days</p>
+                </div>
+                <button
+                  @click="toggleCompare(slot.bid.id)"
+                  class="text-gray-400 hover:text-red-500 transition p-1"
+                  title="Remove"
+                >
+                  <X :size="18" />
+                </button>
+              </div>
+
+              <div v-else class="flex flex-col items-center justify-center py-4 text-center">
+                <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center mb-3">
+                  <Plus :size="20" class="text-gray-400" />
+                </div>
+                <p class="text-xs text-gray-400">Empty — select from registry</p>
+              </div>
+            </div>
           </div>
 
-          <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <p v-if="!bidA && !bidB" class="text-center text-sm text-gray-400 py-2">
+            Select a proposal from the registry below to begin a comparative analysis
+          </p>
+
+          <div v-if="bidA && bidB" class="mt-6 pt-6 border-t border-gray-100">
+            <ProposalComparison
+              :bid-a="bidA"
+              :bid-b="bidB"
+              :project="currentProject"
+            />
+          </div>
+        </div>
+
+        <!-- Bid Registry -->
+        <div v-if="proposalCount > 0" class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
+          <h2 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-6">
+            Bid Registry ({{ proposalCount }})
+          </h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <ProposalCard
               v-for="proposal in projectBids"
               :key="proposal.id"
               :proposal="proposal"
               :project-status="currentProject.status"
+              :is-selected-for-compare="compareIds.includes(proposal.id)"
+              @toggle-compare="toggleCompare(proposal.id)"
               @accept="handleAcceptBid"
-              @view-pdf="handleViewPDF"
               @view-details="handleViewDetails"
             />
           </div>
+        </div>
+
+        <div v-else-if="proposalCount === 0" class="bg-white rounded-3xl border border-gray-200 p-12 text-center shadow-soft">
+          <FileText :size="64" class="text-gray-300 mx-auto mb-4" />
+          <h3 class="text-xl font-bold text-gray-900 mb-2">{{ t.clientDashboard.noProposalsYet }}</h3>
+          <p class="text-gray-500">{{ t.clientDashboard.noProposalsMessage }}</p>
         </div>
       </div>
     </div>
@@ -104,12 +175,13 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/composables/useI18n'
-import { ArrowLeft, FileText, Trophy } from 'lucide-vue-next'
+import { ArrowLeft, FileText, Plus, X } from 'lucide-vue-next'
 import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
 import ProjectStatusBadge from '@/components/project/ProjectStatusBadge.vue'
 import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
 import ProposalCard from '@/components/bid/ProposalCard.vue'
+import ProposalComparison from '@/components/bid/ProposalComparison.vue'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -120,7 +192,20 @@ const bidsStore = useBidsStore()
 const { currentProject, loading, error } = storeToRefs(projectsStore)
 const { projectBids } = storeToRefs(bidsStore)
 
+const compareIds = ref([])
+
 const proposalCount = computed(() => projectBids.value?.length || 0)
+const bidA = computed(() => projectBids.value?.find(b => b.id === compareIds.value[0]) ?? null)
+const bidB = computed(() => projectBids.value?.find(b => b.id === compareIds.value[1]) ?? null)
+
+const toggleCompare = bidId => {
+  const idx = compareIds.value.indexOf(bidId)
+  if (idx !== -1) {
+    compareIds.value.splice(idx, 1)
+  } else if (compareIds.value.length < 2) {
+    compareIds.value.push(bidId)
+  }
+}
 
 const formatCurrency = value => {
   if (!value) return 'N/A'
@@ -145,16 +230,10 @@ const handleAcceptBid = async bidId => {
   if (!confirm(t.clientDashboard.acceptConfirm)) return
 
   try {
-    await bidsStore.acceptBid(route.params.id, bidId)
-    await fetchProject()
+    await bidsStore.acceptBid(bidId)
+    router.push(`/client/projects/${route.params.id}/finalization`)
   } catch (err) {
     alert(err.response?.data?.message || 'Failed to accept proposal')
-  }
-}
-
-const handleViewPDF = proposal => {
-  if (proposal.attachments && proposal.attachments.length > 0) {
-    window.open(proposal.attachments[0].fileUrl, '_blank')
   }
 }
 

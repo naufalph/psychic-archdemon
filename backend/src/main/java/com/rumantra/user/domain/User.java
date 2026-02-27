@@ -64,8 +64,10 @@ public class User {
 
   // Role relationships - eagerly fetched for security checks
   @OneToOne(mappedBy = "user", fetch = FetchType.EAGER)
+  @EqualsAndHashCode.Exclude
   private Architect architect;
 
   @OneToOne(mappedBy = "user", fetch = FetchType.EAGER)
+  @EqualsAndHashCode.Exclude
   private Client client;
 }

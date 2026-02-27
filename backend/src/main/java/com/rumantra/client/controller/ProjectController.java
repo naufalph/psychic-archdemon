@@ -290,6 +290,60 @@ public class ProjectController {
     }
   }
 
+  @PostMapping("/{projectId}/confirm-negotiation")
+  public ResponseEntity<ApiResponse<ProjectResponse>> confirmNegotiation(
+      @PathVariable Long projectId) {
+
+    try {
+      ProjectResponse response = projectService.confirmNegotiation(projectId);
+
+      return ResponseEntity.ok(
+          ApiResponse.<ProjectResponse>builder()
+              .success(true)
+              .message("Negotiation confirmed, project is now in progress")
+              .data(response)
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+
+    } catch (Exception e) {
+      log.error("Error confirming negotiation for project {}", projectId, e);
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              ApiResponse.<ProjectResponse>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
+  }
+
+  @PostMapping("/{projectId}/reject-negotiation")
+  public ResponseEntity<ApiResponse<ProjectResponse>> rejectNegotiation(
+      @PathVariable Long projectId) {
+
+    try {
+      ProjectResponse response = projectService.rejectNegotiation(projectId);
+
+      return ResponseEntity.ok(
+          ApiResponse.<ProjectResponse>builder()
+              .success(true)
+              .message("Negotiation rejected, project reopened for bidding")
+              .data(response)
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+
+    } catch (Exception e) {
+      log.error("Error rejecting negotiation for project {}", projectId, e);
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              ApiResponse.<ProjectResponse>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
+  }
+
   @GetMapping("/{projectId}/bids")
   public ResponseEntity<ApiResponse<List<BidResponse>>> getProjectBids(
       @PathVariable Long projectId) {

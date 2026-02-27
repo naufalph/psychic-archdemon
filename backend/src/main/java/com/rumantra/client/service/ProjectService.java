@@ -1,24 +1,22 @@
 package com.rumantra.client.service;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.rumantra.bidding.domain.Bid;
+import com.rumantra.bidding.domain.BidStatus;
 import com.rumantra.bidding.dto.BidResponse;
+import com.rumantra.bidding.repository.BidRepository;
 import com.rumantra.bidding.service.BidService;
+import com.rumantra.chat.repository.ConversationRepository;
+import com.rumantra.chat.service.ConversationService;
 import com.rumantra.client.domain.Client;
 import com.rumantra.client.domain.Project;
 import com.rumantra.client.domain.ProjectFile;
@@ -32,6 +30,7 @@ import com.rumantra.client.repository.ProjectRepository;
 import com.rumantra.notification.event.ProjectValidatedEvent;
 import com.rumantra.security.SecurityUtils;
 import com.rumantra.shared.exception.ResourceNotFoundException;
+import com.rumantra.shared.storage.FileStorageService;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -48,11 +47,12 @@ public class ProjectService {
   private final ClientRepository clientRepository;
   private final ApplicationEventPublisher eventPublisher;
   private final BidService bidService;
+  private final BidRepository bidRepository;
+  private final FileStorageService fileStorageService;
+  private final ConversationRepository conversationRepository;
+  private final ConversationService conversationService;
 
   @PersistenceContext private EntityManager entityManager;
-
-  @Value("${file.upload-dir:uploads/projects}")
-  private String uploadDir;
 
   /**
    * Get the client ID for the currently authenticated user.
@@ -190,8 +190,11 @@ public class ProjectService {
             .orElseThrow(
                 () -> new ResourceNotFoundException("Project not found with id: " + projectId));
 
-    // Delete associated files from disk
-    project.getFiles().forEach(this::deleteFileFromDisk);
+    List<String> fileUrls =
+        project.getFiles().stream().map(ProjectFile::getFilePath).collect(Collectors.toList());
+    if (!fileUrls.isEmpty()) {
+      fileStorageService.deleteImages(fileUrls);
+    }
 
     projectRepository.delete(project);
   }
@@ -289,74 +292,105 @@ public class ProjectService {
             .orElseThrow(
                 () -> new ResourceNotFoundException("Project not found with id: " + projectId));
 
-    if (project.getStatus() != ProjectStatus.OPEN) {
+    if (project.getStatus() != ProjectStatus.OPEN
+        && project.getStatus() != ProjectStatus.NEGOTIATION) {
       throw new org.springframework.security.access.AccessDeniedException(
-          "This project is not accepting bids");
+          "This project is not accessible");
     }
 
     return mapToProjectResponse(project);
   }
 
-  private void addFilesToProject(Project project, List<MultipartFile> files) {
-    try {
-      // Create upload directory if it doesn't exist
-      Path uploadPath = Paths.get(uploadDir);
-      if (!Files.exists(uploadPath)) {
-        Files.createDirectories(uploadPath);
-      }
+  @Transactional
+  public ProjectResponse confirmNegotiation(Long projectId) {
+    verifyProjectOwnership(projectId);
 
-      for (MultipartFile file : files) {
-        if (file.isEmpty()) {
-          continue;
-        }
+    Project project =
+        projectRepository
+            .findById(projectId)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Project not found with id: " + projectId));
 
-        // Validate file type (png, jpg, pdf)
-        String contentType = file.getContentType();
-        if (contentType == null
-            || (!contentType.equals("image/png")
-                && !contentType.equals("image/jpeg")
-                && !contentType.equals("application/pdf"))) {
-          log.warn("Skipping file with unsupported type: {}", contentType);
-          continue;
-        }
-
-        // Generate unique filename
-        String originalFilename = file.getOriginalFilename();
-        String fileExtension =
-            originalFilename != null && originalFilename.contains(".")
-                ? originalFilename.substring(originalFilename.lastIndexOf("."))
-                : "";
-        String uniqueFilename = UUID.randomUUID() + fileExtension;
-
-        // Save file to disk
-        Path filePath = uploadPath.resolve(uniqueFilename);
-        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
-
-        // Create ProjectFile entity
-        ProjectFile projectFile =
-            ProjectFile.builder()
-                .project(project)
-                .fileName(originalFilename)
-                .filePath(filePath.toString())
-                .fileType(contentType)
-                .fileSize(file.getSize())
-                .build();
-
-        project.getFiles().add(projectFile);
-        projectFileRepository.save(projectFile);
-      }
-    } catch (IOException e) {
-      log.error("Error uploading files for project {}", project.getId(), e);
-      throw new RuntimeException("Failed to upload files", e);
+    if (project.getStatus() != ProjectStatus.NEGOTIATION) {
+      throw new RuntimeException(
+          "Project is not in negotiation phase. Current status: " + project.getStatus());
     }
+
+    project.setStatus(ProjectStatus.IN_PROGRESS);
+    project = projectRepository.save(project);
+
+    return mapToProjectResponse(project);
   }
 
-  private void deleteFileFromDisk(ProjectFile projectFile) {
-    try {
-      Path filePath = Paths.get(projectFile.getFilePath());
-      Files.deleteIfExists(filePath);
-    } catch (IOException e) {
-      log.error("Error deleting file: {}", projectFile.getFilePath(), e);
+  @Transactional
+  public ProjectResponse rejectNegotiation(Long projectId) {
+    verifyProjectOwnership(projectId);
+
+    Project project =
+        projectRepository
+            .findById(projectId)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Project not found with id: " + projectId));
+
+    if (project.getStatus() != ProjectStatus.NEGOTIATION) {
+      throw new RuntimeException(
+          "Project is not in negotiation phase. Current status: " + project.getStatus());
+    }
+
+    List<Bid> acceptedBids = bidRepository.findByProjectIdAndStatus(projectId, BidStatus.ACCEPTED);
+    if (acceptedBids.isEmpty()) {
+      throw new RuntimeException("No accepted bid found for this project");
+    }
+
+    Bid acceptedBid = acceptedBids.get(0);
+    bidService.refundBid(acceptedBid, "Negotiation rejected by client");
+
+    conversationRepository
+        .findByBidId(acceptedBid.getId())
+        .ifPresent(
+            conversation -> {
+              conversationService.archiveConversation(conversation.getId());
+            });
+
+    project.setStatus(ProjectStatus.OPEN);
+    project = projectRepository.save(project);
+
+    return mapToProjectResponse(project);
+  }
+
+  private void addFilesToProject(Project project, List<MultipartFile> files) {
+    for (MultipartFile file : files) {
+      if (file.isEmpty()) {
+        continue;
+      }
+
+      String contentType = file.getContentType();
+      if (contentType == null
+          || (!contentType.equals("image/png")
+              && !contentType.equals("image/jpeg")
+              && !contentType.equals("application/pdf"))) {
+        log.warn("Skipping file with unsupported type: {}", contentType);
+        continue;
+      }
+
+      String storedPath;
+      if (contentType.startsWith("image/")) {
+        storedPath = fileStorageService.uploadImage(file, "projects");
+      } else {
+        storedPath = fileStorageService.uploadFile(file, "projects");
+      }
+
+      ProjectFile projectFile =
+          ProjectFile.builder()
+              .project(project)
+              .fileName(file.getOriginalFilename())
+              .filePath(storedPath)
+              .fileType(contentType)
+              .fileSize(file.getSize())
+              .build();
+
+      project.getFiles().add(projectFile);
+      projectFileRepository.save(projectFile);
     }
   }
 
@@ -388,10 +422,15 @@ public class ProjectService {
         .contactPerson(project.getContactPerson())
         .expectedStartDate(project.getExpectedStartDate())
         .status(project.getStatus())
-        .isValid(project.getStatus() == ProjectStatus.OPEN ? Boolean.TRUE : Boolean.FALSE)
+        .isValid(
+            project.getStatus() != ProjectStatus.PENDING_APPROVAL
+                    && project.getStatus() != ProjectStatus.REJECTED
+                ? Boolean.TRUE
+                : Boolean.FALSE)
         .validationNotes(project.getValidationNotes())
         .biddingDeadline(project.getBiddingDeadline())
         .files(fileDtos)
+        .bidCount(bidRepository.countByProjectId(project.getId()))
         .createdAt(project.getCreatedAt())
         .updatedAt(project.getUpdatedAt())
         .build();

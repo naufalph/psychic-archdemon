@@ -60,6 +60,18 @@ const routes = [
     meta: { requiresAuth: true, requiresRole: 'CLIENT' }
   },
   {
+    path: '/client/projects/:projectId/finalization',
+    name: 'PreProjectFinalization',
+    component: () => import('@/views/client/PreProjectFinalization.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/architect/projects/:projectId/finalization',
+    name: 'ArchitectFinalizationView',
+    component: () => import('@/views/client/PreProjectFinalization.vue'),
+    meta: { requiresAuth: true, requiresRole: 'ARCHITECT' }
+  },
+  {
     path: '/client/projects/:id',
     name: 'ProjectDetail',
     component: () => import('@/views/client/ProjectDetail.vue'),

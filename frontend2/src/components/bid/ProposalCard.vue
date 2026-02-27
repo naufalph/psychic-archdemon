@@ -47,12 +47,17 @@
 
       <div class="space-y-2 pt-2">
         <button
-          disabled
-          class="w-full px-4 py-2 bg-gray-100 text-gray-400 rounded-full text-sm font-medium flex items-center justify-center gap-2 cursor-not-allowed"
-          title="Coming Soon"
+          @click="$emit('toggle-compare')"
+          :class="[
+            'w-full px-4 py-2 rounded-full text-sm font-medium flex items-center justify-center gap-2 transition',
+            isSelectedForCompare
+              ? 'bg-[#7C4728] text-white'
+              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+          ]"
         >
-          <Sparkles :size="16" />
-          Run analysis for scores
+          <Plus v-if="!isSelectedForCompare" :size="16" />
+          <Check v-else :size="16" />
+          {{ isSelectedForCompare ? 'Selected for Compare' : 'Add to Compare' }}
         </button>
 
         <button
@@ -61,15 +66,6 @@
         >
           <Eye :size="16" />
           View Full Details
-        </button>
-
-        <button
-          v-if="hasPdfAttachment"
-          @click="$emit('view-pdf', proposal)"
-          class="w-full px-4 py-2 bg-white border-2 border-[#7C4728] text-[#7C4728] rounded-full text-sm font-medium hover:bg-[#7C4728] hover:text-white transition flex items-center justify-center gap-2"
-        >
-          <FileText :size="16" />
-          View PDF
         </button>
 
         <button
@@ -88,7 +84,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from '@/composables/useI18n'
-import { Building, Trophy, Sparkles, FileText, Check, Eye } from 'lucide-vue-next'
+import { Building, Trophy, Sparkles, Check, Eye, Plus } from 'lucide-vue-next'
 
 const props = defineProps({
   proposal: {
@@ -98,22 +94,19 @@ const props = defineProps({
   projectStatus: {
     type: String,
     default: 'OPEN'
+  },
+  isSelectedForCompare: {
+    type: Boolean,
+    default: false
   }
 })
 
-defineEmits(['accept', 'view-pdf', 'view-details'])
+defineEmits(['accept', 'view-details', 'toggle-compare'])
 
 const { t } = useI18n()
 
 const heroImage = computed(() => {
-  if (props.proposal.conceptSketches && props.proposal.conceptSketches.length > 0) {
-    return props.proposal.conceptSketches[0].imageUrl
-  }
-  return null
-})
-
-const hasPdfAttachment = computed(() => {
-  return props.proposal.attachments && props.proposal.attachments.length > 0
+  return props.proposal.facadeImages?.[0]?.imageUrl ?? null
 })
 
 const showAcceptButton = computed(() => {

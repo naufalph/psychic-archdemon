@@ -265,7 +265,12 @@ CREATE TABLE IF NOT EXISTS rmtr_bid_detail (
     concept_statement TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL,
-    deliverables JSONB
+    deliverables JSONB,
+    site_analysis_revisions INT,
+    design_revisions INT,
+    permits_doc_revisions INT,
+    specialized_services_revisions INT,
+    construction_support_revisions INT
 );
 
 CREATE INDEX IF NOT EXISTS idx_bid_detail_bid_id ON rmtr_bid_detail(bid_id);
@@ -280,7 +285,7 @@ CREATE TABLE IF NOT EXISTS rmtr_bid_image (
     file_name VARCHAR(255),
     file_size BIGINT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT chk_bid_image_type CHECK (image_type IN ('CONCEPT_SKETCH', 'MOOD_BOARD'))
+    CONSTRAINT chk_bid_image_type CHECK (image_type IN ('FACADE', 'INTERIOR', 'MASSING', 'ZONING'))
 );
 
 CREATE INDEX IF NOT EXISTS idx_bid_image_bid_id ON rmtr_bid_image(bid_id);

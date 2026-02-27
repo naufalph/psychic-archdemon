@@ -27,6 +27,21 @@ public class BidDetailService {
     if (request.getDeliverables() != null) {
       detail.setDeliverables(request.getDeliverables());
     }
+    if (request.getSiteAnalysisRevisions() != null) {
+      detail.setSiteAnalysisRevisions(request.getSiteAnalysisRevisions());
+    }
+    if (request.getDesignRevisions() != null) {
+      detail.setDesignRevisions(request.getDesignRevisions());
+    }
+    if (request.getPermitsDocRevisions() != null) {
+      detail.setPermitsDocRevisions(request.getPermitsDocRevisions());
+    }
+    if (request.getSpecializedServicesRevisions() != null) {
+      detail.setSpecializedServicesRevisions(request.getSpecializedServicesRevisions());
+    }
+    if (request.getConstructionSupportRevisions() != null) {
+      detail.setConstructionSupportRevisions(request.getConstructionSupportRevisions());
+    }
 
     return bidDetailRepository.save(detail);
   }
@@ -40,6 +55,11 @@ public class BidDetailService {
                     .id(detail.getId())
                     .conceptStatement(detail.getConceptStatement())
                     .deliverables(detail.getDeliverables())
+                    .siteAnalysisRevisions(detail.getSiteAnalysisRevisions())
+                    .designRevisions(detail.getDesignRevisions())
+                    .permitsDocRevisions(detail.getPermitsDocRevisions())
+                    .specializedServicesRevisions(detail.getSpecializedServicesRevisions())
+                    .constructionSupportRevisions(detail.getConstructionSupportRevisions())
                     .build())
         .orElse(null);
   }

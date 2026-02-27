@@ -13,6 +13,15 @@
         <form @submit.prevent="handleSubmit" class="p-8 space-y-10">
           <section class="space-y-6">
             <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
+              <span class="bg-[#F5E6D3] text-[#7C4728] font-bold px-3 py-1 rounded-full text-sm">Part 0</span>
+              <h2 class="text-xl font-bold text-black">Project Images</h2>
+            </div>
+            <p class="text-xs text-gray-500">Upload photos, mood boards, or inspiration images for your project (max 10 images)</p>
+            <MultiImageUploader v-model="coverImages" label="" :max-files="10" />
+          </section>
+
+          <section class="space-y-6">
+            <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
               <span class="bg-[#F5E6D3] text-[#7C4728] font-bold px-3 py-1 rounded-full text-sm">Part 1</span>
               <h2 class="text-xl font-bold text-black">General Information</h2>
             </div>
@@ -164,10 +173,11 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { Home, Info, CheckSquare, Loader } from 'lucide-vue-next'
+import { Home, CheckSquare, Loader } from 'lucide-vue-next'
 import { useProjectsStore } from '@/stores/projects'
 import DeliverablesSelector from '@/components/project/DeliverablesSelector.vue'
 import BudgetRangeSlider from '@/components/project/BudgetRangeSlider.vue'
+import MultiImageUploader from '@/components/upload/MultiImageUploader.vue'
 
 const router = useRouter()
 const projectsStore = useProjectsStore()
@@ -187,6 +197,7 @@ const formData = ref({
   deliverables: []
 })
 
+const coverImages = ref([])
 const loading = ref(false)
 const error = ref(null)
 
@@ -221,7 +232,7 @@ const handleSubmit = async () => {
       deliverables: formData.value.deliverables
     }
 
-    await projectsStore.createProject(projectData, [])
+    await projectsStore.createProject(projectData, coverImages.value)
     router.push({ name: 'ClientDashboard' })
   } catch (err) {
     error.value = err.response?.data?.message || 'Failed to create project. Please try again.'

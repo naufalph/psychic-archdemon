@@ -10,28 +10,47 @@ import { computed } from 'vue'
 const props = defineProps({
   status: {
     type: String,
-    required: true,
-    validator: value => ['OPEN', 'CLOSED', 'AWARDED', 'PENDING'].includes(value)
+    required: true
   }
 })
 
 const statusConfig = {
+  PENDING_APPROVAL: {
+    text: 'Pending Validation',
+    classes: 'bg-yellow-100 text-yellow-700 border-yellow-200'
+  },
   OPEN: {
     text: 'Open for Bidding',
     classes: 'bg-green-100 text-green-700 border-green-200'
   },
-  CLOSED: {
-    text: 'Closed',
+  BIDDING_CLOSED: {
+    text: 'Bidding Closed',
     classes: 'bg-gray-100 text-gray-700 border-gray-200'
   },
-  AWARDED: {
-    text: 'Awarded',
+  NEGOTIATION: {
+    text: 'Finalization',
+    classes: 'bg-amber-100 text-amber-700 border-amber-200'
+  },
+  IN_PROGRESS: {
+    text: 'In Progress',
+    classes: 'bg-blue-100 text-blue-700 border-blue-200'
+  },
+  COMPLETED: {
+    text: 'Completed',
     classes: 'bg-[#7C4728] text-white border-[#7C4728]'
   },
-  PENDING: {
-    text: 'Pending Validation',
-    classes: 'bg-yellow-100 text-yellow-700 border-yellow-200'
-  }
+  CANCELLED: {
+    text: 'Cancelled',
+    classes: 'bg-gray-100 text-gray-500 border-gray-200'
+  },
+  REJECTED: {
+    text: 'Rejected',
+    classes: 'bg-red-100 text-red-700 border-red-200'
+  },
+  // Legacy values kept for backwards compatibility
+  CLOSED: { text: 'Closed', classes: 'bg-gray-100 text-gray-700 border-gray-200' },
+  AWARDED: { text: 'Awarded', classes: 'bg-[#7C4728] text-white border-[#7C4728]' },
+  PENDING: { text: 'Pending Validation', classes: 'bg-yellow-100 text-yellow-700 border-yellow-200' }
 }
 
 const statusText = computed(() => statusConfig[props.status]?.text || props.status)

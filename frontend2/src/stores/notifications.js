@@ -7,6 +7,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
   const unreadCount = ref(0)
   const loading = ref(false)
   const error = ref(null)
+  const lastFetchedAt = ref(null)
 
   const unreadNotifications = computed(() => {
     return notifications.value.filter(n => !n.isRead)
@@ -25,6 +26,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
   })
 
   async function fetchNotifications() {
+    if (loading.value) return
     loading.value = true
     error.value = null
 
@@ -32,6 +34,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
       const response = await notificationAPI.getAll()
       notifications.value = response.data.data || []
       unreadCount.value = notifications.value.filter(n => !n.isRead).length
+      lastFetchedAt.value = Date.now()
     } catch (err) {
       error.value = err.response?.data?.message || 'Failed to fetch notifications'
       console.error('Failed to fetch notifications:', err)
@@ -127,6 +130,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
     unreadCount,
     loading,
     error,
+    lastFetchedAt,
     unreadNotifications,
     hasUnread,
     recentNotifications,

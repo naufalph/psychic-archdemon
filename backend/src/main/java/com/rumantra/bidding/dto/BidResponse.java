@@ -31,10 +31,11 @@ public class BidResponse {
   private LocalDateTime updatedAt;
   private LocalDateTime submittedAt;
   private LocalDateTime acceptedAt;
-  private LocalDateTime rejectedAt;
   private BidDetailResponse details;
-  private List<BidImageResponse> conceptSketches;
-  private List<BidImageResponse> moodBoards;
+  private List<BidImageResponse> facadeImages;
+  private List<BidImageResponse> interiorImages;
+  private List<BidImageResponse> massingImages;
+  private List<BidImageResponse> zoningImages;
   private List<PortoListResponse> portfolioReferences;
-  private List<BidAttachmentResponse> attachments;
+  private Long conversationId;
 }

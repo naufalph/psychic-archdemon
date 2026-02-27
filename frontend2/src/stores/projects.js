@@ -11,7 +11,8 @@ const transformProjectData = backendProject => ({
   buildingFunction: backendProject.buildingFunction,
   scopeOfWork: backendProject.scopeOfWork,
   estimatedBuildArea: backendProject.estimatedBuildArea,
-  budgetTotal: backendProject.budgetTotal
+  budgetTotal: backendProject.budgetTotal,
+  proposalCount: backendProject.bidCount ?? 0
 })
 
 export const useProjectsStore = defineStore('projects', {
@@ -25,8 +26,7 @@ export const useProjectsStore = defineStore('projects', {
 
   getters: {
     myOpenProjects: state => state.projects.filter(p => p.status === 'OPEN'),
-    myClosedProjects: state => state.projects.filter(p => p.status === 'CLOSED'),
-    myAwardedProjects: state => state.projects.filter(p => p.status === 'AWARDED')
+    myClosedProjects: state => state.projects.filter(p => p.status === 'CLOSED')
   },
 
   actions: {
@@ -98,26 +98,14 @@ export const useProjectsStore = defineStore('projects', {
       this.loading = true
       this.error = null
       try {
-        console.log('=== Creating Project ===')
-        console.log('Project Data:', projectData)
-        console.log('JSON stringified:', JSON.stringify(projectData))
-
         const formData = new FormData()
         const jsonBlob = new Blob([JSON.stringify(projectData)], { type: 'application/json' })
-        console.log('Blob created:', jsonBlob)
-        console.log('Blob size:', jsonBlob.size)
-
         formData.append('project', jsonBlob)
 
         if (files && files.length > 0) {
           files.forEach(file => {
             formData.append('files', file)
           })
-        }
-
-        console.log('FormData entries:')
-        for (let pair of formData.entries()) {
-          console.log(pair[0], pair[1])
         }
 
         const response = await projectAPI.create(formData)
@@ -127,7 +115,6 @@ export const useProjectsStore = defineStore('projects', {
       } catch (error) {
         this.error = error.response?.data?.message || 'Failed to create project'
         console.error('Failed to create project:', error)
-        console.error('Error response:', error.response?.data)
         throw error
       } finally {
         this.loading = false

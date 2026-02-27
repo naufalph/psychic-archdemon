@@ -40,6 +40,7 @@ public class ProjectResponse {
   private String validationNotes;
   private LocalDateTime biddingDeadline;
   private List<ProjectFileDto> files;
+  private Long bidCount;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 }

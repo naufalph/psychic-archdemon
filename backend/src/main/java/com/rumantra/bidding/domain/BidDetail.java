@@ -34,6 +34,21 @@ public class BidDetail {
   @Column(name = "deliverables", columnDefinition = "jsonb")
   private List<String> deliverables;
 
+  @Column(name = "site_analysis_revisions")
+  private Integer siteAnalysisRevisions;
+
+  @Column(name = "design_revisions")
+  private Integer designRevisions;
+
+  @Column(name = "permits_doc_revisions")
+  private Integer permitsDocRevisions;
+
+  @Column(name = "specialized_services_revisions")
+  private Integer specializedServicesRevisions;
+
+  @Column(name = "construction_support_revisions")
+  private Integer constructionSupportRevisions;
+
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
 

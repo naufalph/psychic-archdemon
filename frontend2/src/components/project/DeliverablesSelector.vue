@@ -41,6 +41,19 @@
           </div>
         </label>
       </div>
+
+      <div v-if="hasAnySelected(group)" class="mt-3 pt-3 border-t border-gray-200 flex items-center gap-3">
+        <label class="text-xs text-gray-500 font-medium whitespace-nowrap">Max revisions:</label>
+        <input
+          type="number"
+          min="0"
+          max="10"
+          :value="revisions[group.revisionKey]"
+          @input="updateRevision(group.revisionKey, +$event.target.value)"
+          class="w-20 px-2 py-1 border border-gray-200 rounded-lg text-sm focus:border-[#7C4728] outline-none"
+          placeholder="0"
+        />
+      </div>
     </div>
   </div>
 </template>
@@ -53,14 +66,19 @@ const props = defineProps({
   modelValue: {
     type: Array,
     default: () => []
+  },
+  revisions: {
+    type: Object,
+    default: () => ({})
   }
 })
 
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'update:revisions'])
 
 const deliverableGroups = [
   {
     category: 'Site Analysis & Planning',
+    revisionKey: 'siteAnalysisRevisions',
     items: [
       { value: 'SITE_ANALYSIS', label: 'Site Analysis', description: 'Land survey and environmental assessment' },
       { value: 'ZONING_STUDY', label: 'Zoning Study', description: 'Local regulations and building codes' }
@@ -68,6 +86,7 @@ const deliverableGroups = [
   },
   {
     category: 'Design Phases',
+    revisionKey: 'designRevisions',
     items: [
       { value: 'CONCEPT_DESIGN', label: 'Concept Design', description: 'Initial design concepts and sketches' },
       { value: 'SCHEMATIC_DESIGN', label: 'Schematic Design', description: 'Preliminary floor plans and elevations' },
@@ -77,6 +96,7 @@ const deliverableGroups = [
   },
   {
     category: 'Permits & Documentation',
+    revisionKey: 'permitsDocRevisions',
     items: [
       { value: 'IMB_PERMIT', label: 'IMB (Building Permit)', description: 'Building construction permit' },
       { value: 'SLF_CERT', label: 'SLF Certificate', description: 'Building feasibility certificate' },
@@ -85,6 +105,7 @@ const deliverableGroups = [
   },
   {
     category: 'Specialized Services',
+    revisionKey: 'specializedServicesRevisions',
     items: [
       { value: 'INTERIOR_DESIGN', label: 'Interior Design', description: 'Interior layout and finishes' },
       { value: 'LANDSCAPE_DESIGN', label: 'Landscape Design', description: 'Garden and outdoor spaces' },
@@ -94,6 +115,7 @@ const deliverableGroups = [
   },
   {
     category: 'Construction Support',
+    revisionKey: 'constructionSupportRevisions',
     items: [
       {
         value: 'SUPERVISION',
@@ -109,6 +131,10 @@ const isSelected = value => {
   return props.modelValue.includes(value)
 }
 
+const hasAnySelected = group => {
+  return group.items.some(item => isSelected(item.value))
+}
+
 const toggleDeliverable = value => {
   let updated
   if (isSelected(value)) {
@@ -117,6 +143,10 @@ const toggleDeliverable = value => {
     updated = [...props.modelValue, value]
   }
   emit('update:modelValue', updated)
+}
+
+const updateRevision = (key, value) => {
+  emit('update:revisions', { ...props.revisions, [key]: value || null })
 }
 
 const labelClasses = value => {

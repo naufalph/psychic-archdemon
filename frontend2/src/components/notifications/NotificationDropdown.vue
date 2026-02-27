@@ -154,11 +154,20 @@ const themeClasses = computed(() => {
   }
 })
 
+const CACHE_TTL_MS = 5 * 60 * 1000
+
+const isStale = () => {
+  if (!notificationsStore.lastFetchedAt) return true
+  return Date.now() - notificationsStore.lastFetchedAt > CACHE_TTL_MS
+}
+
 const toggleDropdown = async () => {
   isOpen.value = !isOpen.value
 
-  if (isOpen.value && notificationsStore.notifications.length === 0) {
-    await notificationsStore.fetchNotifications()
+  if (isOpen.value && !notificationsStore.loading) {
+    if (notificationsStore.notifications.length === 0 || isStale()) {
+      await notificationsStore.fetchNotifications()
+    }
   }
 }
 

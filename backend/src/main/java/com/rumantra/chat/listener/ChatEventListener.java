@@ -1,7 +1,6 @@
 package com.rumantra.chat.listener;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -18,7 +17,6 @@ public class ChatEventListener {
   @Autowired private ConversationService conversationService;
 
   @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-  @Async
   public void handleBidAccepted(BidAcceptedEvent event) {
     try {
       conversationService.createConversation(

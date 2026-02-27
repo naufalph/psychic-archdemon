@@ -34,17 +34,16 @@ public class BidImageService {
       throw new BusinessException(ExceptionConstants.BID_NOT_DRAFT);
     }
 
-    if (imageType == BidImageType.CONCEPT_SKETCH) {
-      long currentCount = bidImageRepository.countByBidIdAndImageType(bid.getId(), imageType);
-      long totalAfterUpload = currentCount + images.size();
-      if (totalAfterUpload > 3) {
-        throw new IllegalArgumentException(
-            "Concept sketches limit exceeded. Current: "
-                + currentCount
-                + ", Uploading: "
-                + images.size()
-                + ", Max: 3");
-      }
+    long currentCount = bidImageRepository.countByBidIdAndImageType(bid.getId(), imageType);
+    long totalAfterUpload = currentCount + images.size();
+    if (totalAfterUpload > 5) {
+      throw new IllegalArgumentException(
+          imageType.name()
+              + " image limit exceeded. Current: "
+              + currentCount
+              + ", Uploading: "
+              + images.size()
+              + ", Max: 5");
     }
 
     List<BidImage> savedImages = new ArrayList<>();
@@ -100,10 +99,6 @@ public class BidImageService {
     return bidImageRepository.findByBidIdOrderByDisplayOrder(bidId).stream()
         .map(this::mapToResponse)
         .collect(Collectors.toList());
-  }
-
-  public boolean hasMinimumConceptSketches(Long bidId) {
-    return bidImageRepository.countByBidIdAndImageType(bidId, BidImageType.CONCEPT_SKETCH) >= 1;
   }
 
   private int getMaxDisplayOrder(Long bidId, BidImageType imageType) {

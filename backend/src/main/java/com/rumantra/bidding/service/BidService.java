@@ -31,6 +31,7 @@ import com.rumantra.bidding.event.BidSubmittedEvent;
 import com.rumantra.bidding.repository.BidPortfolioRefRepository;
 import com.rumantra.bidding.repository.BidRepository;
 import com.rumantra.chat.event.BidAcceptedEvent;
+import com.rumantra.chat.repository.ConversationRepository;
 import com.rumantra.client.domain.Project;
 import com.rumantra.client.domain.ProjectStatus;
 import com.rumantra.client.repository.ProjectRepository;
@@ -57,9 +58,9 @@ public class BidService {
 
   @Autowired private BidImageService bidImageService;
 
-  @Autowired private BidAttachmentService bidAttachmentService;
-
   @Autowired private BidPortfolioRefRepository bidPortfolioRefRepository;
+
+  @Autowired private ConversationRepository conversationRepository;
 
   @Autowired private ApplicationEventPublisher eventPublisher;
 
@@ -251,10 +252,6 @@ public class BidService {
     if (!bidDetailService.hasRequiredDetails(bidId)) {
       throw new RuntimeException("Concept statement is required before submission");
     }
-
-    if (!bidImageService.hasMinimumConceptSketches(bidId)) {
-      throw new RuntimeException("At least 1 concept sketch is required before submission");
-    }
   }
 
   public List<BidResponse> getBidsByArchitect(Long architectId) {
@@ -274,7 +271,9 @@ public class BidService {
             .orElseThrow(() -> new BusinessException(ExceptionConstants.BID_NOT_FOUND));
 
     Long userId = SecurityUtils.getCurrentUserId();
-    if (!bid.getArchitect().getUser().getId().equals(userId)) {
+    boolean isArchitect = bid.getArchitect().getUser().getId().equals(userId);
+    boolean isProjectClient = bid.getProject().getClient().getUser().getId().equals(userId);
+    if (!isArchitect && !isProjectClient) {
       throw new BusinessException(ExceptionConstants.UNAUTHORIZED_BID_ACCESS);
     }
 
@@ -306,9 +305,11 @@ public class BidService {
       throw new BusinessException(ExceptionConstants.UNAUTHORIZED_BID_ACCESS);
     }
 
-    if (bid.getStatus() != BidStatus.DRAFT && bid.getStatus() != BidStatus.ACCEPTED) {
+    if (bid.getStatus() != BidStatus.DRAFT
+        && bid.getStatus() != BidStatus.PENDING
+        && bid.getStatus() != BidStatus.ACCEPTED) {
       throw new RuntimeException(
-          "Can only withdraw draft or accepted bids. Current status: " + bid.getStatus());
+          "Can only withdraw draft, pending, or accepted bids. Current status: " + bid.getStatus());
     }
 
     bid.setStatus(BidStatus.WITHDRAWN);
@@ -327,6 +328,9 @@ public class BidService {
   }
 
   private BidResponse mapToResponse(Bid bid) {
+    Long conversationId =
+        conversationRepository.findByBidId(bid.getId()).map(c -> c.getId()).orElse(null);
+
     return BidResponse.builder()
         .id(bid.getId())
         .projectId(bid.getProject().getId())
@@ -344,12 +348,13 @@ public class BidService {
         .updatedAt(bid.getUpdatedAt())
         .submittedAt(bid.getSubmittedAt())
         .acceptedAt(bid.getAcceptedAt())
-        .rejectedAt(bid.getRejectedAt())
         .details(bidDetailService.getDetailResponse(bid.getId()))
-        .conceptSketches(bidImageService.getImagesByType(bid.getId(), BidImageType.CONCEPT_SKETCH))
-        .moodBoards(bidImageService.getImagesByType(bid.getId(), BidImageType.MOOD_BOARD))
+        .facadeImages(bidImageService.getImagesByType(bid.getId(), BidImageType.FACADE))
+        .interiorImages(bidImageService.getImagesByType(bid.getId(), BidImageType.INTERIOR))
+        .massingImages(bidImageService.getImagesByType(bid.getId(), BidImageType.MASSING))
+        .zoningImages(bidImageService.getImagesByType(bid.getId(), BidImageType.ZONING))
         .portfolioReferences(getPortfolioReferences(bid.getId()))
-        .attachments(bidAttachmentService.getAttachments(bid.getId()))
+        .conversationId(conversationId)
         .build();
   }
 
@@ -419,7 +424,7 @@ public class BidService {
     bid.setAcceptedAt(LocalDateTime.now());
     bid = bidRepository.save(bid);
 
-    project.setStatus(ProjectStatus.IN_PROGRESS);
+    project.setStatus(ProjectStatus.NEGOTIATION);
     projectRepository.save(project);
 
     eventPublisher.publishEvent(

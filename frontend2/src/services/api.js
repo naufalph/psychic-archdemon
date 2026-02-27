@@ -231,20 +231,31 @@ export const projectAPI = {
         }
       }
     })
-  }
+  },
+  confirmNegotiation: projectId =>
+    api.post(`/api/v1/projects/${projectId}/confirm-negotiation`),
+  rejectNegotiation: projectId =>
+    api.post(`/api/v1/projects/${projectId}/reject-negotiation`)
+}
+
+export const chatAPI = {
+  getMyConversations: () => api.get('/api/chat/conversations'),
+  getConversation: id => api.get(`/api/chat/conversations/${id}`),
+  getMessages: (id, page = 0, size = 50) =>
+    api.get(`/api/chat/conversations/${id}/messages`, { params: { page, size } }),
+  sendMessage: data => api.post('/api/chat/messages', data),
+  markRead: msgId => api.put(`/api/chat/messages/${msgId}/read`),
+  markAllRead: conversationId => api.put(`/api/chat/conversations/${conversationId}/read-all`)
 }
 
 export const architectAPI = {
-  getAll: params => api.get('/architects', { params }),
   getById: id => api.get(`/architects/${id}`),
   getProfile: () => api.get('/rmtr/architects/profile'),
   getPortfolio: id => api.get(`/architects/${id}/portfolio`),
   updatePortfolio: portfolioData => api.put('/architects/portfolio', portfolioData),
   updateOnboardingProfile: profileData =>
     api.put('/rmtr/architects/onboarding-profile', profileData),
-  updateFullProfile: profileData => api.put('/rmtr/architects/profile', profileData),
-  getReviews: id => api.get(`/architects/${id}/reviews`),
-  addReview: (id, reviewData) => api.post(`/architects/${id}/reviews`, reviewData)
+  updateFullProfile: profileData => api.put('/rmtr/architects/profile', profileData)
 }
 
 export const portfolioAPI = {
@@ -279,71 +290,27 @@ export const bidAPI = {
   updateBidDetails: (bidId, detailsData) => api.put(`/api/bids/${bidId}/details`, detailsData),
   submitBid: bidId => api.post(`/api/bids/${bidId}/submit`),
   withdrawBid: bidId => api.put(`/api/bids/${bidId}/withdraw`),
-  acceptBid: (projectId, bidId) => api.post(`/api/bids/${bidId}/accept`),
+  acceptBid: bidId => api.post(`/api/bids/${bidId}/accept`),
   getQuota: () => api.get('/api/bids/quota'),
   linkPortfolios: (bidId, portfolioIds) =>
     api.post(`/api/bids/${bidId}/portfolios`, { portfolioIds }),
-  uploadConceptSketches: (bidId, files, onProgress) => {
-    const formData = new FormData()
-    files.forEach(file => formData.append('images', file))
-    return api.post(`/api/bids/${bidId}/concept-sketches`, formData, {
+  uploadBidImages: (bidId, imageType, files, onProgress) => {
+    const fd = new FormData()
+    files.forEach(f => fd.append('images', f))
+    return api.post(`/api/bids/${bidId}/images/${imageType}`, fd, {
       headers: { 'Content-Type': 'multipart/form-data' },
-      onUploadProgress: progressEvent => {
-        if (onProgress && progressEvent.total) {
-          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-          onProgress(progress)
-        }
+      onUploadProgress: e => {
+        if (onProgress && e.total) onProgress(Math.round((e.loaded * 100) / e.total))
       }
     })
   },
-  uploadMoodBoards: (bidId, files, onProgress) => {
-    const formData = new FormData()
-    files.forEach(file => formData.append('images', file))
-    return api.post(`/api/bids/${bidId}/mood-boards`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      onUploadProgress: progressEvent => {
-        if (onProgress && progressEvent.total) {
-          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-          onProgress(progress)
-        }
-      }
-    })
-  },
-  deleteImage: imageId => api.delete(`/api/bids/images/${imageId}`),
-  uploadAttachment: (bidId, file, onProgress) => {
-    const formData = new FormData()
-    formData.append('file', file)
-    return api.post(`/api/bids/${bidId}/attachments`, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      onUploadProgress: progressEvent => {
-        if (onProgress && progressEvent.total) {
-          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total)
-          onProgress(progress)
-        }
-      }
-    })
-  },
-  deleteAttachment: attachmentId => api.delete(`/api/bids/attachments/${attachmentId}`),
-  getAttachments: bidId => api.get(`/api/bids/${bidId}/attachments`)
-}
-
-export const adminAPI = {
-  getStats: () => api.get('/admin/stats'),
-  getUsers: params => api.get('/admin/users', { params }),
-  getUserById: id => api.get(`/admin/users/${id}`),
-  updateUser: (id, userData) => api.put(`/admin/users/${id}`, userData),
-  deleteUser: id => api.delete(`/admin/users/${id}`),
-  getProjects: params => api.get('/admin/projects', { params }),
-  deleteProject: id => api.delete(`/admin/projects/${id}`),
-  getReports: () => api.get('/admin/reports'),
-  generateReport: (reportType, params) =>
-    api.post('/admin/reports/generate', { type: reportType, ...params })
+  deleteImage: imageId => api.delete(`/api/bids/images/${imageId}`)
 }
 
 export const tokenPurchaseAPI = {
   getPricing: () => api.get('/tokens/purchases/pricing'),
   initiatePurchase: quantity => api.post('/tokens/purchases', { quantity }),
-  getPurchaseStatus: purchaseId => api.get(`/tokens/purchases/${purchaseId}`)
+  getPurchaseStatus: id => api.get(`/tokens/purchases/${id}`)
 }
 
 // Default export
