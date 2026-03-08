@@ -68,7 +68,7 @@ const routes = [
   {
     path: '/architect/projects/:projectId/finalization',
     name: 'ArchitectFinalizationView',
-    component: () => import('@/views/client/PreProjectFinalization.vue'),
+    component: () => import('@/views/architect/PreProjectFinalizationForArchitect.vue'),
     meta: { requiresAuth: true, requiresRole: 'ARCHITECT' }
   },
   {

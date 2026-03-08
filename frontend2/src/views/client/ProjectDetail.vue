@@ -71,14 +71,13 @@
             <BiddingCountdown :deadline="currentProject.biddingDeadline" size="md" />
           </div>
 
-          <div
-            v-if="currentProject.status === 'NEGOTIATION'"
-            class="mt-8 pt-6 border-t border-gray-100"
-          >
+          <div v-if="currentProject.status === 'NEGOTIATION'" class="mt-8 pt-6 border-t border-gray-100">
             <div class="bg-amber-50 rounded-2xl p-5 flex items-center justify-between">
               <div>
                 <p class="font-bold text-amber-800">Bid Accepted — Finalizing Terms</p>
-                <p class="text-sm text-amber-600 mt-0.5">Review the winning bid terms and confirm before work begins.</p>
+                <p class="text-sm text-amber-600 mt-0.5">
+                  Review the winning bid terms and confirm before work begins.
+                </p>
               </div>
               <button
                 @click="router.push(`/client/projects/${currentProject.id}/finalization`)"
@@ -96,7 +95,10 @@
 
           <div class="grid grid-cols-2 gap-4 mb-4">
             <div
-              v-for="(slot, idx) in [{ bid: bidA, label: 'Subject A' }, { bid: bidB, label: 'Subject B' }]"
+              v-for="(slot, idx) in [
+                { bid: bidA, label: 'Subject A' },
+                { bid: bidB, label: 'Subject B' }
+              ]"
               :key="idx"
               class="rounded-2xl border-2 border-dashed p-6 transition"
               :class="slot.bid ? 'border-[#7C4728] bg-[#F5E6D3]/20' : 'border-gray-200 bg-gray-50'"
@@ -106,7 +108,9 @@
               <div v-if="slot.bid" class="flex items-start justify-between">
                 <div>
                   <p class="font-bold text-black">{{ slot.bid.architectName || 'Architect' }}</p>
-                  <p v-if="slot.bid.architectCompany" class="text-sm text-gray-500 mt-0.5">{{ slot.bid.architectCompany }}</p>
+                  <p v-if="slot.bid.architectCompany" class="text-sm text-gray-500 mt-0.5">
+                    {{ slot.bid.architectCompany }}
+                  </p>
                   <p class="text-sm font-medium text-[#7C4728] mt-2">{{ formatCurrency(slot.bid.bidAmount) }}</p>
                   <p class="text-xs text-gray-500 mt-0.5">{{ slot.bid.proposedTimelineDays || '—' }} days</p>
                 </div>
@@ -133,11 +137,7 @@
           </p>
 
           <div v-if="bidA && bidB" class="mt-6 pt-6 border-t border-gray-100">
-            <ProposalComparison
-              :bid-a="bidA"
-              :bid-b="bidB"
-              :project="currentProject"
-            />
+            <ProposalComparison :bid-a="bidA" :bid-b="bidB" :project="currentProject" />
           </div>
         </div>
 
@@ -160,7 +160,10 @@
           </div>
         </div>
 
-        <div v-else-if="proposalCount === 0" class="bg-white rounded-3xl border border-gray-200 p-12 text-center shadow-soft">
+        <div
+          v-else-if="proposalCount === 0"
+          class="bg-white rounded-3xl border border-gray-200 p-12 text-center shadow-soft"
+        >
           <FileText :size="64" class="text-gray-300 mx-auto mb-4" />
           <h3 class="text-xl font-bold text-gray-900 mb-2">{{ t.clientDashboard.noProposalsYet }}</h3>
           <p class="text-gray-500">{{ t.clientDashboard.noProposalsMessage }}</p>

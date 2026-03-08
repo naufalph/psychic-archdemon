@@ -15,10 +15,7 @@
     </div>
 
     <div v-else class="flex flex-col flex-1 min-h-0">
-      <div
-        ref="scrollContainer"
-        class="flex-1 overflow-y-auto p-4 space-y-1 min-h-0"
-      >
+      <div ref="scrollContainer" class="flex-1 overflow-y-auto p-4 space-y-1 min-h-0">
         <div v-if="messages.length === 0" class="text-center text-gray-400 py-8">
           <p class="text-sm">No messages yet. Start the conversation!</p>
         </div>
@@ -31,10 +28,7 @@
         />
       </div>
 
-      <MessageInput
-        :disabled="sending"
-        @send="handleSend"
-      />
+      <MessageInput :disabled="sending" @send="handleSend" />
     </div>
   </div>
 </template>
@@ -44,6 +38,8 @@ import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useChatStore } from '@/stores/chat'
 import { useAuthStore } from '@/stores/auth'
+import { Client } from '@stomp/stompjs'
+import SockJS from 'sockjs-client'
 import MessageBubble from './MessageBubble.vue'
 import MessageInput from './MessageInput.vue'
 
@@ -63,7 +59,7 @@ const scrollContainer = ref(null)
 
 const currentUserId = computed(() => authStore.user?.id)
 
-let pollInterval = null
+let stompClient = null
 
 const scrollToBottom = async () => {
   await nextTick()
@@ -92,17 +88,23 @@ onMounted(async () => {
   chatStore.clearCurrentChat()
   await loadMessages()
 
-  pollInterval = setInterval(async () => {
-    try {
-      await chatStore.fetchMessages(props.conversationId, 0)
-    } catch {
-      // silently fail on poll errors
-    }
-  }, 5000)
+  const token = localStorage.getItem('auth_token')
+  stompClient = new Client({
+    webSocketFactory: () => new SockJS(import.meta.env.VITE_WS_URL || 'http://localhost:8080/ws'),
+    connectHeaders: { Authorization: `Bearer ${token}` },
+    onConnect: () => {
+      stompClient.subscribe(`/topic/conversation.${props.conversationId}`, frame => {
+        const message = JSON.parse(frame.body)
+        chatStore.appendMessage(message)
+      })
+    },
+    onStompError: frame => console.error('STOMP error', frame)
+  })
+  stompClient.activate()
 })
 
 onUnmounted(() => {
-  if (pollInterval) clearInterval(pollInterval)
+  stompClient?.deactivate()
   chatStore.clearCurrentChat()
 })
 </script>

@@ -30,9 +30,10 @@ import com.rumantra.bidding.dto.UpdateBidRequest;
 import com.rumantra.bidding.event.BidSubmittedEvent;
 import com.rumantra.bidding.repository.BidPortfolioRefRepository;
 import com.rumantra.bidding.repository.BidRepository;
-import com.rumantra.chat.event.BidAcceptedEvent;
 import com.rumantra.chat.repository.ConversationRepository;
+import com.rumantra.chat.service.ConversationService;
 import com.rumantra.client.domain.Project;
+import com.rumantra.client.domain.ProjectFile;
 import com.rumantra.client.domain.ProjectStatus;
 import com.rumantra.client.repository.ProjectRepository;
 import com.rumantra.security.SecurityUtils;
@@ -61,6 +62,8 @@ public class BidService {
   @Autowired private BidPortfolioRefRepository bidPortfolioRefRepository;
 
   @Autowired private ConversationRepository conversationRepository;
+
+  @Autowired private ConversationService conversationService;
 
   @Autowired private ApplicationEventPublisher eventPublisher;
 
@@ -254,16 +257,19 @@ public class BidService {
     }
   }
 
+  @Transactional(readOnly = true)
   public List<BidResponse> getBidsByArchitect(Long architectId) {
     List<Bid> bids = bidRepository.findByArchitectId(architectId);
     return bids.stream().map(this::mapToResponse).collect(Collectors.toList());
   }
 
+  @Transactional(readOnly = true)
   public List<BidResponse> getBidsByProject(Long projectId) {
     List<Bid> bids = bidRepository.findByProjectId(projectId);
     return bids.stream().map(this::mapToResponse).collect(Collectors.toList());
   }
 
+  @Transactional(readOnly = true)
   public BidResponse getBidById(Long bidId) {
     Bid bid =
         bidRepository
@@ -334,6 +340,22 @@ public class BidService {
     return BidResponse.builder()
         .id(bid.getId())
         .projectId(bid.getProject().getId())
+        .projectTitle(bid.getProject().getTitle())
+        .projectLocation(bid.getProject().getLocation())
+        .projectStatus(
+            bid.getProject().getStatus() != null ? bid.getProject().getStatus().name() : null)
+        .projectCoverImagePath(
+            bid.getProject().getFiles().stream()
+                .filter(
+                    f ->
+                        f.getFileType() != null
+                            && (f.getFileType().equals("png")
+                                || f.getFileType().equals("jpg")
+                                || f.getFileType().equals("jpeg")
+                                || f.getFileType().equals("webp")))
+                .findFirst()
+                .map(ProjectFile::getFilePath)
+                .orElse(null))
         .architectId(bid.getArchitect().getId())
         .architectName(
             bid.getArchitect().getUser().getFirstName()
@@ -427,14 +449,8 @@ public class BidService {
     project.setStatus(ProjectStatus.NEGOTIATION);
     projectRepository.save(project);
 
-    eventPublisher.publishEvent(
-        new BidAcceptedEvent(
-            this,
-            bid.getId(),
-            project.getId(),
-            bid.getArchitect().getId(),
-            project.getClient().getId(),
-            userId));
+    conversationService.createConversation(
+        bid.getId(), project.getId(), bid.getArchitect().getId(), project.getClient().getId());
 
     return mapToResponse(bid);
   }

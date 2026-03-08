@@ -90,6 +90,12 @@ public class Project {
   @Column(name = "bidding_deadline")
   private LocalDateTime biddingDeadline;
 
+  @Column(name = "client_confirmed_at")
+  private LocalDateTime clientConfirmedAt;
+
+  @Column(name = "architect_confirmed_at")
+  private LocalDateTime architectConfirmedAt;
+
   @OneToMany(
       mappedBy = "project",
       cascade = CascadeType.ALL,

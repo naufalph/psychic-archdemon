@@ -37,7 +37,10 @@
         <div class="lg:col-span-2">
           <div class="flex justify-between items-center mb-4">
             <h2 class="text-xl font-bold text-black tracking-wide">ACTIVE VENTURES</h2>
-            <router-link :to="{ name: 'ProjectCreate' }" class="text-xs font-bold text-gray-500 hover:text-black tracking-widest transition">
+            <router-link
+              :to="{ name: 'ProjectCreate' }"
+              class="text-xs font-bold text-gray-500 hover:text-black tracking-widest transition"
+            >
               VIEW ALL →
             </router-link>
           </div>
@@ -73,8 +76,12 @@
           <div class="bg-[#7C4728] rounded-2xl p-6 text-white">
             <p class="text-xs font-bold tracking-widest uppercase mb-2 text-white/70">Curated Selection</p>
             <h3 class="text-lg font-bold mb-2">Find Your Architect</h3>
-            <p class="text-sm text-white/80 mb-4">Browse our vetted network of architecture studios ready for your project.</p>
-            <button class="bg-white text-[#7C4728] px-4 py-2 rounded-full text-xs font-bold tracking-wider hover:bg-[#F5E6D3] transition">
+            <p class="text-sm text-white/80 mb-4">
+              Browse our vetted network of architecture studios ready for your project.
+            </p>
+            <button
+              class="bg-white text-[#7C4728] px-4 py-2 rounded-full text-xs font-bold tracking-wider hover:bg-[#F5E6D3] transition"
+            >
               BROWSE STUDIOS →
             </button>
           </div>
@@ -107,8 +114,8 @@ const clientName = computed(() => {
   return user.name || user.email?.split('@')[0] || 'Client'
 })
 
-const activeProjectCount = computed(() =>
-  projects.value.filter(p => p.status === 'OPEN' || p.status === 'IN_PROGRESS').length
+const activeProjectCount = computed(
+  () => projects.value.filter(p => p.status === 'OPEN' || p.status === 'IN_PROGRESS').length
 )
 
 const totalProposalCount = computed(() => projectBids.value?.length || 0)

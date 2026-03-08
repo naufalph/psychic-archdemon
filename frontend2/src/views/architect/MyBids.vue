@@ -22,10 +22,22 @@
         <p class="text-gray-500">Track your submitted proposals</p>
       </div>
 
-      <div v-if="loading" class="space-y-4">
-        <div v-for="n in 3" :key="n" class="bg-white rounded-3xl border border-gray-200 p-8 animate-pulse">
-          <div class="h-6 bg-gray-200 rounded w-1/2 mb-4" />
-          <div class="h-4 bg-gray-200 rounded w-1/4" />
+      <div v-if="loading" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div v-for="n in 6" :key="n" class="bg-white rounded-2xl border border-gray-200 overflow-hidden animate-pulse">
+          <div class="aspect-[16/10] bg-gray-200" />
+          <div class="p-5">
+            <div class="h-4 bg-gray-200 rounded w-3/4 mb-2" />
+            <div class="h-3 bg-gray-200 rounded w-1/2 mb-4" />
+            <div class="flex gap-2 mb-4">
+              <div class="h-6 bg-gray-200 rounded-full w-24" />
+              <div class="h-6 bg-gray-200 rounded-full w-20" />
+            </div>
+            <div class="h-px bg-gray-100 mb-3" />
+            <div class="flex justify-between">
+              <div class="h-3 bg-gray-200 rounded w-16" />
+              <div class="h-7 bg-gray-200 rounded-full w-20" />
+            </div>
+          </div>
         </div>
       </div>
 
@@ -40,37 +52,8 @@
         </router-link>
       </div>
 
-      <div v-else class="space-y-4">
-        <div v-for="bid in myBids" :key="bid.id" class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
-          <div class="flex justify-between items-start mb-4">
-            <div>
-              <h3 class="text-xl font-bold text-black">{{ bid.project?.title || 'Project' }}</h3>
-              <p class="text-sm text-gray-500">{{ bid.project?.location }}</p>
-            </div>
-            <span :class="statusBadgeClass(bid.status)">
-              {{ bid.status }}
-            </span>
-          </div>
-
-          <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-            <div>
-              <p class="text-xs text-gray-500 mb-1">Bid Amount</p>
-              <p class="font-bold text-gray-900">IDR {{ formatNumber(bid.bidAmount) }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-gray-500 mb-1">Timeline</p>
-              <p class="font-bold text-gray-900">{{ bid.proposedTimelineDays }} days</p>
-            </div>
-            <div>
-              <p class="text-xs text-gray-500 mb-1">Submitted</p>
-              <p class="font-bold text-gray-900">{{ formatDate(bid.submittedAt) }}</p>
-            </div>
-          </div>
-
-          <p v-if="bid.proposal" class="text-sm text-gray-700">
-            {{ bid.proposal }}
-          </p>
-        </div>
+      <div v-else class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        <BidCard v-for="bid in myBids" :key="bid.id" :bid="bid" />
       </div>
     </div>
   </div>
@@ -82,30 +65,12 @@ import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { ArrowLeft, FileText } from 'lucide-vue-next'
 import { useBidsStore } from '@/stores/bids'
+import BidCard from '@/components/bid/BidCard.vue'
 
 const router = useRouter()
 const bidsStore = useBidsStore()
 
 const { myBids, loading } = storeToRefs(bidsStore)
-
-const statusBadgeClass = status => {
-  const base = 'px-4 py-1.5 rounded-full text-xs font-bold'
-  const variants = {
-    PENDING: `${base} bg-yellow-100 text-yellow-700`,
-    ACCEPTED: `${base} bg-green-100 text-green-700`,
-    REJECTED: `${base} bg-red-100 text-red-700`
-  }
-  return variants[status] || `${base} bg-gray-100 text-gray-700`
-}
-
-const formatNumber = num => {
-  return new Intl.NumberFormat('id-ID').format(num)
-}
-
-const formatDate = dateString => {
-  if (!dateString) return 'N/A'
-  return new Date(dateString).toLocaleDateString('id-ID')
-}
 
 onMounted(async () => {
   try {

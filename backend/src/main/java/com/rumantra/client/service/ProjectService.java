@@ -316,7 +316,42 @@ public class ProjectService {
           "Project is not in negotiation phase. Current status: " + project.getStatus());
     }
 
-    project.setStatus(ProjectStatus.IN_PROGRESS);
+    project.setClientConfirmedAt(java.time.LocalDateTime.now());
+    if (project.getArchitectConfirmedAt() != null) {
+      project.setStatus(ProjectStatus.IN_PROGRESS);
+    }
+    project = projectRepository.save(project);
+
+    return mapToProjectResponse(project);
+  }
+
+  @Transactional
+  public ProjectResponse architectConfirmNegotiation(Long projectId) {
+    Long userId = SecurityUtils.getCurrentUserId();
+
+    Project project =
+        projectRepository
+            .findById(projectId)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Project not found with id: " + projectId));
+
+    if (project.getStatus() != ProjectStatus.NEGOTIATION) {
+      throw new RuntimeException(
+          "Project is not in negotiation phase. Current status: " + project.getStatus());
+    }
+
+    List<Bid> acceptedBids = bidRepository.findByProjectIdAndStatus(projectId, BidStatus.ACCEPTED);
+    boolean isArchitectForProject =
+        acceptedBids.stream().anyMatch(b -> b.getArchitect().getUser().getId().equals(userId));
+    if (!isArchitectForProject) {
+      throw new org.springframework.security.access.AccessDeniedException(
+          "You are not the architect for this project");
+    }
+
+    project.setArchitectConfirmedAt(java.time.LocalDateTime.now());
+    if (project.getClientConfirmedAt() != null) {
+      project.setStatus(ProjectStatus.IN_PROGRESS);
+    }
     project = projectRepository.save(project);
 
     return mapToProjectResponse(project);
@@ -429,6 +464,8 @@ public class ProjectService {
                 : Boolean.FALSE)
         .validationNotes(project.getValidationNotes())
         .biddingDeadline(project.getBiddingDeadline())
+        .clientConfirmed(project.getClientConfirmedAt() != null)
+        .architectConfirmed(project.getArchitectConfirmedAt() != null)
         .files(fileDtos)
         .bidCount(bidRepository.countByProjectId(project.getId()))
         .createdAt(project.getCreatedAt())

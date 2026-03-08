@@ -26,7 +26,6 @@ export const useNotificationsStore = defineStore('notifications', () => {
   })
 
   async function fetchNotifications() {
-    if (loading.value) return
     loading.value = true
     error.value = null
 

@@ -52,9 +52,9 @@ export const useChatStore = defineStore('chat', {
         const messages = data.messages || []
 
         if (page === 0) {
-          this.currentMessages = messages
+          this.currentMessages = [...messages].reverse()
         } else {
-          this.currentMessages = [...messages, ...this.currentMessages]
+          this.currentMessages = [...messages].reverse().concat(this.currentMessages)
         }
 
         this.currentPage = page
@@ -73,9 +73,7 @@ export const useChatStore = defineStore('chat', {
       this.error = null
       try {
         const response = await chatAPI.sendMessage({ conversationId, content })
-        const message = response.data.data
-        this.currentMessages.push(message)
-        return message
+        return response.data.data
       } catch (error) {
         this.error = error.response?.data?.message || 'Failed to send message'
         throw error
@@ -89,6 +87,13 @@ export const useChatStore = defineStore('chat', {
         await chatAPI.markAllRead(conversationId)
       } catch (error) {
         console.error('Failed to mark messages as read:', error)
+      }
+    },
+
+    appendMessage(message) {
+      const exists = this.currentMessages.some(m => m.id === message.id)
+      if (!exists) {
+        this.currentMessages.push(message)
       }
     },
 

@@ -124,7 +124,8 @@ CREATE TABLE IF NOT EXISTS rmtr_project (
     bidding_deadline TIMESTAMP DEFAULT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL DEFAULT NULL,
-    CONSTRAINT chk_project_status CHECK (status IN ('PENDING_APPROVAL', 'REJECTED', 'OPEN', 'BIDDING_CLOSED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'))
+    client_confirmed_at TIMESTAMP,
+    architect_confirmed_at TIMESTAMP
 );
 
 CREATE INDEX IF NOT EXISTS idx_project_client_id ON rmtr_project(client_id);

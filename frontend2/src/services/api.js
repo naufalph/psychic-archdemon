@@ -232,10 +232,10 @@ export const projectAPI = {
       }
     })
   },
-  confirmNegotiation: projectId =>
-    api.post(`/api/v1/projects/${projectId}/confirm-negotiation`),
-  rejectNegotiation: projectId =>
-    api.post(`/api/v1/projects/${projectId}/reject-negotiation`)
+  confirmNegotiation: projectId => api.post(`/api/v1/projects/${projectId}/confirm-negotiation`),
+  rejectNegotiation: projectId => api.post(`/api/v1/projects/${projectId}/reject-negotiation`),
+  architectConfirmNegotiation: projectId =>
+    api.post(`/api/v1/projects/${projectId}/architect-confirm-negotiation`)
 }
 
 export const chatAPI = {

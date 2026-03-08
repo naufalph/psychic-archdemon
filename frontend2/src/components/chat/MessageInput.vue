@@ -9,7 +9,7 @@
         @keydown.enter.exact.prevent="handleSend"
         rows="1"
         class="flex-1 resize-none rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#C5A17A] transition overflow-hidden"
-        style="min-height: 44px; max-height: 120px;"
+        style="min-height: 44px; max-height: 120px"
         @input="autoResize"
       />
       <button

@@ -49,6 +49,17 @@
             {{ t.notifications.loading }}
           </div>
 
+          <div v-else-if="notificationsStore.error" class="p-8 text-center">
+            <ExclamationCircleIcon class="h-12 w-12 mx-auto mb-3 text-red-400" />
+            <p class="text-sm font-medium text-gray-900">Failed to load notifications</p>
+            <button
+              @click="notificationsStore.fetchNotifications()"
+              class="mt-2 text-sm text-blue-600 hover:text-blue-700"
+            >
+              Try again
+            </button>
+          </div>
+
           <div v-else-if="notificationsStore.recentNotifications.length === 0" class="p-8 text-center">
             <BellIcon class="h-12 w-12 mx-auto mb-3 text-gray-400" />
             <p class="text-sm font-medium text-gray-900">{{ t.notifications.emptyTitle }}</p>
@@ -164,7 +175,7 @@ const isStale = () => {
 const toggleDropdown = async () => {
   isOpen.value = !isOpen.value
 
-  if (isOpen.value && !notificationsStore.loading) {
+  if (isOpen.value) {
     if (notificationsStore.notifications.length === 0 || isStale()) {
       await notificationsStore.fetchNotifications()
     }
@@ -189,11 +200,11 @@ const getNotificationIcon = type => {
 }
 
 const getNotificationDisplay = notification => {
-  return composeNotificationMessage(notification, t)
+  return composeNotificationMessage(notification, t.value)
 }
 
 const getRelativeTime = timestamp => {
-  return getRelativeTimeUtil(timestamp, t)
+  return getRelativeTimeUtil(timestamp, t.value)
 }
 
 const getNotificationRoute = notification => {

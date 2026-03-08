@@ -50,9 +50,7 @@
           @click="$emit('toggle-compare')"
           :class="[
             'w-full px-4 py-2 rounded-full text-sm font-medium flex items-center justify-center gap-2 transition',
-            isSelectedForCompare
-              ? 'bg-[#7C4728] text-white'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            isSelectedForCompare ? 'bg-[#7C4728] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
           ]"
         >
           <Plus v-if="!isSelectedForCompare" :size="16" />

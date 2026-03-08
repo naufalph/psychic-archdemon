@@ -1,5 +1,9 @@
 <template>
-  <div v-if="variant === 'client'" class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-soft hover:shadow-glow transition-all cursor-pointer group" @click="handleClick">
+  <div
+    v-if="variant === 'client'"
+    class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-soft hover:shadow-glow transition-all cursor-pointer group"
+    @click="handleClick"
+  >
     <div class="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-[#7C4728] to-[#3D2114]">
       <img
         v-if="coverImage"
@@ -7,7 +11,9 @@
         :alt="project.title"
         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
       />
-      <span class="absolute top-3 right-3 bg-black/70 text-white text-xs font-bold px-2.5 py-1 rounded-full tracking-wider uppercase">
+      <span
+        class="absolute top-3 right-3 bg-black/70 text-white text-xs font-bold px-2.5 py-1 rounded-full tracking-wider uppercase"
+      >
         {{ buildingLabel }}
       </span>
       <span
@@ -40,7 +46,9 @@
         <span class="text-xs text-gray-500 font-medium">
           {{ proposalCount }} {{ proposalCount === 1 ? 'Bid' : 'Bids' }}
         </span>
-        <button class="bg-black text-white text-xs font-bold px-4 py-2 rounded-full tracking-wider hover:bg-[#7C4728] transition">
+        <button
+          class="bg-black text-white text-xs font-bold px-4 py-2 rounded-full tracking-wider hover:bg-[#7C4728] transition"
+        >
           MANAGE →
         </button>
       </div>
@@ -152,13 +160,20 @@ const buildingLabel = computed(() => {
 
 const statusBadgeClass = computed(() => {
   switch (props.project.status) {
-    case 'OPEN': return 'bg-green-500 text-white'
-    case 'NEGOTIATION': return 'bg-amber-400 text-white'
-    case 'IN_PROGRESS': return 'bg-blue-500 text-white'
-    case 'AWARDED': return 'bg-blue-600 text-white'
-    case 'CLOSED': return 'bg-gray-500 text-white'
-    case 'REJECTED': return 'bg-red-500 text-white'
-    default: return 'bg-gray-400 text-white'
+    case 'OPEN':
+      return 'bg-green-500 text-white'
+    case 'NEGOTIATION':
+      return 'bg-amber-400 text-white'
+    case 'IN_PROGRESS':
+      return 'bg-blue-500 text-white'
+    case 'AWARDED':
+      return 'bg-blue-600 text-white'
+    case 'CLOSED':
+      return 'bg-gray-500 text-white'
+    case 'REJECTED':
+      return 'bg-red-500 text-white'
+    default:
+      return 'bg-gray-400 text-white'
   }
 })
 

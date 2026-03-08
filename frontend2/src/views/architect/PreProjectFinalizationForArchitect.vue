@@ -3,14 +3,14 @@
     <div v-if="loading && !bid" class="flex items-center justify-center h-screen">
       <div class="text-center">
         <div class="w-10 h-10 border-2 border-[#C5A17A] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p class="text-gray-500">Loading negotiation...</p>
+        <p class="text-gray-500">{{ t.finalization?.loading }}</p>
       </div>
     </div>
 
     <div v-else-if="error" class="flex items-center justify-center h-screen">
       <div class="text-center">
         <p class="text-red-500 mb-4">{{ error }}</p>
-        <button @click="loadData" class="text-[#7C4728] hover:underline">Try again</button>
+        <button @click="loadData" class="text-[#7C4728] hover:underline">{{ t.finalization?.tryAgain }}</button>
       </div>
     </div>
 
@@ -19,7 +19,7 @@
       <div class="bg-white border-b border-gray-200 px-6 py-4">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
           <div class="flex items-center gap-4">
-            <button @click="router.back()" class="text-gray-500 hover:text-black transition">
+            <button @click="router.push('/architect/bids')" class="text-gray-500 hover:text-black transition">
               <ArrowLeft :size="20" />
             </button>
             <div>
@@ -28,14 +28,14 @@
                   class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700"
                 >
                   <Clock :size="12" />
-                  Finalization
+                  {{ t.finalization?.badge }}
                 </span>
               </div>
               <h1 class="text-lg font-bold text-black mt-1">{{ project?.title || 'Project Finalization' }}</h1>
             </div>
           </div>
           <div v-if="project?.biddingDeadline" class="text-right text-sm text-gray-500">
-            <p class="text-xs font-bold uppercase text-gray-400">Bidding Deadline</p>
+            <p class="text-xs font-bold uppercase text-gray-400">{{ t.finalization?.biddingDeadline }}</p>
             <p>{{ formatDate(project.biddingDeadline) }}</p>
           </div>
         </div>
@@ -48,16 +48,16 @@
       >
         <div class="max-w-7xl mx-auto flex items-center gap-2 text-green-700 text-sm font-bold">
           <CheckCircle :size="16" />
-          Both parties have confirmed — project is now In Progress!
+          {{ t.finalization?.bothConfirmed }}
         </div>
       </div>
 
       <!-- Main Content -->
       <div class="max-w-7xl mx-auto px-6 py-6">
         <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 h-[calc(100vh-160px)]">
-          <!-- LEFT: Bid Summary (locked) -->
+          <!-- LEFT: Bid Summary -->
           <div class="lg:col-span-3 overflow-y-auto space-y-4 pr-2">
-            <!-- Architect + Key Terms -->
+            <!-- Key Terms -->
             <div class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft">
               <div class="flex items-start justify-between mb-4">
                 <div>
@@ -65,22 +65,23 @@
                   <p v-if="bid.architectCompany" class="text-gray-500 text-sm">{{ bid.architectCompany }}</p>
                 </div>
                 <span
-                  class="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold"
+                  class="inline-flex items-center gap-1 px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold"
                 >
                   <CheckCircle :size="12" />
-                  Winning Bid
+                  {{ t.finalization?.yourProposal }}
                 </span>
               </div>
 
               <div class="grid grid-cols-2 gap-3">
                 <div class="bg-[#FDF6EE] rounded-2xl p-4">
-                  <p class="text-xs text-gray-500 uppercase font-bold mb-1">Proposed Price</p>
+                  <p class="text-xs text-gray-500 uppercase font-bold mb-1">{{ t.finalization?.proposedPrice }}</p>
                   <p class="text-2xl font-bold text-[#7C4728]">{{ formatCurrency(bid.bidAmount) }}</p>
                 </div>
                 <div class="bg-gray-50 rounded-2xl p-4">
-                  <p class="text-xs text-gray-500 uppercase font-bold mb-1">Timeline</p>
+                  <p class="text-xs text-gray-500 uppercase font-bold mb-1">{{ t.finalization?.timeline }}</p>
                   <p class="text-2xl font-bold text-black">
-                    {{ bid.proposedTimelineDays }} <span class="text-sm font-normal text-gray-500">days</span>
+                    {{ bid.proposedTimelineDays }}
+                    <span class="text-sm font-normal text-gray-500">{{ t.finalization?.days }}</span>
                   </p>
                 </div>
               </div>
@@ -91,7 +92,7 @@
               v-if="bid.details?.deliverables?.length"
               class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft"
             >
-              <h3 class="font-bold text-black mb-3">Deliverables</h3>
+              <h3 class="font-bold text-black mb-3">{{ t.finalization?.deliverables }}</h3>
               <ul class="space-y-2">
                 <li
                   v-for="item in bid.details.deliverables"
@@ -106,38 +107,41 @@
 
             <!-- Revision Commitments -->
             <div v-if="hasRevisions" class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft">
-              <h3 class="font-bold text-black mb-3">Revision Commitments</h3>
+              <h3 class="font-bold text-black mb-3">{{ t.finalization?.revisionCommitments }}</h3>
               <div class="grid grid-cols-2 gap-3">
                 <div v-if="bid.details?.siteAnalysisRevisions != null" class="bg-gray-50 rounded-xl p-3">
-                  <p class="text-xs text-gray-500 font-bold mb-0.5">Site Analysis</p>
+                  <p class="text-xs text-gray-500 font-bold mb-0.5">{{ t.finalization?.siteAnalysis }}</p>
                   <p class="text-lg font-bold text-black">
-                    {{ bid.details.siteAnalysisRevisions }} <span class="text-xs font-normal text-gray-500">rev</span>
+                    {{ bid.details.siteAnalysisRevisions }}
+                    <span class="text-xs font-normal text-gray-500">{{ t.finalization?.rev }}</span>
                   </p>
                 </div>
                 <div v-if="bid.details?.designRevisions != null" class="bg-gray-50 rounded-xl p-3">
-                  <p class="text-xs text-gray-500 font-bold mb-0.5">Design Phases</p>
+                  <p class="text-xs text-gray-500 font-bold mb-0.5">{{ t.finalization?.designPhases }}</p>
                   <p class="text-lg font-bold text-black">
-                    {{ bid.details.designRevisions }} <span class="text-xs font-normal text-gray-500">rev</span>
+                    {{ bid.details.designRevisions }}
+                    <span class="text-xs font-normal text-gray-500">{{ t.finalization?.rev }}</span>
                   </p>
                 </div>
                 <div v-if="bid.details?.permitsDocRevisions != null" class="bg-gray-50 rounded-xl p-3">
-                  <p class="text-xs text-gray-500 font-bold mb-0.5">Permits & Docs</p>
+                  <p class="text-xs text-gray-500 font-bold mb-0.5">{{ t.finalization?.permitsAndDocs }}</p>
                   <p class="text-lg font-bold text-black">
-                    {{ bid.details.permitsDocRevisions }} <span class="text-xs font-normal text-gray-500">rev</span>
+                    {{ bid.details.permitsDocRevisions }}
+                    <span class="text-xs font-normal text-gray-500">{{ t.finalization?.rev }}</span>
                   </p>
                 </div>
                 <div v-if="bid.details?.specializedServicesRevisions != null" class="bg-gray-50 rounded-xl p-3">
-                  <p class="text-xs text-gray-500 font-bold mb-0.5">Specialized</p>
+                  <p class="text-xs text-gray-500 font-bold mb-0.5">{{ t.finalization?.specialized }}</p>
                   <p class="text-lg font-bold text-black">
                     {{ bid.details.specializedServicesRevisions }}
-                    <span class="text-xs font-normal text-gray-500">rev</span>
+                    <span class="text-xs font-normal text-gray-500">{{ t.finalization?.rev }}</span>
                   </p>
                 </div>
                 <div v-if="bid.details?.constructionSupportRevisions != null" class="bg-gray-50 rounded-xl p-3">
-                  <p class="text-xs text-gray-500 font-bold mb-0.5">Construction</p>
+                  <p class="text-xs text-gray-500 font-bold mb-0.5">{{ t.finalization?.construction }}</p>
                   <p class="text-lg font-bold text-black">
                     {{ bid.details.constructionSupportRevisions }}
-                    <span class="text-xs font-normal text-gray-500">rev</span>
+                    <span class="text-xs font-normal text-gray-500">{{ t.finalization?.rev }}</span>
                   </p>
                 </div>
               </div>
@@ -148,7 +152,7 @@
               v-if="bid.details?.conceptStatement"
               class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft"
             >
-              <h3 class="font-bold text-black mb-3">Design Concept</h3>
+              <h3 class="font-bold text-black mb-3">{{ t.finalization?.designConcept }}</h3>
               <p class="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
                 {{ bid.details.conceptStatement }}
               </p>
@@ -159,7 +163,7 @@
               v-if="bid.portfolioReferences?.length"
               class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft"
             >
-              <h3 class="font-bold text-black mb-3">Portfolio References</h3>
+              <h3 class="font-bold text-black mb-3">{{ t.finalization?.portfolioRefs }}</h3>
               <div class="grid grid-cols-3 gap-3">
                 <div
                   v-for="porto in bid.portfolioReferences"
@@ -183,117 +187,55 @@
             </div>
           </div>
 
-          <!-- RIGHT: Chat + CTAs -->
+          <!-- RIGHT: Chat + Action Panel -->
           <div class="lg:col-span-2 flex flex-col gap-4">
             <!-- Chat Panel -->
             <div
               class="flex-1 bg-white rounded-3xl border border-gray-200 shadow-soft overflow-hidden flex flex-col min-h-0"
             >
               <div class="px-5 py-4 border-b border-gray-100">
-                <h3 class="font-bold text-black">Discussion</h3>
-                <p class="text-xs text-gray-500 mt-0.5">Chat with the architect about the terms</p>
+                <h3 class="font-bold text-black">{{ t.finalization?.discussion }}</h3>
+                <p class="text-xs text-gray-500 mt-0.5">{{ t.finalization?.discussionSubtitle }}</p>
               </div>
 
               <div class="flex-1 min-h-0" v-if="bid.conversationId">
                 <ChatPanel :conversation-id="bid.conversationId" class="h-full" />
               </div>
               <div v-else class="flex-1 flex items-center justify-center text-gray-400 text-sm">
-                Chat not available yet
+                {{ t.finalization?.chatUnavailable }}
               </div>
             </div>
 
-            <!-- Client action panel -->
-            <div v-if="isClient" class="bg-white rounded-3xl border border-gray-200 p-5 shadow-soft">
-              <div v-if="project?.clientConfirmed" class="flex items-center gap-2 text-green-700">
+            <!-- Architect Action Panel -->
+            <div class="bg-white rounded-3xl border border-gray-200 p-5 shadow-soft">
+              <div v-if="project?.architectConfirmed" class="flex items-center gap-2 text-green-700">
                 <CheckCircle :size="16" />
                 <div>
-                  <p class="text-sm font-bold">You've confirmed</p>
+                  <p class="text-sm font-bold">{{ t.finalization?.confirmed }}</p>
                   <p class="text-xs text-gray-500">
                     {{
-                      project?.architectConfirmed
-                        ? 'Architect has also confirmed.'
-                        : 'Awaiting architect confirmation...'
+                      project?.clientConfirmed ? t.finalization?.clientAlsoConfirmed : t.finalization?.awaitingClient
                     }}
                   </p>
                 </div>
               </div>
               <div v-else>
-                <p class="text-xs text-gray-500 mb-4 leading-relaxed">
-                  Review the bid terms and discuss with the architect before confirming.
+                <p class="text-xs text-gray-500 mb-3 leading-relaxed">{{ t.finalization?.confirmPrompt }}</p>
+                <p v-if="project?.clientConfirmed" class="text-xs text-blue-600 font-bold mb-3">
+                  {{ t.finalization?.clientConfirmedStatus }}
                 </p>
-                <div class="space-y-3">
-                  <button
-                    @click="handleConfirm"
-                    :disabled="actionLoading"
-                    class="w-full px-5 py-3.5 bg-[#7C4728] text-white rounded-full font-bold hover:bg-black transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <CheckCircle :size="18" />
-                    {{ actionLoading === 'confirm' ? 'Confirming...' : 'Confirm & Proceed to Payment' }}
-                  </button>
-                  <button
-                    @click="showRejectDialog = true"
-                    :disabled="actionLoading"
-                    class="w-full px-5 py-3.5 bg-white text-red-600 border border-red-200 rounded-full font-bold hover:bg-red-50 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <XCircle :size="18" />
-                    Reject Terms & Reopen Bidding
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Architect action panel -->
-            <div v-else class="bg-white rounded-3xl border border-gray-200 p-5 shadow-soft">
-              <div v-if="project?.architectConfirmed" class="flex items-center gap-2 text-green-700">
-                <CheckCircle :size="16" />
-                <div>
-                  <p class="text-sm font-bold">You've confirmed</p>
-                  <p class="text-xs text-gray-500">
-                    {{ project?.clientConfirmed ? 'Client has also confirmed.' : 'Awaiting client confirmation...' }}
-                  </p>
-                </div>
-              </div>
-              <div v-else>
-                <p class="text-xs text-gray-500 mb-4 leading-relaxed">
-                  Review the agreed terms and confirm to proceed with the project.
-                </p>
+                <p v-else class="text-xs text-gray-400 mb-3">{{ t.finalization?.awaitingClientStatus }}</p>
                 <button
-                  @click="handleArchitectConfirm"
+                  @click="handleConfirm"
                   :disabled="actionLoading"
                   class="w-full px-5 py-3.5 bg-[#7C4728] text-white rounded-full font-bold hover:bg-black transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <CheckCircle :size="18" />
-                  {{ actionLoading === 'architect-confirm' ? 'Confirming...' : 'Confirm & Proceed to Payment' }}
+                  {{ actionLoading ? t.finalization?.confirming : t.finalization?.confirmButton }}
                 </button>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Reject Confirmation Dialog -->
-    <div v-if="showRejectDialog" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
-      <div class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
-        <h3 class="text-xl font-bold text-black mb-2">Reject Terms & Reopen Bidding?</h3>
-        <p class="text-gray-600 text-sm mb-6">
-          This will reject the current bid, refund the architect's token, and reopen the project for new bids. This
-          action cannot be undone.
-        </p>
-        <div class="flex gap-3">
-          <button
-            @click="showRejectDialog = false"
-            class="flex-1 px-5 py-3 border border-gray-200 rounded-full font-bold text-gray-700 hover:bg-gray-50 transition"
-          >
-            Cancel
-          </button>
-          <button
-            @click="handleReject"
-            :disabled="actionLoading === 'reject'"
-            class="flex-1 px-5 py-3 bg-red-600 text-white rounded-full font-bold hover:bg-red-700 transition disabled:opacity-50"
-          >
-            {{ actionLoading === 'reject' ? 'Rejecting...' : 'Yes, Reject & Reopen' }}
-          </button>
         </div>
       </div>
     </div>
@@ -303,25 +245,22 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft, Clock, CheckCircle, XCircle } from 'lucide-vue-next'
+import { ArrowLeft, Clock, CheckCircle } from 'lucide-vue-next'
 import { useBidsStore } from '@/stores/bids'
-import { useAuthStore } from '@/stores/auth'
 import { projectAPI } from '@/services/api'
+import { useI18n } from '@/composables/useI18n'
 import ChatPanel from '@/components/chat/ChatPanel.vue'
 
 const route = useRoute()
 const router = useRouter()
 const bidsStore = useBidsStore()
-const authStore = useAuthStore()
+const { t, getT } = useI18n()
 
 const bid = ref(null)
 const project = ref(null)
 const loading = ref(false)
 const error = ref(null)
-const actionLoading = ref(null)
-const showRejectDialog = ref(false)
-
-const isClient = computed(() => authStore.hasRole('CLIENT'))
+const actionLoading = ref(false)
 
 const hasRevisions = computed(() => {
   const d = bid.value?.details
@@ -360,36 +299,20 @@ const loadData = async () => {
   try {
     const projectId = route.params.projectId
 
-    if (isClient.value) {
-      await bidsStore.fetchProjectBids(projectId)
-      const acceptedBid = bidsStore.projectBids.find(b => b.status === 'ACCEPTED')
+    await bidsStore.fetchMyBids()
+    const acceptedBid = bidsStore.myBids.find(b => b.projectId === Number(projectId) && b.status === 'ACCEPTED')
 
-      if (!acceptedBid) {
-        error.value = 'No accepted bid found for this project'
-        return
-      }
-
-      bid.value = acceptedBid
-
-      const response = await projectAPI.getById(projectId)
-      project.value = response.data.data
-    } else {
-      // Architect view: find their accepted bid for this project
-      await bidsStore.fetchMyBids()
-      const acceptedBid = bidsStore.myBids.find(b => b.projectId === Number(projectId) && b.status === 'ACCEPTED')
-
-      if (!acceptedBid) {
-        error.value = 'No accepted bid found for this project'
-        return
-      }
-
-      bid.value = acceptedBid
-
-      const response = await projectAPI.getProjectForArchitect(projectId)
-      project.value = response.data.data
+    if (!acceptedBid) {
+      error.value = getT('finalization.noAcceptedBid')
+      return
     }
+
+    bid.value = acceptedBid
+
+    const response = await projectAPI.getProjectForArchitect(projectId)
+    project.value = response.data.data
   } catch (err) {
-    error.value = err.response?.data?.message || 'Failed to load negotiation data'
+    error.value = err.response?.data?.message || getT('finalization.loadError')
     console.error('Failed to load negotiation data:', err)
   } finally {
     loading.value = false
@@ -397,51 +320,18 @@ const loadData = async () => {
 }
 
 const handleConfirm = async () => {
-  if (!confirm('Confirm the terms and proceed to payment?')) return
-  actionLoading.value = 'confirm'
-  try {
-    const response = await projectAPI.confirmNegotiation(route.params.projectId)
-    project.value = response.data.data
-    if (project.value.status === 'IN_PROGRESS') {
-      router.push(`/client/projects/${route.params.projectId}`)
-    }
-  } catch (err) {
-    alert(err.response?.data?.message || 'Failed to confirm terms')
-  } finally {
-    actionLoading.value = null
-  }
-}
-
-const handleArchitectConfirm = async () => {
-  if (!confirm('Confirm the terms and proceed with this project?')) return
-  actionLoading.value = 'architect-confirm'
+  if (!confirm(getT('finalization.confirmDialog'))) return
+  actionLoading.value = true
   try {
     const response = await projectAPI.architectConfirmNegotiation(route.params.projectId)
     project.value = response.data.data
     if (project.value.status === 'IN_PROGRESS') {
-      router.push(`/architect/projects/${route.params.projectId}`)
+      router.push(`/architect/opportunities/${route.params.projectId}`)
     }
   } catch (err) {
-    alert(err.response?.data?.message || 'Failed to confirm terms')
+    alert(err.response?.data?.message || getT('finalization.confirmError'))
   } finally {
-    actionLoading.value = null
-  }
-}
-
-const handleReject = async () => {
-  actionLoading.value = 'reject'
-  try {
-    await projectAPI.rejectNegotiation(route.params.projectId)
-    showRejectDialog.value = false
-    router.push({
-      path: `/client/projects/${route.params.projectId}`,
-      query: { toast: 'Bidding reopened successfully' }
-    })
-  } catch (err) {
-    alert(err.response?.data?.message || 'Failed to reject terms')
-    showRejectDialog.value = false
-  } finally {
-    actionLoading.value = null
+    actionLoading.value = false
   }
 }
 

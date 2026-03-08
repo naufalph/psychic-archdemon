@@ -176,7 +176,12 @@
                         class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition hover:bg-red-600"
                       >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
                         </svg>
                       </button>
                       <p class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs px-2 py-1 truncate">
@@ -191,7 +196,9 @@
                   </p>
                   <MultiImageUploader v-model="facadeImages" label="" :max-files="5 - existingFacade.length" />
                 </div>
-                <p v-else class="text-sm text-amber-600 mt-2">Limit reached. Delete existing images to upload new ones.</p>
+                <p v-else class="text-sm text-amber-600 mt-2">
+                  Limit reached. Delete existing images to upload new ones.
+                </p>
               </div>
 
               <div>
@@ -213,7 +220,12 @@
                         class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition hover:bg-red-600"
                       >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
                         </svg>
                       </button>
                       <p class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs px-2 py-1 truncate">
@@ -228,7 +240,9 @@
                   </p>
                   <MultiImageUploader v-model="interiorImages" label="" :max-files="5 - existingInterior.length" />
                 </div>
-                <p v-else class="text-sm text-amber-600 mt-2">Limit reached. Delete existing images to upload new ones.</p>
+                <p v-else class="text-sm text-amber-600 mt-2">
+                  Limit reached. Delete existing images to upload new ones.
+                </p>
               </div>
 
               <div>
@@ -250,7 +264,12 @@
                         class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition hover:bg-red-600"
                       >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
                         </svg>
                       </button>
                       <p class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs px-2 py-1 truncate">
@@ -265,7 +284,9 @@
                   </p>
                   <MultiImageUploader v-model="massingImages" label="" :max-files="5 - existingMassing.length" />
                 </div>
-                <p v-else class="text-sm text-amber-600 mt-2">Limit reached. Delete existing images to upload new ones.</p>
+                <p v-else class="text-sm text-amber-600 mt-2">
+                  Limit reached. Delete existing images to upload new ones.
+                </p>
               </div>
 
               <div>
@@ -287,7 +308,12 @@
                         class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition hover:bg-red-600"
                       >
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                          <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                          />
                         </svg>
                       </button>
                       <p class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs px-2 py-1 truncate">
@@ -302,7 +328,9 @@
                   </p>
                   <MultiImageUploader v-model="zoningImages" label="" :max-files="5 - existingZoning.length" />
                 </div>
-                <p v-else class="text-sm text-amber-600 mt-2">Limit reached. Delete existing images to upload new ones.</p>
+                <p v-else class="text-sm text-amber-600 mt-2">
+                  Limit reached. Delete existing images to upload new ones.
+                </p>
               </div>
 
               <div v-if="uploadProgress > 0" class="bg-gray-50 rounded-2xl p-6">

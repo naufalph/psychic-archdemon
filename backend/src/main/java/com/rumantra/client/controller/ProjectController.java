@@ -317,6 +317,43 @@ public class ProjectController {
     }
   }
 
+  @PostMapping("/{projectId}/architect-confirm-negotiation")
+  public ResponseEntity<ApiResponse<ProjectResponse>> architectConfirmNegotiation(
+      @PathVariable Long projectId) {
+
+    try {
+      ProjectResponse response = projectService.architectConfirmNegotiation(projectId);
+
+      return ResponseEntity.ok(
+          ApiResponse.<ProjectResponse>builder()
+              .success(true)
+              .message("Negotiation confirmed by architect")
+              .data(response)
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+
+    } catch (org.springframework.security.access.AccessDeniedException e) {
+      log.error("Architect not authorized for project {}", projectId, e);
+      return ResponseEntity.status(HttpStatus.FORBIDDEN)
+          .body(
+              ApiResponse.<ProjectResponse>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+
+    } catch (Exception e) {
+      log.error("Error confirming negotiation as architect for project {}", projectId, e);
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              ApiResponse.<ProjectResponse>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
+  }
+
   @PostMapping("/{projectId}/reject-negotiation")
   public ResponseEntity<ApiResponse<ProjectResponse>> rejectNegotiation(
       @PathVariable Long projectId) {

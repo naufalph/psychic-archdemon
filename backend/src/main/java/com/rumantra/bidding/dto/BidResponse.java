@@ -20,6 +20,10 @@ public class BidResponse {
 
   private Long id;
   private Long projectId;
+  private String projectTitle;
+  private String projectLocation;
+  private String projectStatus;
+  private String projectCoverImagePath;
   private Long architectId;
   private String architectName;
   private String architectCompany;

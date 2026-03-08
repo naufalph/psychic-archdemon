@@ -33,9 +33,7 @@
             @click="switchType(type)"
             :class="[
               'px-4 py-1.5 rounded-full text-xs font-bold transition',
-              activeImageType === type
-                ? 'bg-[#7C4728] text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              activeImageType === type ? 'bg-[#7C4728] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             ]"
           >
             {{ type }}
@@ -62,11 +60,7 @@
           No {{ activeImageType.toLowerCase() }} images
         </div>
 
-        <div
-          v-if="imageAUrl"
-          class="absolute inset-0"
-          :style="{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }"
-        >
+        <div v-if="imageAUrl" class="absolute inset-0" :style="{ clipPath: `inset(0 ${100 - sliderPosition}% 0 0)` }">
           <img :src="imageAUrl" class="w-full h-full object-cover" :alt="bidA.architectName" />
         </div>
 
@@ -85,22 +79,26 @@
           <ChevronRight :size="14" class="text-gray-600" />
         </div>
 
-        <div class="absolute bottom-3 left-3 bg-black/50 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
+        <div
+          class="absolute bottom-3 left-3 bg-black/50 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider"
+        >
           {{ bidA.architectName || 'Proposal A' }}
         </div>
-        <div class="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider">
+        <div
+          class="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider"
+        >
           {{ bidB.architectName || 'Proposal B' }}
         </div>
 
-        <div class="absolute top-3 left-1/2 -translate-x-1/2 bg-black/40 backdrop-blur-sm text-white text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-2 whitespace-nowrap">
+        <div
+          class="absolute top-3 left-1/2 -translate-x-1/2 bg-black/40 backdrop-blur-sm text-white text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-2 whitespace-nowrap"
+        >
           <span class="text-gray-300">Reviewing</span>
           <span>{{ activeImageType }}</span>
         </div>
       </div>
 
-      <p class="text-center text-xs text-gray-400 uppercase tracking-widest mt-3">
-        Adjust slider for relative review
-      </p>
+      <p class="text-center text-xs text-gray-400 uppercase tracking-widest mt-3">Adjust slider for relative review</p>
     </div>
 
     <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-soft">
@@ -116,10 +114,16 @@
           </div>
           <div class="space-y-1.5">
             <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div class="h-full bg-[#7C4728] rounded-full transition-all duration-700" :style="{ width: metric.a + '%' }" />
+              <div
+                class="h-full bg-[#7C4728] rounded-full transition-all duration-700"
+                :style="{ width: metric.a + '%' }"
+              />
             </div>
             <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div class="h-full bg-black rounded-full transition-all duration-700" :style="{ width: metric.b + '%' }" />
+              <div
+                class="h-full bg-black rounded-full transition-all duration-700"
+                :style="{ width: metric.b + '%' }"
+              />
             </div>
           </div>
         </div>
@@ -270,8 +274,12 @@ const switchType = type => {
   sliderPosition.value = 50
 }
 
-const startDrag = () => { isDragging.value = true }
-const stopDrag = () => { isDragging.value = false }
+const startDrag = () => {
+  isDragging.value = true
+}
+const stopDrag = () => {
+  isDragging.value = false
+}
 
 const onMove = e => {
   if (!isDragging.value || !sliderContainerRef.value) return

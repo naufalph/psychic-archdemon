@@ -16,7 +16,9 @@
               <span class="bg-[#F5E6D3] text-[#7C4728] font-bold px-3 py-1 rounded-full text-sm">Part 0</span>
               <h2 class="text-xl font-bold text-black">Project Images</h2>
             </div>
-            <p class="text-xs text-gray-500">Upload photos, mood boards, or inspiration images for your project (max 10 images)</p>
+            <p class="text-xs text-gray-500">
+              Upload photos, mood boards, or inspiration images for your project (max 10 images)
+            </p>
             <MultiImageUploader v-model="coverImages" label="" :max-files="10" />
           </section>
 

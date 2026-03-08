@@ -111,6 +111,28 @@
 
           <div v-if="existingBid" class="space-y-4">
             <div
+              v-if="existingBid.status === 'ACCEPTED' && project.status === 'NEGOTIATION'"
+              class="bg-amber-50 border border-amber-200 rounded-2xl p-6 flex items-start gap-4"
+            >
+              <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
+                <CheckCircle :size="24" class="text-amber-600" />
+              </div>
+              <div class="flex-1">
+                <p class="font-bold text-amber-900 mb-1">Proposal Accepted</p>
+                <p class="text-sm text-amber-700">Review the terms and confirm to start the project.</p>
+              </div>
+            </div>
+
+            <button
+              v-if="existingBid.status === 'ACCEPTED' && project.status === 'NEGOTIATION'"
+              @click="router.push({ name: 'ArchitectFinalizationView', params: { projectId: route.params.projectId } })"
+              class="w-full bg-[#7C4728] text-white py-4 px-6 rounded-2xl hover:bg-black transition flex items-center justify-center gap-3 text-lg font-bold"
+            >
+              <CheckCircle :size="24" />
+              Finalize Agreement
+            </button>
+
+            <div
               class="bg-blue-50 border border-blue-200 rounded-2xl p-6 flex items-start gap-4"
               v-if="existingBid.status === 'PENDING'"
             >
@@ -180,7 +202,9 @@
                 :alt="file.fileName"
                 class="w-full h-full object-cover transition group-hover:scale-105"
               />
-              <div class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition flex items-center justify-center">
+              <div
+                class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition flex items-center justify-center"
+              >
                 <ExternalLink :size="24" class="text-white opacity-0 group-hover:opacity-100 transition" />
               </div>
             </div>
@@ -213,7 +237,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft, Send, FileText, AlertCircle, Check, ExternalLink } from 'lucide-vue-next'
+import { ArrowLeft, Send, FileText, AlertCircle, Check, CheckCircle, ExternalLink } from 'lucide-vue-next'
 import ProjectStatusBadge from '@/components/project/ProjectStatusBadge.vue'
 import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
 import { useProjectsStore } from '@/stores/projects'
@@ -261,7 +285,11 @@ const deliverableGroups = [
   {
     category: 'Construction Support',
     items: [
-      { value: 'SUPERVISION', label: 'Construction Supervision', description: 'On-site supervision during construction' },
+      {
+        value: 'SUPERVISION',
+        label: 'Construction Supervision',
+        description: 'On-site supervision during construction'
+      },
       { value: 'AS_BUILT', label: 'As-Built Drawings', description: 'Final drawings reflecting construction changes' }
     ]
   }
@@ -272,13 +300,9 @@ const loading = ref(false)
 const error = ref(null)
 const existingBid = ref(null)
 
-const imageFiles = computed(() =>
-  (project.value?.files ?? []).filter(f => f.fileType?.startsWith('image/'))
-)
+const imageFiles = computed(() => (project.value?.files ?? []).filter(f => f.fileType?.startsWith('image/')))
 
-const documentFiles = computed(() =>
-  (project.value?.files ?? []).filter(f => !f.fileType?.startsWith('image/'))
-)
+const documentFiles = computed(() => (project.value?.files ?? []).filter(f => !f.fileType?.startsWith('image/')))
 
 const groupedDeliverables = computed(() => {
   if (!project.value?.deliverables) return []

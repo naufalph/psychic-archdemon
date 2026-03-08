@@ -55,7 +55,11 @@
         </div>
 
         <div class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
-          <BidImageGallery :images="currentBid.facadeImages" title="Facade" empty-message="No facade images available" />
+          <BidImageGallery
+            :images="currentBid.facadeImages"
+            title="Facade"
+            empty-message="No facade images available"
+          />
         </div>
 
         <div class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
@@ -75,42 +79,48 @@
         </div>
 
         <div class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
-          <BidImageGallery :images="currentBid.zoningImages" title="Zoning" empty-message="No zoning images available" />
+          <BidImageGallery
+            :images="currentBid.zoningImages"
+            title="Zoning"
+            empty-message="No zoning images available"
+          />
         </div>
 
-        <div
-          v-if="hasRevisions"
-          class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft"
-        >
+        <div v-if="hasRevisions" class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
           <h2 class="text-2xl font-bold text-black mb-4">Revision Commitments</h2>
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div v-if="currentBid.details?.siteAnalysisRevisions != null" class="bg-gray-50 rounded-2xl p-4">
               <p class="text-xs text-gray-500 uppercase font-bold mb-1">Site Analysis & Planning</p>
-              <p class="text-2xl font-bold text-black">{{ currentBid.details.siteAnalysisRevisions }}
+              <p class="text-2xl font-bold text-black">
+                {{ currentBid.details.siteAnalysisRevisions }}
                 <span class="text-sm font-normal text-gray-500">revisions</span>
               </p>
             </div>
             <div v-if="currentBid.details?.designRevisions != null" class="bg-gray-50 rounded-2xl p-4">
               <p class="text-xs text-gray-500 uppercase font-bold mb-1">Design Phases</p>
-              <p class="text-2xl font-bold text-black">{{ currentBid.details.designRevisions }}
+              <p class="text-2xl font-bold text-black">
+                {{ currentBid.details.designRevisions }}
                 <span class="text-sm font-normal text-gray-500">revisions</span>
               </p>
             </div>
             <div v-if="currentBid.details?.permitsDocRevisions != null" class="bg-gray-50 rounded-2xl p-4">
               <p class="text-xs text-gray-500 uppercase font-bold mb-1">Permits & Documentation</p>
-              <p class="text-2xl font-bold text-black">{{ currentBid.details.permitsDocRevisions }}
+              <p class="text-2xl font-bold text-black">
+                {{ currentBid.details.permitsDocRevisions }}
                 <span class="text-sm font-normal text-gray-500">revisions</span>
               </p>
             </div>
             <div v-if="currentBid.details?.specializedServicesRevisions != null" class="bg-gray-50 rounded-2xl p-4">
               <p class="text-xs text-gray-500 uppercase font-bold mb-1">Specialized Services</p>
-              <p class="text-2xl font-bold text-black">{{ currentBid.details.specializedServicesRevisions }}
+              <p class="text-2xl font-bold text-black">
+                {{ currentBid.details.specializedServicesRevisions }}
                 <span class="text-sm font-normal text-gray-500">revisions</span>
               </p>
             </div>
             <div v-if="currentBid.details?.constructionSupportRevisions != null" class="bg-gray-50 rounded-2xl p-4">
               <p class="text-xs text-gray-500 uppercase font-bold mb-1">Construction Support</p>
-              <p class="text-2xl font-bold text-black">{{ currentBid.details.constructionSupportRevisions }}
+              <p class="text-2xl font-bold text-black">
+                {{ currentBid.details.constructionSupportRevisions }}
                 <span class="text-sm font-normal text-gray-500">revisions</span>
               </p>
             </div>
