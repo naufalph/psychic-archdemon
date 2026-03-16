@@ -95,6 +95,22 @@ export const useBidsStore = defineStore('bids', {
       }
     },
 
+    async updateDraftBid(bidId, bidData) {
+      this.loading = true
+      this.error = null
+      try {
+        const response = await bidAPI.updateDraftBid(bidId, bidData)
+        this.currentBid = response.data.data
+        return this.currentBid
+      } catch (error) {
+        this.error = error.response?.data?.message || 'Failed to update bid'
+        console.error('Failed to update bid:', error)
+        throw error
+      } finally {
+        this.loading = false
+      }
+    },
+
     async updateBidDetails(bidId, detailsData) {
       this.loading = true
       this.error = null

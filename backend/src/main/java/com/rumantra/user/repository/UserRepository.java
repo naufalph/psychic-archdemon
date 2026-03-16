@@ -1,5 +1,6 @@
 package com.rumantra.user.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -10,6 +11,8 @@ import com.rumantra.user.domain.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+
+  List<User> findAllByIsSuperuserTrue();
 
   Optional<User> findByEmail(String email);
 

@@ -14,10 +14,5 @@ import lombok.NoArgsConstructor;
 public class BidDetailRequest {
 
   private String conceptStatement;
-  private List<String> deliverables;
-  private Integer siteAnalysisRevisions;
-  private Integer designRevisions;
-  private Integer permitsDocRevisions;
-  private Integer specializedServicesRevisions;
-  private Integer constructionSupportRevisions;
+  private List<BidPaymentPhaseRequest> phases;
 }

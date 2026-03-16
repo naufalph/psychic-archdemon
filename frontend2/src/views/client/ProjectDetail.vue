@@ -53,14 +53,21 @@
 
           <div v-if="currentProject.deliverables && currentProject.deliverables.length > 0">
             <h2 class="text-lg font-bold text-black mb-3">{{ t.clientDashboard.deliverables }}</h2>
-            <div class="flex flex-wrap gap-2">
-              <span
-                v-for="deliverable in currentProject.deliverables"
-                :key="deliverable"
-                class="bg-[#F5E6D3] text-[#7C4728] px-4 py-2 rounded-full text-sm font-medium border border-[#C5A17A]/20"
-              >
-                {{ deliverable.replace(/_/g, ' ') }}
-              </span>
+            <div class="space-y-3">
+              <div v-for="group in groupedDeliverables" :key="group.categoryKey">
+                <p class="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-1.5">
+                  {{ t.proposalCreate?.deliverableCategories?.[group.categoryKey] }}
+                </p>
+                <div class="flex flex-wrap gap-2">
+                  <span
+                    v-for="d in group.items"
+                    :key="d"
+                    class="bg-[#F5E6D3] text-[#7C4728] px-4 py-2 rounded-full text-sm font-medium border border-[#C5A17A]/20"
+                  >
+                    {{ t.proposalCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ') }}
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -196,6 +203,21 @@ const { currentProject, loading, error } = storeToRefs(projectsStore)
 const { projectBids } = storeToRefs(bidsStore)
 
 const compareIds = ref([])
+
+const DELIVERABLE_CATEGORIES = [
+  { categoryKey: 'siteAnalysis', items: ['SITE_ANALYSIS', 'ZONING_STUDY'] },
+  { categoryKey: 'designPhases', items: ['CONCEPT_DESIGN', 'SCHEMATIC_DESIGN', 'DESIGN_DEVELOPMENT', 'CONSTRUCTION_DOCS'] },
+  { categoryKey: 'permits', items: ['IMB_PERMIT', 'SLF_CERT', 'ENVIRONMENTAL_PERMIT'] },
+  { categoryKey: 'specialized', items: ['INTERIOR_DESIGN', 'LANDSCAPE_DESIGN', 'MEP_DESIGN', 'STRUCTURAL_DESIGN'] },
+  { categoryKey: 'construction', items: ['SUPERVISION', 'AS_BUILT'] }
+]
+
+const groupedDeliverables = computed(() => {
+  const deliverables = currentProject.value?.deliverables || []
+  return DELIVERABLE_CATEGORIES
+    .map(g => ({ categoryKey: g.categoryKey, items: g.items.filter(d => deliverables.includes(d)) }))
+    .filter(g => g.items.length > 0)
+})
 
 const proposalCount = computed(() => projectBids.value?.length || 0)
 const bidA = computed(() => projectBids.value?.find(b => b.id === compareIds.value[0]) ?? null)

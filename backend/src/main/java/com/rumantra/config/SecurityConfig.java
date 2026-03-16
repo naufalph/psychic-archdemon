@@ -99,6 +99,12 @@ public class SecurityConfig {
                     .requestMatchers("/api/chat/**")
                     .authenticated()
 
+                    // Support conversation endpoints
+                    .requestMatchers(HttpMethod.POST, "/api/support/conversations")
+                    .hasAnyRole("ARCHITECT", "CLIENT")
+                    .requestMatchers(HttpMethod.GET, "/api/support/conversations")
+                    .hasRole("SUPERUSER")
+
                     // Protected endpoints
                     .requestMatchers("/api/v1/architects/profile", "/api/v1/architects/profile/**")
                     .authenticated()

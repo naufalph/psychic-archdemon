@@ -170,66 +170,29 @@
     <div class="grid grid-cols-2 gap-4">
       <div
         v-for="(bid, idx) in [bidA, bidB]"
-        :key="'scope-' + bid.id"
+        :key="'phases-' + bid.id"
         class="bg-white rounded-2xl border border-gray-200 p-6 shadow-soft"
       >
         <h2 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">
-          Proposal {{ idx === 0 ? 'A' : 'B' }} — Service Scope
+          Proposal {{ idx === 0 ? 'A' : 'B' }} — Payment Schedule
         </h2>
-        <div class="space-y-4">
-          <div v-for="group in DELIVERABLE_GROUPS" :key="group.category">
-            <p class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{{ group.category }}</p>
-            <div class="flex flex-wrap gap-1.5">
-              <span
-                v-for="item in group.items"
-                :key="item.value"
-                :class="[
-                  'px-2 py-0.5 rounded-full text-xs font-medium',
-                  isCommitted(bid, item.value)
-                    ? 'bg-[#F5E6D3] text-[#7C4728]'
-                    : 'bg-gray-100 text-gray-300 line-through'
-                ]"
-              >
-                {{ item.label }}
-              </span>
+        <div v-if="bid.details?.phases?.length" class="space-y-2">
+          <div
+            v-for="phase in bid.details.phases"
+            :key="phase.phaseNumber"
+            class="flex items-start justify-between text-sm py-2 border-b border-gray-100 last:border-0"
+          >
+            <div>
+              <div class="flex items-center gap-1.5 mb-0.5">
+                <span class="text-xs font-bold px-1.5 py-0 rounded-full bg-[#7C4728] text-white">P{{ phase.phaseNumber }}</span>
+                <span class="font-medium text-gray-800">{{ phase.title || `Phase ${phase.phaseNumber}` }}</span>
+              </div>
+              <p v-if="phase.deliverables?.length" class="text-xs text-gray-400">{{ phase.deliverables.length }} deliverable{{ phase.deliverables.length !== 1 ? 's' : '' }}</p>
             </div>
+            <span class="text-xs font-bold text-[#7C4728]">{{ formatCurrency(phase.amount) }}</span>
           </div>
         </div>
-      </div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-4">
-      <div
-        v-for="(bid, idx) in [bidA, bidB]"
-        :key="'revisions-' + bid.id"
-        class="bg-white rounded-2xl border border-gray-200 p-6 shadow-soft"
-      >
-        <h2 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">
-          Proposal {{ idx === 0 ? 'A' : 'B' }} — Revision Commitments
-        </h2>
-        <div v-if="hasRevisions(bid)" class="space-y-2 text-sm">
-          <div v-if="bid.details?.siteAnalysisRevisions != null" class="flex justify-between">
-            <span class="text-gray-600">Site Analysis</span>
-            <span class="font-bold">{{ bid.details.siteAnalysisRevisions }}x</span>
-          </div>
-          <div v-if="bid.details?.designRevisions != null" class="flex justify-between">
-            <span class="text-gray-600">Design Phases</span>
-            <span class="font-bold">{{ bid.details.designRevisions }}x</span>
-          </div>
-          <div v-if="bid.details?.permitsDocRevisions != null" class="flex justify-between">
-            <span class="text-gray-600">Permits & Docs</span>
-            <span class="font-bold">{{ bid.details.permitsDocRevisions }}x</span>
-          </div>
-          <div v-if="bid.details?.specializedServicesRevisions != null" class="flex justify-between">
-            <span class="text-gray-600">Specialized Services</span>
-            <span class="font-bold">{{ bid.details.specializedServicesRevisions }}x</span>
-          </div>
-          <div v-if="bid.details?.constructionSupportRevisions != null" class="flex justify-between">
-            <span class="text-gray-600">Construction Support</span>
-            <span class="font-bold">{{ bid.details.constructionSupportRevisions }}x</span>
-          </div>
-        </div>
-        <p v-else class="text-gray-400 text-sm">No revision commitments specified</p>
+        <p v-else class="text-gray-400 text-sm">No payment phases specified</p>
       </div>
     </div>
   </div>
@@ -293,50 +256,7 @@ const onTouchMove = e => {
   sliderPosition.value = Math.max(0, Math.min(100, ((e.touches[0].clientX - rect.left) / rect.width) * 100))
 }
 
-const DELIVERABLE_GROUPS = [
-  {
-    category: 'Site Analysis & Planning',
-    items: [
-      { value: 'SITE_ANALYSIS', label: 'Site Analysis' },
-      { value: 'ZONING_STUDY', label: 'Zoning Study' }
-    ]
-  },
-  {
-    category: 'Design Phases',
-    items: [
-      { value: 'CONCEPT_DESIGN', label: 'Concept Design' },
-      { value: 'SCHEMATIC_DESIGN', label: 'Schematic Design' },
-      { value: 'DESIGN_DEVELOPMENT', label: 'Design Development' },
-      { value: 'CONSTRUCTION_DOCS', label: 'Construction Docs' }
-    ]
-  },
-  {
-    category: 'Permits & Documentation',
-    items: [
-      { value: 'IMB_PERMIT', label: 'IMB Permit' },
-      { value: 'SLF_CERT', label: 'SLF Certificate' },
-      { value: 'ENVIRONMENTAL_PERMIT', label: 'Environmental Permit' }
-    ]
-  },
-  {
-    category: 'Specialized Services',
-    items: [
-      { value: 'INTERIOR_DESIGN', label: 'Interior Design' },
-      { value: 'LANDSCAPE_DESIGN', label: 'Landscape Design' },
-      { value: 'MEP_DESIGN', label: 'MEP Design' },
-      { value: 'STRUCTURAL_DESIGN', label: 'Structural Design' }
-    ]
-  },
-  {
-    category: 'Construction Support',
-    items: [
-      { value: 'SUPERVISION', label: 'Supervision' },
-      { value: 'AS_BUILT', label: 'As-Built Drawings' }
-    ]
-  }
-]
-
-const isCommitted = (bid, value) => bid.details?.deliverables?.includes(value) ?? false
+const allPhasesDeliverables = bid => bid.details?.phases?.flatMap(p => p.deliverables || []) || []
 
 const formatCurrency = value => {
   if (!value) return 'N/A'
@@ -351,7 +271,7 @@ const formatCurrency = value => {
 const scopeScore = bid => {
   const projectDeliverables = props.project?.deliverables || []
   if (!projectDeliverables.length) return 0
-  const bidDeliverables = bid.details?.deliverables || []
+  const bidDeliverables = allPhasesDeliverables(bid)
   const intersection = bidDeliverables.filter(d => projectDeliverables.includes(d))
   return (intersection.length / projectDeliverables.length) * 100
 }
@@ -371,18 +291,6 @@ const timelineScore = (bid, otherBid) => {
 }
 
 const practiceScore = bid => Math.min(100, (bid.portfolios?.length || 0) * 20)
-
-const hasRevisions = bid => {
-  const d = bid.details
-  if (!d) return false
-  return (
-    d.siteAnalysisRevisions != null ||
-    d.designRevisions != null ||
-    d.permitsDocRevisions != null ||
-    d.specializedServicesRevisions != null ||
-    d.constructionSupportRevisions != null
-  )
-}
 
 const performanceMetrics = computed(() => [
   { label: 'Cost Efficiency', a: costScore(props.bidA), b: costScore(props.bidB) },

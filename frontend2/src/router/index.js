@@ -120,6 +120,12 @@ const routes = [
     meta: { requiresAuth: true, requiresRole: 'CLIENT' }
   },
   {
+    path: '/superuser/support',
+    name: 'SupportDashboard',
+    component: () => import('@/views/superuser/SupportDashboard.vue'),
+    meta: { requiresAuth: true, requiresRole: 'SUPERUSER' }
+  },
+  {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: () => import('@/views/NotFound.vue')

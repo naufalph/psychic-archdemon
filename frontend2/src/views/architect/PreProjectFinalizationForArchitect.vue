@@ -87,63 +87,42 @@
               </div>
             </div>
 
-            <!-- Deliverables -->
+            <!-- Payment Schedule -->
             <div
-              v-if="bid.details?.deliverables?.length"
+              v-if="bid.details?.phases?.length"
               class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft"
             >
-              <h3 class="font-bold text-black mb-3">{{ t.finalization?.deliverables }}</h3>
-              <ul class="space-y-2">
-                <li
-                  v-for="item in bid.details.deliverables"
-                  :key="item"
-                  class="flex items-center gap-2 text-sm text-gray-700"
+              <h3 class="font-bold text-black mb-4">{{ t.finalization?.paymentSchedule || 'Payment Schedule' }}</h3>
+              <div class="space-y-3">
+                <div
+                  v-for="phase in bid.details.phases"
+                  :key="phase.phaseNumber"
+                  class="rounded-2xl border border-gray-100 p-4 bg-[#FDF6EE]"
                 >
-                  <div class="w-1.5 h-1.5 rounded-full bg-[#C5A17A] flex-shrink-0" />
-                  {{ item }}
-                </li>
-              </ul>
-            </div>
-
-            <!-- Revision Commitments -->
-            <div v-if="hasRevisions" class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft">
-              <h3 class="font-bold text-black mb-3">{{ t.finalization?.revisionCommitments }}</h3>
-              <div class="grid grid-cols-2 gap-3">
-                <div v-if="bid.details?.siteAnalysisRevisions != null" class="bg-gray-50 rounded-xl p-3">
-                  <p class="text-xs text-gray-500 font-bold mb-0.5">{{ t.finalization?.siteAnalysis }}</p>
-                  <p class="text-lg font-bold text-black">
-                    {{ bid.details.siteAnalysisRevisions }}
-                    <span class="text-xs font-normal text-gray-500">{{ t.finalization?.rev }}</span>
+                  <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                      <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-[#7C4728] text-white">
+                        Phase {{ phase.phaseNumber }}
+                      </span>
+                      <span class="text-sm font-bold text-black">{{ phase.title || `Phase ${phase.phaseNumber}` }}</span>
+                    </div>
+                    <span class="text-sm font-bold text-[#7C4728]">{{ formatCurrency(phase.amount) }}</span>
+                  </div>
+                  <div v-if="phase.deliverables?.length" class="flex flex-wrap gap-1 mb-2">
+                    <span
+                      v-for="d in phase.deliverables"
+                      :key="d"
+                      class="text-xs px-2 py-0.5 bg-white border border-gray-200 rounded-full text-gray-600"
+                    >{{ d.replace(/_/g, ' ') }}</span>
+                  </div>
+                  <p v-if="phase.revisionRounds != null" class="text-xs text-gray-500">
+                    {{ phase.revisionRounds }} revision round{{ phase.revisionRounds !== 1 ? 's' : '' }}
                   </p>
                 </div>
-                <div v-if="bid.details?.designRevisions != null" class="bg-gray-50 rounded-xl p-3">
-                  <p class="text-xs text-gray-500 font-bold mb-0.5">{{ t.finalization?.designPhases }}</p>
-                  <p class="text-lg font-bold text-black">
-                    {{ bid.details.designRevisions }}
-                    <span class="text-xs font-normal text-gray-500">{{ t.finalization?.rev }}</span>
-                  </p>
-                </div>
-                <div v-if="bid.details?.permitsDocRevisions != null" class="bg-gray-50 rounded-xl p-3">
-                  <p class="text-xs text-gray-500 font-bold mb-0.5">{{ t.finalization?.permitsAndDocs }}</p>
-                  <p class="text-lg font-bold text-black">
-                    {{ bid.details.permitsDocRevisions }}
-                    <span class="text-xs font-normal text-gray-500">{{ t.finalization?.rev }}</span>
-                  </p>
-                </div>
-                <div v-if="bid.details?.specializedServicesRevisions != null" class="bg-gray-50 rounded-xl p-3">
-                  <p class="text-xs text-gray-500 font-bold mb-0.5">{{ t.finalization?.specialized }}</p>
-                  <p class="text-lg font-bold text-black">
-                    {{ bid.details.specializedServicesRevisions }}
-                    <span class="text-xs font-normal text-gray-500">{{ t.finalization?.rev }}</span>
-                  </p>
-                </div>
-                <div v-if="bid.details?.constructionSupportRevisions != null" class="bg-gray-50 rounded-xl p-3">
-                  <p class="text-xs text-gray-500 font-bold mb-0.5">{{ t.finalization?.construction }}</p>
-                  <p class="text-lg font-bold text-black">
-                    {{ bid.details.constructionSupportRevisions }}
-                    <span class="text-xs font-normal text-gray-500">{{ t.finalization?.rev }}</span>
-                  </p>
-                </div>
+              </div>
+              <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between text-sm">
+                <span class="text-gray-500 font-bold">Total</span>
+                <span class="font-bold text-[#7C4728]">{{ formatCurrency(bid.bidAmount) }}</span>
               </div>
             </div>
 
@@ -194,7 +173,10 @@
               class="flex-1 bg-white rounded-3xl border border-gray-200 shadow-soft overflow-hidden flex flex-col min-h-0"
             >
               <div class="px-5 py-4 border-b border-gray-100">
-                <h3 class="font-bold text-black">{{ t.finalization?.discussion }}</h3>
+                <div class="flex items-center gap-2">
+                  <h3 class="font-bold text-black">{{ t.finalization?.discussion }}</h3>
+                  <span v-if="itSupportRequested" class="text-xs text-[#7C4728] font-medium">· IT Support invited</span>
+                </div>
                 <p class="text-xs text-gray-500 mt-0.5">{{ t.finalization?.discussionSubtitle }}</p>
               </div>
 
@@ -204,6 +186,16 @@
               <div v-else class="flex-1 flex items-center justify-center text-gray-400 text-sm">
                 {{ t.finalization?.chatUnavailable }}
               </div>
+            </div>
+
+            <div class="text-center">
+              <button
+                @click="openSupportChat"
+                :disabled="supportLoading || itSupportRequested"
+                class="text-xs text-gray-400 hover:text-gray-600 underline disabled:cursor-not-allowed"
+              >
+                {{ supportLoading ? 'Opening...' : itSupportRequested ? 'IT Support invited' : 'Request IT Support' }}
+              </button>
             </div>
 
             <!-- Architect Action Panel -->
@@ -247,7 +239,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Clock, CheckCircle } from 'lucide-vue-next'
 import { useBidsStore } from '@/stores/bids'
-import { projectAPI } from '@/services/api'
+import { projectAPI, supportAPI } from '@/services/api'
 import { useI18n } from '@/composables/useI18n'
 import ChatPanel from '@/components/chat/ChatPanel.vue'
 
@@ -261,18 +253,8 @@ const project = ref(null)
 const loading = ref(false)
 const error = ref(null)
 const actionLoading = ref(false)
-
-const hasRevisions = computed(() => {
-  const d = bid.value?.details
-  if (!d) return false
-  return (
-    d.siteAnalysisRevisions != null ||
-    d.designRevisions != null ||
-    d.permitsDocRevisions != null ||
-    d.specializedServicesRevisions != null ||
-    d.constructionSupportRevisions != null
-  )
-})
+const itSupportRequested = ref(false)
+const supportLoading = ref(false)
 
 const formatCurrency = value => {
   if (!value) return 'N/A'
@@ -332,6 +314,19 @@ const handleConfirm = async () => {
     alert(err.response?.data?.message || getT('finalization.confirmError'))
   } finally {
     actionLoading.value = false
+  }
+}
+
+const openSupportChat = async () => {
+  if (!bid.value?.id) return
+  supportLoading.value = true
+  try {
+    await supportAPI.createSupportConversation(route.params.projectId, bid.value.id)
+    itSupportRequested.value = true
+  } catch (err) {
+    alert(err.response?.data?.message || 'Failed to open support chat')
+  } finally {
+    supportLoading.value = false
   }
 }
 

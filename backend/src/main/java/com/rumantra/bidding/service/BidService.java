@@ -30,6 +30,7 @@ import com.rumantra.bidding.dto.UpdateBidRequest;
 import com.rumantra.bidding.event.BidSubmittedEvent;
 import com.rumantra.bidding.repository.BidPortfolioRefRepository;
 import com.rumantra.bidding.repository.BidRepository;
+import com.rumantra.chat.domain.Conversation;
 import com.rumantra.chat.repository.ConversationRepository;
 import com.rumantra.chat.service.ConversationService;
 import com.rumantra.client.domain.Project;
@@ -265,7 +266,7 @@ public class BidService {
 
   @Transactional(readOnly = true)
   public List<BidResponse> getBidsByProject(Long projectId) {
-    List<Bid> bids = bidRepository.findByProjectId(projectId);
+    List<Bid> bids = bidRepository.findByProjectIdAndStatusNot(projectId, BidStatus.DRAFT);
     return bids.stream().map(this::mapToResponse).collect(Collectors.toList());
   }
 
@@ -335,7 +336,10 @@ public class BidService {
 
   private BidResponse mapToResponse(Bid bid) {
     Long conversationId =
-        conversationRepository.findByBidId(bid.getId()).map(c -> c.getId()).orElse(null);
+        conversationRepository
+            .findProjectConversationByBidId(bid.getId())
+            .map(Conversation::getId)
+            .orElse(null);
 
     return BidResponse.builder()
         .id(bid.getId())

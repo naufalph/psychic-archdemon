@@ -57,9 +57,20 @@
 
   <div
     v-else
-    class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft hover:shadow-glow transition-all cursor-pointer"
+    class="bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-soft hover:shadow-glow transition-all cursor-pointer group"
     @click="handleClick"
   >
+    <div class="relative aspect-[16/10] overflow-hidden bg-gray-100">
+      <img
+        v-if="coverImage"
+        :src="coverImage"
+        :alt="project.title"
+        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+      />
+      <div v-else class="w-full h-full bg-gray-200" />
+    </div>
+
+    <div class="p-8">
     <div class="flex justify-between items-start mb-4">
       <h3 class="text-xl font-bold text-black line-clamp-2">{{ project.title }}</h3>
       <div class="flex gap-2">
@@ -103,6 +114,7 @@
           IDR {{ formatCurrency(project.designBudget) }}
         </div>
       </div>
+    </div>
     </div>
   </div>
 </template>

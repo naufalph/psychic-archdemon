@@ -160,7 +160,7 @@ CREATE TABLE IF NOT EXISTS rmtr_dashboard_notif (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     message_code VARCHAR(100),
     message_data TEXT,
-    CONSTRAINT chk_dashboard_notif_type CHECK (type IN ('PROJECT_VALIDATED', 'PROJECT_UPDATED', 'BID_RECEIVED', 'BID_ACCEPTED', 'PAYMENT_RECEIVED'))
+    CONSTRAINT chk_dashboard_notif_type CHECK (type IN ('PROJECT_VALIDATED', 'PROJECT_UPDATED', 'BID_RECEIVED', 'BID_ACCEPTED', 'PAYMENT_RECEIVED', 'SUPPORT_REQUESTED'))
 );
 
 CREATE INDEX IF NOT EXISTS idx_dashboard_notif_user_id ON rmtr_dashboard_notif(user_id);
@@ -266,12 +266,6 @@ CREATE TABLE IF NOT EXISTS rmtr_bid_detail (
     concept_statement TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL,
-    deliverables JSONB,
-    site_analysis_revisions INT,
-    design_revisions INT,
-    permits_doc_revisions INT,
-    specialized_services_revisions INT,
-    construction_support_revisions INT
 );
 
 CREATE INDEX IF NOT EXISTS idx_bid_detail_bid_id ON rmtr_bid_detail(bid_id);
@@ -322,18 +316,20 @@ CREATE INDEX IF NOT EXISTS idx_bid_usage_log_architect_id ON rmtr_bid_usage_log(
 CREATE INDEX IF NOT EXISTS idx_bid_usage_log_bid_id ON rmtr_bid_usage_log(bid_id);
 CREATE INDEX IF NOT EXISTS idx_bid_usage_log_timestamp ON rmtr_bid_usage_log(timestamp DESC);
 
-CREATE TABLE rmtr_conversation (
+CREATE TABLE IF NOT EXISTS rmtr_conversation (
                                    id BIGSERIAL PRIMARY KEY,
                                    project_id BIGINT NOT NULL REFERENCES rmtr_project(id) ON DELETE CASCADE,
                                    bid_id BIGINT NOT NULL UNIQUE REFERENCES rmtr_bid(id) ON DELETE CASCADE,
-                                   architect_id BIGINT NOT NULL REFERENCES rmtr_architect(id),
-                                   client_id BIGINT NOT NULL REFERENCES rmtr_client(id),
+                                   architect_id BIGINT REFERENCES rmtr_architect(id),
+                                   client_id BIGINT REFERENCES rmtr_client(id),
                                    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
                                    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                                    updated_at TIMESTAMP,
                                    last_message_at TIMESTAMP,
+                                   requester_user_id BIGINT REFERENCES rmtr_user(id),
+                                   it_support_requested BOOLEAN NOT NULL DEFAULT FALSE,
+                                   it_support_requested_at TIMESTAMP,
 
-                                   CONSTRAINT uk_conversation_bid UNIQUE(bid_id),
                                    CONSTRAINT uk_conversation_project_architect UNIQUE(project_id, architect_id),
                                    CONSTRAINT chk_conversation_status CHECK (status IN ('ACTIVE', 'ARCHIVED', 'CLOSED'))
 );
@@ -341,8 +337,9 @@ CREATE TABLE rmtr_conversation (
 CREATE INDEX idx_conversation_architect ON rmtr_conversation(architect_id);
 CREATE INDEX idx_conversation_client ON rmtr_conversation(client_id);
 CREATE INDEX idx_conversation_project ON rmtr_conversation(project_id);
+CREATE UNIQUE INDEX idx_conv_bid_project ON rmtr_conversation(bid_id) WHERE requester_user_id IS NULL;
 
-CREATE TABLE rmtr_message (
+CREATE TABLE IF NOT EXISTS rmtr_message (
                               id BIGSERIAL PRIMARY KEY,
                               conversation_id BIGINT NOT NULL REFERENCES rmtr_conversation(id) ON DELETE CASCADE,
                               sender_user_id BIGINT NOT NULL REFERENCES rmtr_user(id),
@@ -354,7 +351,7 @@ CREATE TABLE rmtr_message (
                               created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
                               updated_at TIMESTAMP,
 
-                              CONSTRAINT chk_sender_type CHECK (sender_type IN ('ARCHITECT', 'CLIENT')),
+                              CONSTRAINT chk_sender_type CHECK (sender_type IN ('ARCHITECT', 'CLIENT', 'SUPERUSER')),
                               CONSTRAINT chk_message_type CHECK (message_type IN ('TEXT', 'FILE', 'IMAGE'))
 );
 
@@ -391,3 +388,18 @@ CREATE TABLE IF NOT EXISTS rmtr_bid_attachment (
     );
 
 CREATE INDEX IF NOT EXISTS idx_bid_attachment_bid_id ON rmtr_bid_attachment(bid_id);
+
+CREATE TABLE rmtr_bid_payment_phase (
+                                        id BIGSERIAL PRIMARY KEY,
+                                        bid_id BIGINT NOT NULL REFERENCES rmtr_bid(id) ON DELETE CASCADE,
+                                        phase_number INTEGER NOT NULL,
+                                        title VARCHAR(255),
+                                        deliverables JSONB,
+                                        amount DECIMAL(15,2) NOT NULL DEFAULT 0,
+                                        revision_rounds INTEGER,
+                                        display_order INTEGER DEFAULT 0,
+                                        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                                        CONSTRAINT uk_bid_phase UNIQUE (bid_id, phase_number)
+);
+
+CREATE INDEX idx_bid_payment_phase_bid_id ON rmtr_bid_payment_phase(bid_id);

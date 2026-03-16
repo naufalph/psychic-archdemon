@@ -31,6 +31,8 @@ import com.rumantra.client.domain.Client;
 import com.rumantra.client.repository.ClientRepository;
 import com.rumantra.security.SecurityUtils;
 import com.rumantra.shared.storage.FileStorageService;
+import com.rumantra.user.domain.User;
+import com.rumantra.user.repository.UserRepository;
 
 @Service
 public class MessageService {
@@ -44,6 +46,8 @@ public class MessageService {
   @Autowired private ArchitectRepository architectRepository;
 
   @Autowired private ClientRepository clientRepository;
+
+  @Autowired private UserRepository userRepository;
 
   @Autowired private ConversationService conversationService;
 
@@ -202,6 +206,21 @@ public class MessageService {
   }
 
   private SenderType determineSenderType(Long userId, Conversation conversation) {
+    if (conversation.isSupport()) {
+      if (SecurityUtils.hasRole("SUPERUSER")) {
+        return SenderType.SUPERUSER;
+      }
+      Architect architect = architectRepository.findByUserId(userId).orElse(null);
+      if (architect != null) return SenderType.ARCHITECT;
+      Client client = clientRepository.findByUserId(userId).orElse(null);
+      if (client != null) return SenderType.CLIENT;
+      throw new RuntimeException("User has no recognized role");
+    }
+
+    if (SecurityUtils.hasRole("SUPERUSER")) {
+      return SenderType.SUPERUSER;
+    }
+
     Architect architect = architectRepository.findByUserId(userId).orElse(null);
     Client client = clientRepository.findByUserId(userId).orElse(null);
 
@@ -216,22 +235,7 @@ public class MessageService {
   }
 
   private MessageResponse mapToResponse(Message message, Conversation conversation) {
-    Architect architect =
-        architectRepository
-            .findById(conversation.getArchitectId())
-            .orElseThrow(() -> new RuntimeException("Architect not found"));
-
-    Client client =
-        clientRepository
-            .findById(conversation.getClientId())
-            .orElseThrow(() -> new RuntimeException("Client not found"));
-
-    String senderName;
-    if (message.getSenderUserId().equals(architect.getUser().getId())) {
-      senderName = architect.getUser().getFirstName() + " " + architect.getUser().getLastName();
-    } else {
-      senderName = client.getUser().getFirstName() + " " + client.getUser().getLastName();
-    }
+    String senderName = resolveSenderName(message.getSenderUserId(), conversation);
 
     MessageFileResponse fileResponse = null;
     if (message.getMessageType() == MessageType.FILE) {
@@ -261,5 +265,33 @@ public class MessageService {
         .file(fileResponse)
         .createdAt(message.getCreatedAt())
         .build();
+  }
+
+  private String resolveSenderName(Long senderUserId, Conversation conversation) {
+    if (conversation.isSupport()) {
+      User sender = userRepository.findById(senderUserId).orElse(null);
+      return sender != null ? sender.getFirstName() + " " + sender.getLastName() : "Unknown";
+    }
+
+    Architect architect =
+        architectRepository
+            .findById(conversation.getArchitectId())
+            .orElseThrow(() -> new RuntimeException("Architect not found"));
+
+    Client client =
+        clientRepository
+            .findById(conversation.getClientId())
+            .orElseThrow(() -> new RuntimeException("Client not found"));
+
+    if (senderUserId.equals(architect.getUser().getId())) {
+      return architect.getUser().getFirstName() + " " + architect.getUser().getLastName();
+    }
+    if (senderUserId.equals(client.getUser().getId())) {
+      return client.getUser().getFirstName() + " " + client.getUser().getLastName();
+    }
+
+    // Superuser or unknown sender — look up by user ID
+    User sender = userRepository.findById(senderUserId).orElse(null);
+    return sender != null ? sender.getFirstName() + " " + sender.getLastName() : "Support";
   }
 }

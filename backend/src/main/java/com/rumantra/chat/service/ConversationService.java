@@ -1,6 +1,8 @@
 package com.rumantra.chat.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,6 +15,7 @@ import com.rumantra.architect.repository.ArchitectRepository;
 import com.rumantra.chat.domain.Conversation;
 import com.rumantra.chat.domain.ConversationStatus;
 import com.rumantra.chat.domain.Message;
+import com.rumantra.chat.domain.SenderType;
 import com.rumantra.chat.dto.ConversationResponse;
 import com.rumantra.chat.dto.MessageResponse;
 import com.rumantra.chat.repository.ConversationRepository;
@@ -22,6 +25,8 @@ import com.rumantra.client.repository.ClientRepository;
 import com.rumantra.security.SecurityUtils;
 import com.rumantra.shared.exception.BusinessException;
 import com.rumantra.shared.exception.ExceptionConstants;
+import com.rumantra.user.domain.User;
+import com.rumantra.user.repository.UserRepository;
 
 @Service
 public class ConversationService {
@@ -34,10 +39,11 @@ public class ConversationService {
 
   @Autowired private ClientRepository clientRepository;
 
+  @Autowired private UserRepository userRepository;
+
   @Transactional
   public void createConversation(Long bidId, Long projectId, Long architectId, Long clientId) {
-    if (conversationRepository.findByBidId(bidId).isPresent()) {
-      conversationRepository.findByBidId(bidId).get();
+    if (conversationRepository.findProjectConversationByBidId(bidId).isPresent()) {
       return;
     }
 
@@ -56,22 +62,34 @@ public class ConversationService {
   public List<ConversationResponse> getMyConversations() {
     Long userId = SecurityUtils.getCurrentUserId();
 
+    if (SecurityUtils.hasRole("SUPERUSER")) {
+      return conversationRepository
+          .findProjectConversationsWithSupportRequestedOrderByLastMessageAtDesc()
+          .stream()
+          .map(this::mapToResponse)
+          .collect(Collectors.toList());
+    }
+
     Architect architect = architectRepository.findByUserId(userId).orElse(null);
     Client client = clientRepository.findByUserId(userId).orElse(null);
 
-    List<Conversation> conversations;
+    List<Conversation> conversations = new ArrayList<>();
+
     if (architect != null && client != null) {
-      conversations =
-          conversationRepository.findByUserIdOrderByLastMessageAtDesc(
-              architect.getId(), client.getId());
+      conversations.addAll(
+          conversationRepository.findProjectConversationsByUserIdOrderByLastMessageAtDesc(
+              architect.getId(), client.getId()));
     } else if (architect != null) {
-      conversations =
-          conversationRepository.findByArchitectIdOrderByLastMessageAtDesc(architect.getId());
+      conversations.addAll(
+          conversationRepository.findProjectConversationsByArchitectId(architect.getId()));
     } else if (client != null) {
-      conversations = conversationRepository.findByClientIdOrderByLastMessageAtDesc(client.getId());
-    } else {
-      throw new RuntimeException("User has no architect or client role");
+      conversations.addAll(
+          conversationRepository.findProjectConversationsByClientId(client.getId()));
     }
+
+    conversations.sort(
+        Comparator.comparing(
+            Conversation::getLastMessageAt, Comparator.nullsLast(Comparator.reverseOrder())));
 
     return conversations.stream().map(this::mapToResponse).collect(Collectors.toList());
   }
@@ -114,21 +132,37 @@ public class ConversationService {
   public void verifyAccess(Conversation conversation) {
     Long userId = SecurityUtils.getCurrentUserId();
 
+    if (SecurityUtils.hasRole("SUPERUSER")) {
+      return;
+    }
+
+    if (conversation.isSupport()) {
+      if (userId.equals(conversation.getRequesterUserId())) {
+        return;
+      }
+      throw new RuntimeException("Unauthorized access to conversation");
+    }
+
     Architect architect = architectRepository.findByUserId(userId).orElse(null);
     Client client = clientRepository.findByUserId(userId).orElse(null);
 
     boolean hasAccess =
-        architect != null && conversation.getArchitectId().equals(architect.getId());
-    if (client != null && conversation.getClientId().equals(client.getId())) {
-      hasAccess = true;
-    }
+        (architect != null && architect.getId().equals(conversation.getArchitectId()))
+            || (client != null && client.getId().equals(conversation.getClientId()));
 
     if (!hasAccess) {
       throw new RuntimeException("Unauthorized access to conversation");
     }
   }
 
-  private ConversationResponse mapToResponse(Conversation conversation) {
+  public ConversationResponse mapToResponse(Conversation conversation) {
+    if (conversation.isSupport()) {
+      return mapSupportConversationToResponse(conversation);
+    }
+    return mapProjectConversationToResponse(conversation);
+  }
+
+  private ConversationResponse mapProjectConversationToResponse(Conversation conversation) {
     Long userId = SecurityUtils.getCurrentUserId();
 
     Architect architect =
@@ -155,10 +189,14 @@ public class ConversationService {
     MessageResponse lastMessageResponse = null;
     if (lastMessage != null) {
       String senderName;
-      if (lastMessage.getSenderUserId().equals(architect.getUser().getId())) {
-        senderName = architectName;
+      if (lastMessage.getSenderType() == SenderType.SUPERUSER) {
+        User su = userRepository.findById(lastMessage.getSenderUserId()).orElse(null);
+        senderName = su != null ? su.getFirstName() + " " + su.getLastName() : "Support";
       } else {
-        senderName = clientName;
+        senderName =
+            lastMessage.getSenderUserId().equals(architect.getUser().getId())
+                ? architectName
+                : clientName;
       }
 
       lastMessageResponse =
@@ -184,6 +222,56 @@ public class ConversationService {
         .architectName(architectName)
         .clientId(conversation.getClientId())
         .clientName(clientName)
+        .itSupportRequested(conversation.getItSupportRequested())
+        .status(conversation.getStatus())
+        .unreadCount(unreadCount)
+        .lastMessage(lastMessageResponse)
+        .lastMessageAt(conversation.getLastMessageAt())
+        .createdAt(conversation.getCreatedAt())
+        .build();
+  }
+
+  private ConversationResponse mapSupportConversationToResponse(Conversation conversation) {
+    Long userId = SecurityUtils.getCurrentUserId();
+
+    User requester = userRepository.findById(conversation.getRequesterUserId()).orElse(null);
+    String requesterName =
+        requester != null ? requester.getFirstName() + " " + requester.getLastName() : "Unknown";
+
+    Integer unreadCount = messageRepository.countUnreadMessages(conversation.getId(), userId);
+
+    Message lastMessage =
+        messageRepository
+            .findFirstByConversationIdOrderByCreatedAtDesc(conversation.getId())
+            .orElse(null);
+
+    MessageResponse lastMessageResponse = null;
+    if (lastMessage != null) {
+      User sender = userRepository.findById(lastMessage.getSenderUserId()).orElse(null);
+      String senderName =
+          sender != null ? sender.getFirstName() + " " + sender.getLastName() : "Unknown";
+
+      lastMessageResponse =
+          MessageResponse.builder()
+              .id(lastMessage.getId())
+              .conversationId(lastMessage.getConversationId())
+              .senderUserId(lastMessage.getSenderUserId())
+              .senderName(senderName)
+              .senderType(lastMessage.getSenderType())
+              .content(lastMessage.getContent())
+              .messageType(lastMessage.getMessageType())
+              .isRead(lastMessage.getIsRead())
+              .readAt(lastMessage.getReadAt())
+              .createdAt(lastMessage.getCreatedAt())
+              .build();
+    }
+
+    return ConversationResponse.builder()
+        .id(conversation.getId())
+        .projectId(conversation.getProjectId())
+        .bidId(conversation.getBidId())
+        .requesterUserId(conversation.getRequesterUserId())
+        .requesterName(requesterName)
         .status(conversation.getStatus())
         .unreadCount(unreadCount)
         .lastMessage(lastMessageResponse)

@@ -1,5 +1,6 @@
 package com.rumantra.bidding.dto;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -11,9 +12,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class BidDetailResponse {
+public class BidPaymentPhaseRequest {
 
-  private Long id;
-  private String conceptStatement;
-  private List<BidPaymentPhaseResponse> phases;
+  private Integer phaseNumber;
+  private String title;
+  private List<String> deliverables;
+  private BigDecimal amount;
+  private Integer revisionRounds;
 }

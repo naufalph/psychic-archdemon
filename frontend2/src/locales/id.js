@@ -328,7 +328,53 @@ export default {
     attachPortfolios: 'Lampirkan Portofolio yang Relevan',
     attachPortfoliosHelp: 'Pilih portofolio yang menunjukkan pengalaman relevan Anda',
     wordCount: '{count}/200 kata',
-    wordCountExceeded: 'Pernyataan konsep tidak boleh melebihi 200 kata'
+    wordCountExceeded: 'Pernyataan konsep tidak boleh melebihi 200 kata',
+    phasesTotalMismatch: 'Total fase pembayaran harus sama dengan jumlah penawaran. Harap sesuaikan fase Anda.'
+  },
+  proposalCreate: {
+    title: 'Kirim Proposal',
+    updateTitle: 'Perbarui Proposal',
+    subtitle: 'Tunjukkan keahlian Anda dan menangkan proyek ini',
+    updateSubtitle: 'Lanjutkan mengedit draft proposal Anda',
+    projectSummary: 'Ringkasan Proyek',
+    project: 'Proyek',
+    location: 'Lokasi',
+    designBudget: 'Anggaran Desain',
+    buildArea: 'Luas Bangunan',
+    buildingType: 'Tipe Bangunan',
+    deliverables: 'Deliverables',
+    bidAmount: 'Nilai Penawaran (IDR)',
+    timeline: 'Timeline yang Diusulkan (hari)',
+    paymentPhases: 'Fase Pembayaran',
+    paymentPhasesHelp: 'Tentukan fase pembayaran. Total semua fase harus sama dengan nilai penawaran.',
+    submitBtn: 'Kirim Proposal',
+    cancelBtn: 'Batal',
+    submitting: 'Mengirim...',
+    backToOpportunities: 'Kembali ke Peluang',
+    deliverableCategories: {
+      siteAnalysis: 'Analisis Lokasi & Perencanaan',
+      designPhases: 'Fase Desain',
+      permits: 'Izin & Dokumentasi',
+      specialized: 'Layanan Khusus',
+      construction: 'Dukungan Konstruksi'
+    },
+    deliverableItems: {
+      SITE_ANALYSIS: 'Analisis Lokasi',
+      ZONING_STUDY: 'Studi Zonasi',
+      CONCEPT_DESIGN: 'Desain Konsep',
+      SCHEMATIC_DESIGN: 'Desain Skematik',
+      DESIGN_DEVELOPMENT: 'Pengembangan Desain',
+      CONSTRUCTION_DOCS: 'Dokumen Konstruksi',
+      IMB_PERMIT: 'IMB (Izin Mendirikan Bangunan)',
+      SLF_CERT: 'Sertifikat SLF',
+      ENVIRONMENTAL_PERMIT: 'Izin Lingkungan',
+      INTERIOR_DESIGN: 'Desain Interior',
+      LANDSCAPE_DESIGN: 'Desain Lansekap',
+      MEP_DESIGN: 'Desain MEP',
+      STRUCTURAL_DESIGN: 'Desain Struktural',
+      SUPERVISION: 'Pengawasan Konstruksi',
+      AS_BUILT: 'Gambar As-Built'
+    }
   },
   clientDashboard: {
     title: 'Dashboard Klien',
@@ -526,7 +572,27 @@ export default {
       NOTIFICATION_SUBSCRIPTION_ACTIVATED: {
         title: 'Langganan Aktif',
         message: 'Langganan {tier} Anda sekarang aktif dengan {tokenCount} token'
+      },
+      NOTIFICATION_SUPPORT_REQUESTED: {
+        title: 'Permintaan Dukungan',
+        message: 'Seorang pengguna meminta dukungan IT'
       }
+    }
+  },
+  support: {
+    requestSupport: 'Minta Dukungan IT',
+    opening: 'Membuka...',
+    chatTitle: 'Chat Dukungan IT',
+    chatSubtitle: 'Tim kami akan segera merespons',
+    close: 'Tutup',
+    dashboard: {
+      title: 'Permintaan Dukungan IT',
+      subtitle: 'Percakapan dukungan masuk dari arsitek dan klien',
+      empty: 'Belum ada permintaan dukungan.',
+      loading: 'Memuat...',
+      selectPrompt: 'Pilih permintaan dukungan untuk mulai mengobrol',
+      projectRef: 'Proyek',
+      bidRef: 'Penawaran'
     }
   }
 }

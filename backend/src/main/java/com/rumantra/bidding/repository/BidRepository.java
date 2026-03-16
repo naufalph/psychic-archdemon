@@ -17,6 +17,8 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
 
   List<Bid> findByProjectIdAndStatus(Long projectId, BidStatus status);
 
+  List<Bid> findByProjectIdAndStatusNot(Long projectId, BidStatus status);
+
   boolean existsByProjectIdAndArchitectId(Long projectId, Long architectId);
 
   long countByProjectId(Long projectId);

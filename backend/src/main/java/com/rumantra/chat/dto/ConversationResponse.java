@@ -20,6 +20,9 @@ public class ConversationResponse {
   private String architectName;
   private Long clientId;
   private String clientName;
+  private Long requesterUserId;
+  private String requesterName;
+  private Boolean itSupportRequested;
   private ConversationStatus status;
   private Integer unreadCount;
   private MessageResponse lastMessage;

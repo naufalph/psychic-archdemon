@@ -381,7 +381,7 @@ public class ProjectService {
     bidService.refundBid(acceptedBid, "Negotiation rejected by client");
 
     conversationRepository
-        .findByBidId(acceptedBid.getId())
+        .findProjectConversationByBidId(acceptedBid.getId())
         .ifPresent(
             conversation -> {
               conversationService.archiveConversation(conversation.getId());

@@ -1,19 +1,30 @@
 package com.rumantra.bidding.service;
 
+import java.math.BigDecimal;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.rumantra.bidding.domain.Bid;
 import com.rumantra.bidding.domain.BidDetail;
+import com.rumantra.bidding.domain.BidPaymentPhase;
 import com.rumantra.bidding.dto.BidDetailRequest;
 import com.rumantra.bidding.dto.BidDetailResponse;
+import com.rumantra.bidding.dto.BidPaymentPhaseRequest;
+import com.rumantra.bidding.dto.BidPaymentPhaseResponse;
 import com.rumantra.bidding.repository.BidDetailRepository;
+import com.rumantra.bidding.repository.BidPaymentPhaseRepository;
 
 @Service
 public class BidDetailService {
 
   @Autowired private BidDetailRepository bidDetailRepository;
+
+  @Autowired private BidPaymentPhaseRepository bidPaymentPhaseRepository;
 
   @Transactional
   public BidDetail createOrUpdate(Bid bid, BidDetailRequest request) {
@@ -24,43 +35,29 @@ public class BidDetailService {
       validateConceptStatement(request.getConceptStatement());
       detail.setConceptStatement(request.getConceptStatement());
     }
-    if (request.getDeliverables() != null) {
-      detail.setDeliverables(request.getDeliverables());
-    }
-    if (request.getSiteAnalysisRevisions() != null) {
-      detail.setSiteAnalysisRevisions(request.getSiteAnalysisRevisions());
-    }
-    if (request.getDesignRevisions() != null) {
-      detail.setDesignRevisions(request.getDesignRevisions());
-    }
-    if (request.getPermitsDocRevisions() != null) {
-      detail.setPermitsDocRevisions(request.getPermitsDocRevisions());
-    }
-    if (request.getSpecializedServicesRevisions() != null) {
-      detail.setSpecializedServicesRevisions(request.getSpecializedServicesRevisions());
-    }
-    if (request.getConstructionSupportRevisions() != null) {
-      detail.setConstructionSupportRevisions(request.getConstructionSupportRevisions());
+
+    detail = bidDetailRepository.save(detail);
+
+    if (request.getPhases() != null) {
+      validatePhases(bid, request.getPhases());
+      savePhases(bid, request.getPhases());
     }
 
-    return bidDetailRepository.save(detail);
+    return detail;
   }
 
   public BidDetailResponse getDetailResponse(Long bidId) {
     return bidDetailRepository
         .findByBidId(bidId)
         .map(
-            detail ->
-                BidDetailResponse.builder()
-                    .id(detail.getId())
-                    .conceptStatement(detail.getConceptStatement())
-                    .deliverables(detail.getDeliverables())
-                    .siteAnalysisRevisions(detail.getSiteAnalysisRevisions())
-                    .designRevisions(detail.getDesignRevisions())
-                    .permitsDocRevisions(detail.getPermitsDocRevisions())
-                    .specializedServicesRevisions(detail.getSpecializedServicesRevisions())
-                    .constructionSupportRevisions(detail.getConstructionSupportRevisions())
-                    .build())
+            detail -> {
+              List<BidPaymentPhaseResponse> phases = getPhaseResponses(bidId);
+              return BidDetailResponse.builder()
+                  .id(detail.getId())
+                  .conceptStatement(detail.getConceptStatement())
+                  .phases(phases)
+                  .build();
+            })
         .orElse(null);
   }
 
@@ -72,6 +69,65 @@ public class BidDetailService {
       throw new IllegalArgumentException(
           "Concept statement exceeds 200 words limit. Current: " + words.length);
     }
+  }
+
+  private void validatePhases(Bid bid, List<BidPaymentPhaseRequest> phases) {
+    if (phases.isEmpty()) {
+      throw new IllegalArgumentException("At least one payment phase is required");
+    }
+
+    BigDecimal total =
+        phases.stream()
+            .map(p -> p.getAmount() != null ? p.getAmount() : BigDecimal.ZERO)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+    if (total.compareTo(bid.getBidAmount()) != 0) {
+      throw new IllegalArgumentException(
+          "Sum of phase amounts ("
+              + total
+              + ") must equal bid amount ("
+              + bid.getBidAmount()
+              + ")");
+    }
+  }
+
+  private void savePhases(Bid bid, List<BidPaymentPhaseRequest> phases) {
+    bidPaymentPhaseRepository.deleteByBidId(bid.getId());
+
+    int order = 0;
+    for (BidPaymentPhaseRequest phaseReq : phases) {
+      BidPaymentPhase phase =
+          BidPaymentPhase.builder()
+              .bid(bid)
+              .phaseNumber(phaseReq.getPhaseNumber())
+              .title(phaseReq.getTitle())
+              .deliverables(phaseReq.getDeliverables())
+              .amount(phaseReq.getAmount() != null ? phaseReq.getAmount() : BigDecimal.ZERO)
+              .revisionRounds(phaseReq.getRevisionRounds())
+              .displayOrder(order++)
+              .build();
+
+      bidPaymentPhaseRepository.save(phase);
+    }
+  }
+
+  private List<BidPaymentPhaseResponse> getPhaseResponses(Long bidId) {
+    List<BidPaymentPhase> phases = bidPaymentPhaseRepository.findByBidIdOrderByPhaseNumber(bidId);
+    if (phases.isEmpty()) return Collections.emptyList();
+
+    return phases.stream()
+        .map(
+            p ->
+                BidPaymentPhaseResponse.builder()
+                    .id(p.getId())
+                    .phaseNumber(p.getPhaseNumber())
+                    .title(p.getTitle())
+                    .deliverables(p.getDeliverables())
+                    .amount(p.getAmount())
+                    .revisionRounds(p.getRevisionRounds())
+                    .displayOrder(p.getDisplayOrder())
+                    .build())
+        .collect(Collectors.toList());
   }
 
   public boolean hasRequiredDetails(Long bidId) {

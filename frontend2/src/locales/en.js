@@ -326,7 +326,53 @@ export default {
     attachPortfolios: 'Attach Relevant Portfolios',
     attachPortfoliosHelp: 'Select portfolios that demonstrate your relevant experience',
     wordCount: '{count}/200 words',
-    wordCountExceeded: 'Concept statement must not exceed 200 words'
+    wordCountExceeded: 'Concept statement must not exceed 200 words',
+    phasesTotalMismatch: 'Sum of phase amounts must equal the bid amount. Please adjust your phases.'
+  },
+  proposalCreate: {
+    title: 'Submit Proposal',
+    updateTitle: 'Update Proposal',
+    subtitle: 'Showcase your expertise and win the project',
+    updateSubtitle: 'Continue editing your draft proposal',
+    projectSummary: 'Project Summary',
+    project: 'Project',
+    location: 'Location',
+    designBudget: 'Design Budget',
+    buildArea: 'Build Area',
+    buildingType: 'Building Type',
+    deliverables: 'Deliverables',
+    bidAmount: 'Bid Amount (IDR)',
+    timeline: 'Proposed Timeline (days)',
+    paymentPhases: 'Payment Phases',
+    paymentPhasesHelp: 'Define payment phases. All phases must total your bid amount.',
+    submitBtn: 'Submit Proposal',
+    cancelBtn: 'Cancel',
+    submitting: 'Submitting...',
+    backToOpportunities: 'Back to Opportunities',
+    deliverableCategories: {
+      siteAnalysis: 'Site Analysis & Planning',
+      designPhases: 'Design Phases',
+      permits: 'Permits & Documentation',
+      specialized: 'Specialized Services',
+      construction: 'Construction Support'
+    },
+    deliverableItems: {
+      SITE_ANALYSIS: 'Site Analysis',
+      ZONING_STUDY: 'Zoning Study',
+      CONCEPT_DESIGN: 'Concept Design',
+      SCHEMATIC_DESIGN: 'Schematic Design',
+      DESIGN_DEVELOPMENT: 'Design Development',
+      CONSTRUCTION_DOCS: 'Construction Documents',
+      IMB_PERMIT: 'IMB (Building Permit)',
+      SLF_CERT: 'SLF Certificate',
+      ENVIRONMENTAL_PERMIT: 'Environmental Permit',
+      INTERIOR_DESIGN: 'Interior Design',
+      LANDSCAPE_DESIGN: 'Landscape Design',
+      MEP_DESIGN: 'MEP Design',
+      STRUCTURAL_DESIGN: 'Structural Design',
+      SUPERVISION: 'Construction Supervision',
+      AS_BUILT: 'As-Built Drawings'
+    }
   },
   clientDashboard: {
     title: 'Client Dashboard',
@@ -523,7 +569,27 @@ export default {
       NOTIFICATION_SUBSCRIPTION_ACTIVATED: {
         title: 'Subscription Active',
         message: 'Your {tier} subscription is now active with {tokenCount} tokens'
+      },
+      NOTIFICATION_SUPPORT_REQUESTED: {
+        title: 'Support Request',
+        message: 'A user has requested IT support'
       }
+    }
+  },
+  support: {
+    requestSupport: 'Request IT Support',
+    opening: 'Opening...',
+    chatTitle: 'IT Support Chat',
+    chatSubtitle: 'Our team will respond shortly',
+    close: 'Close',
+    dashboard: {
+      title: 'IT Support Requests',
+      subtitle: 'Incoming support conversations from architects and clients',
+      empty: 'No support requests yet.',
+      loading: 'Loading...',
+      selectPrompt: 'Select a support request to start chatting',
+      projectRef: 'Project',
+      bidRef: 'Bid'
     }
   }
 }

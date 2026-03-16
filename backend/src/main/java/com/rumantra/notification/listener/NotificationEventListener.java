@@ -1,13 +1,18 @@
 package com.rumantra.notification.listener;
 
+import java.util.List;
+
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.rumantra.bidding.event.BidSubmittedEvent;
+import com.rumantra.chat.event.SupportRequestedEvent;
 import com.rumantra.notification.domain.NotificationType;
 import com.rumantra.notification.event.ProjectValidatedEvent;
 import com.rumantra.notification.service.DashboardNotificationService;
+import com.rumantra.user.domain.User;
+import com.rumantra.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,14 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 public class NotificationEventListener {
 
   private final DashboardNotificationService dashboardNotificationService;
+  private final UserRepository userRepository;
 
-  /**
-   * Handle ProjectValidatedEvent by creating a dashboard notification.
-   * Uses @TransactionalEventListener to ensure notification is created within the same transaction
-   * as the project validation.
-   *
-   * @param event The project validated event
-   */
   @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
   public void handleProjectValidated(ProjectValidatedEvent event) {
     try {
@@ -102,6 +101,37 @@ public class NotificationEventListener {
       log.error(
           "Failed to create dashboard notification for bid {}: {}",
           event.getBidId(),
+          e.getMessage(),
+          e);
+    }
+  }
+
+  @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
+  public void handleSupportRequested(SupportRequestedEvent event) {
+    try {
+      List<User> superusers = userRepository.findAllByIsSuperuserTrue();
+
+      for (User superuser : superusers) {
+        dashboardNotificationService.createNotification(
+            superuser.getId(),
+            NotificationType.SUPPORT_REQUESTED,
+            "Support Request",
+            "A user has requested IT support. Conversation ID: " + event.getConversationId(),
+            null,
+            null,
+            "SUPPORT_CONVERSATION",
+            event.getConversationId());
+      }
+
+      log.info(
+          "Support request notifications sent to {} superusers for conversationId={}",
+          superusers.size(),
+          event.getConversationId());
+
+    } catch (Exception e) {
+      log.error(
+          "Failed to create support request notifications for conversationId={}: {}",
+          event.getConversationId(),
           e.getMessage(),
           e);
     }

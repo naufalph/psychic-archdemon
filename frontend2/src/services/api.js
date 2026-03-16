@@ -287,6 +287,7 @@ export const bidAPI = {
   getBid: id => api.get(`/api/bids/${id}`),
   getProjectBids: projectId => api.get(`/api/v1/projects/${projectId}/bids`),
   createDraftBid: bidData => api.post('/api/bids', bidData),
+  updateDraftBid: (bidId, bidData) => api.put(`/api/bids/${bidId}`, bidData),
   updateBidDetails: (bidId, detailsData) => api.put(`/api/bids/${bidId}/details`, detailsData),
   submitBid: bidId => api.post(`/api/bids/${bidId}/submit`),
   withdrawBid: bidId => api.put(`/api/bids/${bidId}/withdraw`),
@@ -305,6 +306,12 @@ export const bidAPI = {
     })
   },
   deleteImage: imageId => api.delete(`/api/bids/images/${imageId}`)
+}
+
+export const supportAPI = {
+  createSupportConversation: (projectId, bidId) =>
+    api.post('/api/support/conversations', { projectId, bidId }),
+  getSupportConversations: () => api.get('/api/support/conversations')
 }
 
 export const tokenPurchaseAPI = {

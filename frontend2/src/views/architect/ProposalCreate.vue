@@ -2,11 +2,11 @@
   <div class="min-h-screen bg-[#F4F5F7] py-12">
     <div class="max-w-7xl mx-auto px-6">
       <button
-        @click="router.push({ name: 'OpportunityList' })"
+        @click="saveDraftAndLeave"
         class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition"
       >
         <ArrowLeft :size="20" />
-        Back to Opportunities
+        {{ t.proposalCreate?.backToOpportunities || 'Back to Opportunities' }}
       </button>
 
       <div v-if="projectLoading" class="bg-white rounded-3xl border border-gray-200 p-12 animate-pulse">
@@ -17,53 +17,62 @@
       <div v-else-if="projectError" class="bg-white rounded-3xl border border-gray-200 p-12 text-center">
         <p class="text-red-600 mb-4">{{ projectError }}</p>
         <button @click="router.push({ name: 'OpportunityList' })" class="text-[#7C4728] hover:underline">
-          Back to Opportunities
+          {{ t.proposalCreate?.backToOpportunities || 'Back to Opportunities' }}
         </button>
       </div>
 
       <div v-else-if="project" class="lg:grid lg:grid-cols-3 gap-6">
         <div class="lg:col-span-1 mb-6 lg:mb-0">
           <div class="lg:sticky lg:top-6 bg-white rounded-3xl border border-gray-200 p-6 shadow-soft">
-            <h2 class="text-xl font-bold text-black mb-4">Project Summary</h2>
+            <h2 class="text-xl font-bold text-black mb-4">{{ t.proposalCreate?.projectSummary || 'Project Summary' }}</h2>
 
             <div class="space-y-4">
               <div>
-                <p class="text-xs text-gray-500 uppercase font-bold mb-1">Project</p>
+                <p class="text-xs text-gray-500 uppercase font-bold mb-1">{{ t.proposalCreate?.project || 'Project' }}</p>
                 <p class="font-bold text-gray-900">{{ project.title }}</p>
               </div>
 
               <div>
-                <p class="text-xs text-gray-500 uppercase font-bold mb-1">Location</p>
+                <p class="text-xs text-gray-500 uppercase font-bold mb-1">{{ t.proposalCreate?.location || 'Location' }}</p>
                 <p class="text-gray-900">{{ project.location }}</p>
               </div>
 
               <div>
-                <p class="text-xs text-gray-500 uppercase font-bold mb-1">Design Budget</p>
+                <p class="text-xs text-gray-500 uppercase font-bold mb-1">{{ t.proposalCreate?.designBudget || 'Design Budget' }}</p>
                 <p class="text-gray-900 font-medium">
                   {{ formatCurrency(project.designBudgetMin) }} - {{ formatCurrency(project.designBudgetMax) }}
                 </p>
               </div>
 
               <div>
-                <p class="text-xs text-gray-500 uppercase font-bold mb-1">Build Area</p>
+                <p class="text-xs text-gray-500 uppercase font-bold mb-1">{{ t.proposalCreate?.buildArea || 'Build Area' }}</p>
                 <p class="text-gray-900">{{ project.estimatedBuildArea }} m²</p>
               </div>
 
               <div>
-                <p class="text-xs text-gray-500 uppercase font-bold mb-1">Building Type</p>
+                <p class="text-xs text-gray-500 uppercase font-bold mb-1">{{ t.proposalCreate?.buildingType || 'Building Type' }}</p>
                 <p class="text-gray-900">{{ project.buildingType }}</p>
               </div>
 
               <div v-if="project.deliverables && project.deliverables.length > 0">
-                <p class="text-xs text-gray-500 uppercase font-bold mb-2">Deliverables</p>
-                <div class="flex flex-wrap gap-1">
-                  <span
-                    v-for="deliverable in project.deliverables"
-                    :key="deliverable"
-                    class="bg-[#F5E6D3] text-[#7C4728] px-2 py-1 rounded-full text-xs font-medium"
-                  >
-                    {{ deliverable.replace(/_/g, ' ') }}
-                  </span>
+                <p class="text-xs text-gray-500 uppercase font-bold mb-2">
+                  {{ t.proposalCreate?.deliverables || 'Deliverables' }}
+                </p>
+                <div class="space-y-2">
+                  <div v-for="group in groupedProjectDeliverables" :key="group.categoryKey">
+                    <p class="text-xs text-gray-400 font-semibold mb-1">
+                      {{ t.proposalCreate?.deliverableCategories?.[group.categoryKey] }}
+                    </p>
+                    <div class="flex flex-wrap gap-1">
+                      <span
+                        v-for="d in group.items"
+                        :key="d"
+                        class="bg-[#F5E6D3] text-[#7C4728] px-2 py-0.5 rounded-full text-xs font-medium"
+                      >
+                        {{ t.proposalCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ') }}
+                      </span>
+                    </div>
+                  </div>
                 </div>
               </div>
 
@@ -79,11 +88,13 @@
             <div class="bg-[#7C4728] p-8 text-white">
               <h1 class="text-3xl font-bold flex items-center gap-3">
                 <FileText :size="32" />
-                {{ existingBidId ? 'Update Proposal' : 'Submit Proposal' }}
+                {{ existingBidId ? (t.proposalCreate?.updateTitle || 'Update Proposal') : (t.proposalCreate?.title || 'Submit Proposal') }}
               </h1>
               <p class="text-white/80 mt-2">
                 {{
-                  existingBidId ? 'Continue editing your draft proposal' : 'Showcase your expertise and win the project'
+                  existingBidId
+                    ? (t.proposalCreate?.updateSubtitle || 'Continue editing your draft proposal')
+                    : (t.proposalCreate?.subtitle || 'Showcase your expertise and win the project')
                 }}
               </p>
             </div>
@@ -92,7 +103,7 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-2"
-                    >Bid Amount (IDR)<span class="text-red-500">*</span></label
+                    >{{ t.proposalCreate?.bidAmount || 'Bid Amount (IDR)' }}<span class="text-red-500">*</span></label
                   >
                   <input
                     v-model.number="formData.bidAmount"
@@ -104,7 +115,7 @@
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Proposed Timeline (days)</label>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">{{ t.proposalCreate?.timeline || 'Proposed Timeline (days)' }}</label>
                   <input
                     v-model.number="formData.proposedTimelineDays"
                     type="number"
@@ -143,12 +154,11 @@
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"> Deliverables You'll Provide </label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{ t.proposalCreate?.paymentPhases || 'Payment Phases' }}</label>
                 <p class="text-xs text-gray-500 mb-3">
-                  Select the services and documents you commit to deliver for this project. Set revision rounds inline
-                  per phase.
+                  {{ t.proposalCreate?.paymentPhasesHelp || 'Define payment phases. Phase 0 is free (pre-project). Phase 1+ must total your bid amount.' }}
                 </p>
-                <DeliverablesSelector v-model="formData.deliverables" v-model:revisions="formData.revisions" />
+                <PaymentPhaseBuilder v-model="formData.phases" :bid-amount="formData.bidAmount" />
               </div>
 
               <div>
@@ -344,10 +354,10 @@
               <div class="flex gap-4 pt-6 border-t border-gray-100">
                 <button
                   type="button"
-                  @click="router.push({ name: 'OpportunityList' })"
+                  @click="saveDraftAndLeave"
                   class="px-6 py-3 text-gray-700 bg-white border-2 border-gray-300 rounded-full hover:bg-gray-50 transition font-medium"
                 >
-                  Cancel
+                  {{ t.proposalCreate?.cancelBtn || 'Cancel' }}
                 </button>
                 <button
                   type="submit"
@@ -356,7 +366,7 @@
                 >
                   <Loader v-if="loading" :size="20" class="animate-spin" />
                   <Send v-else :size="20" />
-                  {{ loading ? 'Submitting...' : 'Submit Proposal' }}
+                  {{ loading ? (t.proposalCreate?.submitting || 'Submitting...') : (t.proposalCreate?.submitBtn || 'Submit Proposal') }}
                 </button>
               </div>
             </form>
@@ -374,16 +384,26 @@ import { storeToRefs } from 'pinia'
 import { ArrowLeft, FileText, Loader, Send } from 'lucide-vue-next'
 import { useBidsStore } from '@/stores/bids'
 import { useProjectsStore } from '@/stores/projects'
+import { useI18n } from '@/composables/useI18n'
 import MultiImageUploader from '@/components/upload/MultiImageUploader.vue'
 import UploadProgress from '@/components/upload/UploadProgress.vue'
 import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
-import DeliverablesSelector from '@/components/project/DeliverablesSelector.vue'
+import PaymentPhaseBuilder from '@/components/project/PaymentPhaseBuilder.vue'
 import PortfolioSelector from '@/components/architect/PortfolioSelector.vue'
 
 const route = useRoute()
 const router = useRouter()
 const bidsStore = useBidsStore()
 const projectsStore = useProjectsStore()
+const { t } = useI18n()
+
+const DELIVERABLE_CATEGORIES = [
+  { categoryKey: 'siteAnalysis', items: ['SITE_ANALYSIS', 'ZONING_STUDY'] },
+  { categoryKey: 'designPhases', items: ['CONCEPT_DESIGN', 'SCHEMATIC_DESIGN', 'DESIGN_DEVELOPMENT', 'CONSTRUCTION_DOCS'] },
+  { categoryKey: 'permits', items: ['IMB_PERMIT', 'SLF_CERT', 'ENVIRONMENTAL_PERMIT'] },
+  { categoryKey: 'specialized', items: ['INTERIOR_DESIGN', 'LANDSCAPE_DESIGN', 'MEP_DESIGN', 'STRUCTURAL_DESIGN'] },
+  { categoryKey: 'construction', items: ['SUPERVISION', 'AS_BUILT'] }
+]
 
 const { loading, uploadProgress } = storeToRefs(bidsStore)
 
@@ -392,15 +412,8 @@ const formData = ref({
   proposedTimelineDays: null,
   proposal: '',
   conceptStatement: '',
-  deliverables: [],
-  portfolioIds: [],
-  revisions: {
-    siteAnalysisRevisions: null,
-    designRevisions: null,
-    permitsDocRevisions: null,
-    specializedServicesRevisions: null,
-    constructionSupportRevisions: null
-  }
+  phases: [],
+  portfolioIds: []
 })
 
 const facadeImages = ref([])
@@ -427,6 +440,13 @@ const formatCurrency = value => {
   const thousands = value / 1000
   return `Rp ${thousands.toFixed(0)}K`
 }
+
+const groupedProjectDeliverables = computed(() => {
+  const deliverables = project.value?.deliverables || []
+  return DELIVERABLE_CATEGORIES
+    .map(group => ({ categoryKey: group.categoryKey, items: group.items.filter(d => deliverables.includes(d)) }))
+    .filter(group => group.items.length > 0)
+})
 
 const wordCount = computed(() => {
   const text = formData.value.conceptStatement || ''
@@ -462,11 +482,45 @@ const deleteExistingImage = async (imageId, type) => {
   }
 }
 
+const saveDraftAndLeave = async () => {
+  try {
+    if (formData.value.bidAmount) {
+      let bid
+      const bidData = {
+        projectId: route.params.projectId,
+        bidAmount: formData.value.bidAmount,
+        proposedTimelineDays: formData.value.proposedTimelineDays,
+        proposal: formData.value.proposal,
+      }
+      if (existingBidId.value) {
+        await bidsStore.updateDraftBid(existingBidId.value, bidData)
+        bid = { id: existingBidId.value }
+      } else {
+        bid = await bidsStore.createDraftBid(bidData)
+        existingBidId.value = bid.id
+      }
+      await bidsStore.updateBidDetails(bid.id, {
+        conceptStatement: formData.value.conceptStatement,
+        phases: formData.value.phases,
+      })
+    }
+  } catch {
+    // Silent — draft save is best-effort, always navigate away
+  }
+  router.push({ name: 'OpportunityList' })
+}
+
 const handleSubmit = async () => {
   error.value = null
 
   if (wordCount.value > 200) {
-    error.value = 'Concept statement must not exceed 200 words'
+    error.value = t('proposal.wordCountExceeded')
+    return
+  }
+
+  const phasesTotal = formData.value.phases.reduce((sum, p) => sum + (Number(p.amount) || 0), 0)
+  if (formData.value.phases.length > 0 && Math.abs(phasesTotal - Number(formData.value.bidAmount)) >= 1) {
+    error.value = t('proposal.phasesTotalMismatch')
     return
   }
 
@@ -481,12 +535,17 @@ const handleSubmit = async () => {
       deliverables: formData.value.deliverables
     }
 
-    bid = existingBidId.value ? { id: existingBidId.value } : await bidsStore.createDraftBid(bidData)
+    if (existingBidId.value) {
+      await bidsStore.updateDraftBid(existingBidId.value, bidData)
+      bid = { id: existingBidId.value }
+    } else {
+      bid = await bidsStore.createDraftBid(bidData)
+      existingBidId.value = bid.id
+    }
 
     const bidDetailData = {
       conceptStatement: formData.value.conceptStatement,
-      deliverables: formData.value.deliverables,
-      ...formData.value.revisions
+      phases: formData.value.phases
     }
     await bidsStore.updateBidDetails(bid.id, bidDetailData)
 
@@ -540,15 +599,8 @@ onMounted(async () => {
       formData.value.proposedTimelineDays = existingDraft.proposedTimelineDays
       formData.value.proposal = existingDraft.proposal || ''
       formData.value.conceptStatement = existingDraft.details?.conceptStatement || ''
-      formData.value.deliverables = existingDraft.details?.deliverables || []
+      formData.value.phases = existingDraft.details?.phases || []
       formData.value.portfolioIds = existingDraft.portfolios?.map(p => p.id) || []
-      formData.value.revisions = {
-        siteAnalysisRevisions: existingDraft.details?.siteAnalysisRevisions ?? null,
-        designRevisions: existingDraft.details?.designRevisions ?? null,
-        permitsDocRevisions: existingDraft.details?.permitsDocRevisions ?? null,
-        specializedServicesRevisions: existingDraft.details?.specializedServicesRevisions ?? null,
-        constructionSupportRevisions: existingDraft.details?.constructionSupportRevisions ?? null
-      }
 
       existingFacade.value = (existingDraft.facadeImages || []).map(img => ({
         id: img.id,

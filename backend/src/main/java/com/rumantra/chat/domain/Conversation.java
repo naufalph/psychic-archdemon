@@ -21,14 +21,18 @@ public class Conversation {
   @Column(name = "project_id", nullable = false)
   private Long projectId;
 
-  @Column(name = "bid_id", nullable = false, unique = true)
+  @Column(name = "bid_id")
   private Long bidId;
 
-  @Column(name = "architect_id", nullable = false)
+  @Column(name = "architect_id")
   private Long architectId;
 
-  @Column(name = "client_id", nullable = false)
+  @Column(name = "client_id")
   private Long clientId;
+
+  /** Non-null for SUPPORT conversations; null for PROJECT conversations. */
+  @Column(name = "requester_user_id")
+  private Long requesterUserId;
 
   @Enumerated(EnumType.STRING)
   @Column(name = "status", nullable = false)
@@ -43,6 +47,17 @@ public class Conversation {
 
   @Column(name = "last_message_at")
   private LocalDateTime lastMessageAt;
+
+  @Column(name = "it_support_requested", nullable = false)
+  @Builder.Default
+  private Boolean itSupportRequested = false;
+
+  @Column(name = "it_support_requested_at")
+  private LocalDateTime itSupportRequestedAt;
+
+  public boolean isSupport() {
+    return requesterUserId != null;
+  }
 
   @PrePersist
   protected void onCreate() {
