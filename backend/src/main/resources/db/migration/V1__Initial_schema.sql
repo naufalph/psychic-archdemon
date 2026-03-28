@@ -175,7 +175,7 @@ CREATE TABLE IF NOT EXISTS rmtr_bid_quota (
     tokens_allocated INTEGER NOT NULL DEFAULT 0 CHECK (tokens_allocated >= 0),
     tokens_remaining INTEGER NOT NULL DEFAULT 0 CHECK (tokens_remaining >= 0),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT NULL
+    updated_at TIMESTAMP NULL DEFAULT NULL,
 
     CONSTRAINT chk_bid_quota_tier CHECK (tier IN ('FREE', 'BASIC'))
 );
@@ -199,7 +199,7 @@ CREATE TABLE IF NOT EXISTS rmtr_subscription (
     next_billing_date DATE NULL,
     is_active BOOLEAN NOT NULL DEFAULT TRUE,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT NULL
+    updated_at TIMESTAMP NULL DEFAULT NULL,
 
     CONSTRAINT chk_subscription_tier CHECK (tier IN ('FREE', 'BASIC')),
     CONSTRAINT chk_subscription_status CHECK (status IN ('ACTIVE', 'PENDING', 'EXPIRED', 'CANCELLED'))
@@ -227,7 +227,7 @@ CREATE TABLE IF NOT EXISTS rmtr_token_purchase (
     completed_at TIMESTAMP,
     failure_reason TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL DEFAULT NULL
+    updated_at TIMESTAMP NULL DEFAULT NULL,
 
     CONSTRAINT chk_token_purchase_tier CHECK (tier IN ('FREE', 'BASIC')),
     CONSTRAINT chk_token_purchase_status CHECK (status IN ('PENDING', 'COMPLETED', 'FAILED', 'EXPIRED', 'CANCELLED'))
@@ -265,11 +265,10 @@ CREATE TABLE IF NOT EXISTS rmtr_bid_detail (
     bid_id BIGINT NOT NULL UNIQUE REFERENCES rmtr_bid(id) ON DELETE CASCADE,
     concept_statement TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL,
+    updated_at TIMESTAMP NULL
 );
 
 CREATE INDEX IF NOT EXISTS idx_bid_detail_bid_id ON rmtr_bid_detail(bid_id);
-CREATE INDEX idx_bid_detail_deliverables ON rmtr_bid_detail USING GIN (deliverables);
 
 CREATE TABLE IF NOT EXISTS rmtr_bid_image (
     id BIGSERIAL PRIMARY KEY,
