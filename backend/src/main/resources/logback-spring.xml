@@ -85,6 +85,7 @@
 
     <springProfile name="prod">
         <root level="WARN">
+            <appender-ref ref="CONSOLE"/>
             <appender-ref ref="ASYNC_INFO"/>
             <appender-ref ref="ASYNC_ERROR"/>
         </root>
