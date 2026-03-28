@@ -193,20 +193,20 @@ export const userAPI = {
 }
 
 export const projectAPI = {
-  getAll: params => api.get('/projects', { params }),
-  getById: id => api.get(`/projects/${id}`),
-  create: projectData => api.post('/projects', projectData),
-  update: (id, projectData) => api.put(`/projects/${id}`, projectData),
-  delete: id => api.delete(`/projects/${id}`),
-  getBids: id => api.get(`/projects/${id}/bids`),
-  createBid: (id, bidData) => api.post(`/projects/${id}/bids`, bidData),
-  acceptBid: (projectId, bidId) => api.patch(`/projects/${projectId}/bids/${bidId}/accept`),
-  rejectBid: (projectId, bidId) => api.patch(`/projects/${projectId}/bids/${bidId}/reject`),
-  getOpenProjects: params => api.get('/api/v1/projects/open', { params }),
+  getAll: params => api.get('/rmtr/projects', { params }),
+  getById: id => api.get(`/rmtr/projects/${id}`),
+  create: projectData => api.post('/rmtr/projects', projectData),
+  update: (id, projectData) => api.put(`/rmtr/projects/${id}`, projectData),
+  delete: id => api.delete(`/rmtr/projects/${id}`),
+  getBids: id => api.get(`/rmtr/projects/${id}/bids`),
+  createBid: (id, bidData) => api.post(`/rmtr/projects/${id}/bids`, bidData),
+  acceptBid: (projectId, bidId) => api.patch(`/rmtr/projects/${projectId}/bids/${bidId}/accept`),
+  rejectBid: (projectId, bidId) => api.patch(`/rmtr/projects/${projectId}/bids/${bidId}/reject`),
+  getOpenProjects: params => api.get('/rmtr/projects/open', { params }),
   uploadFiles: (id, files, onProgress) => {
     const formData = new FormData()
     files.forEach(file => formData.append('files', file))
-    return api.post(`/projects/${id}/files`, formData, {
+    return api.post(`/rmtr/projects/${id}/files`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       onUploadProgress: onProgress
     })
@@ -214,19 +214,19 @@ export const projectAPI = {
 }
 
 export const architectAPI = {
-  getAll: params => api.get('/architects', { params }),
-  getById: id => api.get(`/architects/${id}`),
-  getPortfolio: id => api.get(`/architects/${id}/portfolio`),
-  updatePortfolio: portfolioData => api.put('/architects/portfolio', portfolioData),
-  getReviews: id => api.get(`/architects/${id}/reviews`),
-  addReview: (id, reviewData) => api.post(`/architects/${id}/reviews`, reviewData)
+  getAll: params => api.get('/rmtr/architects', { params }),
+  getById: id => api.get(`/rmtr/architects/${id}`),
+  getPortfolio: id => api.get(`/rmtr/architects/${id}/portfolio`),
+  updatePortfolio: portfolioData => api.put('/rmtr/architects/portfolio', portfolioData),
+  getReviews: id => api.get(`/rmtr/architects/${id}/reviews`),
+  addReview: (id, reviewData) => api.post(`/rmtr/architects/${id}/reviews`, reviewData)
 }
 
 export const bidAPI = {
-  getMyBids: () => api.get('/bids/my-bids'),
-  getBid: id => api.get(`/bids/${id}`),
-  updateBid: (id, bidData) => api.put(`/bids/${id}`, bidData),
-  deleteBid: id => api.delete(`/bids/${id}`)
+  getMyBids: () => api.get('/rmtr/bids/my-bids'),
+  getBid: id => api.get(`/rmtr/bids/${id}`),
+  updateBid: (id, bidData) => api.put(`/rmtr/bids/${id}`, bidData),
+  deleteBid: id => api.delete(`/rmtr/bids/${id}`)
 }
 
 export const adminAPI = {
@@ -243,10 +243,10 @@ export const adminAPI = {
 }
 
 export const adminProjectAPI = {
-  getAllProjects: () => api.get('/api/v1/projects/all'),
-  getProjectById: id => api.get(`/api/v1/projects/${id}`),
+  getAllProjects: () => api.get('/rmtr/projects/all'),
+  getProjectById: id => api.get(`/rmtr/projects/${id}`),
   updateValidation: (projectId, validationData) =>
-    api.put(`/api/v1/projects/${projectId}/validate`, validationData)
+    api.put(`/rmtr/projects/${projectId}/validate`, validationData)
 }
 
 // Default export

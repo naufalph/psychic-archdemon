@@ -20,7 +20,7 @@ import com.rumantra.subscription.service.SubscriptionUpgradeResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/api/subscriptions")
+@RequestMapping("/rmtr/subscriptions")
 @Slf4j
 public class SubscriptionController {
 

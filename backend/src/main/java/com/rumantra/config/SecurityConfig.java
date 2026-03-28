@@ -1,5 +1,6 @@
 package com.rumantra.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -33,6 +34,9 @@ public class SecurityConfig {
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
   private final PasswordEncoder passwordEncoder;
 
+  @Value("${app.frontend.url:http://localhost:3001}")
+  private String frontendUrl;
+
   @Bean
   public DaoAuthenticationProvider authenticationProvider() {
     DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -57,6 +61,7 @@ public class SecurityConfig {
     configuration.addAllowedOriginPattern("http://*.ts.net:3000");
     configuration.addAllowedOriginPattern("http://*.ts.net:3001");
     configuration.addAllowedOriginPattern("http://*.ts.net:8080");
+    configuration.addAllowedOriginPattern(frontendUrl);
     configuration.addAllowedMethod("*");
     configuration.addAllowedHeader("*");
     configuration.setAllowCredentials(true);
@@ -88,7 +93,7 @@ public class SecurityConfig {
                     .authenticated()
 
                     // Notification endpoints (authenticated)
-                    .requestMatchers("/api/notifications/**")
+                    .requestMatchers("/rmtr/notifications/**")
                     .authenticated()
 
                     // WebSocket endpoints (public for handshake, auth in WebSocketConfig)
@@ -96,73 +101,68 @@ public class SecurityConfig {
                     .permitAll()
 
                     // Chat endpoints (authenticated)
-                    .requestMatchers("/api/chat/**")
+                    .requestMatchers("/rmtr/chat/**")
                     .authenticated()
 
                     // Support conversation endpoints
-                    .requestMatchers(HttpMethod.POST, "/api/support/conversations")
+                    .requestMatchers(HttpMethod.POST, "/rmtr/support/conversations")
                     .hasAnyRole("ARCHITECT", "CLIENT")
-                    .requestMatchers(HttpMethod.GET, "/api/support/conversations")
+                    .requestMatchers(HttpMethod.GET, "/rmtr/support/conversations")
                     .hasRole("SUPERUSER")
 
-                    // Protected endpoints
-                    .requestMatchers("/api/v1/architects/profile", "/api/v1/architects/profile/**")
-                    .authenticated()
-
                     // Porto endpoints - require ARCHITECT role
-                    .requestMatchers("/api/architects/*/portos/**")
-                    .hasRole("ARCHITECT")
-                    .requestMatchers("/api/architects/*/portos")
-                    .hasRole("ARCHITECT")
-                    .requestMatchers("/api/portos/**")
+                    .requestMatchers("/rmtr/porto/**")
                     .hasRole("ARCHITECT")
 
                     // Bid endpoints — CLIENT-specific actions first
-                    .requestMatchers(HttpMethod.POST, "/api/bids/*/accept")
+                    .requestMatchers(HttpMethod.POST, "/rmtr/bids/*/accept")
                     .hasRole("CLIENT")
-                    .requestMatchers(HttpMethod.GET, "/api/bids/*")
+                    .requestMatchers(HttpMethod.GET, "/rmtr/bids/*")
                     .authenticated()
                     // All other bid operations — ARCHITECT only
-                    .requestMatchers("/api/bids/**")
+                    .requestMatchers("/rmtr/bids/**")
                     .hasRole("ARCHITECT")
 
                     // Subscription endpoints - require ARCHITECT role (except webhook)
-                    .requestMatchers("/api/subscriptions/webhook")
+                    .requestMatchers("/rmtr/subscriptions/webhook")
                     .permitAll()
-                    .requestMatchers("/api/subscriptions/**")
+                    .requestMatchers("/rmtr/subscriptions/**")
                     .hasRole("ARCHITECT")
 
                     // Token purchase endpoints - require ARCHITECT role (except webhooks)
-                    .requestMatchers(
-                        "/tokens/purchases/webhook", "/tokens/purchases/webhook/invoice")
+                    .requestMatchers("/rmtr/tokens/webhook", "/rmtr/tokens/webhook/invoice")
                     .permitAll()
-                    .requestMatchers("/tokens/purchases/**")
+                    .requestMatchers("/rmtr/tokens/**")
                     .hasRole("ARCHITECT")
 
                     // Client project endpoints - require CLIENT role
-                    .requestMatchers("/api/clients/*/projects/**")
+                    .requestMatchers("/rmtr/clients/*/projects/**")
                     .hasRole("CLIENT")
-                    .requestMatchers("/api/clients/*/projects")
+                    .requestMatchers("/rmtr/clients/*/projects")
                     .hasRole("CLIENT")
-                    .requestMatchers("/api/v1/projects/*/confirm-negotiation")
+                    .requestMatchers("/rmtr/projects/*/confirm-negotiation")
                     .hasRole("CLIENT")
-                    .requestMatchers("/api/v1/projects/*/reject-negotiation")
+                    .requestMatchers("/rmtr/projects/*/reject-negotiation")
                     .hasRole("CLIENT")
-                    .requestMatchers("/api/v1/projects/*/architect-confirm-negotiation")
+                    .requestMatchers("/rmtr/projects/*/architect-confirm-negotiation")
                     .hasRole("ARCHITECT")
-                    .requestMatchers("/api/v1/projects/{projectId}/validate")
+                    .requestMatchers("/rmtr/projects/{projectId}/validate")
                     .hasRole("SUPERUSER")
-                    .requestMatchers("/api/v1/projects/all")
+                    .requestMatchers("/rmtr/projects/all")
                     .hasRole("SUPERUSER")
-                    .requestMatchers("/api/v1/projects/*/for-architect")
+                    .requestMatchers("/rmtr/projects/*/for-architect")
                     .hasRole("ARCHITECT")
-                    .requestMatchers("/api/v1/projects/open")
+                    .requestMatchers("/rmtr/projects/open")
                     .hasRole("ARCHITECT")
-                    .requestMatchers("/api/projects/**")
+                    .requestMatchers("/rmtr/projects/**")
                     .hasRole("CLIENT")
 
                     // Static file serving (uploads)
                     .requestMatchers("/uploads/**")
+                    .permitAll()
+
+                    // Health check (for Railway deployment)
+                    .requestMatchers("/actuator/health")
                     .permitAll()
 
                     // Documentation

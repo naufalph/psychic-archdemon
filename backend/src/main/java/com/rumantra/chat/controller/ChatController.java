@@ -18,7 +18,7 @@ import com.rumantra.shared.dto.ApiResponse;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/chat")
+@RequestMapping("/rmtr/chat")
 public class ChatController {
 
   @Autowired private ConversationService conversationService;

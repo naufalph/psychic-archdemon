@@ -13,7 +13,7 @@ import com.rumantra.shared.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/support/conversations")
+@RequestMapping("/rmtr/support/conversations")
 @RequiredArgsConstructor
 public class SupportConversationController {
 

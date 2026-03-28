@@ -30,7 +30,7 @@ import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
-@RequestMapping("/tokens/purchases")
+@RequestMapping("/rmtr/tokens")
 @Slf4j
 public class TokenPurchaseController {
 
