@@ -200,29 +200,29 @@ export const userAPI = {
 }
 
 export const notificationAPI = {
-  getAll: () => api.get('/api/notifications'),
-  getUnread: () => api.get('/api/notifications/unread'),
-  getUnreadCount: () => api.get('/api/notifications/unread-count'),
-  markAsRead: notificationId => api.put(`/api/notifications/${notificationId}/read`),
-  markAllAsRead: () => api.put('/api/notifications/read-all')
+  getAll: () => api.get('/rmtr/notifications'),
+  getUnread: () => api.get('/rmtr/notifications/unread'),
+  getUnreadCount: () => api.get('/rmtr/notifications/unread-count'),
+  markAsRead: notificationId => api.put(`/rmtr/notifications/${notificationId}/read`),
+  markAllAsRead: () => api.put('/rmtr/notifications/read-all')
 }
 
 export const projectAPI = {
-  getAll: params => api.get('/api/v1/projects', { params }),
-  getById: id => api.get(`/api/v1/projects/${id}`),
-  getProjectForArchitect: id => api.get(`/api/v1/projects/${id}/for-architect`),
+  getAll: params => api.get('/rmtr/projects', { params }),
+  getById: id => api.get(`/rmtr/projects/${id}`),
+  getProjectForArchitect: id => api.get(`/rmtr/projects/${id}/for-architect`),
   create: formData =>
-    api.post('/api/v1/projects', formData, {
+    api.post('/rmtr/projects', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     }),
-  update: (id, projectData) => api.put(`/api/v1/projects/${id}`, projectData),
-  delete: id => api.delete(`/api/v1/projects/${id}`),
+  update: (id, projectData) => api.put(`/rmtr/projects/${id}`, projectData),
+  delete: id => api.delete(`/rmtr/projects/${id}`),
   getOpenProjects: (params = {}) =>
-    api.get('/api/v1/projects/open', { params: { ...params, excludeOwnProjects: true } }),
+    api.get('/rmtr/projects/open', { params: { ...params, excludeOwnProjects: true } }),
   uploadFiles: (id, files, onProgress) => {
     const formData = new FormData()
     files.forEach(file => formData.append('files', file))
-    return api.post(`/api/v1/projects/${id}/files`, formData, {
+    return api.post(`/rmtr/projects/${id}/files`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
       onUploadProgress: progressEvent => {
         if (onProgress && progressEvent.total) {
@@ -232,20 +232,20 @@ export const projectAPI = {
       }
     })
   },
-  confirmNegotiation: projectId => api.post(`/api/v1/projects/${projectId}/confirm-negotiation`),
-  rejectNegotiation: projectId => api.post(`/api/v1/projects/${projectId}/reject-negotiation`),
+  confirmNegotiation: projectId => api.post(`/rmtr/projects/${projectId}/confirm-negotiation`),
+  rejectNegotiation: projectId => api.post(`/rmtr/projects/${projectId}/reject-negotiation`),
   architectConfirmNegotiation: projectId =>
-    api.post(`/api/v1/projects/${projectId}/architect-confirm-negotiation`)
+    api.post(`/rmtr/projects/${projectId}/architect-confirm-negotiation`)
 }
 
 export const chatAPI = {
-  getMyConversations: () => api.get('/api/chat/conversations'),
-  getConversation: id => api.get(`/api/chat/conversations/${id}`),
+  getMyConversations: () => api.get('/rmtr/chat/conversations'),
+  getConversation: id => api.get(`/rmtr/chat/conversations/${id}`),
   getMessages: (id, page = 0, size = 50) =>
-    api.get(`/api/chat/conversations/${id}/messages`, { params: { page, size } }),
-  sendMessage: data => api.post('/api/chat/messages', data),
-  markRead: msgId => api.put(`/api/chat/messages/${msgId}/read`),
-  markAllRead: conversationId => api.put(`/api/chat/conversations/${conversationId}/read-all`)
+    api.get(`/rmtr/chat/conversations/${id}/messages`, { params: { page, size } }),
+  sendMessage: data => api.post('/rmtr/chat/messages', data),
+  markRead: msgId => api.put(`/rmtr/chat/messages/${msgId}/read`),
+  markAllRead: conversationId => api.put(`/rmtr/chat/conversations/${conversationId}/read-all`)
 }
 
 export const architectAPI = {
@@ -259,65 +259,65 @@ export const architectAPI = {
 }
 
 export const portfolioAPI = {
-  getAll: () => api.get('/api/portos'),
-  getById: id => api.get(`/api/portos/${id}`),
+  getAll: () => api.get('/rmtr/porto'),
+  getById: id => api.get(`/rmtr/porto/${id}`),
   create: formData =>
-    api.post('/api/portos', formData, {
+    api.post('/rmtr/porto', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     }),
-  update: (id, data) => api.put(`/api/portos/${id}`, data),
-  delete: id => api.delete(`/api/portos/${id}`),
+  update: (id, data) => api.put(`/rmtr/porto/${id}`, data),
+  delete: id => api.delete(`/rmtr/porto/${id}`),
   addImages: (id, images) => {
     const formData = new FormData()
     images.forEach(file => formData.append('images', file))
-    return api.post(`/api/portos/${id}/images`, formData, {
+    return api.post(`/rmtr/porto/${id}/images`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     })
   },
-  deleteImage: imageId => api.delete(`/api/portos/images/${imageId}`)
+  deleteImage: imageId => api.delete(`/rmtr/porto/images/${imageId}`)
 }
 
 export const clientAPI = {
-  getProfile: () => api.get('/api/v1/clients/profile'),
-  updateProfile: profileData => api.put('/api/v1/clients/profile', profileData)
+  getProfile: () => api.get('/rmtr/clients/profile'),
+  updateProfile: profileData => api.put('/rmtr/clients/profile', profileData)
 }
 
 export const bidAPI = {
-  getMyBids: () => api.get('/api/bids/my-bids'),
-  getBid: id => api.get(`/api/bids/${id}`),
-  getProjectBids: projectId => api.get(`/api/v1/projects/${projectId}/bids`),
-  createDraftBid: bidData => api.post('/api/bids', bidData),
-  updateDraftBid: (bidId, bidData) => api.put(`/api/bids/${bidId}`, bidData),
-  updateBidDetails: (bidId, detailsData) => api.put(`/api/bids/${bidId}/details`, detailsData),
-  submitBid: bidId => api.post(`/api/bids/${bidId}/submit`),
-  withdrawBid: bidId => api.put(`/api/bids/${bidId}/withdraw`),
-  acceptBid: bidId => api.post(`/api/bids/${bidId}/accept`),
-  getQuota: () => api.get('/api/bids/quota'),
+  getMyBids: () => api.get('/rmtr/bids/my-bids'),
+  getBid: id => api.get(`/rmtr/bids/${id}`),
+  getProjectBids: projectId => api.get(`/rmtr/projects/${projectId}/bids`),
+  createDraftBid: bidData => api.post('/rmtr/bids', bidData),
+  updateDraftBid: (bidId, bidData) => api.put(`/rmtr/bids/${bidId}`, bidData),
+  updateBidDetails: (bidId, detailsData) => api.put(`/rmtr/bids/${bidId}/details`, detailsData),
+  submitBid: bidId => api.post(`/rmtr/bids/${bidId}/submit`),
+  withdrawBid: bidId => api.put(`/rmtr/bids/${bidId}/withdraw`),
+  acceptBid: bidId => api.post(`/rmtr/bids/${bidId}/accept`),
+  getQuota: () => api.get('/rmtr/bids/quota'),
   linkPortfolios: (bidId, portfolioIds) =>
-    api.post(`/api/bids/${bidId}/portfolios`, { portfolioIds }),
+    api.post(`/rmtr/bids/${bidId}/portfolios`, { portfolioIds }),
   uploadBidImages: (bidId, imageType, files, onProgress) => {
     const fd = new FormData()
     files.forEach(f => fd.append('images', f))
-    return api.post(`/api/bids/${bidId}/images/${imageType}`, fd, {
+    return api.post(`/rmtr/bids/${bidId}/images/${imageType}`, fd, {
       headers: { 'Content-Type': 'multipart/form-data' },
       onUploadProgress: e => {
         if (onProgress && e.total) onProgress(Math.round((e.loaded * 100) / e.total))
       }
     })
   },
-  deleteImage: imageId => api.delete(`/api/bids/images/${imageId}`)
+  deleteImage: imageId => api.delete(`/rmtr/bids/images/${imageId}`)
 }
 
 export const supportAPI = {
   createSupportConversation: (projectId, bidId) =>
-    api.post('/api/support/conversations', { projectId, bidId }),
-  getSupportConversations: () => api.get('/api/support/conversations')
+    api.post('/rmtr/support/conversations', { projectId, bidId }),
+  getSupportConversations: () => api.get('/rmtr/support/conversations')
 }
 
 export const tokenPurchaseAPI = {
-  getPricing: () => api.get('/tokens/purchases/pricing'),
-  initiatePurchase: quantity => api.post('/tokens/purchases', { quantity }),
-  getPurchaseStatus: id => api.get(`/tokens/purchases/${id}`)
+  getPricing: () => api.get('/rmtr/tokens/purchases/pricing'),
+  initiatePurchase: quantity => api.post('/rmtr/tokens/purchases', { quantity }),
+  getPurchaseStatus: id => api.get(`/rmtr/tokens/purchases/${id}`)
 }
 
 // Default export
