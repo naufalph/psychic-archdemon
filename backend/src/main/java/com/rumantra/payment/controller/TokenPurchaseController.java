@@ -186,7 +186,7 @@ public class TokenPurchaseController {
 
   @PostMapping("/webhook")
   public ResponseEntity<Void> handleXenditWebhook(
-      @RequestHeader("x-callback-token") String callbackToken, @RequestBody String payload) {
+      @RequestHeader("X-CALLBACK-TOKEN") String callbackToken, @RequestBody String payload) {
 
     if (!xenditService.verifyWebhookToken(callbackToken)) {
       log.warn("Invalid webhook token received for token purchase");
@@ -217,7 +217,7 @@ public class TokenPurchaseController {
 
   @PostMapping("/webhook/invoice")
   public ResponseEntity<Void> handleXenditInvoiceWebhook(
-      @RequestHeader("x-callback-token") String callbackToken, @RequestBody String payload) {
+      @RequestHeader("X-CALLBACK-TOKEN") String callbackToken, @RequestBody String payload) {
 
     if (!xenditService.verifyWebhookToken(callbackToken)) {
       log.warn("Invalid webhook token received for invoice");
