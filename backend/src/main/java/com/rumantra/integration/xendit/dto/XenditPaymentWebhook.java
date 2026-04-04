@@ -3,11 +3,13 @@ package com.rumantra.integration.xendit.dto;
 import java.math.BigDecimal;
 import java.util.Map;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class XenditPaymentWebhook {
   @JsonProperty("event")
   private String event;
@@ -22,6 +24,7 @@ public class XenditPaymentWebhook {
   private PaymentData data;
 
   @Data
+  @JsonIgnoreProperties(ignoreUnknown = true)
   public static class PaymentData {
     @JsonProperty("id")
     private String id;
@@ -61,6 +64,7 @@ public class XenditPaymentWebhook {
   }
 
   @Data
+  @JsonIgnoreProperties(ignoreUnknown = true)
   public static class PaymentMethod {
     @JsonProperty("id")
     private String id;
@@ -88,6 +92,7 @@ public class XenditPaymentWebhook {
   }
 
   @Data
+  @JsonIgnoreProperties(ignoreUnknown = true)
   public static class CardDetails {
     @JsonProperty("channel_code")
     private String channelCode;
@@ -100,6 +105,7 @@ public class XenditPaymentWebhook {
   }
 
   @Data
+  @JsonIgnoreProperties(ignoreUnknown = true)
   public static class EwalletDetails {
     @JsonProperty("channel_code")
     private String channelCode;
@@ -109,6 +115,7 @@ public class XenditPaymentWebhook {
   }
 
   @Data
+  @JsonIgnoreProperties(ignoreUnknown = true)
   public static class DirectDebitDetails {
     @JsonProperty("channel_code")
     private String channelCode;
@@ -118,12 +125,14 @@ public class XenditPaymentWebhook {
   }
 
   @Data
+  @JsonIgnoreProperties(ignoreUnknown = true)
   public static class OverTheCounterDetails {
     @JsonProperty("channel_code")
     private String channelCode;
   }
 
   @Data
+  @JsonIgnoreProperties(ignoreUnknown = true)
   public static class VirtualAccountDetails {
     @JsonProperty("channel_code")
     private String channelCode;
@@ -133,6 +142,7 @@ public class XenditPaymentWebhook {
   }
 
   @Data
+  @JsonIgnoreProperties(ignoreUnknown = true)
   public static class QrCodeDetails {
     @JsonProperty("channel_code")
     private String channelCode;

@@ -2,11 +2,13 @@ package com.rumantra.integration.xendit.dto;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Data;
 
 @Data
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class XenditInvoiceWebhook {
   @JsonProperty("id")
   private String id;
