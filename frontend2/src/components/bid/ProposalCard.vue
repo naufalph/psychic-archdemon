@@ -39,7 +39,7 @@
       </div>
 
       <div v-if="proposal.details?.conceptStatement">
-        <p class="text-xs text-gray-500 uppercase font-bold mb-2">Concept</p>
+        <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.proposalCard.concept }}</p>
         <p class="text-sm text-gray-700 line-clamp-3">
           {{ proposal.details.conceptStatement }}
         </p>
@@ -55,7 +55,7 @@
         >
           <Plus v-if="!isSelectedForCompare" :size="16" />
           <Check v-else :size="16" />
-          {{ isSelectedForCompare ? 'Selected for Compare' : 'Add to Compare' }}
+          {{ isSelectedForCompare ? t.proposalCard.selectedForCompare : t.proposalCard.addToCompare }}
         </button>
 
         <button
@@ -63,7 +63,7 @@
           class="w-full px-4 py-2 bg-white border-2 border-[#C5A17A] text-[#7C4728] rounded-full text-sm font-medium hover:bg-[#C5A17A] hover:text-white transition flex items-center justify-center gap-2"
         >
           <Eye :size="16" />
-          View Full Details
+          {{ t.proposalCard.viewDetails }}
         </button>
 
         <button

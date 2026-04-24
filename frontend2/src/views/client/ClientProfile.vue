@@ -1,17 +1,17 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-blue-50">
+  <div class="min-h-full bg-[#F4F5F7]">
     <div class="max-w-4xl mx-auto px-6 py-12">
-      <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
-        <div class="bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-6">
+      <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200">
+        <div class="bg-[#1C1C1C] px-8 py-6">
           <button
             @click="goToDashboard"
-            class="flex items-center gap-2 text-white hover:text-blue-100 transition-colors mb-4 group"
+            class="flex items-center gap-2 text-white hover:text-white/70 transition-colors mb-4 group"
           >
             <ArrowLeftIcon class="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
             <span class="font-medium">{{ t.common.backToDashboard }}</span>
           </button>
           <h1 class="text-3xl font-bold text-white">{{ t.clientProfile.title }}</h1>
-          <p class="text-blue-100 mt-2">{{ t.clientProfile.subtitle }}</p>
+          <p class="text-white/60 mt-2">{{ t.clientProfile.subtitle }}</p>
         </div>
 
         <div class="p-8">
@@ -33,7 +33,7 @@
               <h2 class="text-xl font-semibold text-gray-900">{{ t.clientProfile.viewMode.title }}</h2>
               <button
                 @click="enableEdit"
-                class="px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                class="px-4 py-2 bg-[#1C1C1C] text-white font-semibold rounded-lg hover:bg-[#7C4728] focus:outline-none focus:ring-2 focus:ring-[#7C4728] focus:ring-offset-2 transition-colors"
               >
                 {{ t.clientProfile.editProfile }}
               </button>
@@ -83,13 +83,13 @@
               </div>
             </div>
 
-            <div class="bg-blue-50 rounded-lg p-6 border border-blue-200">
-              <h3 class="text-lg font-semibold text-blue-900 mb-4">
+            <div class="bg-gray-50 rounded-lg p-6 border border-gray-200">
+              <h3 class="text-lg font-semibold text-gray-900 mb-4">
                 {{ t.clientProfile.viewMode.projectStats }}
               </h3>
               <div class="grid grid-cols-2 gap-4">
                 <div class="bg-white rounded-lg p-4 text-center">
-                  <p class="text-3xl font-bold text-blue-600">{{ projectStats.matched }}</p>
+                  <p class="text-3xl font-bold text-[#1C1C1C]">{{ projectStats.matched }}</p>
                   <p class="text-sm text-gray-600 mt-1">{{ t.clientProfile.viewMode.projectsMatched }}</p>
                 </div>
                 <div class="bg-white rounded-lg p-4 text-center">
@@ -195,20 +195,3 @@ const showSuccessToast = () => {
   }, 3000)
 }
 </script>
-
-<style scoped>
-@keyframes fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.3s ease-out;
-}
-</style>

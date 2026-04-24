@@ -88,10 +88,7 @@
             </div>
 
             <!-- Payment Schedule -->
-            <div
-              v-if="bid.details?.phases?.length"
-              class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft"
-            >
+            <div v-if="bid.details?.phases?.length" class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft">
               <h3 class="font-bold text-black mb-4">{{ t.finalization?.paymentSchedule || 'Payment Schedule' }}</h3>
               <div class="space-y-3">
                 <div
@@ -104,7 +101,9 @@
                       <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-[#7C4728] text-white">
                         Phase {{ phase.phaseNumber }}
                       </span>
-                      <span class="text-sm font-bold text-black">{{ phase.title || `Phase ${phase.phaseNumber}` }}</span>
+                      <span class="text-sm font-bold text-black">{{
+                        phase.title || `Phase ${phase.phaseNumber}`
+                      }}</span>
                     </div>
                     <span class="text-sm font-bold text-[#7C4728]">{{ formatCurrency(phase.amount) }}</span>
                   </div>
@@ -113,7 +112,8 @@
                       v-for="d in phase.deliverables"
                       :key="d"
                       class="text-xs px-2 py-0.5 bg-white border border-gray-200 rounded-full text-gray-600"
-                    >{{ d.replace(/_/g, ' ') }}</span>
+                      >{{ d.replace(/_/g, ' ') }}</span
+                    >
                   </div>
                   <p v-if="phase.revisionRounds != null" class="text-xs text-gray-500">
                     {{ phase.revisionRounds }} revision round{{ phase.revisionRounds !== 1 ? 's' : '' }}

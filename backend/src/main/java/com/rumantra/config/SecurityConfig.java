@@ -135,6 +135,14 @@ public class SecurityConfig {
                     .requestMatchers("/rmtr/tokens/**")
                     .hasRole("ARCHITECT")
 
+                    // Phase payment endpoints - require CLIENT role (except unified webhook)
+                    .requestMatchers("/rmtr/payments/webhook/invoice")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.GET, "/rmtr/payments/projects/**")
+                    .hasRole("CLIENT")
+                    .requestMatchers(HttpMethod.POST, "/rmtr/payments/phases/**")
+                    .hasRole("CLIENT")
+
                     // Client project endpoints - require CLIENT role
                     .requestMatchers("/rmtr/clients/*/projects/**")
                     .hasRole("CLIENT")

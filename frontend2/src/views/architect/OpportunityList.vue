@@ -15,10 +15,10 @@
           class="mb-4 flex items-center gap-2 text-gray-600 hover:text-black transition"
         >
           <ArrowLeft :size="20" />
-          Back to Dashboard
+          {{ t.common.backToDashboard }}
         </button>
-        <h1 class="text-4xl font-bold text-black mb-2">Available Opportunities</h1>
-        <p class="text-gray-500">Browse open projects and submit your proposals</p>
+        <h1 class="text-4xl font-bold text-black mb-2">{{ t.opportunityList.title }}</h1>
+        <p class="text-gray-500">{{ t.opportunityList.subtitle }}</p>
       </div>
 
       <div v-if="quota" class="bg-white rounded-2xl border border-gray-200 p-6 mb-8 flex items-center justify-between">
@@ -27,7 +27,7 @@
             <Coins :size="24" class="text-[#7C4728]" />
           </div>
           <div>
-            <p class="text-sm text-gray-500">Bid Tokens Available</p>
+            <p class="text-sm text-gray-500">{{ t.opportunityList.tokensAvailable }}</p>
             <p class="text-2xl font-bold text-[#7C4728]">{{ quota.tokensRemaining }} / {{ quota.tokensAllocated }}</p>
           </div>
         </div>
@@ -35,7 +35,7 @@
           @click="tokenPurchaseStore.openModal()"
           class="bg-[#7C4728] hover:bg-black text-white px-6 py-2 rounded-full text-sm font-medium transition"
         >
-          Purchase Tokens
+          {{ t.opportunityList.purchaseTokens }}
         </button>
       </div>
 
@@ -49,8 +49,8 @@
 
       <div v-else-if="openProjects.length === 0" class="text-center py-20">
         <Search :size="64" class="text-gray-300 mx-auto mb-4" />
-        <h3 class="text-xl font-bold text-gray-900 mb-2">No open projects</h3>
-        <p class="text-gray-500">Check back later for new opportunities</p>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">{{ t.opportunityList.empty.title }}</h3>
+        <p class="text-gray-500">{{ t.opportunityList.empty.message }}</p>
       </div>
 
       <div v-else class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -75,12 +75,14 @@ import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { ArrowLeft, Search, Coins } from 'lucide-vue-next'
+import { useI18n } from '@/composables/useI18n'
 import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
 import { useTokenPurchaseStore } from '@/stores/tokenPurchase'
 import ProjectCard from '@/components/project/ProjectCard.vue'
 import TokenPurchaseModal from '@/components/architect/TokenPurchaseModal.vue'
 
+const { t } = useI18n()
 const router = useRouter()
 const projectsStore = useProjectsStore()
 const bidsStore = useBidsStore()

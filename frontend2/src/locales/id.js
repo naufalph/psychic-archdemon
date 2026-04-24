@@ -329,7 +329,8 @@ export default {
     attachPortfoliosHelp: 'Pilih portofolio yang menunjukkan pengalaman relevan Anda',
     wordCount: '{count}/200 kata',
     wordCountExceeded: 'Pernyataan konsep tidak boleh melebihi 200 kata',
-    phasesTotalMismatch: 'Total fase pembayaran harus sama dengan jumlah penawaran. Harap sesuaikan fase Anda.'
+    phasesTotalMismatch:
+      'Total fase pembayaran harus sama dengan jumlah penawaran. Harap sesuaikan fase Anda.'
   },
   proposalCreate: {
     title: 'Kirim Proposal',
@@ -346,7 +347,8 @@ export default {
     bidAmount: 'Nilai Penawaran (IDR)',
     timeline: 'Timeline yang Diusulkan (hari)',
     paymentPhases: 'Fase Pembayaran',
-    paymentPhasesHelp: 'Tentukan fase pembayaran. Total semua fase harus sama dengan nilai penawaran.',
+    paymentPhasesHelp:
+      'Tentukan fase pembayaran. Total semua fase harus sama dengan nilai penawaran.',
     submitBtn: 'Kirim Proposal',
     cancelBtn: 'Batal',
     submitting: 'Mengirim...',
@@ -404,7 +406,16 @@ export default {
     status: 'Status',
     winner: 'Pemenang',
     biddingDeadline: 'Batas Waktu Bidding',
-    deadline: 'Batas Waktu'
+    deadline: 'Batas Waktu',
+    bidAcceptedTitle: 'Penawaran Diterima — Menyelesaikan Syarat',
+    bidAcceptedDesc: 'Tinjau syarat penawaran terpilih dan konfirmasi sebelum pekerjaan dimulai.',
+    continueToFinalization: 'Lanjutkan ke Finalisasi',
+    comparativeAnalysis: 'Analisis Perbandingan',
+    subjectA: 'Subjek A',
+    subjectB: 'Subjek B',
+    emptyCompareSlot: 'Kosong — pilih dari daftar',
+    compareHint: 'Pilih proposal dari daftar di bawah untuk memulai analisis perbandingan',
+    bidRegistry: 'Daftar Penawaran'
   },
   clientProfile: {
     title: 'Profil Saya',
@@ -594,5 +605,221 @@ export default {
       projectRef: 'Proyek',
       bidRef: 'Penawaran'
     }
+  },
+  myBids: {
+    title: 'Penawaran Saya',
+    subtitle: 'Lacak proposal yang telah Anda kirim',
+    empty: {
+      title: 'Belum ada penawaran',
+      message: 'Kirim proposal pertama Anda untuk memulai',
+      cta: 'Lihat Peluang'
+    }
+  },
+  opportunityList: {
+    title: 'Peluang Tersedia',
+    subtitle: 'Jelajahi proyek terbuka dan kirim proposal Anda',
+    tokensAvailable: 'Token Bid Tersedia',
+    purchaseTokens: 'Beli Token',
+    empty: {
+      title: 'Tidak ada proyek terbuka',
+      message: 'Cek kembali nanti untuk peluang baru'
+    }
+  },
+  phasePayments: {
+    loading: 'Memuat jadwal pembayaran...',
+    title: 'Jadwal Pembayaran',
+    subtitle: 'Fase Proyek',
+    tryAgain: 'Coba lagi',
+    inProgressBanner: 'Proyek Anda kini berjalan. Bayar setiap fase seiring pekerjaan diserahkan.',
+    noPhases: 'Tidak ada fase pembayaran untuk proyek ini.',
+    phase: 'Fase',
+    processing: 'Memproses...',
+    payNow: 'Bayar Sekarang',
+    paid: 'Dibayar',
+    deliverables: 'Deliverable',
+    totalValue: 'Total Nilai Proyek',
+    remaining: 'Sisa',
+    statusPending: 'Tertunda',
+    statusPaid: 'Dibayar',
+    statusExpired: 'Kedaluwarsa',
+    statusProcessing: 'Diproses'
+  },
+  projectDetailArchitect: {
+    designBudgetRange: 'Rentang Anggaran Desain',
+    buildArea: 'Luas Bangunan',
+    floors: 'Lantai',
+    scopeOfWork: 'Lingkup Pekerjaan',
+    deliverables: 'Deliverable',
+    category: 'Kategori',
+    expectedStartDate: 'Tanggal Mulai yang Diharapkan',
+    landOwnership: 'Kepemilikan Lahan',
+    yes: 'Ya',
+    no: 'Tidak',
+    legalDocumentation: 'Dokumentasi Hukum',
+    complete: 'Lengkap',
+    incomplete: 'Tidak Lengkap',
+    designPreferences: 'Preferensi Desain',
+    proposalAccepted: 'Proposal Diterima',
+    proposalAcceptedDesc: 'Tinjau ketentuan dan konfirmasi untuk memulai proyek.',
+    finalizeAgreement: 'Finalisasi Perjanjian',
+    proposalSubmitted: 'Proposal Terkirim',
+    proposalSubmittedDesc: 'Penawaran Anda sedang ditinjau oleh klien.',
+    draftSaved: 'Draft Tersimpan',
+    draftSavedDesc: 'Lanjutkan mengedit untuk melengkapi proposal Anda.',
+    bidRejected: 'Penawaran Tidak Terpilih',
+    bidRejectedDesc: 'Penawaran Anda tidak terpilih untuk proyek ini.',
+    noBidYet: 'Belum Ada Penawaran',
+    noBidYetDesc: 'Kirim proposal untuk bersaing mendapatkan proyek ini.',
+    projectClosedBidding: 'Proyek Ditutup',
+    projectClosedBiddingDesc: 'Periode bidding untuk proyek ini telah berakhir.'
+  },
+  proposalComparison: {
+    proposalA: 'Proposal A',
+    proposalB: 'Proposal B',
+    appointed: '✓ Ditunjuk',
+    appointLead: 'Tunjuk Arsitek Utama',
+    appointConfirm: 'Tunjuk arsitek ini sebagai pemimpin untuk proyek ini?',
+    visualOverlay: 'Overlay Visual',
+    sideBySize: 'Tinjauan Desain Berdampingan',
+    adjustSlider: 'Geser untuk perbandingan relatif',
+    facade: 'Fasad',
+    interior: 'Interior',
+    massing: 'Massing',
+    zoning: 'Zoning',
+    noImages: 'Tidak ada gambar {type}',
+    reviewing: 'Meninjau',
+    conceptStatements: 'Konsep Desain',
+    studioOverview: 'Profil Studio',
+    conceptStatement: 'Pernyataan Konsep',
+    noStudioOverview: 'Tidak ada profil studio.',
+    noConceptStatement: 'Tidak ada pernyataan konsep.',
+    summaryStats: 'Ringkasan Statistik',
+    metricHeader: 'Metrik',
+    costEstimate: 'Estimasi Biaya',
+    timeline: 'Timeline',
+    portfolios: 'Portofolio',
+    scopeAlignment: 'Kesesuaian Scope',
+    paymentScheduleTitle: 'Jadwal Pembayaran',
+    noPhases: 'Tidak ada fase pembayaran',
+    deliverable: 'deliverable',
+    deliverables: 'deliverable',
+    days: 'hari',
+    imageOf: '{current} dari {total}',
+    prevImage: 'Gambar sebelumnya',
+    nextImage: 'Gambar berikutnya',
+    matchingDeliverable: 'Sesuai kebutuhan proyek',
+    additionalDeliverable: 'Tambahan dari arsitek',
+    missingDeliverable: 'Belum tercakup dalam proposal',
+    uncoveredTitle: 'Belum tercakup dari kebutuhan proyek'
+  },
+  paymentPhaseBuilder: {
+    availableDeliverables: 'Deliverable Tersedia',
+    availableDeliverablesHelp:
+      'Klik deliverable untuk menetapkannya ke fase aktif, atau seret ke fase tertentu.',
+    paymentPhases: 'Fase Pembayaran',
+    addPhase: '+ Tambah Fase',
+    phasesTotal: 'Total fase',
+    amount: 'Jumlah (IDR)',
+    revisionRounds: 'Putaran revisi',
+    estimatedDays: 'Est. hari',
+    daysTotal: 'Total durasi',
+    phase: 'Fase',
+    phaseTitlePlaceholder: 'judul',
+    dropZoneHint: 'Seret deliverable ke sini atau klik di atas untuk menetapkan'
+  },
+  bidDetail: {
+    backToProject: 'Kembali ke Proyek',
+    proposedCost: 'Biaya yang Diajukan',
+    timeline: 'Timeline',
+    days: 'hari',
+    studioOverview: 'Profil Studio',
+    noStudioOverview: 'Tidak ada profil studio.',
+    designConcept: 'Konsep Desain',
+    paymentSchedule: 'Jadwal Pembayaran',
+    portfolioProjects: 'Proyek Portofolio Terkait',
+    facade: 'Fasad',
+    noFacade: 'Tidak ada gambar fasad',
+    interior: 'Interior',
+    noInterior: 'Tidak ada gambar interior',
+    massing: 'Massing',
+    noMassing: 'Tidak ada gambar massing',
+    zoning: 'Zoning',
+    noZoning: 'Tidak ada gambar zoning',
+    acceptProposal: 'Terima Proposal Ini',
+    accepted: 'Diterima',
+    submittedOn: 'Dikirim pada {date}',
+    matchingDeliverable: 'Sesuai kebutuhan proyek',
+    additionalDeliverable: 'Tambahan dari arsitek',
+    missingDeliverable: 'Belum tercakup dalam proposal',
+    uncoveredTitle: 'Belum tercakup dari kebutuhan proyek'
+  },
+  proposalCard: {
+    appointed: 'Ditunjuk',
+    concept: 'Konsep',
+    selectedForCompare: 'Dipilih untuk Dibandingkan',
+    addToCompare: 'Tambah untuk Dibandingkan',
+    viewDetails: 'Lihat Detail Lengkap'
+  },
+  projectCard: {
+    manage: 'Kelola →'
+  },
+  clientFinalization: {
+    itSupportInvited: 'Dukungan IT diundang',
+    winningBid: 'Penawaran Terpilih',
+    paymentSchedule: 'Jadwal Pembayaran',
+    phase: 'Fase',
+    revisionRound: 'putaran revisi',
+    revisionRounds: 'putaran revisi',
+    total: 'Total',
+    discussionSubtitle: 'Diskusikan ketentuan dengan arsitek',
+    clientPanel: {
+      confirmed: 'Anda telah mengkonfirmasi',
+      architectAlsoConfirmed: 'Arsitek juga telah mengkonfirmasi.',
+      awaitingArchitect: 'Menunggu konfirmasi arsitek...',
+      confirmPrompt:
+        'Tinjau syarat penawaran dan diskusikan dengan arsitek sebelum mengkonfirmasi.',
+      confirmButton: 'Konfirmasi & Lanjut ke Pembayaran',
+      confirming: 'Mengkonfirmasi...',
+      rejectButton: 'Tolak Syarat & Buka Kembali Bidding'
+    },
+    architectPanel: {
+      confirmed: 'Anda telah mengkonfirmasi',
+      clientAlsoConfirmed: 'Klien juga telah mengkonfirmasi.',
+      awaitingClient: 'Menunggu konfirmasi klien...',
+      confirmPrompt:
+        'Tinjau ketentuan yang disepakati dan konfirmasi untuk melanjutkan proyek ini.',
+      confirmButton: 'Konfirmasi & Lanjut ke Pembayaran'
+    },
+    rejectDialog: {
+      title: 'Tolak Syarat & Buka Kembali Bidding?',
+      message:
+        'Ini akan menolak penawaran, mengembalikan token arsitek, dan membuka kembali proyek untuk penawaran baru. Tindakan ini tidak dapat dibatalkan.',
+      cancel: 'Batal',
+      confirm: 'Ya, Tolak & Buka Kembali',
+      rejecting: 'Menolak...'
+    }
+  },
+  errors: {
+    BID_NOT_DRAFT: 'Penawaran hanya bisa dikirim saat berstatus draft.',
+    BID_NOT_FOUND: 'Penawaran tidak ditemukan.',
+    BID_IMAGE_NOT_FOUND: 'Gambar penawaran tidak ditemukan.',
+    UNAUTHORIZED_BID_ACCESS: 'Anda tidak diizinkan mengakses penawaran ini.',
+    ALREADY_BASIC_TIER: 'Anda sudah berlangganan paket Basic.',
+    UNAUTHORIZED_ARCHITECT_ACCESS: 'Anda tidak diizinkan mengakses profil arsitek ini.',
+    ARCHITECT_NOT_FOUND: 'Arsitek tidak ditemukan.',
+    PROJECT_NOT_FOUND: 'Proyek tidak ditemukan.',
+    INVALID_PURCHASE_QUANTITY: 'Jumlah pembelian token tidak valid.',
+    PURCHASE_NOT_FOUND: 'Pembelian token tidak ditemukan.',
+    UNAUTHORIZED_PURCHASE_ACCESS: 'Anda tidak diizinkan mengakses pembelian ini.',
+    XENDIT_PAYMENT_ERROR: 'Gagal memproses pembayaran. Silakan coba lagi.',
+    UNAUTHORIZED_PROJECT_ACCESS: 'Anda tidak diizinkan mengakses proyek ini.',
+    PURCHASE_ALREADY_COMPLETED: 'Pembelian ini sudah selesai diproses.',
+    ATTACHMENT_NOT_FOUND: 'Lampiran tidak ditemukan.',
+    ATTACHMENT_MODIFY_NOT_DRAFT: 'Lampiran hanya bisa diubah saat proyek masih dalam status draft.',
+    ATTACHMENT_EMPTY_FILE: 'File kosong.',
+    ATTACHMENT_INVALID_TYPE: 'Tipe file tidak valid.',
+    ATTACHMENT_SIZE_EXCEEDED: 'Ukuran file melebihi batas maksimum.',
+    PHASE_NOT_FOUND: 'Fase pembayaran tidak ditemukan.',
+    PHASE_ALREADY_PAID: 'Fase ini sudah dibayar.'
   }
 }

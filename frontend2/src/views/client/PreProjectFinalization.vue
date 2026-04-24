@@ -3,14 +3,14 @@
     <div v-if="loading && !bid" class="flex items-center justify-center h-screen">
       <div class="text-center">
         <div class="w-10 h-10 border-2 border-[#C5A17A] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p class="text-gray-500">Loading negotiation...</p>
+        <p class="text-gray-500">{{ t.finalization.loading }}</p>
       </div>
     </div>
 
     <div v-else-if="error" class="flex items-center justify-center h-screen">
       <div class="text-center">
         <p class="text-red-500 mb-4">{{ error }}</p>
-        <button @click="loadData" class="text-[#7C4728] hover:underline">Try again</button>
+        <button @click="loadData" class="text-[#7C4728] hover:underline">{{ t.finalization.tryAgain }}</button>
       </div>
     </div>
 
@@ -28,14 +28,14 @@
                   class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700"
                 >
                   <Clock :size="12" />
-                  Finalization
+                  {{ t.finalization.badge }}
                 </span>
               </div>
-              <h1 class="text-lg font-bold text-black mt-1">{{ project?.title || 'Project Finalization' }}</h1>
+              <h1 class="text-lg font-bold text-black mt-1">{{ project?.title || t.finalization.badge }}</h1>
             </div>
           </div>
           <div v-if="project?.biddingDeadline" class="text-right text-sm text-gray-500">
-            <p class="text-xs font-bold uppercase text-gray-400">Bidding Deadline</p>
+            <p class="text-xs font-bold uppercase text-gray-400">{{ t.finalization.biddingDeadline }}</p>
             <p>{{ formatDate(project.biddingDeadline) }}</p>
           </div>
         </div>
@@ -48,7 +48,7 @@
       >
         <div class="max-w-7xl mx-auto flex items-center gap-2 text-green-700 text-sm font-bold">
           <CheckCircle :size="16" />
-          Both parties have confirmed — project is now In Progress!
+          {{ t.finalization.bothConfirmed }}
         </div>
       </div>
 
@@ -68,30 +68,28 @@
                   class="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-bold"
                 >
                   <CheckCircle :size="12" />
-                  Winning Bid
+                  {{ t.clientFinalization.winningBid }}
                 </span>
               </div>
 
               <div class="grid grid-cols-2 gap-3">
                 <div class="bg-[#FDF6EE] rounded-2xl p-4">
-                  <p class="text-xs text-gray-500 uppercase font-bold mb-1">Proposed Price</p>
+                  <p class="text-xs text-gray-500 uppercase font-bold mb-1">{{ t.finalization.proposedPrice }}</p>
                   <p class="text-2xl font-bold text-[#7C4728]">{{ formatCurrency(bid.bidAmount) }}</p>
                 </div>
                 <div class="bg-gray-50 rounded-2xl p-4">
-                  <p class="text-xs text-gray-500 uppercase font-bold mb-1">Timeline</p>
+                  <p class="text-xs text-gray-500 uppercase font-bold mb-1">{{ t.finalization.timeline }}</p>
                   <p class="text-2xl font-bold text-black">
-                    {{ bid.proposedTimelineDays }} <span class="text-sm font-normal text-gray-500">days</span>
+                    {{ bid.proposedTimelineDays }}
+                    <span class="text-sm font-normal text-gray-500">{{ t.finalization.days }}</span>
                   </p>
                 </div>
               </div>
             </div>
 
             <!-- Payment Schedule -->
-            <div
-              v-if="bid.details?.phases?.length"
-              class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft"
-            >
-              <h3 class="font-bold text-black mb-4">Payment Schedule</h3>
+            <div v-if="bid.details?.phases?.length" class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft">
+              <h3 class="font-bold text-black mb-4">{{ t.clientFinalization.paymentSchedule }}</h3>
               <div class="space-y-3">
                 <div
                   v-for="phase in bid.details.phases"
@@ -101,9 +99,11 @@
                   <div class="flex items-center justify-between mb-2">
                     <div class="flex items-center gap-2">
                       <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-[#7C4728] text-white">
-                        Phase {{ phase.phaseNumber }}
+                        {{ t.clientFinalization.phase }} {{ phase.phaseNumber }}
                       </span>
-                      <span class="text-sm font-bold text-black">{{ phase.title || `Phase ${phase.phaseNumber}` }}</span>
+                      <span class="text-sm font-bold text-black">{{
+                        phase.title || `${t.clientFinalization.phase} ${phase.phaseNumber}`
+                      }}</span>
                     </div>
                     <span class="text-sm font-bold text-[#7C4728]">{{ formatCurrency(phase.amount) }}</span>
                   </div>
@@ -112,15 +112,21 @@
                       v-for="d in phase.deliverables"
                       :key="d"
                       class="text-xs px-2 py-0.5 bg-white border border-gray-200 rounded-full text-gray-600"
-                    >{{ d.replace(/_/g, ' ') }}</span>
+                      >{{ d.replace(/_/g, ' ') }}</span
+                    >
                   </div>
                   <p v-if="phase.revisionRounds != null" class="text-xs text-gray-500">
-                    {{ phase.revisionRounds }} revision round{{ phase.revisionRounds !== 1 ? 's' : '' }}
+                    {{ phase.revisionRounds }}
+                    {{
+                      phase.revisionRounds !== 1
+                        ? t.clientFinalization.revisionRounds
+                        : t.clientFinalization.revisionRound
+                    }}
                   </p>
                 </div>
               </div>
               <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between text-sm">
-                <span class="text-gray-500 font-bold">Total</span>
+                <span class="text-gray-500 font-bold">{{ t.clientFinalization.total }}</span>
                 <span class="font-bold text-[#7C4728]">{{ formatCurrency(bid.bidAmount) }}</span>
               </div>
             </div>
@@ -130,7 +136,7 @@
               v-if="bid.details?.conceptStatement"
               class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft"
             >
-              <h3 class="font-bold text-black mb-3">Design Concept</h3>
+              <h3 class="font-bold text-black mb-3">{{ t.finalization.designConcept }}</h3>
               <p class="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
                 {{ bid.details.conceptStatement }}
               </p>
@@ -141,7 +147,7 @@
               v-if="bid.portfolioReferences?.length"
               class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft"
             >
-              <h3 class="font-bold text-black mb-3">Portfolio References</h3>
+              <h3 class="font-bold text-black mb-3">{{ t.finalization.portfolioRefs }}</h3>
               <div class="grid grid-cols-3 gap-3">
                 <div
                   v-for="porto in bid.portfolioReferences"
@@ -173,17 +179,19 @@
             >
               <div class="px-5 py-4 border-b border-gray-100">
                 <div class="flex items-center gap-2">
-                  <h3 class="font-bold text-black">Discussion</h3>
-                  <span v-if="itSupportRequested" class="text-xs text-[#7C4728] font-medium">· IT Support invited</span>
+                  <h3 class="font-bold text-black">{{ t.finalization.discussion }}</h3>
+                  <span v-if="itSupportRequested" class="text-xs text-[#7C4728] font-medium"
+                    >· {{ t.clientFinalization.itSupportInvited }}</span
+                  >
                 </div>
-                <p class="text-xs text-gray-500 mt-0.5">Chat with the architect about the terms</p>
+                <p class="text-xs text-gray-500 mt-0.5">{{ t.clientFinalization.discussionSubtitle }}</p>
               </div>
 
               <div class="flex-1 min-h-0" v-if="bid.conversationId">
                 <ChatPanel :conversation-id="bid.conversationId" class="h-full" />
               </div>
               <div v-else class="flex-1 flex items-center justify-center text-gray-400 text-sm">
-                Chat not available yet
+                {{ t.finalization.chatUnavailable }}
               </div>
             </div>
 
@@ -193,7 +201,13 @@
                 :disabled="supportLoading || itSupportRequested"
                 class="text-xs text-gray-400 hover:text-gray-600 underline disabled:cursor-not-allowed"
               >
-                {{ supportLoading ? 'Opening...' : itSupportRequested ? 'IT Support invited' : 'Request IT Support' }}
+                {{
+                  supportLoading
+                    ? t.support.opening
+                    : itSupportRequested
+                      ? t.clientFinalization.itSupportInvited
+                      : t.support.requestSupport
+                }}
               </button>
             </div>
 
@@ -202,19 +216,19 @@
               <div v-if="project?.clientConfirmed" class="flex items-center gap-2 text-green-700">
                 <CheckCircle :size="16" />
                 <div>
-                  <p class="text-sm font-bold">You've confirmed</p>
+                  <p class="text-sm font-bold">{{ t.clientFinalization.clientPanel.confirmed }}</p>
                   <p class="text-xs text-gray-500">
                     {{
                       project?.architectConfirmed
-                        ? 'Architect has also confirmed.'
-                        : 'Awaiting architect confirmation...'
+                        ? t.clientFinalization.clientPanel.architectAlsoConfirmed
+                        : t.clientFinalization.clientPanel.awaitingArchitect
                     }}
                   </p>
                 </div>
               </div>
               <div v-else>
                 <p class="text-xs text-gray-500 mb-4 leading-relaxed">
-                  Review the bid terms and discuss with the architect before confirming.
+                  {{ t.clientFinalization.clientPanel.confirmPrompt }}
                 </p>
                 <div class="space-y-3">
                   <button
@@ -223,7 +237,11 @@
                     class="w-full px-5 py-3.5 bg-[#7C4728] text-white rounded-full font-bold hover:bg-black transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <CheckCircle :size="18" />
-                    {{ actionLoading === 'confirm' ? 'Confirming...' : 'Confirm & Proceed to Payment' }}
+                    {{
+                      actionLoading === 'confirm'
+                        ? t.clientFinalization.clientPanel.confirming
+                        : t.clientFinalization.clientPanel.confirmButton
+                    }}
                   </button>
                   <button
                     @click="showRejectDialog = true"
@@ -231,7 +249,7 @@
                     class="w-full px-5 py-3.5 bg-white text-red-600 border border-red-200 rounded-full font-bold hover:bg-red-50 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <XCircle :size="18" />
-                    Reject Terms & Reopen Bidding
+                    {{ t.clientFinalization.clientPanel.rejectButton }}
                   </button>
                 </div>
               </div>
@@ -242,15 +260,19 @@
               <div v-if="project?.architectConfirmed" class="flex items-center gap-2 text-green-700">
                 <CheckCircle :size="16" />
                 <div>
-                  <p class="text-sm font-bold">You've confirmed</p>
+                  <p class="text-sm font-bold">{{ t.clientFinalization.architectPanel.confirmed }}</p>
                   <p class="text-xs text-gray-500">
-                    {{ project?.clientConfirmed ? 'Client has also confirmed.' : 'Awaiting client confirmation...' }}
+                    {{
+                      project?.clientConfirmed
+                        ? t.clientFinalization.architectPanel.clientAlsoConfirmed
+                        : t.clientFinalization.architectPanel.awaitingClient
+                    }}
                   </p>
                 </div>
               </div>
               <div v-else>
                 <p class="text-xs text-gray-500 mb-4 leading-relaxed">
-                  Review the agreed terms and confirm to proceed with the project.
+                  {{ t.clientFinalization.architectPanel.confirmPrompt }}
                 </p>
                 <button
                   @click="handleArchitectConfirm"
@@ -258,7 +280,11 @@
                   class="w-full px-5 py-3.5 bg-[#7C4728] text-white rounded-full font-bold hover:bg-black transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <CheckCircle :size="18" />
-                  {{ actionLoading === 'architect-confirm' ? 'Confirming...' : 'Confirm & Proceed to Payment' }}
+                  {{
+                    actionLoading === 'architect-confirm'
+                      ? t.clientFinalization.clientPanel.confirming
+                      : t.clientFinalization.architectPanel.confirmButton
+                  }}
                 </button>
               </div>
             </div>
@@ -270,24 +296,27 @@
     <!-- Reject Confirmation Dialog -->
     <div v-if="showRejectDialog" class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
       <div class="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl">
-        <h3 class="text-xl font-bold text-black mb-2">Reject Terms & Reopen Bidding?</h3>
+        <h3 class="text-xl font-bold text-black mb-2">{{ t.clientFinalization.rejectDialog.title }}</h3>
         <p class="text-gray-600 text-sm mb-6">
-          This will reject the current bid, refund the architect's token, and reopen the project for new bids. This
-          action cannot be undone.
+          {{ t.clientFinalization.rejectDialog.message }}
         </p>
         <div class="flex gap-3">
           <button
             @click="showRejectDialog = false"
             class="flex-1 px-5 py-3 border border-gray-200 rounded-full font-bold text-gray-700 hover:bg-gray-50 transition"
           >
-            Cancel
+            {{ t.clientFinalization.rejectDialog.cancel }}
           </button>
           <button
             @click="handleReject"
             :disabled="actionLoading === 'reject'"
             class="flex-1 px-5 py-3 bg-red-600 text-white rounded-full font-bold hover:bg-red-700 transition disabled:opacity-50"
           >
-            {{ actionLoading === 'reject' ? 'Rejecting...' : 'Yes, Reject & Reopen' }}
+            {{
+              actionLoading === 'reject'
+                ? t.clientFinalization.rejectDialog.rejecting
+                : t.clientFinalization.rejectDialog.confirm
+            }}
           </button>
         </div>
       </div>
@@ -299,11 +328,13 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Clock, CheckCircle, XCircle } from 'lucide-vue-next'
+import { useI18n } from '@/composables/useI18n'
 import { useBidsStore } from '@/stores/bids'
 import { useAuthStore } from '@/stores/auth'
 import { projectAPI, supportAPI } from '@/services/api'
 import ChatPanel from '@/components/chat/ChatPanel.vue'
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const bidsStore = useBidsStore()
@@ -388,7 +419,7 @@ const handleConfirm = async () => {
     const response = await projectAPI.confirmNegotiation(route.params.projectId)
     project.value = response.data.data
     if (project.value.status === 'IN_PROGRESS') {
-      router.push(`/client/projects/${route.params.projectId}`)
+      router.push(`/client/projects/${route.params.projectId}/payments`)
     }
   } catch (err) {
     alert(err.response?.data?.message || 'Failed to confirm terms')

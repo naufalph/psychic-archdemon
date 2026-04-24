@@ -18,6 +18,7 @@ import com.rumantra.bidding.dto.BidPaymentPhaseRequest;
 import com.rumantra.bidding.dto.BidPaymentPhaseResponse;
 import com.rumantra.bidding.repository.BidDetailRepository;
 import com.rumantra.bidding.repository.BidPaymentPhaseRepository;
+import com.rumantra.bidding.repository.BidRepository;
 
 @Service
 public class BidDetailService {
@@ -25,6 +26,8 @@ public class BidDetailService {
   @Autowired private BidDetailRepository bidDetailRepository;
 
   @Autowired private BidPaymentPhaseRepository bidPaymentPhaseRepository;
+
+  @Autowired private BidRepository bidRepository;
 
   @Transactional
   public BidDetail createOrUpdate(Bid bid, BidDetailRequest request) {
@@ -89,6 +92,12 @@ public class BidDetailService {
               + bid.getBidAmount()
               + ")");
     }
+
+    boolean anyMissingDays =
+        phases.stream().anyMatch(p -> p.getEstimatedDays() == null || p.getEstimatedDays() <= 0);
+    if (anyMissingDays) {
+      throw new IllegalArgumentException("Each phase must have a positive estimated_days value");
+    }
   }
 
   private void savePhases(Bid bid, List<BidPaymentPhaseRequest> phases) {
@@ -104,11 +113,19 @@ public class BidDetailService {
               .deliverables(phaseReq.getDeliverables())
               .amount(phaseReq.getAmount() != null ? phaseReq.getAmount() : BigDecimal.ZERO)
               .revisionRounds(phaseReq.getRevisionRounds())
+              .estimatedDays(phaseReq.getEstimatedDays() != null ? phaseReq.getEstimatedDays() : 0)
               .displayOrder(order++)
               .build();
 
       bidPaymentPhaseRepository.save(phase);
     }
+
+    int totalDays =
+        phases.stream()
+            .mapToInt(p -> p.getEstimatedDays() != null ? p.getEstimatedDays() : 0)
+            .sum();
+    bid.setProposedTimelineDays(totalDays);
+    bidRepository.save(bid);
   }
 
   private List<BidPaymentPhaseResponse> getPhaseResponses(Long bidId) {
@@ -125,6 +142,7 @@ public class BidDetailService {
                     .deliverables(p.getDeliverables())
                     .amount(p.getAmount())
                     .revisionRounds(p.getRevisionRounds())
+                    .estimatedDays(p.getEstimatedDays())
                     .displayOrder(p.getDisplayOrder())
                     .build())
         .collect(Collectors.toList());

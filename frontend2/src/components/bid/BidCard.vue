@@ -35,7 +35,7 @@
           IDR {{ formatNumber(bid.bidAmount) }}
         </span>
         <span class="bg-gray-100 px-3 py-1.5 rounded-full text-xs font-medium border border-gray-200">
-          {{ bid.proposedTimelineDays }} days
+          {{ bid.proposedTimelineDays }} {{ t.clientDashboard.days }}
         </span>
       </div>
 
@@ -58,11 +58,13 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { MapPin } from 'lucide-vue-next'
+import { useI18n } from '@/composables/useI18n'
 
 const props = defineProps({
   bid: { type: Object, required: true }
 })
 
+const { t } = useI18n()
 const router = useRouter()
 
 const coverImage = computed(() => props.bid.projectCoverImagePath || props.bid.facadeImages?.[0]?.imageUrl || null)

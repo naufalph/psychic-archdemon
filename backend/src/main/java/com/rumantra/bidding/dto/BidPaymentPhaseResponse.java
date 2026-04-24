@@ -20,5 +20,6 @@ public class BidPaymentPhaseResponse {
   private List<String> deliverables;
   private BigDecimal amount;
   private Integer revisionRounds;
+  private Integer estimatedDays;
   private Integer displayOrder;
 }

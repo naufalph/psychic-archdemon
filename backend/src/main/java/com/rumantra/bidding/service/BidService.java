@@ -95,7 +95,6 @@ public class BidService {
             .project(project)
             .architect(architect)
             .bidAmount(request.getBidAmount())
-            .proposedTimelineDays(request.getProposedTimelineDays())
             .proposal(request.getProposal())
             .status(BidStatus.DRAFT)
             .build();
@@ -123,19 +122,13 @@ public class BidService {
 
     validateBidComplete(bidId);
 
-    BidQuota quota = bidQuotaService.getQuotaByArchitectId(bid.getArchitect().getId());
-    if (quota.getTokensRemaining() <= 0) {
-      throw new RuntimeException(
-          "No bid tokens remaining. Please upgrade to BASIC tier or purchase more tokens.");
-    }
-
     bidQuotaService.consumeToken(bid.getArchitect().getId());
 
     bid.setStatus(BidStatus.PENDING);
     bid.setSubmittedAt(LocalDateTime.now());
     bid = bidRepository.save(bid);
 
-    quota = bidQuotaService.getQuotaByArchitectId(bid.getArchitect().getId());
+    BidQuota quota = bidQuotaService.getQuotaByArchitectId(bid.getArchitect().getId());
     bidUsageLogService.logBidPlaced(bid.getArchitect(), bid, quota.getTokensRemaining());
 
     Project project = bid.getProject();
@@ -182,9 +175,6 @@ public class BidService {
 
     if (request.getBidAmount() != null) {
       bid.setBidAmount(request.getBidAmount());
-    }
-    if (request.getProposedTimelineDays() != null) {
-      bid.setProposedTimelineDays(request.getProposedTimelineDays());
     }
     if (request.getProposal() != null) {
       bid.setProposal(request.getProposal());

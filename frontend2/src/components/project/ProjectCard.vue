@@ -44,12 +44,13 @@
 
       <div class="flex items-center justify-between pt-3 border-t border-gray-100">
         <span class="text-xs text-gray-500 font-medium">
-          {{ proposalCount }} {{ proposalCount === 1 ? 'Bid' : 'Bids' }}
+          {{ proposalCount }}
+          {{ proposalCount === 1 ? t.clientDashboard.proposalSingular : t.clientDashboard.proposalPlural }}
         </span>
         <button
           class="bg-black text-white text-xs font-bold px-4 py-2 rounded-full tracking-wider hover:bg-[#7C4728] transition"
         >
-          MANAGE →
+          {{ t.projectCard.manage }}
         </button>
       </div>
     </div>
@@ -71,50 +72,51 @@
     </div>
 
     <div class="p-8">
-    <div class="flex justify-between items-start mb-4">
-      <h3 class="text-xl font-bold text-black line-clamp-2">{{ project.title }}</h3>
-      <div class="flex gap-2">
-        <ProjectStatusBadge :status="project.status" />
-        <BidStatusBadge v-if="bidStatus" :status="bidStatus" />
-      </div>
-    </div>
-
-    <p class="text-gray-500 text-sm mb-4">{{ project.location }} • {{ project.buildingType }}</p>
-
-    <p v-if="project.description" class="text-gray-600 text-sm mb-6 line-clamp-3">
-      {{ project.description }}
-    </p>
-
-    <div class="flex flex-wrap gap-2 mb-6">
-      <span class="bg-gray-100 px-3 py-1.5 rounded-full text-xs font-medium border border-gray-200">
-        {{ project.lotSize }} m²
-      </span>
-      <span
-        v-if="project.totalBudget"
-        class="bg-gray-100 px-3 py-1.5 rounded-full text-xs font-medium border border-gray-200"
-      >
-        IDR {{ formatCurrency(project.totalBudget) }}
-      </span>
-      <span
-        v-if="showProposalCount && proposalCount > 0"
-        class="bg-[#7C4728] text-white px-3 py-1.5 rounded-full text-xs font-bold"
-      >
-        {{ proposalCount }} {{ proposalCount === 1 ? 'Proposal' : 'Proposals' }}
-      </span>
-    </div>
-
-    <div v-if="project.biddingDeadline && project.status === 'OPEN'" class="pt-4 border-t border-gray-100">
-      <BiddingCountdown :deadline="project.biddingDeadline" size="sm" />
-    </div>
-
-    <div v-if="variant === 'architect'" class="pt-4 border-t border-gray-100 mt-4">
-      <div class="flex items-center justify-between">
-        <div class="text-xs text-gray-500">
-          <span class="font-semibold text-gray-700">Design Budget:</span>
-          IDR {{ formatCurrency(project.designBudget) }}
+      <div class="flex justify-between items-start mb-4">
+        <h3 class="text-xl font-bold text-black line-clamp-2">{{ project.title }}</h3>
+        <div class="flex gap-2">
+          <ProjectStatusBadge :status="project.status" />
+          <BidStatusBadge v-if="bidStatus" :status="bidStatus" />
         </div>
       </div>
-    </div>
+
+      <p class="text-gray-500 text-sm mb-4">{{ project.location }} • {{ project.buildingType }}</p>
+
+      <p v-if="project.description" class="text-gray-600 text-sm mb-6 line-clamp-3">
+        {{ project.description }}
+      </p>
+
+      <div class="flex flex-wrap gap-2 mb-6">
+        <span class="bg-gray-100 px-3 py-1.5 rounded-full text-xs font-medium border border-gray-200">
+          {{ project.lotSize }} m²
+        </span>
+        <span
+          v-if="project.totalBudget"
+          class="bg-gray-100 px-3 py-1.5 rounded-full text-xs font-medium border border-gray-200"
+        >
+          IDR {{ formatCurrency(project.totalBudget) }}
+        </span>
+        <span
+          v-if="showProposalCount && proposalCount > 0"
+          class="bg-[#7C4728] text-white px-3 py-1.5 rounded-full text-xs font-bold"
+        >
+          {{ proposalCount }}
+          {{ proposalCount === 1 ? t.clientDashboard.proposalSingular : t.clientDashboard.proposalPlural }}
+        </span>
+      </div>
+
+      <div v-if="project.biddingDeadline && project.status === 'OPEN'" class="pt-4 border-t border-gray-100">
+        <BiddingCountdown :deadline="project.biddingDeadline" size="sm" />
+      </div>
+
+      <div v-if="variant === 'architect'" class="pt-4 border-t border-gray-100 mt-4">
+        <div class="flex items-center justify-between">
+          <div class="text-xs text-gray-500">
+            <span class="font-semibold text-gray-700">Design Budget:</span>
+            IDR {{ formatCurrency(project.designBudget) }}
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -123,6 +125,7 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { MapPin, DollarSign, Clock } from 'lucide-vue-next'
+import { useI18n } from '@/composables/useI18n'
 import ProjectStatusBadge from './ProjectStatusBadge.vue'
 import BidStatusBadge from './BidStatusBadge.vue'
 import BiddingCountdown from '../bidding/BiddingCountdown.vue'
@@ -148,6 +151,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['submit-proposal'])
+const { t } = useI18n()
 const router = useRouter()
 
 const proposalCount = computed(() => props.project.bids?.length || props.project.proposalCount || 0)
@@ -212,7 +216,12 @@ const timeAgo = dateString => {
 
 const handleClick = () => {
   if (props.variant === 'client') {
-    router.push({ name: 'ProjectDetail', params: { id: props.project.id } })
+    const activeStatuses = ['IN_PROGRESS', 'COMPLETED']
+    if (activeStatuses.includes(props.project.status)) {
+      router.push({ name: 'ActiveProjectDashboard', params: { id: props.project.id } })
+    } else {
+      router.push({ name: 'ProjectDetail', params: { id: props.project.id } })
+    }
   } else if (props.variant === 'architect') {
     router.push({ name: 'ProjectDetailForArchitect', params: { projectId: props.project.id } })
   }

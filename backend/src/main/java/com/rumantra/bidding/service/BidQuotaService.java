@@ -63,10 +63,15 @@ public class BidQuotaService {
 
   @Transactional
   public void consumeToken(Long architectId) {
-    BidQuota quota = getQuotaByArchitectId(architectId);
+    BidQuota quota =
+        bidQuotaRepository
+            .findByArchitectIdForUpdate(architectId)
+            .orElseThrow(
+                () -> new RuntimeException("Bid quota not found. Please activate architect role."));
 
     if (quota.getTokensRemaining() <= 0) {
-      throw new RuntimeException("No bid tokens remaining. Please upgrade to BASIC tier.");
+      throw new RuntimeException(
+          "No bid tokens remaining. Please upgrade to BASIC tier or purchase more tokens.");
     }
 
     quota.setTokensRemaining(quota.getTokensRemaining() - 1);

@@ -7,8 +7,8 @@
           <ArrowLeft :size="20" />
         </button>
         <div>
-          <h1 class="text-lg font-bold text-black">IT Support Requests</h1>
-          <p class="text-xs text-gray-500">Incoming support conversations from architects and clients</p>
+          <h1 class="text-lg font-bold text-black">{{ t.support.dashboard.title }}</h1>
+          <p class="text-xs text-gray-500">{{ t.support.dashboard.subtitle }}</p>
         </div>
       </div>
     </div>
@@ -17,10 +17,10 @@
       <div class="grid grid-cols-1 lg:grid-cols-5 gap-6" style="height: calc(100vh - 140px)">
         <!-- LEFT: Conversation list -->
         <div class="lg:col-span-2 overflow-y-auto space-y-2 pr-1">
-          <div v-if="loading" class="text-center py-12 text-gray-400 text-sm">Loading...</div>
+          <div v-if="loading" class="text-center py-12 text-gray-400 text-sm">{{ t.support.dashboard.loading }}</div>
 
           <div v-else-if="conversations.length === 0" class="text-center py-12 text-gray-400 text-sm">
-            No support requests yet.
+            {{ t.support.dashboard.empty }}
           </div>
 
           <div
@@ -36,8 +36,8 @@
                   {{ conv.architectName }} &amp; {{ conv.clientName }}
                 </p>
                 <p class="text-xs text-gray-500 mt-0.5">
-                  Project #{{ conv.projectId }}
-                  <span v-if="conv.bidId">· Bid #{{ conv.bidId }}</span>
+                  {{ t.support.dashboard.projectRef }} #{{ conv.projectId }}
+                  <span v-if="conv.bidId">· {{ t.support.dashboard.bidRef }} #{{ conv.bidId }}</span>
                 </p>
               </div>
               <span
@@ -67,8 +67,10 @@
                 {{ selectedConversation.architectName }} &amp; {{ selectedConversation.clientName }}
               </h3>
               <p class="text-xs text-gray-500 mt-0.5">
-                Project #{{ selectedConversation.projectId }}
-                <span v-if="selectedConversation.bidId">· Bid #{{ selectedConversation.bidId }}</span>
+                {{ t.support.dashboard.projectRef }} #{{ selectedConversation.projectId }}
+                <span v-if="selectedConversation.bidId"
+                  >· {{ t.support.dashboard.bidRef }} #{{ selectedConversation.bidId }}</span
+                >
               </p>
             </div>
             <div class="flex-1 min-h-0">
@@ -76,8 +78,11 @@
             </div>
           </div>
 
-          <div v-else class="flex-1 bg-white rounded-3xl border border-gray-200 flex items-center justify-center text-gray-400 text-sm">
-            Select a support request to start chatting
+          <div
+            v-else
+            class="flex-1 bg-white rounded-3xl border border-gray-200 flex items-center justify-center text-gray-400 text-sm"
+          >
+            {{ t.support.dashboard.selectPrompt }}
           </div>
         </div>
       </div>
@@ -89,9 +94,11 @@
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ArrowLeft } from 'lucide-vue-next'
+import { useI18n } from '@/composables/useI18n'
 import { supportAPI } from '@/services/api'
 import ChatPanel from '@/components/chat/ChatPanel.vue'
 
+const { t } = useI18n()
 const router = useRouter()
 const conversations = ref([])
 const loading = ref(false)

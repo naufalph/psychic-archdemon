@@ -45,6 +45,10 @@ public class BidPaymentPhase {
   @Column(name = "revision_rounds")
   private Integer revisionRounds;
 
+  @Column(name = "estimated_days", nullable = false)
+  @Builder.Default
+  private Integer estimatedDays = 0;
+
   @Column(name = "display_order")
   @Builder.Default
   private Integer displayOrder = 0;

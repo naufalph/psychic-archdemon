@@ -30,9 +30,7 @@ const props = defineProps({
   }
 })
 
-const isOwn = computed(
-  () => Number(props.message.senderUserId) === Number(props.currentUserId)
-)
+const isOwn = computed(() => Number(props.message.senderUserId) === Number(props.currentUserId))
 
 const avatarClass = computed(() => {
   if (isOwn.value) return 'bg-[#7C4728]'

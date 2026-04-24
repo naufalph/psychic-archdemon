@@ -1,12 +1,9 @@
 <template>
   <div class="min-h-screen bg-[#F4F5F7] py-12">
     <div class="max-w-7xl mx-auto px-6">
-      <button
-        @click="router.push({ name: 'OpportunityList' })"
-        class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition"
-      >
+      <button @click="router.back()" class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition">
         <ArrowLeft :size="20" />
-        Back to Opportunities
+        Back
       </button>
 
       <div v-if="loading" class="bg-white rounded-3xl border border-gray-200 p-12 animate-pulse">
@@ -19,9 +16,7 @@
         <div class="flex flex-col items-center gap-4">
           <AlertCircle :size="64" class="text-red-400" />
           <p class="text-red-600 mb-2 text-lg font-medium">{{ error }}</p>
-          <button @click="router.push({ name: 'OpportunityList' })" class="text-[#7C4728] hover:underline font-medium">
-            Back to Opportunities
-          </button>
+          <button @click="router.back()" class="text-[#7C4728] hover:underline font-medium">Back</button>
         </div>
       </div>
 
@@ -37,45 +32,44 @@
 
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div class="bg-gray-50 rounded-2xl p-6">
-              <p class="text-xs text-gray-500 uppercase font-bold mb-2">Design Budget Range</p>
+              <p class="text-xs text-gray-500 uppercase font-bold mb-2">
+                {{ t.projectDetailArchitect.designBudgetRange }}
+              </p>
               <p class="text-2xl font-bold text-black">
                 {{ formatCurrency(project.designBudgetMin) }} - {{ formatCurrency(project.designBudgetMax) }}
               </p>
             </div>
             <div class="bg-gray-50 rounded-2xl p-6">
-              <p class="text-xs text-gray-500 uppercase font-bold mb-2">Build Area</p>
+              <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.projectDetailArchitect.buildArea }}</p>
               <p class="text-2xl font-bold text-black">{{ project.estimatedBuildArea }} m²</p>
             </div>
             <div class="bg-gray-50 rounded-2xl p-6">
-              <p class="text-xs text-gray-500 uppercase font-bold mb-2">Floors</p>
+              <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.projectDetailArchitect.floors }}</p>
               <p class="text-2xl font-bold text-black">{{ project.numberOfFloors }}</p>
             </div>
           </div>
 
           <div class="mb-8">
-            <h2 class="text-lg font-bold text-black mb-3">Scope of Work</h2>
+            <h2 class="text-lg font-bold text-black mb-3">{{ t.projectDetailArchitect.scopeOfWork }}</h2>
             <p class="text-gray-700 leading-relaxed">{{ project.scopeOfWork }}</p>
           </div>
 
           <div v-if="project.deliverables && project.deliverables.length > 0" class="mb-8">
-            <h2 class="text-lg font-bold text-black mb-3">Deliverables</h2>
+            <h2 class="text-lg font-bold text-black mb-3">{{ t.projectDetailArchitect.deliverables }}</h2>
             <div class="space-y-4">
-              <div v-for="group in groupedDeliverables" :key="group.category" class="bg-gray-50 rounded-2xl p-5">
-                <h4 class="font-bold text-sm text-gray-700 uppercase mb-3">{{ group.category }}</h4>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                  <div
-                    v-for="item in group.matched"
-                    :key="item.value"
-                    class="flex items-start gap-3 p-3 bg-white rounded-xl border border-[#C5A17A]/30"
+              <div v-for="group in groupedDeliverables" :key="group.categoryKey" class="bg-gray-50 rounded-2xl p-5">
+                <h4 class="font-bold text-sm text-gray-700 uppercase mb-3">
+                  {{ t.proposalCreate.deliverableCategories[group.categoryKey] }}
+                </h4>
+                <div class="flex flex-wrap gap-2">
+                  <span
+                    v-for="value in group.matched"
+                    :key="value"
+                    class="bg-white border border-[#C5A17A]/30 px-3 py-1.5 rounded-full text-sm font-medium text-gray-800 flex items-center gap-1.5"
                   >
-                    <div class="w-5 h-5 rounded bg-[#7C4728] flex items-center justify-center flex-shrink-0 mt-0.5">
-                      <Check :size="12" class="text-white" />
-                    </div>
-                    <div>
-                      <div class="font-medium text-gray-900 text-sm">{{ item.label }}</div>
-                      <div class="text-xs text-gray-500 mt-0.5">{{ item.description }}</div>
-                    </div>
-                  </div>
+                    <Check :size="12" class="text-[#7C4728]" />
+                    {{ t.proposalCreate.deliverableItems[value] || value.replace(/_/g, ' ') }}
+                  </span>
                 </div>
               </div>
             </div>
@@ -83,25 +77,35 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div>
-              <p class="text-xs text-gray-500 uppercase font-bold mb-2">Category</p>
+              <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.projectDetailArchitect.category }}</p>
               <p class="text-base text-gray-900">{{ project.category }}</p>
             </div>
             <div>
-              <p class="text-xs text-gray-500 uppercase font-bold mb-2">Expected Start Date</p>
+              <p class="text-xs text-gray-500 uppercase font-bold mb-2">
+                {{ t.projectDetailArchitect.expectedStartDate }}
+              </p>
               <p class="text-base text-gray-900">{{ formatDate(project.expectedStartDate) }}</p>
             </div>
             <div>
-              <p class="text-xs text-gray-500 uppercase font-bold mb-2">Land Ownership</p>
-              <p class="text-base text-gray-900">{{ project.hasOwnedLand ? 'Yes' : 'No' }}</p>
+              <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.projectDetailArchitect.landOwnership }}</p>
+              <p class="text-base text-gray-900">
+                {{ project.hasOwnedLand ? t.projectDetailArchitect.yes : t.projectDetailArchitect.no }}
+              </p>
             </div>
             <div>
-              <p class="text-xs text-gray-500 uppercase font-bold mb-2">Legal Documentation</p>
-              <p class="text-base text-gray-900">{{ project.hasLegalDocuments ? 'Complete' : 'Incomplete' }}</p>
+              <p class="text-xs text-gray-500 uppercase font-bold mb-2">
+                {{ t.projectDetailArchitect.legalDocumentation }}
+              </p>
+              <p class="text-base text-gray-900">
+                {{
+                  project.hasLegalDocuments ? t.projectDetailArchitect.complete : t.projectDetailArchitect.incomplete
+                }}
+              </p>
             </div>
           </div>
 
           <div v-if="project.designPreferences" class="mb-8">
-            <h2 class="text-lg font-bold text-black mb-3">Design Preferences</h2>
+            <h2 class="text-lg font-bold text-black mb-3">{{ t.projectDetailArchitect.designPreferences }}</h2>
             <p class="text-gray-700 leading-relaxed">{{ project.designPreferences }}</p>
           </div>
 
@@ -118,8 +122,8 @@
                 <CheckCircle :size="24" class="text-amber-600" />
               </div>
               <div class="flex-1">
-                <p class="font-bold text-amber-900 mb-1">Proposal Accepted</p>
-                <p class="text-sm text-amber-700">Review the terms and confirm to start the project.</p>
+                <p class="font-bold text-amber-900 mb-1">{{ t.projectDetailArchitect.proposalAccepted }}</p>
+                <p class="text-sm text-amber-700">{{ t.projectDetailArchitect.proposalAcceptedDesc }}</p>
               </div>
             </div>
 
@@ -129,7 +133,7 @@
               class="w-full bg-[#7C4728] text-white py-4 px-6 rounded-2xl hover:bg-black transition flex items-center justify-center gap-3 text-lg font-bold"
             >
               <CheckCircle :size="24" />
-              Finalize Agreement
+              {{ t.projectDetailArchitect.finalizeAgreement }}
             </button>
 
             <div
@@ -140,8 +144,8 @@
                 <Send :size="24" class="text-blue-600" />
               </div>
               <div class="flex-1">
-                <p class="font-bold text-blue-900 mb-1">Proposal Submitted</p>
-                <p class="text-sm text-blue-700">Your bid is pending review by the client.</p>
+                <p class="font-bold text-blue-900 mb-1">{{ t.projectDetailArchitect.proposalSubmitted }}</p>
+                <p class="text-sm text-blue-700">{{ t.projectDetailArchitect.proposalSubmittedDesc }}</p>
               </div>
             </div>
 
@@ -153,8 +157,8 @@
                 <FileText :size="24" class="text-yellow-600" />
               </div>
               <div class="flex-1">
-                <p class="font-bold text-yellow-900 mb-1">Draft Saved</p>
-                <p class="text-sm text-yellow-700">You have an unfinished proposal for this project.</p>
+                <p class="font-bold text-yellow-900 mb-1">{{ t.projectDetailArchitect.draftSaved }}</p>
+                <p class="text-sm text-yellow-700">{{ t.projectDetailArchitect.draftSavedDesc }}</p>
               </div>
             </div>
 
@@ -164,7 +168,7 @@
               class="w-full bg-[#7C4728] text-white py-4 px-6 rounded-2xl hover:bg-[#5a3419] transition flex items-center justify-center gap-3 text-lg font-bold"
             >
               <Send :size="24" />
-              Continue Draft
+              {{ t.projectDetailArchitect.draftSaved }}
             </button>
 
             <button
@@ -173,7 +177,7 @@
               class="w-full bg-gray-300 text-gray-500 py-4 px-6 rounded-2xl cursor-not-allowed flex items-center justify-center gap-3 text-lg font-bold"
             >
               <Send :size="24" />
-              Proposal Submitted
+              {{ t.projectDetailArchitect.proposalSubmitted }}
             </button>
           </div>
 
@@ -184,7 +188,7 @@
             class="w-full bg-[#7C4728] text-white py-4 px-6 rounded-2xl hover:bg-[#5a3419] transition flex items-center justify-center gap-3 text-lg font-bold disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-500"
           >
             <Send :size="24" />
-            Submit Proposal
+            {{ t.projectDetailArchitect.noBidYet }}
           </button>
         </div>
 
@@ -238,11 +242,13 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Send, FileText, AlertCircle, Check, CheckCircle, ExternalLink } from 'lucide-vue-next'
+import { useI18n } from '@/composables/useI18n'
 import ProjectStatusBadge from '@/components/project/ProjectStatusBadge.vue'
 import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
 import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
 
+const { t } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const projectsStore = useProjectsStore()
@@ -250,48 +256,24 @@ const bidsStore = useBidsStore()
 
 const deliverableGroups = [
   {
-    category: 'Site Analysis & Planning',
-    items: [
-      { value: 'SITE_ANALYSIS', label: 'Site Analysis', description: 'Land survey and environmental assessment' },
-      { value: 'ZONING_STUDY', label: 'Zoning Study', description: 'Local regulations and building codes' }
-    ]
+    categoryKey: 'siteAnalysis',
+    items: ['SITE_ANALYSIS', 'ZONING_STUDY']
   },
   {
-    category: 'Design Phases',
-    items: [
-      { value: 'CONCEPT_DESIGN', label: 'Concept Design', description: 'Initial design concepts and sketches' },
-      { value: 'SCHEMATIC_DESIGN', label: 'Schematic Design', description: 'Preliminary floor plans and elevations' },
-      { value: 'DESIGN_DEVELOPMENT', label: 'Design Development', description: 'Detailed design drawings' },
-      { value: 'CONSTRUCTION_DOCS', label: 'Construction Documents', description: 'Complete technical drawings' }
-    ]
+    categoryKey: 'designPhases',
+    items: ['CONCEPT_DESIGN', 'SCHEMATIC_DESIGN', 'DESIGN_DEVELOPMENT', 'CONSTRUCTION_DOCS']
   },
   {
-    category: 'Permits & Documentation',
-    items: [
-      { value: 'IMB_PERMIT', label: 'IMB (Building Permit)', description: 'Building construction permit' },
-      { value: 'SLF_CERT', label: 'SLF Certificate', description: 'Building feasibility certificate' },
-      { value: 'ENVIRONMENTAL_PERMIT', label: 'Environmental Permit', description: 'Environmental impact assessment' }
-    ]
+    categoryKey: 'permits',
+    items: ['IMB_PERMIT', 'SLF_CERT', 'ENVIRONMENTAL_PERMIT']
   },
   {
-    category: 'Specialized Services',
-    items: [
-      { value: 'INTERIOR_DESIGN', label: 'Interior Design', description: 'Interior layout and finishes' },
-      { value: 'LANDSCAPE_DESIGN', label: 'Landscape Design', description: 'Garden and outdoor spaces' },
-      { value: 'MEP_DESIGN', label: 'MEP Design', description: 'Mechanical, electrical, and plumbing' },
-      { value: 'STRUCTURAL_DESIGN', label: 'Structural Design', description: 'Structural engineering drawings' }
-    ]
+    categoryKey: 'specialized',
+    items: ['INTERIOR_DESIGN', 'LANDSCAPE_DESIGN', 'MEP_DESIGN', 'STRUCTURAL_DESIGN']
   },
   {
-    category: 'Construction Support',
-    items: [
-      {
-        value: 'SUPERVISION',
-        label: 'Construction Supervision',
-        description: 'On-site supervision during construction'
-      },
-      { value: 'AS_BUILT', label: 'As-Built Drawings', description: 'Final drawings reflecting construction changes' }
-    ]
+    categoryKey: 'construction',
+    items: ['SUPERVISION', 'AS_BUILT']
   }
 ]
 
@@ -309,7 +291,7 @@ const groupedDeliverables = computed(() => {
   return deliverableGroups
     .map(group => ({
       ...group,
-      matched: group.items.filter(item => project.value.deliverables.includes(item.value))
+      matched: group.items.filter(value => project.value.deliverables.includes(value))
     }))
     .filter(group => group.matched.length > 0)
 })

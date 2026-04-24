@@ -17,8 +17,5 @@ public class UpdateBidRequest {
   @Positive(message = "Bid amount must be positive")
   private BigDecimal bidAmount;
 
-  @Positive(message = "Proposed timeline must be positive")
-  private Integer proposedTimelineDays;
-
   private String proposal;
 }

@@ -1,7 +1,5 @@
 <template>
-  <div class="min-h-screen bg-[#F4F5F7]">
-    <ClientNavbar />
-
+  <div class="min-h-full bg-[#F4F5F7]">
     <div class="max-w-7xl mx-auto px-6 py-10">
       <div class="flex justify-between items-center mb-10">
         <div>
@@ -98,7 +96,6 @@ import { Plus, FileText } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
-import ClientNavbar from '@/components/layout/ClientNavbar.vue'
 import ProjectList from './ProjectList.vue'
 
 const authStore = useAuthStore()

@@ -1,5 +1,16 @@
 import axios from 'axios'
 import { useAuthStore } from '@/stores/auth'
+import en from '@/locales/en'
+import id from '@/locales/id'
+
+const localeMessages = { en, id }
+
+const translateErrorCode = code => {
+  const currentLocale = localStorage.getItem('locale') || 'id'
+  return (
+    localeMessages[currentLocale]?.errors?.[code] || localeMessages['en']?.errors?.[code] || null
+  )
+}
 
 // Create axios instance with default configuration
 const api = axios.create({
@@ -59,6 +70,14 @@ api.interceptors.response.use(
     // Log error in development
     if (import.meta.env.DEV) {
       console.error('[API Error]', error.response?.status, error.response?.data)
+    }
+
+    // Translate BusinessException errorCode into a localized message
+    if (error.response?.data?.errorCode) {
+      const translated = translateErrorCode(error.response.data.errorCode)
+      if (translated) {
+        error.response.data.message = translated
+      }
     }
 
     // Handle 401 Unauthorized errors (JWT token expired or invalid)
@@ -318,6 +337,11 @@ export const tokenPurchaseAPI = {
   getPricing: () => api.get('/rmtr/tokens/purchases/pricing'),
   initiatePurchase: quantity => api.post('/rmtr/tokens/purchases', { quantity }),
   getPurchaseStatus: id => api.get(`/rmtr/tokens/purchases/${id}`)
+}
+
+export const paymentAPI = {
+  getProjectPhasePayments: projectId => api.get(`/rmtr/payments/projects/${projectId}`),
+  initiatePhasePayment: phaseId => api.post(`/rmtr/payments/phases/${phaseId}`)
 }
 
 // Default export

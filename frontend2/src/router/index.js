@@ -29,18 +29,77 @@ const routes = [
     name: 'AuthCallback',
     component: () => import('@/views/auth/AuthCallback.vue')
   },
+
+  // ── Client app shell (persistent sidebar) ──────────────────────────────────
   {
-    path: '/client/dashboard',
-    name: 'ClientDashboard',
-    component: () => import('@/views/client/ClientDashboard.vue'),
-    meta: { requiresAuth: true }
+    path: '/client',
+    component: () => import('@/layouts/ClientLayout.vue'),
+    meta: { requiresAuth: true, requiresRole: 'CLIENT' },
+    children: [
+      {
+        path: 'dashboard',
+        name: 'ClientDashboard',
+        component: () => import('@/views/client/ClientDashboard.vue')
+      },
+      {
+        path: 'projects',
+        name: 'ClientProjects',
+        component: () => import('@/views/client/ClientProjectsPage.vue')
+      },
+      {
+        path: 'messages',
+        name: 'ClientMessages',
+        component: () => import('@/views/client/ClientMessages.vue')
+      },
+      {
+        path: 'payments',
+        name: 'ClientPayments',
+        component: () => import('@/views/client/ClientPaymentsPage.vue')
+      },
+      {
+        path: 'settings',
+        name: 'ClientSettings',
+        component: () => import('@/views/client/ClientSettings.vue')
+      },
+      {
+        path: 'profile',
+        name: 'ClientProfile',
+        component: () => import('@/views/client/ClientProfile.vue')
+      },
+      {
+        path: 'projects/create',
+        name: 'ProjectCreate',
+        component: () => import('@/views/client/ProjectCreate.vue')
+      },
+      {
+        path: 'projects/:projectId/finalization',
+        name: 'PreProjectFinalization',
+        component: () => import('@/views/client/PreProjectFinalization.vue')
+      },
+      {
+        path: 'projects/:id/active',
+        name: 'ActiveProjectDashboard',
+        component: () => import('@/views/client/ActiveProjectDashboard.vue')
+      },
+      {
+        path: 'projects/:projectId/payments',
+        name: 'ProjectPhasePayments',
+        component: () => import('@/views/client/ProjectPhasePayments.vue')
+      },
+      {
+        path: 'projects/:id',
+        name: 'ProjectDetail',
+        component: () => import('@/views/client/ProjectDetail.vue')
+      },
+      {
+        path: 'projects/:projectId/bids/:bidId',
+        name: 'BidDetail',
+        component: () => import('@/views/client/BidDetail.vue')
+      }
+    ]
   },
-  {
-    path: '/client/projects/:projectId/bids/:bidId',
-    name: 'BidDetail',
-    component: () => import('@/views/client/BidDetail.vue'),
-    meta: { requiresAuth: true, requiresRole: 'CLIENT' }
-  },
+
+  // ── Architect routes ────────────────────────────────────────────────────────
   {
     path: '/architect/onboarding',
     name: 'ArchitectOnboarding',
@@ -54,28 +113,10 @@ const routes = [
     meta: { requiresAuth: true }
   },
   {
-    path: '/client/projects/create',
-    name: 'ProjectCreate',
-    component: () => import('@/views/client/ProjectCreate.vue'),
-    meta: { requiresAuth: true, requiresRole: 'CLIENT' }
-  },
-  {
-    path: '/client/projects/:projectId/finalization',
-    name: 'PreProjectFinalization',
-    component: () => import('@/views/client/PreProjectFinalization.vue'),
-    meta: { requiresAuth: true }
-  },
-  {
     path: '/architect/projects/:projectId/finalization',
     name: 'ArchitectFinalizationView',
     component: () => import('@/views/architect/PreProjectFinalizationForArchitect.vue'),
     meta: { requiresAuth: true, requiresRole: 'ARCHITECT' }
-  },
-  {
-    path: '/client/projects/:id',
-    name: 'ProjectDetail',
-    component: () => import('@/views/client/ProjectDetail.vue'),
-    meta: { requiresAuth: true, requiresRole: 'CLIENT' }
   },
   {
     path: '/architect/opportunities',
@@ -113,18 +154,15 @@ const routes = [
     component: () => import('@/views/architect/ArchitectPortfolios.vue'),
     meta: { requiresAuth: true, requiresRole: 'ARCHITECT' }
   },
-  {
-    path: '/client/profile',
-    name: 'ClientProfile',
-    component: () => import('@/views/client/ClientProfile.vue'),
-    meta: { requiresAuth: true, requiresRole: 'CLIENT' }
-  },
+
+  // ── Superuser ───────────────────────────────────────────────────────────────
   {
     path: '/superuser/support',
     name: 'SupportDashboard',
     component: () => import('@/views/superuser/SupportDashboard.vue'),
     meta: { requiresAuth: true, requiresRole: 'SUPERUSER' }
   },
+
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
@@ -143,7 +181,6 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
 
-  // Initialize auth from token if not already done
   if (authStore.token && !authStore.user) {
     try {
       await authStore.fetchUserData()
@@ -167,32 +204,28 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
-  // Check if architect needs onboarding before accessing architect routes
   if (to.name === 'ArchitectDashboard' && authStore.user?.needsArchitectOnboarding === true) {
     next({ name: 'ArchitectOnboarding' })
     return
   }
 
   if (to.meta.requiresOnboarding) {
-    // Check backend data, not localStorage
     const needsOnboarding =
       to.meta.role === 'ARCHITECT' ? authStore.user?.needsArchitectOnboarding : false
-
     if (!needsOnboarding) {
-      // Already completed onboarding, redirect to dashboard
       const dashboardRoute = to.meta.role === 'ARCHITECT' ? 'ArchitectDashboard' : 'ClientDashboard'
       next({ name: dashboardRoute })
       return
     }
   }
 
-  if (to.meta.requiresRole) {
-    const requiredRole = to.meta.requiresRole
-    if (!authStore.hasRole(requiredRole)) {
-      const redirectRoute = requiredRole === 'CLIENT' ? 'ClientDashboard' : 'ArchitectDashboard'
-      next({ name: redirectRoute })
-      return
-    }
+  // For nested client routes, role check is on the parent; skip redundant check on children
+  const effectiveRole =
+    to.meta.requiresRole || to.matched.find(r => r.meta.requiresRole)?.meta.requiresRole
+  if (effectiveRole && !authStore.hasRole(effectiveRole)) {
+    const redirectRoute = effectiveRole === 'CLIENT' ? 'ClientDashboard' : 'ArchitectDashboard'
+    next({ name: redirectRoute })
+    return
   }
 
   next()
