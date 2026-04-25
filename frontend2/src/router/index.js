@@ -5,7 +5,7 @@ const routes = [
   {
     path: '/',
     name: 'Landing',
-    component: () => import('@/views/marketing/LandingPage.vue')
+    component: () => import('@/views/landing/LandingPage.vue')
   },
   {
     path: '/signup',

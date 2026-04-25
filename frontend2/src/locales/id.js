@@ -4,7 +4,72 @@ export default {
     howItWorks: 'Cara Kerja',
     forArchitects: 'Untuk Arsitek',
     signIn: 'Masuk',
-    signUp: 'Daftar'
+    signUp: 'Daftar',
+    caraKerja: 'Cara kerja',
+    inspirasi: 'Inspirasi',
+    temukanArsitek: 'Temukan arsitek',
+    riset: 'Riset',
+    untukArsitek: 'Untuk Arsitek',
+    masuk: 'Masuk',
+    mulaiProyek: 'Mulai Proyek Gratis'
+  },
+  landing: {
+    eyebrow: '1.4k+ Arsitek Berlisensi IAI',
+    hero: {
+      title: 'Wujudkan Desain Impian, Tanpa Ribet',
+      subline:
+        'Bandingkan proposal arsitek terbaik, kelola proyek dengan cermat, dan bangun impian Anda bersama Rumantra.',
+      cta: 'Mulai Proyek Gratis',
+      learnMore: 'Pelajari cara kerja',
+      microcopy: 'Gratis untuk klien · Tanpa biaya pendaftaran'
+    },
+    trust: {
+      rating: '4.9/5',
+      desc: 'dari 1.200+ ulasan pengguna'
+    },
+    jelajahi: {
+      trending: 'Sedang trending',
+      searchPlaceholder: 'Cari proyek, arsitek, atau gaya desain...',
+      filterAll: 'Semua',
+      filterHunian: 'Hunian',
+      filterKomersil: 'Komersial',
+      filterIndustrial: 'Industrial',
+      filterLainnya: 'Lainnya'
+    },
+    howItWorks: {
+      eyebrow: 'Cara Kerja',
+      step1Title: 'Posting Brief Proyek',
+      step1Desc:
+        'Ceritakan kebutuhan Anda — luas, anggaran, gaya desain. AI kami akan membantu merumuskan brief profesional.',
+      step2Title: 'Terima & Bandingkan Proposal',
+      step2Desc:
+        'Arsitek berlisensi IAI mengajukan penawaran. Bandingkan harga, timeline, dan portofolio secara berdampingan.',
+      step3Title: 'Bangun dengan Tenang',
+      step3Desc:
+        'Arsitek terpilih mulai bekerja. Dana cair per milestone — proyek terjamin selesai sesuai rencana.'
+    },
+    why: {
+      label: 'Dirancang untuk ketenangan pikiran Anda',
+      card1Title: 'Arsitek terverifikasi IAI',
+      card1Desc: 'Hanya arsitek dengan lisensi resmi dan portofolio terverifikasi yang bisa bergabung.',
+      card2Title: 'Harga transparan',
+      card2Desc: 'Bandingkan harga dari berbagai studio secara apel-ke-apel tanpa biaya tersembunyi.',
+      card3Title: 'Pembayaran aman',
+      card3Desc: 'Dana Anda aman di escrow Rumantra sampai tahap pengerjaan disetujui.',
+      card4Title: 'Komunikasi terpusat',
+      card4Desc: 'Semua revisi, dokumen, dan chat tersimpan rapi dalam satu dashboard proyek.',
+      card5Title: 'Beragam keahlian',
+      card5Desc: 'Dari rumah minimalis hingga stadion olahraga, tersedia spesialis untuk semuanya.',
+      card6Title: 'Seluruh Indonesia',
+      card6Desc: 'Temukan talenta lokal di kota Anda atau arsitek ternama di ibu kota.'
+    },
+    cta: {
+      title: 'Siap Mulai Proyek Impian Anda?',
+      subline:
+        'Bergabunglah dengan ribuan klien yang membangun dengan percaya diri bersama Rumantra.',
+      primary: 'Mulai Proyek Gratis',
+      secondary: 'Daftar sebagai Arsitek'
+    }
   },
   navbar: {
     switchRole: 'Ganti Peran',

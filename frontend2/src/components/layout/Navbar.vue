@@ -1,56 +1,96 @@
 <template>
-  <nav :class="navClasses">
-    <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
-      <div class="flex items-center gap-12">
+  <nav
+    class="sticky top-0 z-50 flex items-center"
+    style="height:72px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);"
+  >
+    <div class="flex justify-between items-center w-full px-10 max-w-[1440px] mx-auto">
+      <!-- Logo (flex-1, left) -->
+      <div class="flex-1 flex justify-start">
         <Logo />
-
-        <div class="hidden md:flex items-center gap-10">
-          <router-link to="/" class="text-sm font-bold text-gray-900 hover:text-brand-brown transition-colors">{{
-            t.nav.home
-          }}</router-link>
-          <router-link
-            to="/how-it-works"
-            class="text-sm font-bold text-gray-900 hover:text-brand-brown transition-colors"
-            >{{ t.nav.howItWorks }}</router-link
-          >
-          <router-link
-            to="/signup?role=ARCHITECT"
-            class="text-sm font-bold text-gray-900 hover:text-brand-brown transition-colors"
-            >{{ t.nav.forArchitects }}</router-link
-          >
-        </div>
       </div>
 
-      <div class="hidden md:flex items-center gap-4">
+      <!-- Center nav links -->
+      <div class="hidden md:flex items-center gap-8 flex-none">
+        <router-link
+          to="/"
+          class="text-[14px] font-medium text-[#666666] hover:text-[#0A0A0A] transition-colors"
+        >
+          {{ t.nav.caraKerja }}
+        </router-link>
+        <router-link
+          to="/"
+          class="text-[14px] font-medium text-[#666666] hover:text-[#0A0A0A] transition-colors"
+        >
+          {{ t.nav.inspirasi }}
+        </router-link>
+        <router-link
+          to="/"
+          class="text-[14px] font-medium text-[#666666] hover:text-[#0A0A0A] transition-colors"
+        >
+          {{ t.nav.temukanArsitek }}
+        </router-link>
+        <span class="flex items-center gap-1.5">
+          <router-link
+            to="/"
+            class="text-[14px] font-medium text-[#666666] hover:text-[#0A0A0A] transition-colors"
+          >
+            {{ t.nav.riset }}
+          </router-link>
+          <span
+            class="text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider"
+            style="background:#0A0A0A;"
+          >NEW</span>
+        </span>
+      </div>
+
+      <!-- Right actions -->
+      <div class="hidden md:flex items-center gap-4 flex-1 justify-end">
         <LanguageSwitcher />
-        <router-link to="/login">
-          <BaseButton variant="ghost" class="px-6 text-sm font-bold text-gray-900">{{ t.nav.signIn }}</BaseButton>
+        <router-link
+          to="/signup?role=ARCHITECT"
+          class="text-[13px] font-medium text-[#666666] hover:text-[#0A0A0A] transition-colors"
+        >
+          {{ t.nav.untukArsitek }}
+        </router-link>
+        <router-link
+          to="/login"
+          class="text-[13px] font-medium text-[#888888] hover:text-[#0A0A0A] transition-colors"
+        >
+          {{ t.nav.masuk }}
         </router-link>
         <router-link to="/signup">
-          <BaseButton variant="primary" class="px-8 py-3 text-sm font-bold rounded-full">{{ t.nav.signUp }}</BaseButton>
+          <button
+            class="px-5 py-2 bg-[#0A0A0A] text-white rounded-full text-[14px] font-semibold hover:opacity-90 transition-all hover:-translate-y-px whitespace-nowrap border-none cursor-pointer"
+            style="box-shadow:0 4px 12px rgba(0,0,0,0.08);"
+          >
+            {{ t.nav.mulaiProyek }}
+          </button>
         </router-link>
       </div>
 
+      <!-- Mobile menu toggle -->
       <button class="md:hidden text-black" @click="isMobileMenuOpen = !isMobileMenuOpen">
         <component :is="isMobileMenuOpen ? X : Menu" :size="24" />
       </button>
     </div>
 
+    <!-- Mobile menu -->
     <div
       v-if="isMobileMenuOpen"
       class="absolute top-full left-0 w-full bg-white shadow-xl p-8 flex flex-col gap-6 md:hidden border-b border-gray-100"
     >
-      <router-link to="/" class="text-lg font-bold">{{ t.nav.home }}</router-link>
-      <router-link to="/how-it-works" class="text-lg font-bold">{{ t.nav.howItWorks }}</router-link>
-      <router-link to="/signup?role=ARCHITECT" class="text-lg font-bold">{{ t.nav.forArchitects }}</router-link>
+      <router-link to="/" class="text-lg font-bold">{{ t.nav.caraKerja }}</router-link>
+      <router-link to="/" class="text-lg font-bold">{{ t.nav.inspirasi }}</router-link>
+      <router-link to="/" class="text-lg font-bold">{{ t.nav.temukanArsitek }}</router-link>
+      <router-link to="/signup?role=ARCHITECT" class="text-lg font-bold">{{ t.nav.untukArsitek }}</router-link>
       <hr class="border-gray-100" />
       <div class="flex flex-col gap-4">
         <LanguageSwitcher />
         <router-link to="/login">
-          <BaseButton variant="ghost" :fullWidth="true" class="font-bold">{{ t.nav.signIn }}</BaseButton>
+          <BaseButton variant="ghost" :fullWidth="true" class="font-bold">{{ t.nav.masuk }}</BaseButton>
         </router-link>
         <router-link to="/signup">
-          <BaseButton variant="primary" :fullWidth="true" class="font-bold">{{ t.nav.signUp }}</BaseButton>
+          <BaseButton variant="primary" :fullWidth="true" class="font-bold">{{ t.nav.mulaiProyek }}</BaseButton>
         </router-link>
       </div>
     </div>
@@ -58,28 +98,19 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { Menu, X } from 'lucide-vue-next'
 import BaseButton from '@/components/ui/BaseButton.vue'
 import LanguageSwitcher from './LanguageSwitcher.vue'
 import Logo from '@/components/ui/Logo.vue'
 import { useI18n } from '@/composables/useI18n'
+import { watch } from 'vue'
 
 const { t } = useI18n()
 
 const route = useRoute()
-const isScrolled = ref(false)
 const isMobileMenuOpen = ref(false)
-
-const navClasses = computed(() => {
-  const base = 'fixed w-full z-50 transition-all duration-300 py-4'
-  return isScrolled.value ? `${base} bg-white/95 backdrop-blur-md shadow-sm` : `${base} bg-transparent`
-})
-
-const handleScroll = () => {
-  isScrolled.value = window.scrollY > 20
-}
 
 watch(
   () => route.path,
@@ -87,12 +118,4 @@ watch(
     isMobileMenuOpen.value = false
   }
 )
-
-onMounted(() => {
-  window.addEventListener('scroll', handleScroll)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('scroll', handleScroll)
-})
 </script>

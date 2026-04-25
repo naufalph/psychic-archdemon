@@ -4,7 +4,71 @@ export default {
     howItWorks: 'How It Works',
     forArchitects: 'For Architects',
     signIn: 'Sign In',
-    signUp: 'Sign Up'
+    signUp: 'Sign Up',
+    caraKerja: 'How it works',
+    inspirasi: 'Inspiration',
+    temukanArsitek: 'Find architects',
+    riset: 'Research',
+    untukArsitek: 'For Architects',
+    masuk: 'Sign in',
+    mulaiProyek: 'Start Free Project'
+  },
+  landing: {
+    eyebrow: '1.4k+ IAI Licensed Architects',
+    hero: {
+      title: 'Build Your Dream Design, Effortlessly',
+      subline:
+        'Compare top architect proposals, manage your project with precision, and build your dream with Rumantra.',
+      cta: 'Start Free Project',
+      learnMore: 'Learn how it works',
+      microcopy: 'Free for clients · No registration fees'
+    },
+    trust: {
+      rating: '4.9/5',
+      desc: 'from 1,200+ user reviews'
+    },
+    jelajahi: {
+      trending: 'Trending now',
+      searchPlaceholder: 'Search projects, architects, or design styles...',
+      filterAll: 'All',
+      filterHunian: 'Residential',
+      filterKomersil: 'Commercial',
+      filterIndustrial: 'Industrial',
+      filterLainnya: 'Other'
+    },
+    howItWorks: {
+      eyebrow: 'How It Works',
+      step1Title: 'Post Your Project Brief',
+      step1Desc:
+        'Describe your needs — area, budget, design style. Our AI helps you craft a professional brief.',
+      step2Title: 'Receive & Compare Proposals',
+      step2Desc:
+        'IAI licensed architects submit bids. Compare prices, timelines, and portfolios side by side.',
+      step3Title: 'Build with Confidence',
+      step3Desc:
+        "Your chosen architect gets to work. Funds release per milestone — your project stays on track."
+    },
+    why: {
+      label: 'Designed for your peace of mind',
+      card1Title: 'IAI verified architects',
+      card1Desc: 'Only architects with official licenses and verified portfolios can join.',
+      card2Title: 'Transparent pricing',
+      card2Desc: 'Compare prices across studios apples-to-apples with no hidden fees.',
+      card3Title: 'Secure payments',
+      card3Desc: 'Your funds are held safely in Rumantra escrow until each phase is approved.',
+      card4Title: 'Centralised communication',
+      card4Desc: 'All revisions, documents, and chats are neatly stored in one project dashboard.',
+      card5Title: 'Diverse expertise',
+      card5Desc: 'From minimalist homes to sports stadiums, specialists are available for everything.',
+      card6Title: 'All across Indonesia',
+      card6Desc: 'Find local talent in your city or renowned architects from the capital.'
+    },
+    cta: {
+      title: 'Ready to Start Your Dream Project?',
+      subline: 'Join thousands of clients building confidently with Rumantra.',
+      primary: 'Start Free Project',
+      secondary: 'Join as an Architect'
+    }
   },
   navbar: {
     switchRole: 'Switch Role',
