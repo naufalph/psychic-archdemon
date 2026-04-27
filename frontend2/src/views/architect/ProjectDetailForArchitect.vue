@@ -75,16 +75,27 @@
             </div>
           </div>
 
+          <div class="mb-6 rounded-2xl p-5 border-2 border-amber-200 bg-amber-50 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+              <CalendarDays :size="20" class="text-amber-600" />
+            </div>
+            <div>
+              <p class="text-xs text-gray-500 uppercase font-bold mb-0.5">
+                {{ t.projectDetailArchitect.expectedStartDate }}
+              </p>
+              <p class="text-base font-bold text-gray-900">
+                <span v-if="!project.startDateType || project.startDateType === 'IMMEDIATELY'">
+                  {{ t.projectDetailArchitect.immediately }}
+                </span>
+                <span v-else>{{ formatDate(project.expectedStartDate) }}</span>
+              </p>
+            </div>
+          </div>
+
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div>
               <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.projectDetailArchitect.category }}</p>
               <p class="text-base text-gray-900">{{ project.category }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-gray-500 uppercase font-bold mb-2">
-                {{ t.projectDetailArchitect.expectedStartDate }}
-              </p>
-              <p class="text-base text-gray-900">{{ formatDate(project.expectedStartDate) }}</p>
             </div>
             <div>
               <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.projectDetailArchitect.landOwnership }}</p>
@@ -241,7 +252,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft, Send, FileText, AlertCircle, Check, CheckCircle, ExternalLink } from 'lucide-vue-next'
+import { ArrowLeft, Send, FileText, AlertCircle, Check, CheckCircle, ExternalLink, CalendarDays } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
 import ProjectStatusBadge from '@/components/project/ProjectStatusBadge.vue'
 import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'

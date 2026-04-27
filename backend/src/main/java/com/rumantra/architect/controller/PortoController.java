@@ -34,7 +34,7 @@ public class PortoController {
    * @param images List of image files (optional)
    * @return Created portfolio
    */
-  @PostMapping(value = "/portos", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<ApiResponse<PortoResponse>> createPorto(
       @Valid @ModelAttribute CreatePortoRequest request,
       @RequestParam(value = "images", required = false) List<MultipartFile> images) {
@@ -95,7 +95,7 @@ public class PortoController {
    *
    * @return List of portfolios
    */
-  @GetMapping("/portos")
+  @GetMapping
   public ResponseEntity<ApiResponse<List<PortoListResponse>>> getPortosByArchitect() {
 
     try {
@@ -145,7 +145,7 @@ public class PortoController {
    * @param portoId The portfolio ID
    * @return Portfolio details
    */
-  @GetMapping("/portos/{portoId}")
+  @GetMapping("/{portoId}")
   public ResponseEntity<ApiResponse<PortoResponse>> getPortoById(@PathVariable Long portoId) {
 
     try {
@@ -196,7 +196,7 @@ public class PortoController {
    * @param request Updated metadata
    * @return Updated portfolio
    */
-  @PutMapping("/portos/{portoId}")
+  @PutMapping("/{portoId}")
   public ResponseEntity<ApiResponse<PortoResponse>> updatePorto(
       @PathVariable Long portoId, @Valid @RequestBody UpdatePortoRequest request) {
 
@@ -247,7 +247,7 @@ public class PortoController {
    * @param portoId The portfolio ID
    * @return Success message
    */
-  @DeleteMapping("/portos/{portoId}")
+  @DeleteMapping("/{portoId}")
   public ResponseEntity<ApiResponse<Void>> deletePorto(@PathVariable Long portoId) {
 
     try {
@@ -306,7 +306,7 @@ public class PortoController {
    * @param images List of image files
    * @return Updated portfolio
    */
-  @PostMapping(value = "/portos/{portoId}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PostMapping(value = "/{portoId}/images", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<ApiResponse<PortoResponse>> addImages(
       @PathVariable Long portoId, @RequestParam("images") List<MultipartFile> images) {
 
@@ -365,7 +365,7 @@ public class PortoController {
    * @param imageId The image ID
    * @return Success message
    */
-  @DeleteMapping("/portos/images/{imageId}")
+  @DeleteMapping("/images/{imageId}")
   public ResponseEntity<ApiResponse<Void>> deleteImage(@PathVariable Long imageId) {
 
     try {

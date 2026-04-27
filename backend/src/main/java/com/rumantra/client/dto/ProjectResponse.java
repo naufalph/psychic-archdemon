@@ -34,6 +34,8 @@ public class ProjectResponse {
   private List<String> deliverables;
   private String designPreferences;
   private String contactPerson;
+  private com.rumantra.client.domain.StartDateType startDateType;
+
   private LocalDate expectedStartDate;
   private ProjectStatus status;
   private Boolean isValid;

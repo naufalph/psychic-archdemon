@@ -482,6 +482,13 @@ export default {
     compareHint: 'Pilih proposal dari daftar di bawah untuk memulai analisis perbandingan',
     bidRegistry: 'Daftar Penawaran'
   },
+  projectCreate: {
+    immediately: 'Segera',
+    immediatelyDesc: 'Proyek dapat dimulai segera setelah arsitek dipilih',
+    specificDate: 'Pada Tanggal Tertentu',
+    specificDateDesc: 'Anda punya target tanggal mulai',
+    targetStartDate: 'Target Tanggal Mulai'
+  },
   clientProfile: {
     title: 'Profil Saya',
     subtitle: 'Kelola informasi pribadi Anda',
@@ -717,6 +724,7 @@ export default {
     deliverables: 'Deliverable',
     category: 'Kategori',
     expectedStartDate: 'Tanggal Mulai yang Diharapkan',
+    immediately: 'Segera — bisa langsung dimulai',
     landOwnership: 'Kepemilikan Lahan',
     yes: 'Ya',
     no: 'Tidak',

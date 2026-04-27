@@ -71,6 +71,18 @@
             </div>
           </div>
 
+          <div class="mt-6 pt-6 border-t border-gray-100">
+            <p class="text-xs text-gray-500 uppercase font-bold mb-2">
+              {{ t.projectDetailArchitect.expectedStartDate }}
+            </p>
+            <p class="text-base text-gray-900 font-medium">
+              <span v-if="!currentProject.startDateType || currentProject.startDateType === 'IMMEDIATELY'">
+                Immediately
+              </span>
+              <span v-else>{{ formatDate(currentProject.expectedStartDate) }}</span>
+            </p>
+          </div>
+
           <div
             v-if="currentProject.biddingDeadline && currentProject.status === 'OPEN'"
             class="mt-8 pt-6 border-t border-gray-100"
@@ -235,6 +247,11 @@ const toggleCompare = bidId => {
   } else if (compareIds.value.length < 2) {
     compareIds.value.push(bidId)
   }
+}
+
+const formatDate = dateString => {
+  if (!dateString) return '—'
+  return new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
 const formatCurrency = value => {

@@ -135,6 +135,10 @@ public class ProjectService {
             .designPreferences(request.getDesignPreferences())
             .contactPerson(request.getContactPerson())
             .expectedStartDate(request.getExpectedStartDate())
+            .startDateType(
+                request.getStartDateType() != null
+                    ? request.getStartDateType()
+                    : com.rumantra.client.domain.StartDateType.IMMEDIATELY)
             .build(); // status defaults to PENDING_APPROVAL
 
     project = projectRepository.save(project);
@@ -456,6 +460,7 @@ public class ProjectService {
         .designPreferences(project.getDesignPreferences())
         .contactPerson(project.getContactPerson())
         .expectedStartDate(project.getExpectedStartDate())
+        .startDateType(project.getStartDateType())
         .status(project.getStatus())
         .isValid(
             project.getStatus() != ProjectStatus.PENDING_APPROVAL

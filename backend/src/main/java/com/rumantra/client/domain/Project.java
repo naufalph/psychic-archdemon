@@ -80,6 +80,11 @@ public class Project {
   private LocalDate expectedStartDate;
 
   @Enumerated(EnumType.STRING)
+  @Column(name = "start_date_type", nullable = false)
+  @Builder.Default
+  private StartDateType startDateType = StartDateType.IMMEDIATELY;
+
+  @Enumerated(EnumType.STRING)
   @Column(name = "status", nullable = false)
   @Builder.Default
   private ProjectStatus status = ProjectStatus.PENDING_APPROVAL;

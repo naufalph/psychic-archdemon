@@ -57,5 +57,7 @@ public class CreateProjectRequest {
   @Size(max = 255, message = "Contact person must not exceed 255 characters")
   private String contactPerson;
 
+  private com.rumantra.client.domain.StartDateType startDateType;
+
   private LocalDate expectedStartDate;
 }

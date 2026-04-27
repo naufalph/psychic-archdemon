@@ -478,6 +478,13 @@ export default {
     compareHint: 'Select a proposal from the registry below to begin a comparative analysis',
     bidRegistry: 'Bid Registry'
   },
+  projectCreate: {
+    immediately: 'Immediately',
+    immediatelyDesc: 'Project can start as soon as an architect is hired',
+    specificDate: 'On a Specific Date',
+    specificDateDesc: 'You have a target date in mind',
+    targetStartDate: 'Target Start Date'
+  },
   clientProfile: {
     title: 'My Profile',
     subtitle: 'Manage your personal information',
@@ -712,6 +719,7 @@ export default {
     deliverables: 'Deliverables',
     category: 'Category',
     expectedStartDate: 'Expected Start Date',
+    immediately: 'Immediately — can start right away',
     landOwnership: 'Land Ownership',
     yes: 'Yes',
     no: 'No',

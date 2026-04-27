@@ -144,6 +144,75 @@
             </div>
           </section>
 
+          <section class="space-y-6">
+            <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
+              <span class="bg-[#F5E6D3] text-[#7C4728] font-bold px-3 py-1 rounded-full text-sm">Part 4</span>
+              <h2 class="text-xl font-bold text-black">Expected Start Date</h2>
+            </div>
+            <p class="text-xs text-gray-500">Let architects know when you expect construction to begin.</p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label
+                :class="[
+                  'flex items-center gap-4 p-5 rounded-2xl border-2 cursor-pointer transition',
+                  formData.startDateType === 'IMMEDIATELY'
+                    ? 'border-[#7C4728] bg-[#F5E6D3]/30'
+                    : 'border-gray-200 hover:border-gray-300'
+                ]"
+              >
+                <input type="radio" v-model="formData.startDateType" value="IMMEDIATELY" class="hidden" />
+                <div
+                  :class="[
+                    'w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0',
+                    formData.startDateType === 'IMMEDIATELY' ? 'border-[#7C4728]' : 'border-gray-300'
+                  ]"
+                >
+                  <div v-if="formData.startDateType === 'IMMEDIATELY'" class="w-2.5 h-2.5 rounded-full bg-[#7C4728]" />
+                </div>
+                <div>
+                  <p class="font-semibold text-gray-900">Immediately</p>
+                  <p class="text-xs text-gray-500 mt-0.5">Project can start as soon as an architect is hired</p>
+                </div>
+              </label>
+
+              <label
+                :class="[
+                  'flex items-center gap-4 p-5 rounded-2xl border-2 cursor-pointer transition',
+                  formData.startDateType === 'SPECIFIC_DATE'
+                    ? 'border-[#7C4728] bg-[#F5E6D3]/30'
+                    : 'border-gray-200 hover:border-gray-300'
+                ]"
+              >
+                <input type="radio" v-model="formData.startDateType" value="SPECIFIC_DATE" class="hidden" />
+                <div
+                  :class="[
+                    'w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0',
+                    formData.startDateType === 'SPECIFIC_DATE' ? 'border-[#7C4728]' : 'border-gray-300'
+                  ]"
+                >
+                  <div v-if="formData.startDateType === 'SPECIFIC_DATE'" class="w-2.5 h-2.5 rounded-full bg-[#7C4728]" />
+                </div>
+                <div>
+                  <p class="font-semibold text-gray-900">On a Specific Date</p>
+                  <p class="text-xs text-gray-500 mt-0.5">You have a target date in mind</p>
+                </div>
+              </label>
+            </div>
+
+            <div v-if="formData.startDateType === 'SPECIFIC_DATE'">
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Target Start Date <span class="text-red-500">*</span>
+              </label>
+              <input
+                v-model="formData.expectedStartDate"
+                type="date"
+                :min="minStartDate"
+                required
+                class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#7C4728] focus:border-[#7C4728] outline-none transition"
+              />
+            </div>
+          </section>
+
           <div v-if="error" class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
             {{ error }}
           </div>
@@ -173,7 +242,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { Home, CheckSquare, Loader } from 'lucide-vue-next'
 import { useProjectsStore } from '@/stores/projects'
@@ -196,8 +265,12 @@ const formData = ref({
     min: 0,
     max: 0
   },
-  deliverables: []
+  deliverables: [],
+  startDateType: 'IMMEDIATELY',
+  expectedStartDate: ''
 })
+
+const minStartDate = computed(() => new Date().toISOString().split('T')[0])
 
 const coverImages = ref([])
 const loading = ref(false)
@@ -231,7 +304,12 @@ const handleSubmit = async () => {
       buildingFunction: formData.value.buildingType,
       estimatedBuildArea: formData.value.lotSize,
       scopeOfWork: formData.value.description,
-      deliverables: formData.value.deliverables
+      deliverables: formData.value.deliverables,
+      startDateType: formData.value.startDateType,
+      expectedStartDate:
+        formData.value.startDateType === 'SPECIFIC_DATE' && formData.value.expectedStartDate
+          ? formData.value.expectedStartDate
+          : null
     }
 
     await projectsStore.createProject(projectData, coverImages.value)
