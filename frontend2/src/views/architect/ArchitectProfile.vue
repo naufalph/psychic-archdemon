@@ -1,7 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-amber-50 via-white to-amber-50">
-    <ArchitectNavbar />
-
+  <div class="min-h-full bg-[#F4F5F7]">
     <div class="max-w-2xl mx-auto px-6 py-12">
       <button
         @click="$router.push({ name: 'ArchitectDashboard' })"
@@ -186,7 +184,6 @@
 import { ref, onMounted } from 'vue'
 import { useArchitectProfileStore } from '@/stores/architectProfile'
 import { useI18n } from '@/composables/useI18n'
-import ArchitectNavbar from '@/components/layout/ArchitectNavbar.vue'
 import ProfileForm from '@/components/architect/ProfileForm.vue'
 
 const store = useArchitectProfileStore()

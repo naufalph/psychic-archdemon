@@ -106,22 +106,11 @@ const routes = [
     component: () => import('@/views/architect/ArchitectOnboarding.vue'),
     meta: { requiresAuth: true, requiresOnboarding: true, role: 'ARCHITECT' }
   },
-  {
-    path: '/architect/dashboard',
-    name: 'ArchitectDashboard',
-    component: () => import('@/views/architect/ArchitectDashboard.vue'),
-    meta: { requiresAuth: true }
-  },
+  // Full-screen flows (no sidebar)
   {
     path: '/architect/projects/:projectId/finalization',
     name: 'ArchitectFinalizationView',
     component: () => import('@/views/architect/PreProjectFinalizationForArchitect.vue'),
-    meta: { requiresAuth: true, requiresRole: 'ARCHITECT' }
-  },
-  {
-    path: '/architect/opportunities',
-    name: 'OpportunityList',
-    component: () => import('@/views/architect/OpportunityList.vue'),
     meta: { requiresAuth: true, requiresRole: 'ARCHITECT' }
   },
   {
@@ -136,23 +125,43 @@ const routes = [
     component: () => import('@/views/architect/ProposalCreate.vue'),
     meta: { requiresAuth: true, requiresRole: 'ARCHITECT' }
   },
+  // Architect app shell (persistent sidebar)
   {
-    path: '/architect/bids',
-    name: 'MyBids',
-    component: () => import('@/views/architect/MyBids.vue'),
-    meta: { requiresAuth: true, requiresRole: 'ARCHITECT' }
-  },
-  {
-    path: '/architect/profile',
-    name: 'ArchitectProfile',
-    component: () => import('@/views/architect/ArchitectProfile.vue'),
-    meta: { requiresAuth: true, requiresRole: 'ARCHITECT' }
-  },
-  {
-    path: '/architect/portfolios',
-    name: 'ArchitectPortfolios',
-    component: () => import('@/views/architect/ArchitectPortfolios.vue'),
-    meta: { requiresAuth: true, requiresRole: 'ARCHITECT' }
+    path: '/architect',
+    component: () => import('@/layouts/ArchitectLayout.vue'),
+    meta: { requiresAuth: true, requiresRole: 'ARCHITECT' },
+    children: [
+      {
+        path: 'dashboard',
+        name: 'ArchitectDashboard',
+        component: () => import('@/views/architect/ArchitectDashboard.vue')
+      },
+      {
+        path: 'opportunities',
+        name: 'OpportunityList',
+        component: () => import('@/views/architect/OpportunityList.vue')
+      },
+      {
+        path: 'bids',
+        name: 'MyBids',
+        component: () => import('@/views/architect/MyBids.vue')
+      },
+      {
+        path: 'portfolios',
+        name: 'ArchitectPortfolios',
+        component: () => import('@/views/architect/ArchitectPortfolios.vue')
+      },
+      {
+        path: 'profile',
+        name: 'ArchitectProfile',
+        component: () => import('@/views/architect/ArchitectProfile.vue')
+      },
+      {
+        path: 'settings',
+        name: 'ArchitectSettings',
+        component: () => import('@/views/architect/ArchitectSettings.vue')
+      }
+    ]
   },
 
   // ── Superuser ───────────────────────────────────────────────────────────────

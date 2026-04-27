@@ -10,7 +10,7 @@
       <div class="bg-white rounded-xl border border-gray-200 divide-y divide-gray-100">
         <div class="px-5 py-4">
           <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Account</p>
-          <RouterLink to="/client/profile" class="flex items-center justify-between group">
+          <RouterLink to="/architect/profile" class="flex items-center justify-between group">
             <div class="flex items-center gap-3">
               <div
                 class="w-9 h-9 rounded-full bg-[#1C1C1C] text-white flex items-center justify-center text-xs font-bold"
@@ -60,30 +60,28 @@
       <div class="bg-white rounded-xl border border-gray-200 px-5 py-4">
         <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Mode</p>
         <div class="flex gap-2">
-          <button
-            @click="switchToArchitect"
-            :disabled="isSwitching"
-            class="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition text-sm font-medium disabled:opacity-60"
-          >
-            <Loader v-if="isSwitching" :size="15" class="animate-spin" />
-            <HardHat v-else :size="15" />
-            <span>{{ isSwitching ? 'Switching…' : 'Architect' }}</span>
-          </button>
           <div class="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg bg-[#1C1C1C] text-white text-sm font-medium">
+            <HardHat :size="15" />
+            <span>Architect</span>
+          </div>
+          <button
+            v-if="canSwitchToClient"
+            @click="switchToClient"
+            class="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition text-sm font-medium"
+          >
             <UserCog :size="15" />
             <span>Client</span>
-          </div>
+          </button>
         </div>
-        <p v-if="switchError" class="text-red-500 text-xs mt-2">{{ switchError }}</p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { ChevronRight, LogOut, UserCog, HardHat, Loader } from 'lucide-vue-next'
+import { ChevronRight, LogOut, UserCog, HardHat } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 import { useI18n } from '@/composables/useI18n'
 
@@ -91,10 +89,7 @@ const router = useRouter()
 const authStore = useAuthStore()
 const { locale, setLocale } = useI18n()
 
-const isSwitching = ref(false)
-const switchError = ref('')
-
-const userName = computed(() => authStore.userName || 'Client')
+const userName = computed(() => authStore.userName || 'Architect')
 const userEmail = computed(() => authStore.user?.email || '')
 const userInitials = computed(() =>
   userName.value
@@ -104,25 +99,15 @@ const userInitials = computed(() =>
     .slice(0, 2)
     .toUpperCase()
 )
+const canSwitchToClient = computed(() => authStore.hasRole('CLIENT'))
 
 const handleLogout = async () => {
   await authStore.logout()
   router.push('/login')
 }
 
-const switchToArchitect = async () => {
-  isSwitching.value = true
-  switchError.value = ''
-  try {
-    if (!authStore.hasRole('ARCHITECT')) {
-      await authStore.activateRole('ARCHITECT')
-    }
-    authStore.updateLastLoginRole('ARCHITECT')
-    router.push('/architect/dashboard')
-  } catch {
-    switchError.value = 'Could not switch to Architect mode. Please try again.'
-  } finally {
-    isSwitching.value = false
-  }
+const switchToClient = () => {
+  authStore.updateLastLoginRole('CLIENT')
+  router.push('/client/dashboard')
 }
 </script>

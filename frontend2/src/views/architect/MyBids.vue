@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-[#F4F5F7]">
+  <div class="min-h-full bg-[#F4F5F7]">
     <div
       class="absolute inset-0 opacity-[0.03] pointer-events-none"
       style="
