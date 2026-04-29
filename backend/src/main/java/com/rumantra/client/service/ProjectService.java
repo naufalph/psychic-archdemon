@@ -139,6 +139,10 @@ public class ProjectService {
                 request.getStartDateType() != null
                     ? request.getStartDateType()
                     : com.rumantra.client.domain.StartDateType.IMMEDIATELY)
+            .biddingDeadline(
+                request.getBiddingDeadline() != null
+                    ? request.getBiddingDeadline().atTime(23, 59, 59)
+                    : null)
             .build(); // status defaults to PENDING_APPROVAL
 
     project = projectRepository.save(project);
@@ -498,6 +502,30 @@ public class ProjectService {
   public List<BidResponse> getProjectBids(Long projectId) {
     verifyProjectOwnership(projectId);
     return bidService.getBidsByProject(projectId);
+  }
+
+  @Transactional
+  public void closeExpiredProject(Long projectId) {
+    Project project =
+        projectRepository
+            .findById(projectId)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Project not found with id: " + projectId));
+
+    if (project.getStatus() != ProjectStatus.OPEN) {
+      return;
+    }
+
+    project.setStatus(ProjectStatus.BIDDING_CLOSED);
+    projectRepository.save(project);
+
+    List<Bid> pendingBids = bidRepository.findByProjectIdAndStatus(projectId, BidStatus.PENDING);
+    for (Bid bid : pendingBids) {
+      bidService.refundBid(bid, "Bidding period ended with no winner selected");
+    }
+
+    log.info(
+        "Project {} closed for deadline expiry. {} bids refunded.", projectId, pendingBids.size());
   }
 
   private String buildProjectTitle(Project project) {

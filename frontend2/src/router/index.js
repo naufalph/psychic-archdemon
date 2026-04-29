@@ -209,7 +209,14 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (to.meta.requiresGuest && authStore.isAuthenticated) {
-    next({ name: 'Landing' })
+    const roles = authStore.user?.registeredRoles || []
+    if (roles.includes('ARCHITECT')) {
+      next({ name: 'ArchitectDashboard' })
+    } else if (roles.includes('CLIENT')) {
+      next({ name: 'ClientDashboard' })
+    } else {
+      next({ name: 'Landing' })
+    }
     return
   }
 

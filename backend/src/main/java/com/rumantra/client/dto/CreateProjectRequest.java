@@ -60,4 +60,6 @@ public class CreateProjectRequest {
   private com.rumantra.client.domain.StartDateType startDateType;
 
   private LocalDate expectedStartDate;
+
+  private LocalDate biddingDeadline;
 }

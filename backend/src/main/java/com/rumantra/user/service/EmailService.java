@@ -148,6 +148,76 @@ public class EmailService {
   }
 
   @Async
+  public void sendDeadlineReminderEmail(String toEmail, String projectTitle, int daysLeft) {
+    try {
+      String subject =
+          String.format(
+              "Reminder: Bid deadline in %d day%s — %s",
+              daysLeft, daysLeft == 1 ? "" : "s", projectTitle);
+      String body =
+          String.format(
+              "Hi,\n\n"
+                  + "This is a reminder that the bidding deadline for your project \"%s\" "
+                  + "is in %d day%s.\n\n"
+                  + "If you haven't found a suitable architect yet, log in to review all submitted bids before the deadline passes.\n\n"
+                  + "Visit: %s/client/dashboard\n\n"
+                  + "Best regards,\n"
+                  + "The Rumantra Team",
+              projectTitle, daysLeft, daysLeft == 1 ? "" : "s", frontendUrl);
+
+      SimpleMailMessage message = new SimpleMailMessage();
+      message.setFrom(fromEmail);
+      message.setTo(toEmail);
+      message.setSubject(subject);
+      message.setText(body);
+      mailSender.send(message);
+      log.info("Deadline reminder email ({} days) sent to {}", daysLeft, toEmail);
+    } catch (Exception e) {
+      log.error("Failed to send deadline reminder email to {}", toEmail, e);
+    }
+  }
+
+  @Async
+  public void sendProjectClosedEmail(String toEmail, String projectTitle, boolean isClient) {
+    try {
+      String subject = String.format("Bidding closed — %s", projectTitle);
+      String body;
+      if (isClient) {
+        body =
+            String.format(
+                "Hi,\n\n"
+                    + "The bidding period for your project \"%s\" has ended. "
+                    + "No architect was selected, so the project has been closed.\n\n"
+                    + "You can create a new project or contact support if you need assistance.\n\n"
+                    + "Visit: %s/client/dashboard\n\n"
+                    + "Best regards,\n"
+                    + "The Rumantra Team",
+                projectTitle, frontendUrl);
+      } else {
+        body =
+            String.format(
+                "Hi,\n\n"
+                    + "The bidding period for the project \"%s\" has ended without a winner being selected. "
+                    + "Your bid token has been refunded to your account.\n\n"
+                    + "Visit: %s/architect/dashboard\n\n"
+                    + "Best regards,\n"
+                    + "The Rumantra Team",
+                projectTitle, frontendUrl);
+      }
+
+      SimpleMailMessage message = new SimpleMailMessage();
+      message.setFrom(fromEmail);
+      message.setTo(toEmail);
+      message.setSubject(subject);
+      message.setText(body);
+      mailSender.send(message);
+      log.info("Project closed email sent to {} (isClient={})", toEmail, isClient);
+    } catch (Exception e) {
+      log.error("Failed to send project closed email to {}", toEmail, e);
+    }
+  }
+
+  @Async
   public void sendBidNotificationEmail(String toEmail, String subject, String message) {
     long startTime = System.currentTimeMillis();
 

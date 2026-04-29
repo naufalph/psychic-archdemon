@@ -11,7 +11,9 @@ export default {
     riset: 'Riset',
     untukArsitek: 'Untuk Arsitek',
     masuk: 'Masuk',
-    mulaiProyek: 'Mulai Proyek Gratis'
+    mulaiProyek: 'Mulai Proyek Gratis',
+    dasbor: 'Dasbor',
+    keluar: 'Keluar'
   },
   landing: {
     eyebrow: '1.4k+ Arsitek Berlisensi IAI',

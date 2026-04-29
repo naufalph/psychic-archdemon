@@ -11,7 +11,9 @@ export default {
     riset: 'Research',
     untukArsitek: 'For Architects',
     masuk: 'Sign in',
-    mulaiProyek: 'Start Free Project'
+    mulaiProyek: 'Start Free Project',
+    dasbor: 'Dashboard',
+    keluar: 'Sign out'
   },
   landing: {
     eyebrow: '1.4k+ IAI Licensed Architects',

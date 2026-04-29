@@ -213,6 +213,34 @@
             </div>
           </section>
 
+          <section class="space-y-6">
+            <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
+              <span class="bg-[#F5E6D3] text-[#7C4728] font-bold px-3 py-1 rounded-full text-sm">Part 5</span>
+              <h2 class="text-xl font-bold text-black">Bid Deadline</h2>
+            </div>
+            <p class="text-xs text-gray-500">
+              Set the closing date for architect bids. After this date the project closes automatically and
+              any unselected bids are refunded.
+            </p>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Bidding Closes On <span class="text-red-500">*</span>
+              </label>
+              <input
+                v-model="formData.biddingDeadline"
+                type="date"
+                required
+                :min="minBiddingDeadline"
+                :max="maxBiddingDeadline"
+                class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#7C4728] focus:border-[#7C4728] outline-none transition"
+              />
+              <p v-if="biddingDaysLeft !== null" class="mt-2 text-sm font-medium text-[#7C4728]">
+                {{ biddingDaysLeft }} day{{ biddingDaysLeft === 1 ? '' : 's' }} of bidding time
+              </p>
+            </div>
+          </section>
+
           <div v-if="error" class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
             {{ error }}
           </div>
@@ -267,10 +295,36 @@ const formData = ref({
   },
   deliverables: [],
   startDateType: 'IMMEDIATELY',
-  expectedStartDate: ''
+  expectedStartDate: '',
+  biddingDeadline: (() => {
+    const d = new Date()
+    d.setDate(d.getDate() + 21)
+    return d.toISOString().split('T')[0]
+  })()
 })
 
 const minStartDate = computed(() => new Date().toISOString().split('T')[0])
+
+const minBiddingDeadline = computed(() => {
+  const d = new Date()
+  d.setDate(d.getDate() + 7)
+  return d.toISOString().split('T')[0]
+})
+
+const maxBiddingDeadline = computed(() => {
+  const d = new Date()
+  d.setDate(d.getDate() + 56)
+  return d.toISOString().split('T')[0]
+})
+
+const biddingDaysLeft = computed(() => {
+  if (!formData.value.biddingDeadline) return null
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const deadline = new Date(formData.value.biddingDeadline)
+  const diff = Math.round((deadline - today) / (1000 * 60 * 60 * 24))
+  return diff > 0 ? diff : null
+})
 
 const coverImages = ref([])
 const loading = ref(false)
@@ -309,7 +363,8 @@ const handleSubmit = async () => {
       expectedStartDate:
         formData.value.startDateType === 'SPECIFIC_DATE' && formData.value.expectedStartDate
           ? formData.value.expectedStartDate
-          : null
+          : null,
+      biddingDeadline: formData.value.biddingDeadline || null
     }
 
     await projectsStore.createProject(projectData, coverImages.value)
