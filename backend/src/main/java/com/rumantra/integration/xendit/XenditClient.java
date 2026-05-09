@@ -61,6 +61,46 @@ public class XenditClient {
     }
   }
 
+  public <T> T postWithIdempotency(
+      String endpoint, Object request, Class<T> responseType, String idempotencyKey) {
+    HttpHeaders headers = new HttpHeaders();
+    headers.setBasicAuth(apiKey, "");
+    headers.setContentType(MediaType.APPLICATION_JSON);
+    headers.set("Idempotency-key", idempotencyKey);
+
+    HttpEntity<?> entity = new HttpEntity<>(request, headers);
+    String fullUrl = BASE_URL + endpoint;
+
+    try {
+      log.info("=== XENDIT API REQUEST (POST IDEMPOTENT) ===");
+      log.info("URL: {}", fullUrl);
+      log.info("Idempotency-key: {}", idempotencyKey);
+      String requestBody = objectMapper.writeValueAsString(request);
+      log.info("Request Body: {}", requestBody);
+
+      ResponseEntity<T> response =
+          restTemplate.exchange(fullUrl, HttpMethod.POST, entity, responseType);
+
+      log.info("=== XENDIT API RESPONSE (POST IDEMPOTENT) ===");
+      log.info("Status Code: {}", response.getStatusCode());
+      String responseBody = objectMapper.writeValueAsString(response.getBody());
+      log.info("Response Body: {}", responseBody);
+
+      return response.getBody();
+    } catch (HttpClientErrorException e) {
+      log.error("=== XENDIT API ERROR (POST IDEMPOTENT) ===");
+      log.error("URL: {}", fullUrl);
+      log.error("Status Code: {}", e.getStatusCode());
+      log.error("Response Body: {}", e.getResponseBodyAsString());
+      throw new XenditException("API call failed: " + e.getMessage(), e);
+    } catch (Exception e) {
+      log.error("=== XENDIT API UNEXPECTED ERROR (POST IDEMPOTENT) ===");
+      log.error("URL: {}", fullUrl);
+      log.error("Error: {}", e.getMessage(), e);
+      throw new XenditException("Unexpected error: " + e.getMessage(), e);
+    }
+  }
+
   public <T> T postV2(String endpoint, Object request, Class<T> responseType) {
     HttpHeaders headers = new HttpHeaders();
     headers.setBasicAuth(apiKey, "");

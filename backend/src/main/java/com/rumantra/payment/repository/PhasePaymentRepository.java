@@ -16,4 +16,8 @@ public interface PhasePaymentRepository extends JpaRepository<PhasePayment, Long
   List<PhasePayment> findByProjectIdOrderByCreatedAtAsc(Long projectId);
 
   Optional<PhasePayment> findByXenditReferenceId(String xenditReferenceId);
+
+  Optional<PhasePayment> findByProjectPhaseId(Long projectPhaseId);
+
+  Optional<PhasePayment> findByXenditInvoiceId(String xenditInvoiceId);
 }

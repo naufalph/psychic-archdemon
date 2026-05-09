@@ -135,6 +135,10 @@ public class SecurityConfig {
                     .requestMatchers("/rmtr/tokens/**")
                     .hasRole("ARCHITECT")
 
+                    // Phase lifecycle webhook (public, token-verified)
+                    .requestMatchers("/rmtr/phases/webhook/**")
+                    .permitAll()
+
                     // Phase payment endpoints - require CLIENT role (except unified webhook)
                     .requestMatchers("/rmtr/payments/webhook/invoice")
                     .permitAll()
@@ -164,6 +168,24 @@ public class SecurityConfig {
                     .hasRole("ARCHITECT")
                     .requestMatchers("/rmtr/projects/**")
                     .hasRole("CLIENT")
+
+                    // Phase lifecycle endpoints
+                    .requestMatchers(HttpMethod.POST, "/rmtr/projects/*/phases")
+                    .hasRole("CLIENT")
+                    .requestMatchers(HttpMethod.GET, "/rmtr/projects/*/phases/**")
+                    .authenticated()
+                    .requestMatchers(HttpMethod.POST, "/rmtr/phases/*/bill")
+                    .hasRole("CLIENT")
+                    .requestMatchers(HttpMethod.POST, "/rmtr/phases/*/approve")
+                    .hasRole("CLIENT")
+                    .requestMatchers(HttpMethod.POST, "/rmtr/phases/*/dispute")
+                    .hasRole("CLIENT")
+                    .requestMatchers(HttpMethod.POST, "/rmtr/phases/*/deliverables")
+                    .hasRole("ARCHITECT")
+                    .requestMatchers(HttpMethod.POST, "/rmtr/phases/*/disburse")
+                    .hasRole("ARCHITECT")
+                    .requestMatchers(HttpMethod.GET, "/rmtr/phases/*/logs")
+                    .authenticated()
 
                     // Static file serving (uploads)
                     .requestMatchers("/uploads/**")

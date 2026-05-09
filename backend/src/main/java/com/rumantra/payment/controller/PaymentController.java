@@ -13,6 +13,7 @@ import com.rumantra.payment.dto.PhasePaymentInitiateResponse;
 import com.rumantra.payment.dto.PhasePaymentResponse;
 import com.rumantra.payment.service.PaymentService;
 import com.rumantra.payment.service.TokenPurchaseService;
+import com.rumantra.project.service.PhasePaymentService;
 import com.rumantra.security.SecurityUtils;
 import com.rumantra.shared.dto.ApiResponse;
 
@@ -28,6 +29,8 @@ public class PaymentController {
   @Autowired private TokenPurchaseService tokenPurchaseService;
 
   @Autowired private XenditService xenditService;
+
+  @Autowired private PhasePaymentService phasePaymentService;
 
   @GetMapping("/projects/{projectId}")
   public ResponseEntity<ApiResponse<List<PhasePaymentResponse>>> getProjectPhasePayments(
@@ -77,7 +80,13 @@ public class PaymentController {
 
     log.info("Received invoice webhook - status: {}, external_id: {}", status, externalId);
 
-    if (externalId != null && externalId.startsWith("phase_payment_")) {
+    if (externalId != null && externalId.startsWith("proj_phase_")) {
+      if ("PAID".equals(status)) {
+        phasePaymentService.handlePaymentWebhook(webhook);
+      } else {
+        log.info("Unhandled invoice status for project phase payment: {}", status);
+      }
+    } else if (externalId != null && externalId.startsWith("phase_payment_")) {
       switch (status) {
         case "PAID":
           paymentService.handleInvoicePaid(webhook);

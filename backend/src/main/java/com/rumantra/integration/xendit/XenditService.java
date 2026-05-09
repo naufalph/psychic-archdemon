@@ -12,6 +12,9 @@ import com.rumantra.integration.xendit.dto.XenditInvoiceWebhook;
 import com.rumantra.integration.xendit.dto.XenditPaymentRequestRequest;
 import com.rumantra.integration.xendit.dto.XenditPaymentResponse;
 import com.rumantra.integration.xendit.dto.XenditPaymentWebhook;
+import com.rumantra.integration.xendit.dto.XenditPayoutCallback;
+import com.rumantra.integration.xendit.dto.XenditPayoutRequest;
+import com.rumantra.integration.xendit.dto.XenditPayoutResponse;
 import com.rumantra.integration.xendit.dto.XenditWebhookEvent;
 
 import lombok.extern.slf4j.Slf4j;
@@ -95,6 +98,22 @@ public class XenditService {
     } catch (Exception e) {
       log.error("Failed to parse Xendit invoice webhook", e);
       throw new XenditException("Invalid invoice webhook payload", e);
+    }
+  }
+
+  public XenditPayoutResponse createPayout(XenditPayoutRequest request, String idempotencyKey) {
+    log.info("Creating Xendit payout for reference {}", request.getReferenceId());
+    return xenditClient.postWithIdempotency(
+        "/v2/payouts", request, XenditPayoutResponse.class, idempotencyKey);
+  }
+
+  public XenditPayoutCallback parsePayoutCallback(String payload) {
+    try {
+      ObjectMapper mapper = new ObjectMapper();
+      return mapper.readValue(payload, XenditPayoutCallback.class);
+    } catch (Exception e) {
+      log.error("Failed to parse Xendit payout callback", e);
+      throw new XenditException("Invalid payout callback payload", e);
     }
   }
 }

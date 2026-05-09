@@ -7,6 +7,7 @@ import com.rumantra.architect.domain.Architect;
 import com.rumantra.bidding.domain.BidPaymentPhase;
 import com.rumantra.client.domain.Client;
 import com.rumantra.client.domain.Project;
+import com.rumantra.project.domain.ProjectPhase;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -75,6 +76,11 @@ public class PhasePayment {
 
   @Column(name = "failure_reason", columnDefinition = "TEXT")
   private String failureReason;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "project_phase_id")
+  @ToString.Exclude
+  private ProjectPhase projectPhase;
 
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
