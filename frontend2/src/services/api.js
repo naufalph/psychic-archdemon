@@ -344,5 +344,16 @@ export const paymentAPI = {
   initiatePhasePayment: phaseId => api.post(`/rmtr/payments/phases/${phaseId}`)
 }
 
+export const phaseAPI = {
+  getPhases: projectId => api.get(`/rmtr/projects/${projectId}/phases`),
+  getPhase: (projectId, phaseId) => api.get(`/rmtr/projects/${projectId}/phases/${phaseId}`),
+  billPhase: phaseId => api.post(`/rmtr/phases/${phaseId}/bill`),
+  uploadDeliverable: (phaseId, data) => api.post(`/rmtr/phases/${phaseId}/deliverables`, data),
+  approveDeliverable: phaseId => api.post(`/rmtr/phases/${phaseId}/approve`),
+  disputeDeliverable: (phaseId, data) => api.post(`/rmtr/phases/${phaseId}/dispute`, data),
+  disburse: (phaseId, data) => api.post(`/rmtr/phases/${phaseId}/disburse`, data),
+  getLogs: phaseId => api.get(`/rmtr/phases/${phaseId}/logs`)
+}
+
 // Default export
 export default api

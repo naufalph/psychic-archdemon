@@ -82,6 +82,11 @@ const routes = [
         component: () => import('@/views/client/ActiveProjectDashboard.vue')
       },
       {
+        path: 'projects/:id/workspace',
+        name: 'ClientProjectWorkspace',
+        component: () => import('@/views/client/ProjectWorkspace.vue')
+      },
+      {
         path: 'projects/:projectId/payments',
         name: 'ProjectPhasePayments',
         component: () => import('@/views/client/ProjectPhasePayments.vue')
@@ -160,6 +165,11 @@ const routes = [
         path: 'settings',
         name: 'ArchitectSettings',
         component: () => import('@/views/architect/ArchitectSettings.vue')
+      },
+      {
+        path: 'projects/:id/workspace',
+        name: 'ArchitectProjectWorkspace',
+        component: () => import('@/views/architect/ProjectWorkspace.vue')
       }
     ]
   },
