@@ -27,7 +27,7 @@
               <h1 class="text-lg font-bold text-black">{{ project?.title || 'Active Project' }}</h1>
             </div>
           </div>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center gap-3">
             <span
               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700"
             >
@@ -35,6 +35,13 @@
               In Progress
             </span>
             <span class="text-sm text-gray-500">Phase {{ currentPhaseNumber }} of {{ phases.length }}</span>
+            <button
+              @click="router.push(`/client/projects/${projectId}/workspace`)"
+              class="flex items-center gap-1.5 px-4 py-1.5 bg-[#1C1C1C] text-white text-xs font-semibold rounded-full hover:bg-[#333] transition"
+            >
+              <Layers :size="13" />
+              Open Workspace
+            </button>
           </div>
         </div>
       </div>
@@ -177,14 +184,23 @@
                     <span class="w-1.5 h-1.5 rounded-full bg-amber-500" />
                     {{ phase.paymentStatus === 'EXPIRED' ? 'Expired' : 'Pending' }}
                   </span>
-                  <button
-                    :disabled="payingPhaseId === phase.phaseId"
-                    @click="payPhase(phase)"
-                    class="px-4 py-2 bg-[#1C1C1C] text-white text-sm font-semibold rounded-lg hover:bg-[#333] disabled:opacity-50 disabled:cursor-not-allowed transition"
-                  >
-                    <span v-if="payingPhaseId === phase.phaseId">Processing...</span>
-                    <span v-else>Pay Now</span>
-                  </button>
+                  <div class="flex items-center gap-2">
+                    <button
+                      v-if="pendingPaymentLink"
+                      @click="checkPaymentStatus"
+                      class="px-3 py-2 text-xs font-semibold text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition"
+                    >
+                      I've Paid — Refresh
+                    </button>
+                    <button
+                      :disabled="payingPhaseId === phase.phaseId"
+                      @click="payPhase(phase)"
+                      class="px-4 py-2 bg-[#1C1C1C] text-white text-sm font-semibold rounded-lg hover:bg-[#333] disabled:opacity-50 disabled:cursor-not-allowed transition"
+                    >
+                      <span v-if="payingPhaseId === phase.phaseId">Processing...</span>
+                      <span v-else>{{ pendingPaymentLink ? 'Pay Now Again' : 'Pay Now' }}</span>
+                    </button>
+                  </div>
                 </div>
               </div>
               <div v-if="phase.deliverables && phase.deliverables.length" class="px-5 py-3 bg-amber-50">
@@ -235,7 +251,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft, CheckCircle, AlertCircle, Building2, MapPin, Lock } from 'lucide-vue-next'
+import { ArrowLeft, CheckCircle, AlertCircle, Building2, MapPin, Lock, Layers } from 'lucide-vue-next'
 import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
 import { paymentAPI } from '@/services/api'
@@ -250,6 +266,7 @@ const phases = ref([])
 const loading = ref(true)
 const error = ref(null)
 const payingPhaseId = ref(null)
+const pendingPaymentLink = ref(null)
 
 const project = computed(() => projectsStore.currentProject)
 const projectBids = computed(() => bidsStore.projectBids)
@@ -310,13 +327,29 @@ const payPhase = async phase => {
   payingPhaseId.value = phase.phaseId
   try {
     const res = await paymentAPI.initiatePhasePayment(phase.phaseId)
-    window.open(res.data.data.paymentLink, '_blank')
-    const updated = await paymentAPI.getProjectPhasePayments(projectId)
-    phases.value = updated.data.data
+    const link = res.data.data.paymentLink
+    pendingPaymentLink.value = link
+    window.open(link, '_blank')
   } catch (err) {
     alert(err.response?.data?.message || 'Failed to initiate payment')
   } finally {
     payingPhaseId.value = null
+  }
+}
+
+const checkPaymentStatus = async () => {
+  try {
+    const updated = await paymentAPI.getProjectPhasePayments(projectId)
+    const updatedPhases = updated.data.data
+    const wasUnpaid = phases.value.filter(p => p.paymentStatus === 'COMPLETED').length
+    const nowPaid = updatedPhases.filter(p => p.paymentStatus === 'COMPLETED').length
+    phases.value = updatedPhases
+    pendingPaymentLink.value = null
+    if (nowPaid > wasUnpaid) {
+      router.push(`/client/projects/${projectId}/workspace`)
+    }
+  } catch (err) {
+    console.error('Failed to refresh payment status', err)
   }
 }
 

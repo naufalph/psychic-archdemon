@@ -47,6 +47,14 @@ public class ProjectPhase {
   @Column(name = "due_date")
   private LocalDate dueDate;
 
+  @Column(name = "max_revisions", nullable = false)
+  @Builder.Default
+  private Integer maxRevisions = 3;
+
+  @Column(name = "revisions_used", nullable = false)
+  @Builder.Default
+  private Integer revisionsUsed = 0;
+
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
 

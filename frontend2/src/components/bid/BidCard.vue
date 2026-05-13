@@ -112,6 +112,8 @@ const navigate = () => {
   if (!projectId) return
   if (props.bid.status === 'ACCEPTED' && props.bid.projectStatus === 'NEGOTIATION') {
     router.push({ name: 'ArchitectFinalizationView', params: { projectId } })
+  } else if (props.bid.status === 'ACCEPTED' && props.bid.projectStatus === 'IN_PROGRESS') {
+    router.push({ name: 'ArchitectProjectWorkspace', params: { id: projectId } })
   } else {
     router.push({ name: 'ProjectDetailForArchitect', params: { projectId } })
   }

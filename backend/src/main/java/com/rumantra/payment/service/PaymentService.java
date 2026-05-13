@@ -33,6 +33,8 @@ import com.rumantra.payment.domain.PhasePaymentStatus;
 import com.rumantra.payment.dto.PhasePaymentInitiateResponse;
 import com.rumantra.payment.dto.PhasePaymentResponse;
 import com.rumantra.payment.repository.PhasePaymentRepository;
+import com.rumantra.project.domain.PhaseStatus;
+import com.rumantra.project.repository.ProjectPhaseRepository;
 import com.rumantra.shared.exception.BusinessException;
 import com.rumantra.shared.exception.ExceptionConstants;
 
@@ -53,6 +55,8 @@ public class PaymentService {
   @Autowired private ClientRepository clientRepository;
 
   @Autowired private XenditService xenditService;
+
+  @Autowired private ProjectPhaseRepository projectPhaseRepository;
 
   @Value("${app.frontend.url:http://localhost:3000}")
   private String frontendUrl;
@@ -156,8 +160,8 @@ public class PaymentService {
                     phase.getPhaseNumber(), phase.getTitle(), project.getTitle()))
             .currency("IDR")
             .invoiceDuration(86400)
-            .successRedirectUrl(frontendUrl + "/client/projects/" + project.getId() + "/payments")
-            .failureRedirectUrl(frontendUrl + "/client/projects/" + project.getId() + "/payments")
+            .successRedirectUrl(frontendUrl + "/client/projects/" + project.getId() + "/workspace")
+            .failureRedirectUrl(frontendUrl + "/client/projects/" + project.getId() + "/active")
             .customer(customer)
             .customerNotificationPreference(notificationPref)
             .items(Arrays.asList(item))
@@ -243,6 +247,26 @@ public class PaymentService {
         "Phase payment completed: phaseId={}, projectId={}",
         payment.getPhase().getId(),
         payment.getProject().getId());
+
+    advanceProjectPhaseToInProgress(payment);
+  }
+
+  private void advanceProjectPhaseToInProgress(PhasePayment payment) {
+    int phaseNumber = payment.getPhase().getPhaseNumber();
+    Long projectId = payment.getProject().getId();
+    projectPhaseRepository
+        .findByProjectIdAndPhaseNumber(projectId, phaseNumber)
+        .ifPresent(
+            phase -> {
+              if (phase.getStatus() == PhaseStatus.PENDING
+                  || phase.getStatus() == PhaseStatus.BILLED) {
+                phase.setStatus(PhaseStatus.IN_PROGRESS);
+                projectPhaseRepository.save(phase);
+                log.info(
+                    "ProjectPhase {} advanced to IN_PROGRESS after BidPaymentPhase payment",
+                    phase.getId());
+              }
+            });
   }
 
   @Transactional

@@ -254,7 +254,8 @@ export const projectAPI = {
   confirmNegotiation: projectId => api.post(`/rmtr/projects/${projectId}/confirm-negotiation`),
   rejectNegotiation: projectId => api.post(`/rmtr/projects/${projectId}/reject-negotiation`),
   architectConfirmNegotiation: projectId =>
-    api.post(`/rmtr/projects/${projectId}/architect-confirm-negotiation`)
+    api.post(`/rmtr/projects/${projectId}/architect-confirm-negotiation`),
+  initializePhases: projectId => api.post(`/rmtr/projects/${projectId}/initialize-phases`)
 }
 
 export const chatAPI = {
@@ -349,7 +350,13 @@ export const phaseAPI = {
   getPhase: (projectId, phaseId) => api.get(`/rmtr/projects/${projectId}/phases/${phaseId}`),
   billPhase: phaseId => api.post(`/rmtr/phases/${phaseId}/bill`),
   uploadDeliverable: (phaseId, data) => api.post(`/rmtr/phases/${phaseId}/deliverables`, data),
+  uploadDeliverableFile: (phaseId, formData) =>
+    api.post(`/rmtr/phases/${phaseId}/deliverables/upload`, formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    }),
+  submitForReview: phaseId => api.post(`/rmtr/phases/${phaseId}/submit-for-review`),
   approveDeliverable: phaseId => api.post(`/rmtr/phases/${phaseId}/approve`),
+  requestRevision: phaseId => api.post(`/rmtr/phases/${phaseId}/request-revision`),
   disputeDeliverable: (phaseId, data) => api.post(`/rmtr/phases/${phaseId}/dispute`, data),
   disburse: (phaseId, data) => api.post(`/rmtr/phases/${phaseId}/disburse`, data),
   getLogs: phaseId => api.get(`/rmtr/phases/${phaseId}/logs`)

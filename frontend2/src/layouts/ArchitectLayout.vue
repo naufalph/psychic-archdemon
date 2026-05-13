@@ -86,7 +86,7 @@ const navItems = [
   { name: 'dashboard', label: 'Dashboard', to: '/architect/dashboard', icon: LayoutDashboard },
   { name: 'opportunities', label: 'Find Projects', to: '/architect/opportunities', icon: Search },
   { name: 'bids', label: 'My Bids', to: '/architect/bids', icon: ClipboardList },
-  { name: 'portfolios', label: 'Portfolio', to: '/architect/portfolios', icon: Layout },
+  { name: 'portfolios', label: 'Portfolio', to: '/architect/portfolios', icon: Layout }
 ]
 
 const isActive = item => {

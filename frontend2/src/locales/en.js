@@ -48,7 +48,7 @@ export default {
         'IAI licensed architects submit bids. Compare prices, timelines, and portfolios side by side.',
       step3Title: 'Build with Confidence',
       step3Desc:
-        "Your chosen architect gets to work. Funds release per milestone — your project stays on track."
+        'Your chosen architect gets to work. Funds release per milestone — your project stays on track.'
     },
     why: {
       label: 'Designed for your peace of mind',
@@ -61,7 +61,8 @@ export default {
       card4Title: 'Centralised communication',
       card4Desc: 'All revisions, documents, and chats are neatly stored in one project dashboard.',
       card5Title: 'Diverse expertise',
-      card5Desc: 'From minimalist homes to sports stadiums, specialists are available for everything.',
+      card5Desc:
+        'From minimalist homes to sports stadiums, specialists are available for everything.',
       card6Title: 'All across Indonesia',
       card6Desc: 'Find local talent in your city or renowned architects from the capital.'
     },

@@ -3,7 +3,9 @@
     <Navbar />
 
     <!-- Hero -->
-    <section class="py-16 px-10 max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center min-h-[520px]">
+    <section
+      class="py-16 px-10 max-w-[1440px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-20 items-center min-h-[520px]"
+    >
       <!-- Left: copy -->
       <div class="max-w-xl">
         <div
@@ -12,10 +14,7 @@
           ⭐ {{ t.landing.eyebrow }}
         </div>
 
-        <h1
-          class="font-semibold leading-[1.1] text-[#0A0A0A] mb-5"
-          style="font-size:56px;letter-spacing:-0.03em;"
-        >
+        <h1 class="font-semibold leading-[1.1] text-[#0A0A0A] mb-5" style="font-size: 56px; letter-spacing: -0.03em">
           {{ t.landing.hero.title }}
         </h1>
 
@@ -27,7 +26,7 @@
           <router-link to="/signup">
             <button
               class="px-6 py-2.5 bg-[#0A0A0A] text-white rounded-full text-[14px] font-semibold hover:opacity-90 transition-all hover:-translate-y-px"
-              style="box-shadow:0 4px 12px rgba(0,0,0,0.08);"
+              style="box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08)"
             >
               {{ t.landing.hero.cta }}
             </button>
@@ -86,7 +85,7 @@
         <div class="relative mb-6">
           <svg
             class="absolute left-5 top-1/2 -translate-y-1/2 text-[#888888]"
-            style="width:20px;height:20px;"
+            style="width: 20px; height: 20px"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -108,7 +107,7 @@
         </div>
 
         <!-- Filter chips -->
-        <div class="flex gap-2.5 overflow-x-auto pb-1" style="scrollbar-width:none;">
+        <div class="flex gap-2.5 overflow-x-auto pb-1" style="scrollbar-width: none">
           <button
             v-for="cat in CATEGORIES"
             :key="cat.value"
@@ -143,7 +142,7 @@
                 project.category === 'lainnya'
             }"
           >
-            <div class="relative overflow-hidden" style="aspect-ratio:4/3;">
+            <div class="relative overflow-hidden" style="aspect-ratio: 4/3">
               <img
                 :src="project.img"
                 :alt="project.title"
@@ -151,13 +150,13 @@
               />
               <span
                 class="absolute top-3 left-3 text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide text-[#0A0A0A]"
-                style="background:rgba(255,255,255,0.9);backdrop-filter:blur(4px);"
+                style="background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(4px)"
               >
                 {{ project.categoryLabel }}
               </span>
             </div>
             <div class="p-4">
-              <h3 class="text-[15px] font-semibold text-[#0A0A0A] mb-1" style="letter-spacing:-0.01em;">
+              <h3 class="text-[15px] font-semibold text-[#0A0A0A] mb-1" style="letter-spacing: -0.01em">
                 {{ project.title }}
               </h3>
               <p class="text-[12px] text-[#888888] leading-snug">{{ project.location }}</p>
@@ -177,16 +176,10 @@
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
           <div v-for="(step, i) in HOW_IT_WORKS_KEYS" :key="i" class="relative">
-            <div
-              class="font-black leading-none mb-4 select-none"
-              style="font-size:64px;color:#E8E8E8;"
-            >
+            <div class="font-black leading-none mb-4 select-none" style="font-size: 64px; color: #e8e8e8">
               {{ String(i + 1).padStart(2, '0') }}
             </div>
-            <h3
-              class="text-[20px] font-semibold text-[#0A0A0A] mb-3"
-              style="letter-spacing:-0.02em;"
-            >
+            <h3 class="text-[20px] font-semibold text-[#0A0A0A] mb-3" style="letter-spacing: -0.02em">
               {{ t.landing.howItWorks[step.titleKey] }}
             </h3>
             <p class="text-[15px] text-[#666666] leading-relaxed">
@@ -212,10 +205,7 @@
             <div class="w-12 h-12 bg-[#F5F5F5] rounded-xl flex items-center justify-center mb-6">
               <component :is="card.icon" class="w-6 h-6 text-[#0A0A0A]" />
             </div>
-            <h3
-              class="text-[18px] font-semibold text-[#0A0A0A] mb-3"
-              style="letter-spacing:-0.02em;"
-            >
+            <h3 class="text-[18px] font-semibold text-[#0A0A0A] mb-3" style="letter-spacing: -0.02em">
               {{ t.landing.why[card.titleKey] }}
             </h3>
             <p class="text-[14px] text-[#666666] leading-relaxed">
@@ -229,10 +219,7 @@
     <!-- CTA -->
     <section class="py-24 bg-[#F5F5F5]">
       <div class="max-w-[1440px] mx-auto px-10 text-center">
-        <h2
-          class="font-semibold text-[#0A0A0A] mb-4 leading-[1.1]"
-          style="font-size:48px;letter-spacing:-0.03em;"
-        >
+        <h2 class="font-semibold text-[#0A0A0A] mb-4 leading-[1.1]" style="font-size: 48px; letter-spacing: -0.03em">
           {{ t.landing.cta.title }}
         </h2>
         <p class="text-[18px] text-[#666666] font-light mb-10 max-w-lg mx-auto">
@@ -242,7 +229,7 @@
           <router-link to="/signup">
             <button
               class="px-8 py-3 bg-[#0A0A0A] text-white rounded-full text-[15px] font-semibold hover:opacity-90 transition-all hover:-translate-y-px"
-              style="box-shadow:0 4px 12px rgba(0,0,0,0.08);"
+              style="box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08)"
             >
               {{ t.landing.cta.primary }}
             </button>
@@ -388,9 +375,7 @@ const filteredProjects = computed(() => {
   }
   if (searchQuery.value.trim()) {
     const q = searchQuery.value.toLowerCase()
-    result = result.filter(
-      p => p.title.toLowerCase().includes(q) || p.location.toLowerCase().includes(q)
-    )
+    result = result.filter(p => p.title.toLowerCase().includes(q) || p.location.toLowerCase().includes(q))
   }
   return result
 })

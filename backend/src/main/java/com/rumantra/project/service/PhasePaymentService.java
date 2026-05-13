@@ -74,6 +74,7 @@ public class PhasePaymentService {
   @Autowired private BidRepository bidRepository;
   @Autowired private UserRepository userRepository;
   @Autowired private XenditService xenditService;
+  @Autowired private com.rumantra.shared.storage.FileStorageService fileStorageService;
 
   @Value("${app.frontend.url:http://localhost:3000}")
   private String frontendUrl;
@@ -304,6 +305,70 @@ public class PhasePaymentService {
             .build();
     deliverable = phaseDeliverableRepository.save(deliverable);
 
+    log(phase, architectUserId, PhaseActorType.ARCHITECT, "DELIVERABLE_UPLOADED", null, null, null);
+
+    return toDeliverableResponse(deliverable);
+  }
+
+  @Transactional
+  public DeliverableResponse uploadDeliverableFile(
+      Long phaseId,
+      Long architectUserId,
+      org.springframework.web.multipart.MultipartFile file,
+      String description) {
+    ProjectPhase phase =
+        projectPhaseRepository
+            .findById(phaseId)
+            .orElseThrow(() -> new BusinessException(ExceptionConstants.PROJECT_PHASE_NOT_FOUND));
+
+    verifyArchitectOwnsProject(architectUserId, phase.getProject().getId());
+
+    if (phase.getStatus() != PhaseStatus.IN_PROGRESS) {
+      throw new BusinessException(ExceptionConstants.PHASE_WRONG_STATUS);
+    }
+
+    User user =
+        userRepository
+            .findById(architectUserId)
+            .orElseThrow(() -> new BusinessException(ExceptionConstants.UNAUTHORIZED_PHASE_ACCESS));
+
+    String storedPath = fileStorageService.uploadFile(file, "deliverables/" + phaseId);
+    String fileType = file.getContentType();
+
+    PhaseDeliverable deliverable =
+        PhaseDeliverable.builder()
+            .phase(phase)
+            .uploadedBy(user)
+            .filePath(storedPath)
+            .fileType(fileType)
+            .description(description)
+            .build();
+    deliverable = phaseDeliverableRepository.save(deliverable);
+
+    log(phase, architectUserId, PhaseActorType.ARCHITECT, "DELIVERABLE_UPLOADED", null, null, null);
+
+    return toDeliverableResponse(deliverable);
+  }
+
+  @Transactional
+  public PhaseResponse submitForReview(Long phaseId, Long architectUserId) {
+    ProjectPhase phase =
+        projectPhaseRepository
+            .findById(phaseId)
+            .orElseThrow(() -> new BusinessException(ExceptionConstants.PROJECT_PHASE_NOT_FOUND));
+
+    verifyArchitectOwnsProject(architectUserId, phase.getProject().getId());
+
+    if (phase.getStatus() != PhaseStatus.IN_PROGRESS) {
+      throw new BusinessException(ExceptionConstants.PHASE_WRONG_STATUS);
+    }
+
+    List<PhaseDeliverable> deliverables =
+        phaseDeliverableRepository.findByPhaseIdOrderByUploadedAtAsc(phaseId);
+    if (deliverables.isEmpty()) {
+      throw new BusinessException(ExceptionConstants.NO_DELIVERABLES_YET);
+    }
+
     phase.setStatus(PhaseStatus.DELIVERED);
     projectPhaseRepository.save(phase);
 
@@ -311,12 +376,53 @@ public class PhasePaymentService {
         phase,
         architectUserId,
         PhaseActorType.ARCHITECT,
-        "DELIVERABLE_UPLOADED",
+        "PHASE_SUBMITTED_FOR_REVIEW",
         PhaseStatus.IN_PROGRESS,
         PhaseStatus.DELIVERED,
         null);
 
-    return toDeliverableResponse(deliverable);
+    PhasePayment payment = phasePaymentRepository.findByProjectPhaseId(phaseId).orElse(null);
+    return toPhaseResponse(phase, payment, deliverables);
+  }
+
+  @Transactional
+  public PhaseResponse requestRevision(Long phaseId, Long clientUserId) {
+    ProjectPhase phase =
+        projectPhaseRepository
+            .findById(phaseId)
+            .orElseThrow(() -> new BusinessException(ExceptionConstants.PROJECT_PHASE_NOT_FOUND));
+
+    verifyClientOwnsProject(clientUserId, phase.getProject().getId());
+
+    if (phase.getStatus() != PhaseStatus.DELIVERED) {
+      throw new BusinessException(ExceptionConstants.PHASE_WRONG_STATUS);
+    }
+
+    if (phase.getRevisionsUsed() >= phase.getMaxRevisions()) {
+      throw new BusinessException(ExceptionConstants.NO_REVISIONS_LEFT);
+    }
+
+    phase.setRevisionsUsed(phase.getRevisionsUsed() + 1);
+    phase.setStatus(PhaseStatus.IN_PROGRESS);
+    projectPhaseRepository.save(phase);
+
+    log(
+        phase,
+        clientUserId,
+        PhaseActorType.CLIENT,
+        "REVISION_REQUESTED",
+        PhaseStatus.DELIVERED,
+        PhaseStatus.IN_PROGRESS,
+        Map.of(
+            "revisionsUsed",
+            String.valueOf(phase.getRevisionsUsed()),
+            "maxRevisions",
+            String.valueOf(phase.getMaxRevisions())));
+
+    PhasePayment payment = phasePaymentRepository.findByProjectPhaseId(phaseId).orElse(null);
+    List<PhaseDeliverable> deliverables =
+        phaseDeliverableRepository.findByPhaseIdOrderByUploadedAtAsc(phaseId);
+    return toPhaseResponse(phase, payment, deliverables);
   }
 
   @Transactional
@@ -665,6 +771,8 @@ public class PhasePaymentService {
         .dueDate(phase.getDueDate())
         .paymentStatus(payment != null ? payment.getStatus().name() : null)
         .paymentLink(payment != null ? payment.getPaymentLink() : null)
+        .maxRevisions(phase.getMaxRevisions())
+        .revisionsUsed(phase.getRevisionsUsed())
         .deliverables(
             deliverables.stream().map(this::toDeliverableResponse).collect(Collectors.toList()))
         .createdAt(phase.getCreatedAt())

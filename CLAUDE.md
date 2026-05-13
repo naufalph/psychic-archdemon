@@ -6,13 +6,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Rumantra is a full-stack architecture marketplace platform connecting architects and clients. Built with Vue 3 frontend and Spring Boot backend.
 
+### Active Frontend
+The project has two frontend directories. **`frontend2/` is the active one** — always work here. `frontend/` is legacy and unused.
+- Active frontend: `frontend2/` (port 3001 in dev)
+- Backend: `backend/` (port 8080)
+
 ## Development Commands
 
 ### Frontend (Vue 3 + Vite)
 ```bash
-cd frontend
+cd frontend2               # NOTE: use frontend2, not frontend
 npm install                 # Install dependencies
-npm run dev                 # Start dev server (http://localhost:3000)
+npm run dev                 # Start dev server (http://localhost:3001)
 npm run build              # Build for production
 npm run preview            # Preview production build
 npm run lint               # Run ESLint
@@ -282,6 +287,76 @@ if (!resource.getOwner().getUser().getId().equals(userId)) {
 6. Backend allocates purchased tokens immediately
 7. Tokens added to quota (no expiration)
 
+### Project Execution Flow (Post-Bid Acceptance)
+
+This is the core product vision. Once a bid is accepted the platform becomes a collaboration workspace between architect and client — not just a payment tracker.
+
+#### Full Lifecycle (End-to-End)
+```
+1. CLIENT creates project → PENDING_APPROVAL
+2. SUPERUSER validates project → OPEN
+3. ARCHITECTs bid on project
+4. CLIENT accepts a bid → NEGOTIATION
+5. Both parties confirm terms (finalization page) → IN_PROGRESS
+   └─ Backend auto-creates ProjectPhase records from BidPaymentPhase
+6. CLIENT sees workspace, pays Phase 1 via ActiveProjectDashboard
+   └─ Xendit webhook fires → ProjectPhase advances to IN_PROGRESS
+7. ARCHITECT uploads deliverables in workspace
+8. CLIENT reviews files and approves (or disputes)
+9. ARCHITECT requests payout (Xendit disbursement)
+10. Xendit webhook fires → ProjectPhase advances to DISBURSED
+11. Repeat steps 6–10 for each phase
+12. All phases DISBURSED → project auto-closes as COMPLETED
+```
+
+#### Two-Phase System (Important Architecture Detail)
+The backend has two parallel phase entities — do NOT confuse them:
+
+| Entity | Table | Purpose | Used by |
+|---|---|---|---|
+| `BidPaymentPhase` | `rmtr_bid_payment_phase` | Phase schedule proposed in bid | `ActiveProjectDashboard` (payment tracking) |
+| `ProjectPhase` | `rmtr_project_phase` | Actual execution phase | `ProjectWorkspace` (collaboration + billing) |
+
+When the project transitions to `IN_PROGRESS`, `ProjectPhase` records are **automatically created** from `BidPaymentPhase` records in `ProjectService.initializeProjectPhasesFromBid()`. The two systems are then bridged by payment: when a `BidPaymentPhase` invoice is paid, `PaymentService.advanceProjectPhaseToInProgress()` advances the matching `ProjectPhase` to `IN_PROGRESS`.
+
+For already-IN_PROGRESS projects without `ProjectPhase` records, the client can call `POST /rmtr/projects/{projectId}/initialize-phases` (or use the button in the workspace UI).
+
+#### ProjectPhase Status Machine
+```
+PENDING → BILLED → IN_PROGRESS → DELIVERED → APPROVED → DISBURSED
+                                           └→ DISPUTED (under review)
+```
+- `PENDING`: waiting for client to generate invoice
+- `BILLED`: invoice created, awaiting Xendit payment
+- `IN_PROGRESS`: paid, architect is working
+- `DELIVERED`: architect uploaded deliverables
+- `APPROVED`: client approved work
+- `DISBURSED`: architect received payout, phase complete
+- `DISPUTED`: client raised dispute, support team reviews
+
+#### Key Views
+| Route | View | Who sees it | Purpose |
+|---|---|---|---|
+| `/client/projects/:id/workspace` | `ProjectWorkspace.vue` | Client | Main workspace: phases, deliverables, chat, approve/dispute |
+| `/client/projects/:id/active` | `ActiveProjectDashboard.vue` | Client | Payment-tracking summary (BidPaymentPhase view) |
+| `/architect/projects/:id/workspace` | `ProjectWorkspace.vue` | Architect | Upload deliverables, request payout, chat |
+| `/client/projects/:id/finalization` | `PreProjectFinalization.vue` | Client | Confirm bid terms before work starts |
+| `/architect/projects/:id/finalization` | `PreProjectFinalizationForArchitect.vue` | Architect | Confirm bid terms before work starts |
+
+**Routing rules for IN_PROGRESS projects:**
+- Clicking a project card as client → goes to `/workspace` (not `/active`)
+- `ActiveProjectDashboard` is accessible via "Open Workspace" back button or direct URL
+- After Xendit payment success → redirects to `/workspace`
+- `BidCard` as architect on IN_PROGRESS project → goes to `/architect/projects/:id/workspace`
+
+#### Chat in Workspace
+Both workspace views (client + architect) use the real `ChatPanel` component connected to the conversation created during bidding. The `conversationId` comes from `acceptedBid.conversationId` (client) or is resolved by matching `chatAPI.getMyConversations()` against the `projectId` (architect).
+
+#### Architect Project Access Authorization
+`getProjectForArchitect` uses layered access:
+- `OPEN` / `NEGOTIATION` → any architect can view (for bidding)
+- `IN_PROGRESS` / `COMPLETED` → only the architect with the accepted bid can view
+
 ### Key API Endpoints
 
 #### Subscription Management (Architect Role Required)
@@ -319,6 +394,27 @@ if (!resource.getOwner().getUser().getId().equals(userId)) {
 - `GET /api/v1/projects` - Get all projects for authenticated client
 - `GET /api/v1/projects/{projectId}` - Get project by ID (ownership verified)
 - `DELETE /api/v1/projects/{projectId}` - Delete project (ownership verified)
+
+#### Project Negotiation & Execution
+- `POST /rmtr/projects/{projectId}/confirm-negotiation` - Client confirms bid terms → project → IN_PROGRESS when both confirm
+- `POST /rmtr/projects/{projectId}/architect-confirm-negotiation` - Architect confirms bid terms
+- `POST /rmtr/projects/{projectId}/reject-negotiation` - Client rejects, project reopens for bidding
+- `POST /rmtr/projects/{projectId}/initialize-phases` - Manually initialize ProjectPhase records from BidPaymentPhase (recovery for existing IN_PROGRESS projects)
+- `GET /rmtr/projects/{projectId}/for-architect` - Architect reads project detail (OPEN/NEGOTIATION: any architect; IN_PROGRESS/COMPLETED: winning architect only)
+
+#### Phase Execution (Client Role Required for billing/approval; Architect for upload/disburse)
+- `GET /rmtr/projects/{projectId}/phases` - List all ProjectPhase records for a project (both parties)
+- `POST /rmtr/phases/{phaseId}/bill` - Client generates Xendit invoice for a phase
+- `POST /rmtr/phases/{phaseId}/approve` - Client approves delivered work
+- `POST /rmtr/phases/{phaseId}/dispute` - Client disputes delivered work (requires `reason`)
+- `POST /rmtr/phases/{phaseId}/deliverables` - Architect uploads deliverable files
+- `POST /rmtr/phases/{phaseId}/disburse` - Architect requests payout (requires bank details)
+- `GET /rmtr/phases/{phaseId}/logs` - Audit log for a phase (both parties)
+
+#### Phase Payment Tracking (Client — BidPaymentPhase view)
+- `GET /rmtr/payments/projects/{projectId}` - Get BidPaymentPhase payment summary for client dashboard
+- `POST /rmtr/payments/phases/{phaseId}` - Initiate Xendit invoice for a BidPaymentPhase
+- `POST /rmtr/payments/webhook/invoice` - Xendit invoice webhook (public, signature-verified); on PAID: marks PhasePayment COMPLETED and advances matching ProjectPhase to IN_PROGRESS
 
 #### Project Validation (Superuser Role Required)
 - `PUT /api/v1/projects/{projectId}/validate` - Update project validation status (superuser only, no ownership check)

@@ -128,7 +128,6 @@ import { Search, ClipboardList, FileText } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 import { useBidsStore } from '@/stores/bids'
 
-
 const authStore = useAuthStore()
 const bidsStore = useBidsStore()
 

@@ -11,8 +11,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.rumantra.bidding.domain.Bid;
+import com.rumantra.bidding.domain.BidPaymentPhase;
 import com.rumantra.bidding.domain.BidStatus;
 import com.rumantra.bidding.dto.BidResponse;
+import com.rumantra.bidding.repository.BidPaymentPhaseRepository;
 import com.rumantra.bidding.repository.BidRepository;
 import com.rumantra.bidding.service.BidService;
 import com.rumantra.chat.repository.ConversationRepository;
@@ -28,6 +30,8 @@ import com.rumantra.client.repository.ClientRepository;
 import com.rumantra.client.repository.ProjectFileRepository;
 import com.rumantra.client.repository.ProjectRepository;
 import com.rumantra.notification.event.ProjectValidatedEvent;
+import com.rumantra.project.domain.ProjectPhase;
+import com.rumantra.project.repository.ProjectPhaseRepository;
 import com.rumantra.security.SecurityUtils;
 import com.rumantra.shared.exception.ResourceNotFoundException;
 import com.rumantra.shared.storage.FileStorageService;
@@ -51,6 +55,8 @@ public class ProjectService {
   private final FileStorageService fileStorageService;
   private final ConversationRepository conversationRepository;
   private final ConversationService conversationService;
+  private final BidPaymentPhaseRepository bidPaymentPhaseRepository;
+  private final ProjectPhaseRepository projectPhaseRepository;
 
   @PersistenceContext private EntityManager entityManager;
 
@@ -294,19 +300,32 @@ public class ProjectService {
 
   @Transactional(readOnly = true)
   public ProjectResponse getProjectForArchitect(Long projectId) {
+    Long userId = SecurityUtils.getCurrentUserId();
+
     Project project =
         projectRepository
             .findByIdWithFiles(projectId)
             .orElseThrow(
                 () -> new ResourceNotFoundException("Project not found with id: " + projectId));
 
-    if (project.getStatus() != ProjectStatus.OPEN
-        && project.getStatus() != ProjectStatus.NEGOTIATION) {
-      throw new org.springframework.security.access.AccessDeniedException(
-          "This project is not accessible");
+    if (project.getStatus() == ProjectStatus.OPEN
+        || project.getStatus() == ProjectStatus.NEGOTIATION) {
+      return mapToProjectResponse(project);
     }
 
-    return mapToProjectResponse(project);
+    if (project.getStatus() == ProjectStatus.IN_PROGRESS
+        || project.getStatus() == ProjectStatus.COMPLETED) {
+      List<Bid> acceptedBids =
+          bidRepository.findByProjectIdAndStatus(projectId, BidStatus.ACCEPTED);
+      boolean isWinningArchitect =
+          acceptedBids.stream().anyMatch(b -> b.getArchitect().getUser().getId().equals(userId));
+      if (isWinningArchitect) {
+        return mapToProjectResponse(project);
+      }
+    }
+
+    throw new org.springframework.security.access.AccessDeniedException(
+        "This project is not accessible");
   }
 
   @Transactional
@@ -327,8 +346,11 @@ public class ProjectService {
     project.setClientConfirmedAt(java.time.LocalDateTime.now());
     if (project.getArchitectConfirmedAt() != null) {
       project.setStatus(ProjectStatus.IN_PROGRESS);
+      project = projectRepository.save(project);
+      initializeProjectPhasesFromBid(project);
+    } else {
+      project = projectRepository.save(project);
     }
-    project = projectRepository.save(project);
 
     return mapToProjectResponse(project);
   }
@@ -359,10 +381,70 @@ public class ProjectService {
     project.setArchitectConfirmedAt(java.time.LocalDateTime.now());
     if (project.getClientConfirmedAt() != null) {
       project.setStatus(ProjectStatus.IN_PROGRESS);
+      project = projectRepository.save(project);
+      initializeProjectPhasesFromBid(project);
+    } else {
+      project = projectRepository.save(project);
     }
-    project = projectRepository.save(project);
 
     return mapToProjectResponse(project);
+  }
+
+  @Transactional
+  public void initializePhasesForProject(Long projectId) {
+    Long userId = SecurityUtils.getCurrentUserId();
+    Project project =
+        projectRepository
+            .findById(projectId)
+            .orElseThrow(() -> new ResourceNotFoundException("Project not found: " + projectId));
+    if (!project.getClient().getUser().getId().equals(userId)) {
+      throw new org.springframework.security.access.AccessDeniedException(
+          "You are not the client for this project");
+    }
+    if (project.getStatus() != ProjectStatus.IN_PROGRESS) {
+      throw new RuntimeException("Project is not IN_PROGRESS");
+    }
+    initializeProjectPhasesFromBid(project);
+  }
+
+  private void initializeProjectPhasesFromBid(Project project) {
+    List<ProjectPhase> existingPhases =
+        projectPhaseRepository.findByProjectIdOrderByPhaseNumberAsc(project.getId());
+    if (!existingPhases.isEmpty()) {
+      return;
+    }
+    List<Bid> acceptedBids =
+        bidRepository.findByProjectIdAndStatus(project.getId(), BidStatus.ACCEPTED);
+    if (acceptedBids.isEmpty()) {
+      return;
+    }
+    Bid acceptedBid = acceptedBids.get(0);
+    List<BidPaymentPhase> bidPhases =
+        bidPaymentPhaseRepository.findByBidIdOrderByPhaseNumber(acceptedBid.getId());
+
+    List<ProjectPhase> phases = new ArrayList<>();
+    for (BidPaymentPhase bidPhase : bidPhases) {
+      phases.add(
+          ProjectPhase.builder()
+              .project(project)
+              .phaseNumber(bidPhase.getPhaseNumber())
+              .title(
+                  bidPhase.getTitle() != null
+                      ? bidPhase.getTitle()
+                      : "Phase " + bidPhase.getPhaseNumber())
+              .description(
+                  bidPhase.getDeliverables() != null
+                      ? String.join(", ", bidPhase.getDeliverables())
+                      : null)
+              .amount(bidPhase.getAmount())
+              .maxRevisions(
+                  bidPhase.getRevisionRounds() != null && bidPhase.getRevisionRounds() > 0
+                      ? bidPhase.getRevisionRounds()
+                      : 3)
+              .build());
+    }
+    projectPhaseRepository.saveAll(phases);
+    log.info("Initialized {} project phases for project {}", phases.size(), project.getId());
   }
 
   @Transactional

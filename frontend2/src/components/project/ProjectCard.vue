@@ -216,9 +216,8 @@ const timeAgo = dateString => {
 
 const handleClick = () => {
   if (props.variant === 'client') {
-    const activeStatuses = ['IN_PROGRESS', 'COMPLETED']
-    if (activeStatuses.includes(props.project.status)) {
-      router.push({ name: 'ActiveProjectDashboard', params: { id: props.project.id } })
+    if (props.project.status === 'IN_PROGRESS') {
+      router.push({ name: 'ClientProjectWorkspace', params: { id: props.project.id } })
     } else {
       router.push({ name: 'ProjectDetail', params: { id: props.project.id } })
     }

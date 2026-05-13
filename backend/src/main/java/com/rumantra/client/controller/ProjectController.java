@@ -381,6 +381,28 @@ public class ProjectController {
     }
   }
 
+  @PostMapping("/{projectId}/initialize-phases")
+  public ResponseEntity<ApiResponse<Void>> initializePhases(@PathVariable Long projectId) {
+    try {
+      projectService.initializePhasesForProject(projectId);
+      return ResponseEntity.ok(
+          ApiResponse.<Void>builder()
+              .success(true)
+              .message("Phases initialized")
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+    } catch (Exception e) {
+      log.error("Error initializing phases for project {}", projectId, e);
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              ApiResponse.<Void>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
+  }
+
   @GetMapping("/{projectId}/bids")
   public ResponseEntity<ApiResponse<List<BidResponse>>> getProjectBids(
       @PathVariable Long projectId) {

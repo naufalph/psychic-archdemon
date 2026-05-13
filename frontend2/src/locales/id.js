@@ -53,9 +53,11 @@ export default {
     why: {
       label: 'Dirancang untuk ketenangan pikiran Anda',
       card1Title: 'Arsitek terverifikasi IAI',
-      card1Desc: 'Hanya arsitek dengan lisensi resmi dan portofolio terverifikasi yang bisa bergabung.',
+      card1Desc:
+        'Hanya arsitek dengan lisensi resmi dan portofolio terverifikasi yang bisa bergabung.',
       card2Title: 'Harga transparan',
-      card2Desc: 'Bandingkan harga dari berbagai studio secara apel-ke-apel tanpa biaya tersembunyi.',
+      card2Desc:
+        'Bandingkan harga dari berbagai studio secara apel-ke-apel tanpa biaya tersembunyi.',
       card3Title: 'Pembayaran aman',
       card3Desc: 'Dana Anda aman di escrow Rumantra sampai tahap pengerjaan disetujui.',
       card4Title: 'Komunikasi terpusat',

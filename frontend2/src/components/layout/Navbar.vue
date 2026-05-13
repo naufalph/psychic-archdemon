@@ -1,7 +1,7 @@
 <template>
   <nav
     class="sticky top-0 z-50 flex items-center"
-    style="height:72px;background:rgba(255,255,255,0.8);backdrop-filter:blur(10px);"
+    style="height: 72px; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px)"
   >
     <div class="flex justify-between items-center w-full px-10 max-w-[1440px] mx-auto">
       <!-- Logo (flex-1, left) -->
@@ -11,35 +11,24 @@
 
       <!-- Center nav links -->
       <div class="hidden md:flex items-center gap-8 flex-none">
-        <router-link
-          to="/"
-          class="text-[14px] font-medium text-[#666666] hover:text-[#0A0A0A] transition-colors"
-        >
+        <router-link to="/" class="text-[14px] font-medium text-[#666666] hover:text-[#0A0A0A] transition-colors">
           {{ t.nav.caraKerja }}
         </router-link>
-        <router-link
-          to="/"
-          class="text-[14px] font-medium text-[#666666] hover:text-[#0A0A0A] transition-colors"
-        >
+        <router-link to="/" class="text-[14px] font-medium text-[#666666] hover:text-[#0A0A0A] transition-colors">
           {{ t.nav.inspirasi }}
         </router-link>
-        <router-link
-          to="/"
-          class="text-[14px] font-medium text-[#666666] hover:text-[#0A0A0A] transition-colors"
-        >
+        <router-link to="/" class="text-[14px] font-medium text-[#666666] hover:text-[#0A0A0A] transition-colors">
           {{ t.nav.temukanArsitek }}
         </router-link>
         <span class="flex items-center gap-1.5">
-          <router-link
-            to="/"
-            class="text-[14px] font-medium text-[#666666] hover:text-[#0A0A0A] transition-colors"
-          >
+          <router-link to="/" class="text-[14px] font-medium text-[#666666] hover:text-[#0A0A0A] transition-colors">
             {{ t.nav.riset }}
           </router-link>
           <span
             class="text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider"
-            style="background:#0A0A0A;"
-          >NEW</span>
+            style="background: #0a0a0a"
+            >NEW</span
+          >
         </span>
       </div>
 
@@ -55,7 +44,7 @@
           </router-link>
           <button
             class="px-5 py-2 bg-[#0A0A0A] text-white rounded-full text-[14px] font-semibold hover:opacity-90 transition-all hover:-translate-y-px whitespace-nowrap border-none cursor-pointer"
-            style="box-shadow:0 4px 12px rgba(0,0,0,0.08);"
+            style="box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08)"
             @click="handleLogout"
           >
             {{ t.nav.keluar }}
@@ -77,7 +66,7 @@
           <router-link to="/signup">
             <button
               class="px-5 py-2 bg-[#0A0A0A] text-white rounded-full text-[14px] font-semibold hover:opacity-90 transition-all hover:-translate-y-px whitespace-nowrap border-none cursor-pointer"
-              style="box-shadow:0 4px 12px rgba(0,0,0,0.08);"
+              style="box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08)"
             >
               {{ t.nav.mulaiProyek }}
             </button>

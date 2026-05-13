@@ -190,7 +190,10 @@
                     formData.startDateType === 'SPECIFIC_DATE' ? 'border-[#7C4728]' : 'border-gray-300'
                   ]"
                 >
-                  <div v-if="formData.startDateType === 'SPECIFIC_DATE'" class="w-2.5 h-2.5 rounded-full bg-[#7C4728]" />
+                  <div
+                    v-if="formData.startDateType === 'SPECIFIC_DATE'"
+                    class="w-2.5 h-2.5 rounded-full bg-[#7C4728]"
+                  />
                 </div>
                 <div>
                   <p class="font-semibold text-gray-900">On a Specific Date</p>
@@ -219,8 +222,8 @@
               <h2 class="text-xl font-bold text-black">Bid Deadline</h2>
             </div>
             <p class="text-xs text-gray-500">
-              Set the closing date for architect bids. After this date the project closes automatically and
-              any unselected bids are refunded.
+              Set the closing date for architect bids. After this date the project closes automatically and any
+              unselected bids are refunded.
             </p>
 
             <div>
