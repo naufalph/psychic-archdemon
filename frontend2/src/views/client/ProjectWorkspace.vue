@@ -254,8 +254,16 @@
                         target="_blank"
                         class="px-3 py-1.5 bg-blue-700 text-white text-xs font-semibold rounded-lg hover:bg-blue-800 transition whitespace-nowrap"
                       >
-                        Bayar Sekarang
+                        {{ t.projectWorkspace?.payNow }}
                       </a>
+                      <button
+                        v-else
+                        @click="billPhase(phase)"
+                        :disabled="actionLoading === phase.id"
+                        class="px-3 py-1.5 bg-blue-700 text-white text-xs font-semibold rounded-lg hover:bg-blue-800 disabled:opacity-50 transition whitespace-nowrap"
+                      >
+                        {{ t.projectWorkspace?.getLink }}
+                      </button>
                     </div>
 
                     <!-- IN_PROGRESS: work underway -->
@@ -278,35 +286,38 @@
                         </p>
                       </div>
 
-                      <div v-if="!showDisputeForm[phase.id]" class="flex flex-wrap gap-2">
-                        <!-- Approve button -->
-                        <button
-                          @click="showApproveConfirm = phase.id"
-                          :disabled="actionLoading === phase.id"
-                          class="flex-1 min-w-[140px] px-4 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 transition flex items-center justify-center gap-2"
-                        >
-                          <ThumbsUp :size="15" />
-                          Setujui · Approve
-                        </button>
+                      <div v-if="!showDisputeForm[phase.id]">
+                        <!-- Primary actions row -->
+                        <div class="flex flex-wrap gap-2">
+                          <!-- Approve button -->
+                          <button
+                            @click="showApproveConfirm = phase.id"
+                            :disabled="actionLoading === phase.id"
+                            class="flex-1 min-w-[140px] px-4 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 transition flex items-center justify-center gap-2"
+                          >
+                            <ThumbsUp :size="15" />
+                            Setujui · Approve
+                          </button>
 
-                        <!-- Request revision button (if revisions remain) -->
-                        <button
-                          v-if="revisionsLeft(phase) > 0"
-                          @click="doRequestRevision(phase)"
-                          :disabled="actionLoading === phase.id"
-                          class="flex-1 min-w-[140px] px-4 py-2.5 border-2 border-amber-300 text-amber-700 text-sm font-semibold rounded-lg hover:bg-amber-50 disabled:opacity-50 transition flex items-center justify-center gap-2"
-                        >
-                          <RotateCcw :size="15" />
-                          Minta Revisi
-                        </button>
+                          <!-- Request revision button (if revisions remain) -->
+                          <button
+                            v-if="revisionsLeft(phase) > 0"
+                            @click="doRequestRevision(phase)"
+                            :disabled="actionLoading === phase.id"
+                            class="flex-1 min-w-[140px] px-4 py-2.5 border-2 border-amber-300 text-amber-700 text-sm font-semibold rounded-lg hover:bg-amber-50 disabled:opacity-50 transition flex items-center justify-center gap-2"
+                          >
+                            <RotateCcw :size="15" />
+                            Minta Revisi
+                          </button>
+                        </div>
 
-                        <!-- Dispute button -->
+                        <!-- Dispute trigger — de-emphasized secondary action -->
                         <button
                           @click="showDisputeForm[phase.id] = true"
-                          class="flex-1 min-w-[140px] px-4 py-2.5 border-2 border-red-200 text-red-600 text-sm font-semibold rounded-lg hover:bg-red-50 transition flex items-center justify-center gap-2"
+                          class="w-full mt-2 px-3 py-1.5 text-xs border border-red-200 text-red-500 rounded-lg hover:bg-red-50 transition flex items-center justify-center gap-1.5"
                         >
-                          <AlertTriangle :size="15" />
-                          Ajukan Sengketa
+                          <AlertTriangle :size="12" />
+                          Ajukan Sengketa · Dispute
                         </button>
                       </div>
 
@@ -377,63 +388,72 @@
                       <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">Deliverable</p>
                       <span class="text-xs text-gray-400">{{ phase.deliverables?.length || 0 }} file</span>
                     </div>
-                    <div v-if="phase.deliverables && phase.deliverables.length > 0">
-                      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        <button
-                          v-for="(d, di) in phase.deliverables"
-                          :key="d.id"
-                          @click="openPreview(phase, di)"
-                          class="group border border-gray-200 rounded-lg overflow-hidden hover:border-[#C5A17A] transition text-left"
-                        >
-                          <template v-if="isImage(d.fileType)">
-                            <div class="aspect-video bg-gray-100 overflow-hidden relative">
-                              <img
-                                :src="d.filePath"
-                                :alt="d.description || 'Deliverable'"
-                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                              />
-                              <div
-                                class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition flex items-center justify-center"
-                              >
-                                <Eye :size="20" class="text-white opacity-0 group-hover:opacity-100 transition" />
+                    <div v-if="phase.deliverables && phase.deliverables.length > 0" class="space-y-4">
+                      <div v-for="group in groupedDeliverables(phase)" :key="group.round">
+                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+                          {{
+                            group.round === 0
+                              ? t.projectWorkspace?.initialDelivery
+                              : t.projectWorkspace?.revisionRound + ' ' + group.round
+                          }}
+                        </p>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                          <button
+                            v-for="(d, di) in group.files"
+                            :key="d.id"
+                            @click="openPreview(phase, phase.deliverables.indexOf(d))"
+                            class="group border border-gray-200 rounded-lg overflow-hidden hover:border-[#C5A17A] transition text-left"
+                          >
+                            <template v-if="isImage(d.fileType)">
+                              <div class="aspect-video bg-gray-100 overflow-hidden relative">
+                                <img
+                                  :src="d.filePath"
+                                  :alt="d.description || 'Deliverable'"
+                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                                />
+                                <div
+                                  class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition flex items-center justify-center"
+                                >
+                                  <Eye :size="20" class="text-white opacity-0 group-hover:opacity-100 transition" />
+                                </div>
                               </div>
-                            </div>
-                            <div class="p-2.5">
-                              <p class="text-xs font-medium text-gray-700 truncate">
-                                {{ d.description || fileNameFromPath(d.filePath) }}
-                              </p>
-                              <p class="text-xs text-gray-400 mt-0.5">{{ formatDateTime(d.uploadedAt) }}</p>
-                            </div>
-                          </template>
-                          <template v-else-if="isPdf(d.fileType)">
-                            <div class="p-3 flex items-start gap-2.5">
-                              <div class="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center shrink-0">
-                                <FileText :size="18" class="text-red-500" />
-                              </div>
-                              <div class="flex-1 min-w-0">
+                              <div class="p-2.5">
                                 <p class="text-xs font-medium text-gray-700 truncate">
                                   {{ d.description || fileNameFromPath(d.filePath) }}
                                 </p>
-                                <p class="text-xs text-gray-400 mt-0.5">PDF · {{ formatDateTime(d.uploadedAt) }}</p>
+                                <p class="text-xs text-gray-400 mt-0.5">{{ formatDateTime(d.uploadedAt) }}</p>
                               </div>
-                            </div>
-                          </template>
-                          <template v-else>
-                            <div class="p-3 flex items-start gap-2.5">
-                              <div class="w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center shrink-0">
-                                <File :size="18" class="text-gray-400" />
+                            </template>
+                            <template v-else-if="isPdf(d.fileType)">
+                              <div class="p-3 flex items-start gap-2.5">
+                                <div class="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center shrink-0">
+                                  <FileText :size="18" class="text-red-500" />
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                  <p class="text-xs font-medium text-gray-700 truncate">
+                                    {{ d.description || fileNameFromPath(d.filePath) }}
+                                  </p>
+                                  <p class="text-xs text-gray-400 mt-0.5">PDF · {{ formatDateTime(d.uploadedAt) }}</p>
+                                </div>
                               </div>
-                              <div class="flex-1 min-w-0">
-                                <p class="text-xs font-medium text-gray-700 truncate">
-                                  {{ d.description || fileNameFromPath(d.filePath) }}
-                                </p>
-                                <p class="text-xs text-gray-400 mt-0.5">
-                                  {{ d.fileType || 'File' }} · {{ formatDateTime(d.uploadedAt) }}
-                                </p>
+                            </template>
+                            <template v-else>
+                              <div class="p-3 flex items-start gap-2.5">
+                                <div class="w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center shrink-0">
+                                  <File :size="18" class="text-gray-400" />
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                  <p class="text-xs font-medium text-gray-700 truncate">
+                                    {{ d.description || fileNameFromPath(d.filePath) }}
+                                  </p>
+                                  <p class="text-xs text-gray-400 mt-0.5">
+                                    {{ d.fileType || 'File' }} · {{ formatDateTime(d.uploadedAt) }}
+                                  </p>
+                                </div>
                               </div>
-                            </div>
-                          </template>
-                        </button>
+                            </template>
+                          </button>
+                        </div>
                       </div>
                     </div>
                     <div v-else class="py-8 text-center border-2 border-dashed border-gray-200 rounded-xl">
@@ -879,6 +899,48 @@
         </div>
       </div>
     </Teleport>
+
+    <!-- Revision Notes Modal -->
+    <Teleport to="body">
+      <div
+        v-if="showRevisionModal !== null"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60"
+        @click.self="showRevisionModal = null"
+      >
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md p-6">
+          <h3 class="text-base font-bold text-gray-900 mb-1">{{ t.projectWorkspace?.revisionModalTitle }}</h3>
+          <p class="text-sm text-gray-500 mb-4">{{ t.projectWorkspace?.revisionModalHint }}</p>
+          <textarea
+            v-model="revisionNotes[showRevisionModal]"
+            :placeholder="t.projectWorkspace?.revisionModalPlaceholder"
+            rows="4"
+            class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-300"
+          />
+          <p
+            v-if="revisionNotes[showRevisionModal] !== undefined && !revisionNotes[showRevisionModal]?.trim()"
+            class="text-xs text-red-500 mt-1"
+          >
+            {{ t.projectWorkspace?.revisionModalRequired }}
+          </p>
+          <div class="flex gap-2 mt-4">
+            <button
+              @click="submitRevision(sortedPhases.find(p => p.id === showRevisionModal))"
+              :disabled="!revisionNotes[showRevisionModal]?.trim() || actionLoading === showRevisionModal"
+              class="flex-1 px-4 py-2.5 bg-amber-500 text-white text-sm font-semibold rounded-lg hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
+            >
+              <span v-if="actionLoading === showRevisionModal">...</span>
+              <span v-else>{{ t.projectWorkspace?.revisionModalSubmit }}</span>
+            </button>
+            <button
+              @click="showRevisionModal = null"
+              class="px-4 py-2.5 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-100 transition"
+            >
+              {{ t.projectWorkspace?.revisionModalCancel }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -912,11 +974,13 @@ import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
 import { phaseAPI, projectAPI } from '@/services/api'
 import ChatPanel from '@/components/chat/ChatPanel.vue'
+import { useI18n } from '@/composables/useI18n'
 
 const route = useRoute()
 const router = useRouter()
 const projectsStore = useProjectsStore()
 const bidsStore = useBidsStore()
+const { t } = useI18n()
 
 const projectId = route.params.id
 
@@ -929,6 +993,8 @@ const logsLoading = reactive({})
 const actionLoading = ref(null)
 const showDisputeForm = reactive({})
 const disputeReason = reactive({})
+const showRevisionModal = ref(null)
+const revisionNotes = reactive({})
 const initializingPhases = ref(false)
 const showProjectModal = ref(false)
 const showApproveConfirm = ref(null)
@@ -974,12 +1040,25 @@ const progressPercent = computed(() => (totalAmount.value > 0 ? (paidAmount.valu
 
 const isNotStarted = (phase, index) => {
   if (phase.status !== 'PENDING') return false
-  return sortedPhases.value.slice(0, index).some(p => p.status !== 'DISBURSED')
+  return sortedPhases.value.slice(0, index).some(p => !['APPROVED', 'DISBURSED'].includes(p.status))
 }
 
 const revisionsLeft = phase => (phase.maxRevisions != null ? phase.maxRevisions - (phase.revisionsUsed || 0) : Infinity)
 
 const showRevisionBadge = phase => ['IN_PROGRESS', 'DELIVERED'].includes(phase.status) && phase.maxRevisions != null
+
+const groupedDeliverables = phase => {
+  if (!phase.deliverables?.length) return []
+  const map = {}
+  for (const d of phase.deliverables) {
+    const r = d.revisionRound ?? 0
+    if (!map[r]) map[r] = []
+    map[r].push(d)
+  }
+  return Object.keys(map)
+    .map(r => ({ round: Number(r), files: map[r] }))
+    .sort((a, b) => a.round - b.round)
+}
 
 const statusConfig = {
   NOT_STARTED: {
@@ -1213,10 +1292,18 @@ const approvePhase = async phaseId => {
   }
 }
 
-const doRequestRevision = async phase => {
+const doRequestRevision = phase => {
+  revisionNotes[phase.id] = ''
+  showRevisionModal.value = phase.id
+}
+
+const submitRevision = async phase => {
+  if (!revisionNotes[phase.id]?.trim()) return
   actionLoading.value = phase.id
   try {
-    await phaseAPI.requestRevision(phase.id)
+    await phaseAPI.requestRevision(phase.id, { notes: revisionNotes[phase.id] })
+    showRevisionModal.value = null
+    revisionNotes[phase.id] = ''
     await refreshPhases()
     delete phaseLogs[phase.id]
     fetchLogs(phase.id)

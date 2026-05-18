@@ -16,7 +16,6 @@ import lombok.NoArgsConstructor;
 public class NotificationResponse {
 
   private Long id;
-  private Long userId;
   private NotificationType type;
   private String title;
   private String message;

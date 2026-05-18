@@ -890,5 +890,50 @@ export default {
     ATTACHMENT_SIZE_EXCEEDED: 'File size exceeds the maximum allowed limit.',
     PHASE_NOT_FOUND: 'Payment phase not found.',
     PHASE_ALREADY_PAID: 'This phase has already been paid.'
+  },
+  clientNav: {
+    dashboard: 'Dashboard',
+    projects: 'Projects',
+    messages: 'Messages',
+    payments: 'Payments'
+  },
+  clientPaymentsPage: {
+    title: 'Payments',
+    subtitle: 'Active Projects',
+    selectProject: 'Select a project to view and manage phase payments.',
+    noProjects: 'No active projects with payments',
+    noProjectsHint: 'Projects move here once both parties have confirmed the deal.',
+    viewProjects: 'View my projects →',
+    phase: 'Phase',
+    of: 'of',
+    pending: 'pending',
+    allPaid: 'All paid'
+  },
+  activeProjectDashboard: {
+    paidRefresh: "I've Paid — Refresh",
+    processing: 'Processing...',
+    payNow: 'Pay Now',
+    payNowAgain: 'Pay Now Again',
+    deliverables: 'Deliverables'
+  },
+  projectWorkspace: {
+    payNow: 'Pay Now',
+    getLink: 'Get Payment Link',
+    payoutProcessing: 'Payout Processing',
+    payoutProcessingHint: 'Transfer is being verified by Xendit. Please wait for confirmation.',
+    payoutFailed: 'Payout Failed',
+    payoutFailedHint: 'Transfer failed to process. Please retry with correct account details.',
+    retryPayout: 'Retry Payout',
+    requestPayout: 'Request Payout',
+    deadline: 'Deadline',
+    remaining: 'remaining',
+    initialDelivery: 'Initial Delivery',
+    revisionRound: 'Revision',
+    revisionModalTitle: 'Revision Notes',
+    revisionModalHint: 'Describe what changes you need the architect to make.',
+    revisionModalPlaceholder: 'e.g., Please adjust the floor plan to include...',
+    revisionModalSubmit: 'Request Revision',
+    revisionModalCancel: 'Cancel',
+    revisionModalRequired: 'Please describe what changes are needed.'
   }
 }

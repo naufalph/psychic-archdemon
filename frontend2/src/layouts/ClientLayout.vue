@@ -72,11 +72,13 @@ import { useRoute, useRouter } from 'vue-router'
 import { LayoutDashboard, FolderOpen, MessageSquare, CreditCard, Settings, LogOut } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 import { useNotificationsStore } from '@/stores/notifications'
+import { useI18n } from '@/composables/useI18n'
 
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 const notificationsStore = useNotificationsStore()
+const { t } = useI18n()
 
 const logoHovered = ref(false)
 const userName = computed(() => authStore.userName || 'Client')
@@ -91,14 +93,22 @@ const userInitials = computed(() => {
 })
 
 const navItems = computed(() => [
-  { name: 'dashboard', label: 'Dashboard', to: '/client/dashboard', icon: LayoutDashboard },
-  { name: 'projects', label: 'Projects', to: '/client/projects', icon: FolderOpen },
-  { name: 'messages', label: 'Messages', to: '/client/messages', icon: MessageSquare },
-  { name: 'payments', label: 'Payments', to: '/client/payments', icon: CreditCard }
+  {
+    name: 'dashboard',
+    label: t.value?.clientNav?.dashboard || 'Dashboard',
+    to: '/client/dashboard',
+    icon: LayoutDashboard
+  },
+  { name: 'projects', label: t.value?.clientNav?.projects || 'Projects', to: '/client/projects', icon: FolderOpen },
+  { name: 'messages', label: t.value?.clientNav?.messages || 'Messages', to: '/client/messages', icon: MessageSquare },
+  { name: 'payments', label: t.value?.clientNav?.payments || 'Payments', to: '/client/payments', icon: CreditCard }
 ])
 
 const isActive = item => {
   if (item.name === 'dashboard') return route.path === '/client/dashboard'
+  if (item.name === 'payments') {
+    return route.path.startsWith('/client/payments') || route.path.endsWith('/active')
+  }
   return route.path.startsWith(item.to)
 }
 

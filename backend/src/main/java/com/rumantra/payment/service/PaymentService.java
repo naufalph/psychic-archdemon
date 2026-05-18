@@ -1,5 +1,6 @@
 package com.rumantra.payment.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -206,8 +207,6 @@ public class PaymentService {
         phase.getAmount());
 
     return PhasePaymentInitiateResponse.builder()
-        .phasePaymentId(phasePayment.getId())
-        .phaseId(phaseId)
         .amount(phase.getAmount())
         .paymentLink(phasePayment.getPaymentLink())
         .expiresAt(phasePayment.getExpiresAt())
@@ -261,6 +260,10 @@ public class PaymentService {
               if (phase.getStatus() == PhaseStatus.PENDING
                   || phase.getStatus() == PhaseStatus.BILLED) {
                 phase.setStatus(PhaseStatus.IN_PROGRESS);
+                Integer estimatedDays = payment.getPhase().getEstimatedDays();
+                if (estimatedDays != null && estimatedDays > 0) {
+                  phase.setDueDate(LocalDate.now().plusDays(estimatedDays));
+                }
                 projectPhaseRepository.save(phase);
                 log.info(
                     "ProjectPhase {} advanced to IN_PROGRESS after BidPaymentPhase payment",

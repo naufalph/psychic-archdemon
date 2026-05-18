@@ -308,7 +308,7 @@ const handleConfirm = async () => {
     const response = await projectAPI.architectConfirmNegotiation(route.params.projectId)
     project.value = response.data.data
     if (project.value.status === 'IN_PROGRESS') {
-      router.push(`/architect/opportunities/${route.params.projectId}`)
+      router.push(`/architect/projects/${route.params.projectId}/workspace`)
     }
   } catch (err) {
     alert(err.response?.data?.message || getT('finalization.confirmError'))

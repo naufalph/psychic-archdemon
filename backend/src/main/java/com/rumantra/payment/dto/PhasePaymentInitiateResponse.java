@@ -9,8 +9,6 @@ import lombok.Data;
 @Data
 @Builder
 public class PhasePaymentInitiateResponse {
-  private Long phasePaymentId;
-  private Long phaseId;
   private BigDecimal amount;
   private String paymentLink;
   private LocalDateTime expiresAt;

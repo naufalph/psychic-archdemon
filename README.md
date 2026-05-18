@@ -1,189 +1,142 @@
 # RUMANTRA
 
+An architecture marketplace platform connecting architects and clients. Built with Vue 3 frontend and Spring Boot backend.
+
+## Project Structure
+
+- `frontend2/` — **Active frontend** (Vue 3 + Vite, port 3001)
+- `backend/` — Spring Boot API (port 8080)
+- `docker/` — Docker Compose configs for local development
+
+> `frontend/` is legacy and unused — always work in `frontend2/`.
+
 ## Prerequisites
 
-### Software Requirements
-- Docker
-- Docker Compose
+- Docker & Docker Compose
 - Java 17+
 - Maven
+- Node 18+
 
-### Installation Guide
+### Installation
 
-#### Mac (Intel/Apple Silicon)
-1. **Homebrew Installation (Recommended)**
-   ```bash
-   # Install Homebrew (if not already installed)
-   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-
-   # Install Java 17
-   brew install openjdk@17
-
-   # Install Maven
-   brew install maven
-
-   # Install Docker Desktop
-   brew install --cask docker
-   ```
-
-#### Windows
-1. **Recommended Method: Windows Installer**
-   - Download and Install [Java 17 JDK](https://adoptium.net/)
-   - Download and Install [Maven](https://maven.apache.org/download.cgi)
-   - Download and Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-
-
-#### Linux (Ubuntu/Debian)
-1. **System Package Manager**
-   ```bash
-   # Update package list
-   sudo apt-get update
-
-   # Install Java 17
-   sudo apt-get install openjdk-17-jdk
-
-   # Install Maven
-   sudo apt-get install maven
-
-   # Install Docker
-   sudo apt-get install docker.io docker-compose
-
-   # Add current user to docker group (avoid sudo for docker)
-   sudo usermod -aG docker $USER
-   ```
-
-### Post-Installation Checklist
-
-1. **Verify Installations**
-   ```bash
-   # Open Terminal/Command Prompt and run:
-   java --version
-   mvn --version
-   docker --version
-   ```
-
-2. **First-Time Setup Tips**
-   - Restart your computer after installations
-   - Log out and log back in after adding user to docker group (Linux)
-   - For Windows, restart Docker Desktop if prompted
-
-## Local Development Setup
-
-### Quick Start (Recommended)
-
-Start all services (database, backend, frontend) with a single command:
+#### Mac
 ```bash
-# Start all services
-./start-dev.sh
-
-# Check status
-./status-dev.sh
-
-# Stop all services
-./stop-dev.sh
+brew install openjdk@17 maven
+brew install --cask docker
 ```
 
-The `start-dev.sh` script will:
-- Start PostgreSQL database via Docker Compose
-- Start Spring Boot backend on port 8080
-- Start Vue 3 frontend on port 3000
-- Display logs from all services
-- Press `Ctrl+C` to stop all services
+#### Windows
+- [Java 17 JDK](https://adoptium.net/)
+- [Maven](https://maven.apache.org/download.cgi)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+
+#### Linux (Ubuntu/Debian)
+```bash
+sudo apt-get update
+sudo apt-get install openjdk-17-jdk maven docker.io docker-compose
+sudo usermod -aG docker $USER  # avoid sudo for docker — log out/in after
+```
+
+### Verify Installations
+```bash
+java --version
+mvn --version
+docker --version
+node --version
+```
+
+## Local Development
+
+### Quick Start
+
+```bash
+./start-dev.sh   # starts database, backend (8080), and frontend (3001)
+./status-dev.sh  # check running services
+./stop-dev.sh    # stop all services
+```
 
 ### Manual Setup
 
-#### Database Configuration
-
-##### Option 1: Docker Compose (Recommended)
+#### 1. Database (PostgreSQL via Docker)
 ```bash
-# Start PostgreSQL database
 docker compose -f docker/dev-database.yml up -d
 ```
+Starts PostgreSQL on port 5432. To stop: `docker compose -f docker/dev-database.yml down`.
+To reset all data: `docker compose -f docker/dev-database.yml down -v`.
 
-##### Option 2: Manual PostgreSQL Setup
-1. Install PostgreSQL locally
-2. Create database: `architecture_marketplace`
-3. Use credentials from `backend/src/main/resources/application.properties`
-
-#### Running the Application
-
-##### Backend (Spring Boot)
+#### 2. Backend (Spring Boot)
 ```bash
-# Navigate to backend directory
 cd backend
-
-# Build the project
 mvn clean package
-
-# Run Spring Boot application
 mvn spring-boot:run
-
-mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
+# API available at http://localhost:8080
 ```
 
-##### Frontend (Vue 3)
+#### 3. Frontend (Vue 3)
 ```bash
-# Navigate to frontend directory
 cd frontend2
-
-# Install dependencies (first time only)
-npm install
-
-# Start development server
+npm install       # first time only
 npm run dev
+# App available at http://localhost:3001
 ```
 
-##### Full Stack with Docker Compose
+### Full Stack with Docker Compose
 ```bash
-# Start entire application stack
 docker compose up --build
+# or faster: DOCKER_BUILDKIT=1 docker compose build
 ```
 
-## Development Workflow
+## Development Commands
 
-### Database Management
-- Persistent volume ensures data preservation
-- Reset database: `docker compose -f docker/dev-database.yml down -v`
+### Frontend
+```bash
+cd frontend2
+npm run dev       # dev server
+npm run build     # production build
+npm run lint      # ESLint
+npm run format    # Prettier
+```
 
-### Debugging
+### Backend
+```bash
+cd backend
+export $(cat .env | grep -v '^#' | xargs) && mvn spring-boot:run       # run app
+mvn test                   # run tests
+mvn spotless:apply         # format code (required before commits)
+```
+
+## Architecture
+
+- **Frontend**: Vue 3 + Composition API, Tailwind CSS, Pinia, Vue Router, Axios
+- **Backend**: Spring Boot 3.1.5, PostgreSQL, JPA/Hibernate, Spring Security + JWT, Flyway
+- **Auth**: Custom JWT + Google OAuth2, role-based access (ARCHITECT, CLIENT, SUPERUSER)
+- **Payments**: Xendit (subscriptions + one-time token purchases + phase invoicing)
+- **Storage**: Local (dev), Railway S3-compatible (prod), Cloudinary (fallback)
+
+### Core Platform Flow
+
+1. Client creates a project → Superuser validates → project opens for bidding
+2. Architects bid with a payment phase schedule
+3. Client accepts a bid → negotiation → both confirm → project goes IN_PROGRESS
+4. Client pays phase invoices via Xendit → architect works and uploads deliverables
+5. Client approves work → architect requests payout → repeat per phase
+6. All phases complete → project auto-closes as COMPLETED
+
+## Debugging
+
 ```bash
 # View container logs
 docker compose logs
 
-# Inspect specific service
-docker compose logs postgres
+# View database logs
+docker compose -f docker/dev-database.yml logs postgres
+
+# Backend with remote debug (port 5005)
+cd backend && mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=5005"
 ```
 
-## Performance & Security
+## Security Notes
 
-### Docker Optimization
-- Use BuildKit for faster builds:
-  ```bash
-  DOCKER_BUILDKIT=1 docker compose build
-  ```
-
-### Security Recommendations
-- Replace default passwords in `application.properties`
-- Use environment-specific configurations
-- Generate secure JWT secret keys
-
-## Troubleshooting
-
-- Ensure Docker daemon is running
-- Check port conflicts (default: 5432)
-- Verify network connectivity
-
-## Alternative Container Runtimes
-
-### Podman (Daemonless Alternative)
-```bash
-# Install Podman
-sudo apt-get install podman
-
-# Run database
-podman-compose -f docker/dev-database.yml up -d
-```
-
-## License
-
-[Specify Project License]
+- Replace default passwords in `application.properties` before deploying
+- Use environment-specific configurations for production secrets
+- JWT secret keys should be randomly generated per environment

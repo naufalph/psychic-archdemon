@@ -17,5 +17,6 @@ public class DeliverableResponse {
   private String filePath;
   private String fileType;
   private String description;
+  private Integer revisionRound;
   private LocalDateTime uploadedAt;
 }

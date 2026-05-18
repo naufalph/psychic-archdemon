@@ -13,8 +13,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BidQuotaResponse {
 
-  private Long id;
-  private Long architectId;
   private SubscriptionTier tier;
   private Integer tokensRemaining;
   private Integer tokensAllocated;

@@ -28,6 +28,7 @@ public class PhaseResponse {
   private String paymentLink;
   private Integer maxRevisions;
   private Integer revisionsUsed;
+  private String disbursementStatus;
   private List<DeliverableResponse> deliverables;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;

@@ -2,9 +2,9 @@
   <div class="min-h-full bg-[#F4F5F7] px-6 py-8">
     <div class="max-w-3xl mx-auto">
       <div class="mb-8">
-        <p class="text-xs text-gray-400 uppercase font-bold tracking-wide mb-1">Payments</p>
-        <h1 class="text-2xl font-bold text-gray-900">Active Projects</h1>
-        <p class="text-sm text-gray-500 mt-1">Select a project to view and manage phase payments.</p>
+        <p class="text-xs text-gray-400 uppercase font-bold tracking-wide mb-1">{{ t.clientPaymentsPage?.title }}</p>
+        <h1 class="text-2xl font-bold text-gray-900">{{ t.clientPaymentsPage?.subtitle }}</h1>
+        <p class="text-sm text-gray-500 mt-1">{{ t.clientPaymentsPage?.selectProject }}</p>
       </div>
 
       <div v-if="loading" class="space-y-4">
@@ -22,13 +22,13 @@
 
       <div v-else-if="activeProjects.length === 0" class="bg-white rounded-xl border border-gray-200 py-16 text-center">
         <CreditCard :size="40" class="text-gray-300 mx-auto mb-3" />
-        <p class="text-gray-500 font-medium">No active projects with payments</p>
-        <p class="text-sm text-gray-400 mt-1">Projects move here once both parties have confirmed the deal.</p>
+        <p class="text-gray-500 font-medium">{{ t.clientPaymentsPage?.noProjects }}</p>
+        <p class="text-sm text-gray-400 mt-1">{{ t.clientPaymentsPage?.noProjectsHint }}</p>
         <RouterLink
           to="/client/projects"
           class="inline-block mt-4 text-sm font-semibold text-[#7C4728] hover:underline"
         >
-          View my projects →
+          {{ t.clientPaymentsPage?.viewProjects }}
         </RouterLink>
       </div>
 
@@ -59,12 +59,15 @@
               </p>
 
               <div v-if="item.phases.length" class="mt-2 flex items-center gap-2">
-                <span class="text-xs text-gray-500"> Phase {{ item.currentPhase }} of {{ item.phases.length }} </span>
+                <span class="text-xs text-gray-500"
+                  >{{ t.clientPaymentsPage?.phase }} {{ item.currentPhase }} {{ t.clientPaymentsPage?.of }}
+                  {{ item.phases.length }}</span
+                >
                 <span class="text-gray-300">·</span>
                 <span v-if="item.pendingAmount > 0" class="text-xs font-semibold text-amber-600">
-                  {{ formatAmount(item.pendingAmount) }} pending
+                  {{ formatAmount(item.pendingAmount) }} {{ t.clientPaymentsPage?.pending }}
                 </span>
-                <span v-else class="text-xs font-semibold text-green-600">All paid</span>
+                <span v-else class="text-xs font-semibold text-green-600">{{ t.clientPaymentsPage?.allPaid }}</span>
               </div>
 
               <div v-if="item.phases.length" class="mt-2 w-full bg-gray-100 rounded-full h-1">
@@ -86,9 +89,11 @@ import { useRouter } from 'vue-router'
 import { Building2, MapPin, CreditCard, ChevronRight } from 'lucide-vue-next'
 import { useProjectsStore } from '@/stores/projects'
 import { paymentAPI } from '@/services/api'
+import { useI18n } from '@/composables/useI18n'
 
 const router = useRouter()
 const projectsStore = useProjectsStore()
+const { t } = useI18n()
 
 const loading = ref(true)
 const phaseData = ref({})

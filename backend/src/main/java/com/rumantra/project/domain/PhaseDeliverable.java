@@ -39,6 +39,10 @@ public class PhaseDeliverable {
   @Column(name = "description", columnDefinition = "TEXT")
   private String description;
 
+  @Column(name = "revision_round", nullable = false)
+  @Builder.Default
+  private Integer revisionRound = 0;
+
   @Column(name = "uploaded_at", nullable = false, updatable = false)
   private LocalDateTime uploadedAt;
 

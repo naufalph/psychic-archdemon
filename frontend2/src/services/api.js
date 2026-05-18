@@ -356,7 +356,8 @@ export const phaseAPI = {
     }),
   submitForReview: phaseId => api.post(`/rmtr/phases/${phaseId}/submit-for-review`),
   approveDeliverable: phaseId => api.post(`/rmtr/phases/${phaseId}/approve`),
-  requestRevision: phaseId => api.post(`/rmtr/phases/${phaseId}/request-revision`),
+  requestRevision: (phaseId, data = {}) =>
+    api.post(`/rmtr/phases/${phaseId}/request-revision`, data),
   disputeDeliverable: (phaseId, data) => api.post(`/rmtr/phases/${phaseId}/dispute`, data),
   disburse: (phaseId, data) => api.post(`/rmtr/phases/${phaseId}/disburse`, data),
   getLogs: phaseId => api.get(`/rmtr/phases/${phaseId}/logs`)

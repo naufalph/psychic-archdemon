@@ -1,7 +1,5 @@
 package com.rumantra.project.dto;
 
-import java.math.BigDecimal;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,9 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DisbursementResponse {
-
-  private String status;
-  private BigDecimal amount;
-  private String failureCode;
+public class RevisionRequest {
+  private String notes;
 }

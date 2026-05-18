@@ -205,7 +205,6 @@ public class DashboardNotificationService {
 
     return NotificationResponse.builder()
         .id(notification.getId())
-        .userId(notification.getUser().getId())
         .type(notification.getType())
         .title(notification.getTitle())
         .message(notification.getMessage())

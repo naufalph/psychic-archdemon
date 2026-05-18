@@ -11,6 +11,7 @@ import com.rumantra.chat.event.SupportRequestedEvent;
 import com.rumantra.notification.domain.NotificationType;
 import com.rumantra.notification.event.ProjectValidatedEvent;
 import com.rumantra.notification.service.DashboardNotificationService;
+import com.rumantra.project.event.RevisionRequestedEvent;
 import com.rumantra.user.domain.User;
 import com.rumantra.user.repository.UserRepository;
 
@@ -101,6 +102,43 @@ public class NotificationEventListener {
       log.error(
           "Failed to create dashboard notification for bid {}: {}",
           event.getBidId(),
+          e.getMessage(),
+          e);
+    }
+  }
+
+  @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
+  public void handleRevisionRequested(RevisionRequestedEvent event) {
+    try {
+      String message =
+          String.format(
+              "Client requested revision %d/%d on phase '%s' of project '%s'.%s",
+              event.getRevisionsUsed(),
+              event.getMaxRevisions(),
+              event.getPhaseTitle(),
+              event.getProjectTitle(),
+              event.getNotes() != null && !event.getNotes().isBlank()
+                  ? " Notes: " + event.getNotes()
+                  : "");
+
+      dashboardNotificationService.createNotification(
+          event.getArchitectUserId(),
+          NotificationType.REVISION_REQUESTED,
+          "Revision Requested",
+          message,
+          null,
+          null,
+          "PHASE",
+          event.getPhaseId());
+
+      log.info(
+          "Revision notification sent to architect userId={} for phaseId={}",
+          event.getArchitectUserId(),
+          event.getPhaseId());
+    } catch (Exception e) {
+      log.error(
+          "Failed to create revision notification for phaseId={}: {}",
+          event.getPhaseId(),
           e.getMessage(),
           e);
     }

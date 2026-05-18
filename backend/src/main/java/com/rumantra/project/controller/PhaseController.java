@@ -18,6 +18,7 @@ import com.rumantra.project.dto.DisputeRequest;
 import com.rumantra.project.dto.PhaseCreateRequest;
 import com.rumantra.project.dto.PhaseLogResponse;
 import com.rumantra.project.dto.PhaseResponse;
+import com.rumantra.project.dto.RevisionRequest;
 import com.rumantra.project.service.PhasePaymentService;
 import com.rumantra.security.SecurityUtils;
 import com.rumantra.shared.dto.ApiResponse;
@@ -127,9 +128,11 @@ public class PhaseController {
 
   @Operation(summary = "Client requests a revision on a delivered phase")
   @PostMapping("/rmtr/phases/{phaseId}/request-revision")
-  public ResponseEntity<ApiResponse<PhaseResponse>> requestRevision(@PathVariable Long phaseId) {
+  public ResponseEntity<ApiResponse<PhaseResponse>> requestRevision(
+      @PathVariable Long phaseId, @RequestBody(required = false) RevisionRequest body) {
     Long userId = SecurityUtils.getCurrentUserId();
-    PhaseResponse phase = phasePaymentService.requestRevision(phaseId, userId);
+    String notes = body != null ? body.getNotes() : null;
+    PhaseResponse phase = phasePaymentService.requestRevision(phaseId, userId, notes);
     return ResponseEntity.ok(ApiResponse.success(phase));
   }
 

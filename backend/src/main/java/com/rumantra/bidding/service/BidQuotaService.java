@@ -43,8 +43,6 @@ public class BidQuotaService {
     BidQuota quota = getQuotaByArchitectId(architectId);
 
     return BidQuotaResponse.builder()
-        .id(quota.getId())
-        .architectId(quota.getArchitect().getId())
         .tier(quota.getTier())
         .tokensRemaining(quota.getTokensRemaining())
         .tokensAllocated(quota.getTokensAllocated())

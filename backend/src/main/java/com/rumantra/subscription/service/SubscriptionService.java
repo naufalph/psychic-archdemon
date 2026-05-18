@@ -119,7 +119,6 @@ public class SubscriptionService {
     subscriptionRepository.save(newSubscription);
 
     return SubscriptionUpgradeResponse.builder()
-        .subscriptionId(newSubscription.getId())
         .paymentLink(
             xenditResponse.getActions() != null
                 ? xenditResponse.getActions().getDesktopWebCheckoutUrl()

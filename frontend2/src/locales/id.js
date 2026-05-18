@@ -898,5 +898,51 @@ export default {
     ATTACHMENT_SIZE_EXCEEDED: 'Ukuran file melebihi batas maksimum.',
     PHASE_NOT_FOUND: 'Fase pembayaran tidak ditemukan.',
     PHASE_ALREADY_PAID: 'Fase ini sudah dibayar.'
+  },
+  clientNav: {
+    dashboard: 'Dasbor',
+    projects: 'Proyek',
+    messages: 'Pesan',
+    payments: 'Pembayaran'
+  },
+  clientPaymentsPage: {
+    title: 'Pembayaran',
+    subtitle: 'Proyek Aktif',
+    selectProject: 'Pilih proyek untuk melihat dan mengelola pembayaran fase.',
+    noProjects: 'Tidak ada proyek aktif dengan pembayaran',
+    noProjectsHint: 'Proyek muncul di sini setelah kedua pihak mengkonfirmasi kesepakatan.',
+    viewProjects: 'Lihat proyek saya →',
+    phase: 'Fase',
+    of: 'dari',
+    pending: 'menunggu',
+    allPaid: 'Semua terbayar'
+  },
+  activeProjectDashboard: {
+    paidRefresh: 'Sudah Dibayar — Refresh',
+    processing: 'Memproses...',
+    payNow: 'Bayar Sekarang',
+    payNowAgain: 'Bayar Lagi',
+    deliverables: 'Deliverable'
+  },
+  projectWorkspace: {
+    payNow: 'Bayar Sekarang',
+    getLink: 'Dapatkan Link Pembayaran',
+    payoutProcessing: 'Pencairan Sedang Diproses',
+    payoutProcessingHint: 'Transfer sedang diverifikasi oleh Xendit. Harap tunggu konfirmasi.',
+    payoutFailed: 'Pencairan Gagal',
+    payoutFailedHint:
+      'Transfer gagal diproses. Silakan coba lagi dengan detail rekening yang benar.',
+    retryPayout: 'Coba Lagi',
+    requestPayout: 'Cairkan Dana',
+    deadline: 'Tenggat',
+    remaining: 'tersisa',
+    initialDelivery: 'Pengiriman Awal',
+    revisionRound: 'Revisi',
+    revisionModalTitle: 'Catatan Revisi',
+    revisionModalHint: 'Jelaskan perubahan yang Anda butuhkan dari arsitek.',
+    revisionModalPlaceholder: 'mis. Mohon sesuaikan denah lantai untuk mencakup...',
+    revisionModalSubmit: 'Minta Revisi',
+    revisionModalCancel: 'Batal',
+    revisionModalRequired: 'Silakan jelaskan perubahan yang diperlukan.'
   }
 }

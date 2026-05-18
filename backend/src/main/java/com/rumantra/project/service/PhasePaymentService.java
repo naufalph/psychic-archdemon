@@ -48,6 +48,7 @@ import com.rumantra.project.dto.DisbursementResponse;
 import com.rumantra.project.dto.PhaseCreateRequest;
 import com.rumantra.project.dto.PhaseLogResponse;
 import com.rumantra.project.dto.PhaseResponse;
+import com.rumantra.project.event.RevisionRequestedEvent;
 import com.rumantra.project.repository.PhaseDeliverableRepository;
 import com.rumantra.project.repository.PhaseDisbursementRepository;
 import com.rumantra.project.repository.PhaseProcessLogRepository;
@@ -75,6 +76,7 @@ public class PhasePaymentService {
   @Autowired private UserRepository userRepository;
   @Autowired private XenditService xenditService;
   @Autowired private com.rumantra.shared.storage.FileStorageService fileStorageService;
+  @Autowired private org.springframework.context.ApplicationEventPublisher eventPublisher;
 
   @Value("${app.frontend.url:http://localhost:3000}")
   private String frontendUrl;
@@ -342,6 +344,7 @@ public class PhasePaymentService {
             .filePath(storedPath)
             .fileType(fileType)
             .description(description)
+            .revisionRound(phase.getRevisionsUsed())
             .build();
     deliverable = phaseDeliverableRepository.save(deliverable);
 
@@ -386,7 +389,7 @@ public class PhasePaymentService {
   }
 
   @Transactional
-  public PhaseResponse requestRevision(Long phaseId, Long clientUserId) {
+  public PhaseResponse requestRevision(Long phaseId, Long clientUserId, String notes) {
     ProjectPhase phase =
         projectPhaseRepository
             .findById(phaseId)
@@ -417,7 +420,27 @@ public class PhasePaymentService {
             "revisionsUsed",
             String.valueOf(phase.getRevisionsUsed()),
             "maxRevisions",
-            String.valueOf(phase.getMaxRevisions())));
+            String.valueOf(phase.getMaxRevisions()),
+            "notes",
+            notes != null ? notes : ""));
+
+    List<Bid> bids =
+        bidRepository.findByProjectIdAndStatus(phase.getProject().getId(), BidStatus.ACCEPTED);
+    if (!bids.isEmpty()) {
+      Long architectUserId = bids.get(0).getArchitect().getUser().getId();
+      eventPublisher.publishEvent(
+          new RevisionRequestedEvent(
+              this,
+              phaseId,
+              phase.getProject().getId(),
+              architectUserId,
+              clientUserId,
+              phase.getProject().getTitle(),
+              phase.getTitle(),
+              phase.getRevisionsUsed(),
+              phase.getMaxRevisions(),
+              notes));
+    }
 
     PhasePayment payment = phasePaymentRepository.findByProjectPhaseId(phaseId).orElse(null);
     List<PhaseDeliverable> deliverables =
@@ -760,6 +783,8 @@ public class PhasePaymentService {
 
   private PhaseResponse toPhaseResponse(
       ProjectPhase phase, PhasePayment payment, List<PhaseDeliverable> deliverables) {
+    PhaseDisbursement disbursement =
+        phaseDisbursementRepository.findByPhaseId(phase.getId()).orElse(null);
     return PhaseResponse.builder()
         .id(phase.getId())
         .projectId(phase.getProject().getId())
@@ -773,6 +798,7 @@ public class PhasePaymentService {
         .paymentLink(payment != null ? payment.getPaymentLink() : null)
         .maxRevisions(phase.getMaxRevisions())
         .revisionsUsed(phase.getRevisionsUsed())
+        .disbursementStatus(disbursement != null ? disbursement.getStatus().name() : null)
         .deliverables(
             deliverables.stream().map(this::toDeliverableResponse).collect(Collectors.toList()))
         .createdAt(phase.getCreatedAt())
@@ -786,24 +812,16 @@ public class PhasePaymentService {
         .filePath(d.getFilePath())
         .fileType(d.getFileType())
         .description(d.getDescription())
+        .revisionRound(d.getRevisionRound())
         .uploadedAt(d.getUploadedAt())
         .build();
   }
 
   private DisbursementResponse toDisbursementResponse(PhaseDisbursement d) {
     return DisbursementResponse.builder()
-        .id(d.getId())
-        .phaseId(d.getPhase().getId())
-        .xenditPayoutId(d.getXenditPayoutId())
-        .xenditReferenceId(d.getXenditReferenceId())
-        .channelCode(d.getChannelCode())
-        .accountNumber(d.getAccountNumber())
-        .accountHolderName(d.getAccountHolderName())
-        .amount(d.getAmount())
         .status(d.getStatus().name())
+        .amount(d.getAmount())
         .failureCode(d.getFailureCode())
-        .initiatedAt(d.getInitiatedAt())
-        .completedAt(d.getCompletedAt())
         .build();
   }
 

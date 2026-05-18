@@ -33,6 +33,14 @@
               {{ disbursedCount }} / {{ phases.length }} selesai
             </span>
             <span
+              v-if="activePhase?.dueDate"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold"
+              :class="daysLeft(activePhase.dueDate) < 3 ? 'bg-red-100 text-red-700' : 'bg-amber-50 text-amber-700'"
+            >
+              <Clock :size="12" />
+              {{ t.projectWorkspace?.deadline }}: {{ countdownText(activePhase.dueDate) }}
+            </span>
+            <span
               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-[#F5E6D3] text-[#7C4728]"
             >
               <span class="w-1.5 h-1.5 rounded-full bg-[#7C4728]" />
@@ -229,7 +237,7 @@
                             >
                               {{ countdownText(phase.dueDate) }}
                             </p>
-                            <p class="text-xs text-gray-400">tersisa</p>
+                            <p class="text-xs text-gray-400">{{ t.projectWorkspace?.remaining }}</p>
                           </div>
                         </div>
                       </div>
@@ -340,86 +348,186 @@
                         </p>
                       </div>
 
-                      <div v-if="!showDisbursementForm[phase.id]">
-                        <button
-                          @click="showDisbursementForm[phase.id] = true"
-                          class="flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition"
-                        >
-                          <Banknote :size="15" />
-                          Cairkan Dana · Request Payout
-                        </button>
+                      <!-- Case 1: Disbursement webhook pending (ACCEPTED/PENDING) -->
+                      <div
+                        v-if="['ACCEPTED', 'PENDING'].includes(phase.disbursementStatus)"
+                        class="p-3 bg-amber-50 border border-amber-200 rounded-lg flex items-center gap-2"
+                      >
+                        <div
+                          class="w-4 h-4 border-2 border-amber-500 border-t-transparent rounded-full animate-spin shrink-0"
+                        />
+                        <div>
+                          <p class="text-sm font-semibold text-amber-800">{{ t.projectWorkspace?.payoutProcessing }}</p>
+                          <p class="text-xs text-amber-600 mt-0.5">{{ t.projectWorkspace?.payoutProcessingHint }}</p>
+                        </div>
                       </div>
 
-                      <div v-else class="space-y-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">
-                          Detail Pencairan · Payout Details
-                        </p>
-                        <div>
-                          <label class="text-xs font-medium text-gray-600 mb-1 block">Bank / Channel</label>
-                          <select
-                            v-model="disbursementForm[phase.id].channelCode"
-                            class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-300"
-                          >
-                            <option value="">Pilih bank...</option>
-                            <option value="ID_BCA">BCA</option>
-                            <option value="ID_MANDIRI">Mandiri</option>
-                            <option value="ID_BNI">BNI</option>
-                            <option value="ID_BRI">BRI</option>
-                            <option value="ID_PERMATA">Permata</option>
-                            <option value="ID_CIMB">CIMB Niaga</option>
-                            <option value="ID_DANAMON">Danamon</option>
-                          </select>
+                      <!-- Case 2: Disbursement failed — show banner then button/form -->
+                      <template v-else-if="['FAILED', 'REVERSED'].includes(phase.disbursementStatus)">
+                        <div class="p-3 bg-red-50 border border-red-200 rounded-lg mb-3">
+                          <p class="text-sm font-semibold text-red-800">{{ t.projectWorkspace?.payoutFailed }}</p>
+                          <p class="text-xs text-red-600 mt-0.5">{{ t.projectWorkspace?.payoutFailedHint }}</p>
                         </div>
-                        <div>
-                          <label class="text-xs font-medium text-gray-600 mb-1 block"
-                            >Nomor Rekening · Account Number</label
-                          >
-                          <input
-                            v-model="disbursementForm[phase.id].accountNumber"
-                            type="text"
-                            placeholder="cth. 1234567890"
-                            class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
-                          />
-                        </div>
-                        <div>
-                          <label class="text-xs font-medium text-gray-600 mb-1 block"
-                            >Nama Pemilik Rekening · Account Holder Name</label
-                          >
-                          <input
-                            v-model="disbursementForm[phase.id].accountHolderName"
-                            type="text"
-                            placeholder="Nama sesuai buku tabungan"
-                            class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
-                          />
-                        </div>
-                        <div class="pt-1 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                          <p class="text-xs text-amber-700 font-medium">
-                            Jumlah pencairan: {{ formatAmount(phase.amount) }}
-                          </p>
-                          <p class="text-xs text-amber-600 mt-0.5">
-                            Transfer akan diproses melalui Xendit. Harap periksa detail rekening dengan cermat.
-                          </p>
-                        </div>
-                        <div class="flex gap-2">
+                        <div v-if="!showDisbursementForm[phase.id]">
                           <button
-                            @click="requestPayout(phase)"
-                            :disabled="!isDisbursementFormValid(phase.id) || actionLoading === phase.id"
-                            class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
+                            @click="showDisbursementForm[phase.id] = true"
+                            class="flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition"
                           >
-                            <span v-if="actionLoading === phase.id">Memproses...</span>
-                            <template v-else>
-                              <Banknote :size="14" />
-                              Konfirmasi Pencairan
-                            </template>
-                          </button>
-                          <button
-                            @click="showDisbursementForm[phase.id] = false"
-                            class="px-4 py-2 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-200 transition"
-                          >
-                            Batal
+                            <Banknote :size="15" />
+                            {{ t.projectWorkspace?.retryPayout }}
                           </button>
                         </div>
-                      </div>
+                        <div v-else class="space-y-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                          <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">
+                            Detail Pencairan · Payout Details
+                          </p>
+                          <div>
+                            <label class="text-xs font-medium text-gray-600 mb-1 block">Bank / Channel</label>
+                            <select
+                              v-model="disbursementForm[phase.id].channelCode"
+                              class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-300"
+                            >
+                              <option value="">Pilih bank...</option>
+                              <option value="ID_BCA">BCA</option>
+                              <option value="ID_MANDIRI">Mandiri</option>
+                              <option value="ID_BNI">BNI</option>
+                              <option value="ID_BRI">BRI</option>
+                              <option value="ID_PERMATA">Permata</option>
+                              <option value="ID_CIMB">CIMB Niaga</option>
+                              <option value="ID_DANAMON">Danamon</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label class="text-xs font-medium text-gray-600 mb-1 block"
+                              >Nomor Rekening · Account Number</label
+                            >
+                            <input
+                              v-model="disbursementForm[phase.id].accountNumber"
+                              type="text"
+                              placeholder="cth. 1234567890"
+                              class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                            />
+                          </div>
+                          <div>
+                            <label class="text-xs font-medium text-gray-600 mb-1 block"
+                              >Nama Pemilik Rekening · Account Holder Name</label
+                            >
+                            <input
+                              v-model="disbursementForm[phase.id].accountHolderName"
+                              type="text"
+                              placeholder="Nama sesuai buku tabungan"
+                              class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                            />
+                          </div>
+                          <div class="pt-1 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                            <p class="text-xs text-amber-700 font-medium">
+                              Jumlah pencairan: {{ formatAmount(phase.amount) }}
+                            </p>
+                            <p class="text-xs text-amber-600 mt-0.5">
+                              Transfer akan diproses melalui Xendit. Harap periksa detail rekening dengan cermat.
+                            </p>
+                          </div>
+                          <div class="flex gap-2">
+                            <button
+                              @click="requestPayout(phase)"
+                              :disabled="!isDisbursementFormValid(phase.id) || actionLoading === phase.id"
+                              class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
+                            >
+                              <span v-if="actionLoading === phase.id">Memproses...</span>
+                              <template v-else><Banknote :size="14" />Konfirmasi Pencairan</template>
+                            </button>
+                            <button
+                              @click="showDisbursementForm[phase.id] = false"
+                              class="px-4 py-2 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-200 transition"
+                            >
+                              Batal
+                            </button>
+                          </div>
+                        </div>
+                      </template>
+
+                      <!-- Case 3: No disbursement yet — show button or form -->
+                      <template v-else>
+                        <div v-if="!showDisbursementForm[phase.id]">
+                          <button
+                            @click="showDisbursementForm[phase.id] = true"
+                            class="flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition"
+                          >
+                            <Banknote :size="15" />
+                            {{ t.projectWorkspace?.requestPayout }}
+                          </button>
+                        </div>
+                        <div v-else class="space-y-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                          <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">
+                            Detail Pencairan · Payout Details
+                          </p>
+                          <div>
+                            <label class="text-xs font-medium text-gray-600 mb-1 block">Bank / Channel</label>
+                            <select
+                              v-model="disbursementForm[phase.id].channelCode"
+                              class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-300"
+                            >
+                              <option value="">Pilih bank...</option>
+                              <option value="ID_BCA">BCA</option>
+                              <option value="ID_MANDIRI">Mandiri</option>
+                              <option value="ID_BNI">BNI</option>
+                              <option value="ID_BRI">BRI</option>
+                              <option value="ID_PERMATA">Permata</option>
+                              <option value="ID_CIMB">CIMB Niaga</option>
+                              <option value="ID_DANAMON">Danamon</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label class="text-xs font-medium text-gray-600 mb-1 block"
+                              >Nomor Rekening · Account Number</label
+                            >
+                            <input
+                              v-model="disbursementForm[phase.id].accountNumber"
+                              type="text"
+                              placeholder="cth. 1234567890"
+                              class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                            />
+                          </div>
+                          <div>
+                            <label class="text-xs font-medium text-gray-600 mb-1 block"
+                              >Nama Pemilik Rekening · Account Holder Name</label
+                            >
+                            <input
+                              v-model="disbursementForm[phase.id].accountHolderName"
+                              type="text"
+                              placeholder="Nama sesuai buku tabungan"
+                              class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
+                            />
+                          </div>
+                          <div class="pt-1 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                            <p class="text-xs text-amber-700 font-medium">
+                              Jumlah pencairan: {{ formatAmount(phase.amount) }}
+                            </p>
+                            <p class="text-xs text-amber-600 mt-0.5">
+                              Transfer akan diproses melalui Xendit. Harap periksa detail rekening dengan cermat.
+                            </p>
+                          </div>
+                          <div class="flex gap-2">
+                            <button
+                              @click="requestPayout(phase)"
+                              :disabled="!isDisbursementFormValid(phase.id) || actionLoading === phase.id"
+                              class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
+                            >
+                              <span v-if="actionLoading === phase.id">Memproses...</span>
+                              <template v-else>
+                                <Banknote :size="14" />
+                                Konfirmasi Pencairan
+                              </template>
+                            </button>
+                            <button
+                              @click="showDisbursementForm[phase.id] = false"
+                              class="px-4 py-2 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-200 transition"
+                            >
+                              Batal
+                            </button>
+                          </div>
+                        </div>
+                      </template>
                     </div>
 
                     <!-- DISBURSED: complete -->
@@ -450,59 +558,68 @@
                       <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">Deliverable</p>
                       <span class="text-xs text-gray-400">{{ phase.deliverables?.length || 0 }} file</span>
                     </div>
-                    <div v-if="phase.deliverables && phase.deliverables.length > 0">
-                      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                        <a
-                          v-for="d in phase.deliverables"
-                          :key="d.id"
-                          :href="d.filePath"
-                          target="_blank"
-                          class="group border border-gray-200 rounded-lg overflow-hidden hover:border-[#C5A17A] transition block"
-                        >
-                          <template v-if="isImage(d.fileType)">
-                            <div class="aspect-video bg-gray-100 overflow-hidden">
-                              <img
-                                :src="d.filePath"
-                                :alt="d.description || 'Deliverable'"
-                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
-                              />
-                            </div>
-                            <div class="p-2.5">
-                              <p class="text-xs font-medium text-gray-700 truncate">
-                                {{ d.description || fileNameFromPath(d.filePath) }}
-                              </p>
-                              <p class="text-xs text-gray-400 mt-0.5">{{ formatDateTime(d.uploadedAt) }}</p>
-                            </div>
-                          </template>
-                          <template v-else-if="isPdf(d.fileType)">
-                            <div class="p-3 flex items-start gap-2.5">
-                              <div class="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center shrink-0">
-                                <FileText :size="18" class="text-red-500" />
+                    <div v-if="phase.deliverables && phase.deliverables.length > 0" class="space-y-4">
+                      <div v-for="group in groupedDeliverables(phase)" :key="group.round">
+                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
+                          {{
+                            group.round === 0
+                              ? t.projectWorkspace?.initialDelivery
+                              : t.projectWorkspace?.revisionRound + ' ' + group.round
+                          }}
+                        </p>
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                          <a
+                            v-for="d in group.files"
+                            :key="d.id"
+                            :href="d.filePath"
+                            target="_blank"
+                            class="group border border-gray-200 rounded-lg overflow-hidden hover:border-[#C5A17A] transition block"
+                          >
+                            <template v-if="isImage(d.fileType)">
+                              <div class="aspect-video bg-gray-100 overflow-hidden">
+                                <img
+                                  :src="d.filePath"
+                                  :alt="d.description || 'Deliverable'"
+                                  class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-200"
+                                />
                               </div>
-                              <div class="flex-1 min-w-0">
+                              <div class="p-2.5">
                                 <p class="text-xs font-medium text-gray-700 truncate">
                                   {{ d.description || fileNameFromPath(d.filePath) }}
                                 </p>
-                                <p class="text-xs text-gray-400 mt-0.5">PDF · {{ formatDateTime(d.uploadedAt) }}</p>
+                                <p class="text-xs text-gray-400 mt-0.5">{{ formatDateTime(d.uploadedAt) }}</p>
                               </div>
-                            </div>
-                          </template>
-                          <template v-else>
-                            <div class="p-3 flex items-start gap-2.5">
-                              <div class="w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center shrink-0">
-                                <File :size="18" class="text-gray-400" />
+                            </template>
+                            <template v-else-if="isPdf(d.fileType)">
+                              <div class="p-3 flex items-start gap-2.5">
+                                <div class="w-9 h-9 bg-red-50 rounded-lg flex items-center justify-center shrink-0">
+                                  <FileText :size="18" class="text-red-500" />
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                  <p class="text-xs font-medium text-gray-700 truncate">
+                                    {{ d.description || fileNameFromPath(d.filePath) }}
+                                  </p>
+                                  <p class="text-xs text-gray-400 mt-0.5">PDF · {{ formatDateTime(d.uploadedAt) }}</p>
+                                </div>
                               </div>
-                              <div class="flex-1 min-w-0">
-                                <p class="text-xs font-medium text-gray-700 truncate">
-                                  {{ d.description || fileNameFromPath(d.filePath) }}
-                                </p>
-                                <p class="text-xs text-gray-400 mt-0.5">
-                                  {{ d.fileType || 'File' }} · {{ formatDateTime(d.uploadedAt) }}
-                                </p>
+                            </template>
+                            <template v-else>
+                              <div class="p-3 flex items-start gap-2.5">
+                                <div class="w-9 h-9 bg-gray-50 rounded-lg flex items-center justify-center shrink-0">
+                                  <File :size="18" class="text-gray-400" />
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                  <p class="text-xs font-medium text-gray-700 truncate">
+                                    {{ d.description || fileNameFromPath(d.filePath) }}
+                                  </p>
+                                  <p class="text-xs text-gray-400 mt-0.5">
+                                    {{ d.fileType || 'File' }} · {{ formatDateTime(d.uploadedAt) }}
+                                  </p>
+                                </div>
                               </div>
-                            </div>
-                          </template>
-                        </a>
+                            </template>
+                          </a>
+                        </div>
                       </div>
                     </div>
                     <div v-else class="py-8 text-center border-2 border-dashed border-gray-200 rounded-xl">
@@ -793,10 +910,12 @@ import {
 import { useProjectsStore } from '@/stores/projects'
 import { phaseAPI, chatAPI, bidAPI } from '@/services/api'
 import ChatPanel from '@/components/chat/ChatPanel.vue'
+import { useI18n } from '@/composables/useI18n'
 
 const route = useRoute()
 const router = useRouter()
 const projectsStore = useProjectsStore()
+const { t } = useI18n()
 
 const projectId = route.params.id
 
@@ -837,6 +956,7 @@ const clientInitials = computed(() =>
 
 const sortedPhases = computed(() => [...phases.value].sort((a, b) => a.phaseNumber - b.phaseNumber))
 const disbursedCount = computed(() => phases.value.filter(p => p.status === 'DISBURSED').length)
+const activePhase = computed(() => sortedPhases.value.find(p => p.status === 'IN_PROGRESS') || null)
 const totalAmount = computed(() => phases.value.reduce((sum, p) => sum + Number(p.amount || 0), 0))
 const disbursedAmount = computed(() =>
   phases.value.filter(p => p.status === 'DISBURSED').reduce((sum, p) => sum + Number(p.amount || 0), 0)
@@ -845,10 +965,23 @@ const progressPercent = computed(() => (totalAmount.value > 0 ? (disbursedAmount
 
 const isNotStarted = (phase, index) => {
   if (phase.status !== 'PENDING') return false
-  return sortedPhases.value.slice(0, index).some(p => p.status !== 'DISBURSED')
+  return sortedPhases.value.slice(0, index).some(p => !['APPROVED', 'DISBURSED'].includes(p.status))
 }
 
 const showRevisionBadge = phase => ['IN_PROGRESS', 'DELIVERED'].includes(phase.status) && phase.maxRevisions != null
+
+const groupedDeliverables = phase => {
+  if (!phase.deliverables?.length) return []
+  const map = {}
+  for (const d of phase.deliverables) {
+    const r = d.revisionRound ?? 0
+    if (!map[r]) map[r] = []
+    map[r].push(d)
+  }
+  return Object.keys(map)
+    .map(r => ({ round: Number(r), files: map[r] }))
+    .sort((a, b) => a.round - b.round)
+}
 
 const statusConfig = {
   NOT_STARTED: {

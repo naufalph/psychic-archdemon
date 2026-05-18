@@ -190,28 +190,32 @@
                       @click="checkPaymentStatus"
                       class="px-3 py-2 text-xs font-semibold text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition"
                     >
-                      I've Paid — Refresh
+                      {{ t.activeProjectDashboard?.paidRefresh }}
                     </button>
                     <button
                       :disabled="payingPhaseId === phase.phaseId"
                       @click="payPhase(phase)"
                       class="px-4 py-2 bg-[#1C1C1C] text-white text-sm font-semibold rounded-lg hover:bg-[#333] disabled:opacity-50 disabled:cursor-not-allowed transition"
                     >
-                      <span v-if="payingPhaseId === phase.phaseId">Processing...</span>
-                      <span v-else>{{ pendingPaymentLink ? 'Pay Now Again' : 'Pay Now' }}</span>
+                      <span v-if="payingPhaseId === phase.phaseId">{{ t.activeProjectDashboard?.processing }}</span>
+                      <span v-else>{{
+                        pendingPaymentLink ? t.activeProjectDashboard?.payNowAgain : t.activeProjectDashboard?.payNow
+                      }}</span>
                     </button>
                   </div>
                 </div>
               </div>
               <div v-if="phase.deliverables && phase.deliverables.length" class="px-5 py-3 bg-amber-50">
-                <p class="text-xs font-bold text-amber-700 uppercase tracking-wide mb-2">Deliverables</p>
+                <p class="text-xs font-bold text-amber-700 uppercase tracking-wide mb-2">
+                  {{ t.activeProjectDashboard?.deliverables }}
+                </p>
                 <div class="flex flex-wrap gap-2">
                   <span
                     v-for="d in phase.deliverables"
                     :key="d"
                     class="px-2.5 py-1 bg-white border border-amber-200 rounded-md text-xs text-amber-800"
                   >
-                    {{ d }}
+                    {{ d.replace(/_/g, ' ') }}
                   </span>
                 </div>
               </div>
@@ -255,11 +259,13 @@ import { ArrowLeft, CheckCircle, AlertCircle, Building2, MapPin, Lock, Layers } 
 import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
 import { paymentAPI } from '@/services/api'
+import { useI18n } from '@/composables/useI18n'
 
 const route = useRoute()
 const router = useRouter()
 const projectsStore = useProjectsStore()
 const bidsStore = useBidsStore()
+const { t } = useI18n()
 
 const projectId = route.params.id
 const phases = ref([])
