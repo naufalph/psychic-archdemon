@@ -4,5 +4,6 @@ public enum PhaseActorType {
   CLIENT,
   ARCHITECT,
   SYSTEM,
-  XENDIT
+  XENDIT,
+  SUPERUSER
 }

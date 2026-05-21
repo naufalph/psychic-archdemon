@@ -174,12 +174,43 @@ const routes = [
     ]
   },
 
-  // ── Superuser ───────────────────────────────────────────────────────────────
+  // ── Superuser Backoffice ─────────────────────────────────────────────────────
   {
-    path: '/superuser/support',
-    name: 'SupportDashboard',
-    component: () => import('@/views/superuser/SupportDashboard.vue'),
-    meta: { requiresAuth: true, requiresRole: 'SUPERUSER' }
+    path: '/superuser',
+    component: () => import('@/layouts/SuperuserLayout.vue'),
+    meta: { requiresAuth: true, requiresRole: 'SUPERUSER' },
+    children: [
+      {
+        path: 'dashboard',
+        name: 'SuperuserDashboard',
+        component: () => import('@/views/superuser/SuperuserDashboard.vue')
+      },
+      {
+        path: 'projects/queue',
+        name: 'ProjectValidationQueue',
+        component: () => import('@/views/superuser/ProjectValidationQueue.vue')
+      },
+      {
+        path: 'projects',
+        name: 'AllProjectsAdmin',
+        component: () => import('@/views/superuser/AllProjectsAdmin.vue')
+      },
+      {
+        path: 'disputes',
+        name: 'DisputeManagement',
+        component: () => import('@/views/superuser/DisputeManagement.vue')
+      },
+      {
+        path: 'support',
+        name: 'SupportDashboard',
+        component: () => import('@/views/superuser/SupportDashboard.vue')
+      },
+      {
+        path: 'users',
+        name: 'UserManagement',
+        component: () => import('@/views/superuser/UserManagement.vue')
+      }
+    ]
   },
 
   {

@@ -18,4 +18,6 @@ public interface ProjectPhaseRepository extends JpaRepository<ProjectPhase, Long
 
   Optional<ProjectPhase> findFirstByProjectIdAndStatusOrderByPhaseNumberAsc(
       Long projectId, PhaseStatus status);
+
+  List<ProjectPhase> findByStatus(PhaseStatus status);
 }

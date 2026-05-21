@@ -104,6 +104,10 @@ public class SecurityConfig {
                     .requestMatchers("/rmtr/chat/**")
                     .authenticated()
 
+                    // Admin backoffice endpoints — SUPERUSER only
+                    .requestMatchers("/rmtr/admin/**")
+                    .hasRole("SUPERUSER")
+
                     // Support conversation endpoints
                     .requestMatchers(HttpMethod.POST, "/rmtr/support/conversations")
                     .hasAnyRole("ARCHITECT", "CLIENT")
