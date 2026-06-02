@@ -120,6 +120,7 @@ public class BidService {
       throw new RuntimeException("Can only submit draft bids. Current status: " + bid.getStatus());
     }
 
+    validateArchitectIdentity(bid.getArchitect());
     validateBidComplete(bidId);
 
     bidQuotaService.consumeToken(bid.getArchitect().getId());
@@ -447,5 +448,18 @@ public class BidService {
         bid.getId(), project.getId(), bid.getArchitect().getId(), project.getClient().getId());
 
     return mapToResponse(bid);
+  }
+
+  private void validateArchitectIdentity(Architect architect) {
+    boolean missingKtp = architect.getKtpNum() == null || architect.getKtpNum().isBlank();
+    boolean missingNpwp = architect.getNpwp() == null || architect.getNpwp().isBlank();
+    boolean missingFullname =
+        architect.getFullnameKtp() == null || architect.getFullnameKtp().isBlank();
+    boolean phoneNotVerified = !architect.isPhoneVerified();
+
+    if (missingKtp || missingNpwp || missingFullname || phoneNotVerified) {
+      throw new IllegalStateException(
+          "IDENTITY_INCOMPLETE: Lengkapi informasi identitas (KTP, NPWP, nama lengkap sesuai KTP, dan verifikasi nomor HP) sebelum mengajukan penawaran.");
+    }
   }
 }

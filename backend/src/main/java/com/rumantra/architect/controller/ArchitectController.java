@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.rumantra.architect.dto.*;
 import com.rumantra.architect.service.ArchitectService;
+import com.rumantra.architect.service.OtpService;
 import com.rumantra.security.UserPrincipal;
 import com.rumantra.shared.dto.ApiResponse;
 
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class ArchitectController {
 
   private final ArchitectService architectService;
+  private final OtpService otpService;
 
   @PostMapping("/register")
   public ResponseEntity<ApiResponse<ArchitectDto>> register(
@@ -117,6 +119,56 @@ public class ArchitectController {
               ApiResponse.<ArchitectDto>builder()
                   .success(false)
                   .message("An error occurred while updating onboarding profile")
+                  .build());
+    }
+  }
+
+  @PostMapping("/phone/send-otp")
+  public ResponseEntity<ApiResponse<Void>> sendPhoneOtp(
+      @Valid @RequestBody OtpRequestDto request, Authentication authentication) {
+    try {
+      Long userId = getUserIdFromAuthentication(authentication);
+      otpService.sendOtp(userId, request.getPhoneNumber());
+      return ResponseEntity.ok(
+          ApiResponse.<Void>builder()
+              .success(true)
+              .message("OTP telah dikirim ke WhatsApp Anda.")
+              .build());
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(ApiResponse.<Void>builder().success(false).message(e.getMessage()).build());
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(
+              ApiResponse.<Void>builder()
+                  .success(false)
+                  .message("Gagal mengirim OTP. Silakan coba lagi.")
+                  .build());
+    }
+  }
+
+  @PostMapping("/phone/verify-otp")
+  public ResponseEntity<ApiResponse<ArchitectDto>> verifyPhoneOtp(
+      @Valid @RequestBody OtpVerifyDto request, Authentication authentication) {
+    try {
+      Long userId = getUserIdFromAuthentication(authentication);
+      otpService.verifyOtp(userId, request.getPhoneNumber(), request.getCode());
+      ArchitectDto updatedArchitect = architectService.getArchitectByUserId(userId);
+      return ResponseEntity.ok(
+          ApiResponse.<ArchitectDto>builder()
+              .success(true)
+              .message("Nomor HP berhasil diverifikasi.")
+              .data(updatedArchitect)
+              .build());
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(ApiResponse.<ArchitectDto>builder().success(false).message(e.getMessage()).build());
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(
+              ApiResponse.<ArchitectDto>builder()
+                  .success(false)
+                  .message("Verifikasi OTP gagal. Silakan coba lagi.")
                   .build());
     }
   }

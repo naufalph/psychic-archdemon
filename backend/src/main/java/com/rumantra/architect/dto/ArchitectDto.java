@@ -20,6 +20,8 @@ public class ArchitectDto {
   private boolean ktpVerified;
   private String npwp;
   private boolean npwpVerified;
+  private String fullnameKtp;
+  private boolean phoneVerified;
   private int bidLeft;
   private int successMatch;
   private int successProject;

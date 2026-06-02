@@ -71,7 +71,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useOnboardingStore } from '@/stores/onboarding'
 import { useAuthStore } from '@/stores/auth'
@@ -80,6 +80,7 @@ const router = useRouter()
 const store = useOnboardingStore()
 const authStore = useAuthStore()
 const countdown = ref(5)
+let intervalId = null
 
 const confettiStyle = index => {
   const angle = (index * 360) / 20
@@ -96,22 +97,27 @@ const confettiStyle = index => {
 }
 
 const goToDashboard = async () => {
-  store.clearOnboardingData()
+  clearInterval(intervalId)
   await authStore.fetchUserData()
-  router.push('/architect/dashboard')
+  await router.push('/architect/dashboard')
+  store.clearOnboardingData()
 }
 
 onMounted(async () => {
-  store.clearOnboardingData()
   await authStore.fetchUserData()
 
-  const interval = setInterval(() => {
+  intervalId = setInterval(async () => {
     countdown.value--
     if (countdown.value <= 0) {
-      clearInterval(interval)
-      router.push('/architect/dashboard')
+      clearInterval(intervalId)
+      await router.push('/architect/dashboard')
+      store.clearOnboardingData()
     }
   }, 1000)
+})
+
+onUnmounted(() => {
+  clearInterval(intervalId)
 })
 </script>
 

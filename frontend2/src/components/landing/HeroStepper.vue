@@ -1,5 +1,5 @@
 <template>
-  <div class="relative w-full max-w-[680px] mx-auto" @mouseenter="pauseTimer" @mouseleave="resumeTimer">
+  <div class="relative w-full max-w-[820px] mx-auto" @mouseenter="pauseTimer" @mouseleave="resumeTimer">
     <div class="laptop-mockup hover:-translate-y-1 transition-transform duration-500">
       <!-- Screen bezel -->
       <div
@@ -8,7 +8,7 @@
           background: #000;
           border-radius: 24px;
           padding: 8px;
-          height: 440px;
+          height: 540px;
           box-shadow: 0 50px 100px -20px rgba(0, 0, 0, 0.3);
           display: flex;
           flex-direction: column;
@@ -49,19 +49,35 @@
             <div style="width: 10px; height: 10px; border-radius: 50%; background: #28c840; opacity: 0.8"></div>
           </div>
 
-          <!-- Stepper dots -->
-          <div class="flex justify-center gap-2 mb-4">
+          <!-- Stepper navigation -->
+          <div class="flex items-center justify-center gap-3 mb-4">
             <button
-              v-for="i in 4"
-              :key="i"
-              class="rounded-full transition-all duration-300 cursor-pointer border-none p-0"
-              :style="
-                currentStep === i - 1
-                  ? 'width:6px;height:6px;background:#0A0A0A;transform:scale(1.4);box-shadow:0 0 0 4px rgba(0,0,0,0.1);'
-                  : 'width:6px;height:6px;background:#CCCCCC;'
-              "
-              @click="goToStep(i - 1)"
-            />
+              class="flex items-center justify-center rounded-full border-none cursor-pointer transition-all duration-200 hover:bg-[#F5F5F5]"
+              style="width:20px;height:20px;background:transparent;padding:0;"
+              @click="prevStep"
+            >
+              <ChevronLeft style="width:12px;height:12px;color:#AAAAAA;" />
+            </button>
+            <div class="flex gap-2">
+              <button
+                v-for="i in 4"
+                :key="i"
+                class="rounded-full transition-all duration-300 cursor-pointer border-none p-0"
+                :style="
+                  currentStep === i - 1
+                    ? 'width:6px;height:6px;background:#0A0A0A;transform:scale(1.4);box-shadow:0 0 0 4px rgba(0,0,0,0.1);'
+                    : 'width:6px;height:6px;background:#CCCCCC;'
+                "
+                @click="goToStep(i - 1)"
+              />
+            </div>
+            <button
+              class="flex items-center justify-center rounded-full border-none cursor-pointer transition-all duration-200 hover:bg-[#F5F5F5]"
+              style="width:20px;height:20px;background:transparent;padding:0;"
+              @click="nextStep"
+            >
+              <ChevronRight style="width:12px;height:12px;color:#AAAAAA;" />
+            </button>
           </div>
 
           <!-- Step panels container -->
@@ -219,6 +235,7 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 
 const currentStep = ref(0)
 let timer = null
@@ -256,6 +273,14 @@ function goToStep(n) {
   currentStep.value = n
   clearInterval(timer)
   startTimer()
+}
+
+function prevStep() {
+  goToStep((currentStep.value - 1 + 4) % 4)
+}
+
+function nextStep() {
+  goToStep((currentStep.value + 1) % 4)
 }
 
 function pauseTimer() {

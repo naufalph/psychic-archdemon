@@ -119,6 +119,10 @@ public class ArchitectService {
       architect.setNpwp(updateRequest.getNpwp());
     }
 
+    if (updateRequest.getFullnameKtp() != null) {
+      architect.setFullnameKtp(updateRequest.getFullnameKtp());
+    }
+
     architect = architectRepository.save(architect);
 
     return mapToDto(architect);
@@ -183,6 +187,8 @@ public class ArchitectService {
         .ktpVerified(architect.isKtpVerified())
         .npwp(architect.getNpwp())
         .npwpVerified(architect.isNpwpVerified())
+        .fullnameKtp(architect.getFullnameKtp())
+        .phoneVerified(architect.isPhoneVerified())
         .successMatch(architect.getSuccessMatch())
         .successProject(architect.getSuccessProject())
         .city(architect.getCity())

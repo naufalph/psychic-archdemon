@@ -67,6 +67,13 @@ public class Architect {
   @Builder.Default()
   private boolean npwpVerified = false;
 
+  @Column(name = "fullname_ktp", length = 255)
+  private String fullnameKtp;
+
+  @Column(name = "is_phone_verified")
+  @Builder.Default()
+  private boolean phoneVerified = false;
+
   @Column(name = "success_match")
   @Builder.Default()
   private int successMatch = 0;

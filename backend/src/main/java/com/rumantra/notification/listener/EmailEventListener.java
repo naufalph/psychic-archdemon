@@ -1,5 +1,9 @@
 package com.rumantra.notification.listener;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
@@ -7,6 +11,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 
 import com.rumantra.bidding.event.BidSubmittedEvent;
 import com.rumantra.notification.event.ProjectValidatedEvent;
+import com.rumantra.shared.email.EmailTemplateService;
 import com.rumantra.user.domain.User;
 import com.rumantra.user.repository.UserRepository;
 import com.rumantra.user.service.EmailService;
@@ -20,15 +25,12 @@ import lombok.extern.slf4j.Slf4j;
 public class EmailEventListener {
 
   private final EmailService emailService;
+  private final EmailTemplateService templateService;
   private final UserRepository userRepository;
 
-  /**
-   * Handle ProjectValidatedEvent by sending an email notification. Runs asynchronously to avoid
-   * blocking the main thread. Uses @TransactionalEventListener to ensure email is only sent after
-   * the project validation transaction commits successfully.
-   *
-   * @param event The project validated event
-   */
+  @Value("${app.frontend.url:http://localhost:3001}")
+  private String frontendUrl;
+
   @Async
   @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
   public void handleProjectValidated(ProjectValidatedEvent event) {
@@ -39,18 +41,43 @@ public class EmailEventListener {
               .orElseThrow(
                   () -> new RuntimeException("Client user not found: " + event.getClientId()));
 
-      String subject =
-          event.getIsValid()
-              ? "Project Approved: " + event.getProjectTitle()
-              : "Project Needs Changes: " + event.getProjectTitle();
+      String firstName = client.getFirstName() != null ? client.getFirstName() : "there";
 
-      String message =
-          event.getIsValid()
-              ? buildApprovedEmailBody(client.getFirstName(), event.getProjectTitle())
-              : buildNeedsChangesEmailBody(
-                  client.getFirstName(), event.getProjectTitle(), event.getValidationNotes());
+      String subject;
+      String html;
 
-      emailService.sendProjectValidationEmail(client.getEmail(), subject, message);
+      if (event.getIsValid()) {
+        subject = "Project Approved: " + event.getProjectTitle();
+        html =
+            templateService.render(
+                "project-approved",
+                Map.of(
+                    "FIRST_NAME", firstName,
+                    "PROJECT_TITLE", event.getProjectTitle(),
+                    "FRONTEND_URL", frontendUrl));
+      } else {
+        subject = "Project Needs Changes: " + event.getProjectTitle();
+
+        String validationNotesHtml = "";
+        if (event.getValidationNotes() != null && !event.getValidationNotes().isBlank()) {
+          validationNotesHtml =
+              "<div style=\"background-color:#fff7ed;border-left:4px solid #f97316;border-radius:4px;padding:16px 20px;margin-bottom:24px;\">"
+                  + "<p style=\"margin:0 0 6px 0;font-size:12px;font-weight:600;color:#c2410c;text-transform:uppercase;letter-spacing:0.5px;\">Reviewer Notes</p>"
+                  + "<p style=\"margin:0;font-size:14px;color:#374151;line-height:1.6;\">"
+                  + event.getValidationNotes()
+                  + "</p>"
+                  + "</div>";
+        }
+
+        Map<String, String> vars = new HashMap<>();
+        vars.put("FIRST_NAME", firstName);
+        vars.put("PROJECT_TITLE", event.getProjectTitle());
+        vars.put("VALIDATION_NOTES", validationNotesHtml);
+        vars.put("FRONTEND_URL", frontendUrl);
+        html = templateService.render("project-needs-changes", vars);
+      }
+
+      emailService.sendProjectValidationEmail(client.getEmail(), subject, html);
 
       log.info(
           "Validation email sent to {} for project {}: isValid={}",
@@ -64,45 +91,7 @@ public class EmailEventListener {
           event.getProjectId(),
           e.getMessage(),
           e);
-      // Don't throw - email failure shouldn't affect other listeners
     }
-  }
-
-  private String buildApprovedEmailBody(String firstName, String projectTitle) {
-    return String.format(
-        "Hello %s,\n\n"
-            + "Great news! Your project '%s' has been approved and is now visible to architects on Rumantra.\n\n"
-            + "Architects can now view your project and submit bids. You'll receive notifications when bids are submitted.\n\n"
-            + "Next steps:\n"
-            + "• Review incoming bids from architects\n"
-            + "• Compare proposals and portfolios\n"
-            + "• Select the best architect for your project\n\n"
-            + "View your project and manage bids in your dashboard.\n\n"
-            + "Best regards,\n"
-            + "The Rumantra Team",
-        firstName != null ? firstName : "there", projectTitle);
-  }
-
-  private String buildNeedsChangesEmailBody(
-      String firstName, String projectTitle, String validationNotes) {
-    String notesSection = "";
-    if (validationNotes != null && !validationNotes.isBlank()) {
-      notesSection = "\n\nValidation Notes:\n" + validationNotes + "\n";
-    }
-
-    return String.format(
-        "Hello %s,\n\n"
-            + "Your project '%s' has been reviewed and requires some changes before it can be published."
-            + "%s\n"
-            + "Please review your project details and make the necessary updates. Common reasons for changes:\n"
-            + "• Incomplete project information\n"
-            + "• Missing required documents\n"
-            + "• Budget or scope clarifications needed\n\n"
-            + "Once you've updated your project, it will be reviewed again.\n\n"
-            + "If you have questions, please contact our support team.\n\n"
-            + "Best regards,\n"
-            + "The Rumantra Team",
-        firstName != null ? firstName : "there", projectTitle, notesSection);
   }
 
   @Async
@@ -115,13 +104,22 @@ public class EmailEventListener {
               .orElseThrow(
                   () -> new RuntimeException("Client user not found: " + event.getClientUserId()));
 
+      String firstName = client.getFirstName() != null ? client.getFirstName() : "there";
       String subject = "New Bid for Your Project: " + event.getProjectTitle();
+      String html =
+          templateService.render(
+              "new-bid",
+              Map.of(
+                  "FIRST_NAME",
+                  firstName,
+                  "ARCHITECT_NAME",
+                  event.getArchitectName(),
+                  "PROJECT_TITLE",
+                  event.getProjectTitle(),
+                  "FRONTEND_URL",
+                  frontendUrl));
 
-      String message =
-          buildBidReceivedEmailBody(
-              client.getFirstName(), event.getArchitectName(), event.getProjectTitle());
-
-      emailService.sendBidNotificationEmail(client.getEmail(), subject, message);
+      emailService.sendBidNotificationEmail(client.getEmail(), subject, html);
 
       log.info(
           "Bid notification email sent to {} for project {}: bidId={}",
@@ -136,21 +134,5 @@ public class EmailEventListener {
           e.getMessage(),
           e);
     }
-  }
-
-  private String buildBidReceivedEmailBody(
-      String firstName, String architectName, String projectTitle) {
-    return String.format(
-        "Hello %s,\n\n"
-            + "Great news! Architect %s has submitted a bid for your project '%s'.\n\n"
-            + "Next steps:\n"
-            + "• Review the bid proposal and pricing\n"
-            + "• View the architect's portfolio and previous work\n"
-            + "• Compare with other bids if you have multiple\n"
-            + "• Accept the bid that best fits your needs\n\n"
-            + "Visit your dashboard to review the proposal and connect with the architect.\n\n"
-            + "Best regards,\n"
-            + "The Rumantra Team",
-        firstName != null ? firstName : "there", architectName, projectTitle);
   }
 }

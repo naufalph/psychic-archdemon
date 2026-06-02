@@ -43,7 +43,7 @@
           {{ t.landing.hero.microcopy }}
         </p>
 
-        <!-- Trust metrics -->
+        <!-- Trust metrics — commented out, still in development
         <div class="flex items-center gap-4 pt-6 border-t border-[#E8E8E8] text-[13px] text-[#666666]">
           <div class="flex items-center">
             <img
@@ -60,6 +60,7 @@
             {{ t.landing.trust.desc }}
           </div>
         </div>
+        -->
       </div>
 
       <!-- Right: stepper mockup -->

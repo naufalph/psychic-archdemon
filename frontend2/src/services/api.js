@@ -275,7 +275,9 @@ export const architectAPI = {
   updatePortfolio: portfolioData => api.put('/architects/portfolio', portfolioData),
   updateOnboardingProfile: profileData =>
     api.put('/rmtr/architects/onboarding-profile', profileData),
-  updateFullProfile: profileData => api.put('/rmtr/architects/profile', profileData)
+  updateFullProfile: profileData => api.put('/rmtr/architects/profile', profileData),
+  sendPhoneOtp: data => api.post('/rmtr/architects/phone/send-otp', data),
+  verifyPhoneOtp: data => api.post('/rmtr/architects/phone/verify-otp', data)
 }
 
 export const portfolioAPI = {

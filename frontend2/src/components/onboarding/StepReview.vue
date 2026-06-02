@@ -55,6 +55,34 @@
           </div>
         </div>
 
+        <div
+          v-if="store.identityDocs.fullnameKtp || store.identityDocs.ktpNum || store.identityDocs.npwp || store.identityDocs.phoneNum"
+          class="bg-white rounded-3xl p-8 shadow-sm border border-black/5"
+        >
+          <div class="flex justify-between items-start mb-6">
+            <h3 class="text-2xl font-bold text-black">Identity Documents</h3>
+            <button @click="store.goToStep('IDENTITY_DOCS')" class="text-sm text-[#7C4728] hover:underline">Edit</button>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div v-if="store.identityDocs.fullnameKtp" class="space-y-1">
+              <p class="text-xs text-black/40 uppercase tracking-wider">Full Name (KTP)</p>
+              <p class="text-base font-semibold text-black">{{ store.identityDocs.fullnameKtp }}</p>
+            </div>
+            <div v-if="store.identityDocs.ktpNum" class="space-y-1">
+              <p class="text-xs text-black/40 uppercase tracking-wider">KTP Number</p>
+              <p class="text-base font-semibold text-black">{{ store.identityDocs.ktpNum }}</p>
+            </div>
+            <div v-if="store.identityDocs.npwp" class="space-y-1">
+              <p class="text-xs text-black/40 uppercase tracking-wider">NPWP</p>
+              <p class="text-base font-semibold text-black">{{ store.identityDocs.npwp }}</p>
+            </div>
+            <div v-if="store.identityDocs.phoneNum" class="space-y-1">
+              <p class="text-xs text-black/40 uppercase tracking-wider">Mobile Phone</p>
+              <p class="text-base font-semibold text-black">{{ store.identityDocs.phoneNum }}</p>
+            </div>
+          </div>
+        </div>
+
         <div class="bg-white rounded-3xl p-8 shadow-sm border border-black/5">
           <div class="flex justify-between items-start mb-6">
             <h3 class="text-2xl font-bold text-black">Portfolio Projects ({{ store.portfolio.length }})</h3>

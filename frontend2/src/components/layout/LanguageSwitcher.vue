@@ -1,26 +1,27 @@
 <template>
-  <button
-    @click="toggleLocale"
-    class="px-3 py-1.5 text-sm font-bold text-gray-700 hover:text-brand-brown transition-colors flex items-center gap-2 border border-gray-200 rounded-lg hover:border-gray-300"
-  >
-    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129"
-      />
-    </svg>
-    {{ locale.toUpperCase() }}
-  </button>
+  <div class="group flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-lg hover:border-gray-300 transition-all cursor-default select-none">
+    <Globe class="w-4 h-4 text-gray-500 flex-shrink-0" />
+    <span class="text-sm font-bold text-[#0A0A0A]">{{ locale.toUpperCase() }}</span>
+    <span class="hidden group-hover:inline text-gray-400 text-sm font-medium transition-all"> | </span>
+    <button
+      class="hidden group-hover:inline text-sm font-medium text-[#888888] hover:text-[#0A0A0A] transition-colors"
+      @click="switchLocale"
+    >
+      {{ otherLocale }}
+    </button>
+  </div>
 </template>
 
 <script setup>
+import { computed } from 'vue'
+import { Globe } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
 
 const { locale, setLocale } = useI18n()
 
-const toggleLocale = () => {
+const otherLocale = computed(() => (locale.value === 'id' ? 'EN' : 'ID'))
+
+const switchLocale = () => {
   setLocale(locale.value === 'id' ? 'en' : 'id')
 }
 </script>

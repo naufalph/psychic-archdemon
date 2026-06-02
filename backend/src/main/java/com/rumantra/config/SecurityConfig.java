@@ -114,6 +114,12 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.GET, "/rmtr/support/conversations")
                     .hasRole("SUPERUSER")
 
+                    // Architect profile & OTP endpoints - require ARCHITECT role
+                    .requestMatchers("/rmtr/architects/register")
+                    .authenticated()
+                    .requestMatchers("/rmtr/architects/**")
+                    .hasRole("ARCHITECT")
+
                     // Porto endpoints - require ARCHITECT role
                     .requestMatchers("/rmtr/porto/**")
                     .hasRole("ARCHITECT")

@@ -112,6 +112,42 @@
               </p>
             </div>
 
+            <div
+              v-if="profileStore.profile && !isIdentityComplete"
+              class="mx-8 mt-6 p-5 bg-amber-50 border border-amber-200 rounded-2xl flex gap-4 items-start"
+            >
+              <svg
+                class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <div class="flex-1">
+                <p class="text-sm font-semibold text-amber-900">
+                  {{ t.proposalCreate?.identityIncompleteTitle || 'Identity verification required to submit' }}
+                </p>
+                <p class="text-sm text-amber-800 mt-1">
+                  {{
+                    t.proposalCreate?.identityIncompleteDesc ||
+                    'Complete your KTP, NPWP, full name, and WhatsApp OTP verification before submitting a bid. You can still save a draft.'
+                  }}
+                </p>
+                <router-link
+                  to="/architect/profile"
+                  class="inline-block mt-2 text-sm font-semibold text-amber-900 underline hover:text-[#7C4728]"
+                >
+                  {{ t.proposalCreate?.identityIncompleteAction || 'Complete Profile' }} →
+                </router-link>
+              </div>
+            </div>
+
             <form @submit.prevent="handleSubmit" class="p-8 space-y-8">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
@@ -176,187 +212,69 @@
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >Facade Images <span class="text-gray-400 font-normal">(exterior views, max 5)</span></label
-                >
-                <div v-if="existingFacade.length > 0" class="mb-4">
-                  <p class="text-xs text-gray-500 mb-2">Existing ({{ existingFacade.length }}/5)</p>
-                  <div class="grid grid-cols-3 gap-3">
-                    <div
-                      v-for="image in existingFacade"
-                      :key="image.id"
-                      class="relative group rounded-lg overflow-hidden border-2 border-gray-200"
-                    >
-                      <img :src="image.url" :alt="image.name" class="w-full h-24 object-cover" />
-                      <button
-                        type="button"
-                        @click="deleteExistingImage(image.id, 'facade')"
-                        class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition hover:bg-red-600"
-                      >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
-                      </button>
-                      <p class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs px-2 py-1 truncate">
-                        {{ image.name }}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div v-if="existingFacade.length < 5">
-                  <p class="text-xs text-gray-500 mb-2">
-                    Upload new ({{ facadeImages.length }}/{{ 5 - existingFacade.length }} slots available)
-                  </p>
-                  <MultiImageUploader v-model="facadeImages" label="" :max-files="5 - existingFacade.length" />
-                </div>
-                <p v-else class="text-sm text-amber-600 mt-2">
-                  Limit reached. Delete existing images to upload new ones.
-                </p>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Facade Images <span class="text-gray-400 font-normal">(exterior views, max 5)</span>
+                </label>
+                <MultiImageUploader
+                  v-model="facadeImages"
+                  :max-files="5"
+                  :existing-images="existingFacade"
+                  @delete-existing="id => deleteExistingImage(id, 'facade')"
+                />
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >Interior Images <span class="text-gray-400 font-normal">(interior spaces, max 5)</span></label
-                >
-                <div v-if="existingInterior.length > 0" class="mb-4">
-                  <p class="text-xs text-gray-500 mb-2">Existing ({{ existingInterior.length }}/5)</p>
-                  <div class="grid grid-cols-3 gap-3">
-                    <div
-                      v-for="image in existingInterior"
-                      :key="image.id"
-                      class="relative group rounded-lg overflow-hidden border-2 border-gray-200"
-                    >
-                      <img :src="image.url" :alt="image.name" class="w-full h-24 object-cover" />
-                      <button
-                        type="button"
-                        @click="deleteExistingImage(image.id, 'interior')"
-                        class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition hover:bg-red-600"
-                      >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
-                      </button>
-                      <p class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs px-2 py-1 truncate">
-                        {{ image.name }}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div v-if="existingInterior.length < 5">
-                  <p class="text-xs text-gray-500 mb-2">
-                    Upload new ({{ interiorImages.length }}/{{ 5 - existingInterior.length }} slots available)
-                  </p>
-                  <MultiImageUploader v-model="interiorImages" label="" :max-files="5 - existingInterior.length" />
-                </div>
-                <p v-else class="text-sm text-amber-600 mt-2">
-                  Limit reached. Delete existing images to upload new ones.
-                </p>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Interior Images <span class="text-gray-400 font-normal">(interior spaces, max 5)</span>
+                </label>
+                <MultiImageUploader
+                  v-model="interiorImages"
+                  :max-files="5"
+                  :existing-images="existingInterior"
+                  @delete-existing="id => deleteExistingImage(id, 'interior')"
+                />
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >Massing Images <span class="text-gray-400 font-normal">(3D form studies, max 5)</span></label
-                >
-                <div v-if="existingMassing.length > 0" class="mb-4">
-                  <p class="text-xs text-gray-500 mb-2">Existing ({{ existingMassing.length }}/5)</p>
-                  <div class="grid grid-cols-3 gap-3">
-                    <div
-                      v-for="image in existingMassing"
-                      :key="image.id"
-                      class="relative group rounded-lg overflow-hidden border-2 border-gray-200"
-                    >
-                      <img :src="image.url" :alt="image.name" class="w-full h-24 object-cover" />
-                      <button
-                        type="button"
-                        @click="deleteExistingImage(image.id, 'massing')"
-                        class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition hover:bg-red-600"
-                      >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
-                      </button>
-                      <p class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs px-2 py-1 truncate">
-                        {{ image.name }}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div v-if="existingMassing.length < 5">
-                  <p class="text-xs text-gray-500 mb-2">
-                    Upload new ({{ massingImages.length }}/{{ 5 - existingMassing.length }} slots available)
-                  </p>
-                  <MultiImageUploader v-model="massingImages" label="" :max-files="5 - existingMassing.length" />
-                </div>
-                <p v-else class="text-sm text-amber-600 mt-2">
-                  Limit reached. Delete existing images to upload new ones.
-                </p>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Massing Images <span class="text-gray-400 font-normal">(3D form studies, max 5)</span>
+                </label>
+                <MultiImageUploader
+                  v-model="massingImages"
+                  :max-files="5"
+                  :existing-images="existingMassing"
+                  @delete-existing="id => deleteExistingImage(id, 'massing')"
+                />
               </div>
 
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >Zoning Images <span class="text-gray-400 font-normal">(site plan diagrams, max 5)</span></label
-                >
-                <div v-if="existingZoning.length > 0" class="mb-4">
-                  <p class="text-xs text-gray-500 mb-2">Existing ({{ existingZoning.length }}/5)</p>
-                  <div class="grid grid-cols-3 gap-3">
-                    <div
-                      v-for="image in existingZoning"
-                      :key="image.id"
-                      class="relative group rounded-lg overflow-hidden border-2 border-gray-200"
-                    >
-                      <img :src="image.url" :alt="image.name" class="w-full h-24 object-cover" />
-                      <button
-                        type="button"
-                        @click="deleteExistingImage(image.id, 'zoning')"
-                        class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition hover:bg-red-600"
-                      >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
-                      </button>
-                      <p class="absolute bottom-0 left-0 right-0 bg-black/50 text-white text-xs px-2 py-1 truncate">
-                        {{ image.name }}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div v-if="existingZoning.length < 5">
-                  <p class="text-xs text-gray-500 mb-2">
-                    Upload new ({{ zoningImages.length }}/{{ 5 - existingZoning.length }} slots available)
-                  </p>
-                  <MultiImageUploader v-model="zoningImages" label="" :max-files="5 - existingZoning.length" />
-                </div>
-                <p v-else class="text-sm text-amber-600 mt-2">
-                  Limit reached. Delete existing images to upload new ones.
-                </p>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Zoning Images <span class="text-gray-400 font-normal">(site plan diagrams, max 5)</span>
+                </label>
+                <MultiImageUploader
+                  v-model="zoningImages"
+                  :max-files="5"
+                  :existing-images="existingZoning"
+                  @delete-existing="id => deleteExistingImage(id, 'zoning')"
+                />
               </div>
 
               <div v-if="uploadProgress > 0" class="bg-gray-50 rounded-2xl p-6">
                 <UploadProgress :progress="uploadProgress" label="Uploading files..." />
               </div>
 
-              <div v-if="error" class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
-                {{ error }}
+              <div ref="errorRef" v-if="error" class="p-4 bg-red-50 border border-red-200 rounded-xl space-y-2">
+                <p class="text-sm font-semibold text-red-700">{{ error }}</p>
+                <ul v-if="identityMissing.length" class="text-xs text-red-600 list-disc list-inside space-y-0.5">
+                  <li v-for="item in identityMissing" :key="item">{{ item }}</li>
+                </ul>
+                <router-link
+                  v-if="!isIdentityComplete"
+                  to="/architect/profile"
+                  class="inline-block text-sm font-semibold text-[#7C4728] underline"
+                >
+                  {{ t.value.proposalCreate?.completeProfileLink || 'Lengkapi Profil →' }}
+                </router-link>
               </div>
 
               <div class="flex gap-4 pt-6 border-t border-gray-100">
@@ -369,13 +287,13 @@
                 </button>
                 <button
                   type="submit"
-                  :disabled="loading || uploadProgress > 0"
+                  :disabled="(loading && !isSavingDraft) || uploadProgress > 0"
                   class="flex-1 px-6 py-3 text-white bg-[#7C4728] rounded-full hover:bg-black shadow-md hover:shadow-lg transition-all font-bold flex items-center justify-center gap-2 disabled:opacity-50"
                 >
-                  <Loader v-if="loading" :size="20" class="animate-spin" />
+                  <Loader v-if="loading && !isSavingDraft" :size="20" class="animate-spin" />
                   <Send v-else :size="20" />
                   {{
-                    loading
+                    loading && !isSavingDraft
                       ? t.proposalCreate?.submitting || 'Submitting...'
                       : t.proposalCreate?.submitBtn || 'Submit Proposal'
                   }}
@@ -390,12 +308,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { ArrowLeft, FileText, Loader, Send } from 'lucide-vue-next'
 import { useBidsStore } from '@/stores/bids'
 import { useProjectsStore } from '@/stores/projects'
+import { useArchitectProfileStore } from '@/stores/architectProfile'
 import { useI18n } from '@/composables/useI18n'
 import MultiImageUploader from '@/components/upload/MultiImageUploader.vue'
 import UploadProgress from '@/components/upload/UploadProgress.vue'
@@ -407,7 +326,21 @@ const route = useRoute()
 const router = useRouter()
 const bidsStore = useBidsStore()
 const projectsStore = useProjectsStore()
+const profileStore = useArchitectProfileStore()
 const { t } = useI18n()
+
+const identityMissing = computed(() => {
+  const p = profileStore.profile
+  if (!p) return ['profile']
+  const missing = []
+  if (!p.ktpNum || !p.ktpNum.trim()) missing.push('KTP')
+  if (!p.npwp || !p.npwp.trim()) missing.push('NPWP')
+  if (!p.fullnameKtp || !p.fullnameKtp.trim()) missing.push('Nama Lengkap sesuai KTP')
+  if (!p.phoneVerified) missing.push('Verifikasi nomor HP')
+  return missing
+})
+
+const isIdentityComplete = computed(() => identityMissing.value.length === 0)
 
 const DELIVERABLE_CATEGORIES = [
   { categoryKey: 'siteAnalysis', items: ['SITE_ANALYSIS', 'ZONING_STUDY'] },
@@ -497,7 +430,10 @@ const deleteExistingImage = async (imageId, type) => {
   }
 }
 
+const isSavingDraft = ref(false)
+
 const saveDraftAndLeave = async () => {
+  isSavingDraft.value = true
   try {
     if (formData.value.bidAmount) {
       let bid
@@ -517,15 +453,59 @@ const saveDraftAndLeave = async () => {
         conceptStatement: formData.value.conceptStatement,
         phases: formData.value.phases
       })
+
+      if (formData.value.portfolioIds.length > 0) {
+        await bidsStore.linkPortfolios(bid.id, formData.value.portfolioIds)
+      }
+
+      const uploadIfAny = async (type, newFiles, existingRef, fileRef) => {
+        const fresh = newFiles.filter(f => f instanceof File)
+        if (!fresh.length) return
+        try {
+          const uploaded = await bidsStore.uploadBidImages(bid.id, type, fresh)
+          existingRef.value = [
+            ...existingRef.value,
+            ...uploaded.map(img => ({ id: img.id, url: img.imageUrl, name: img.fileName }))
+          ]
+          fileRef.value = []
+        } catch {
+          // per-type failure doesn't abort the others
+        }
+      }
+
+      await uploadIfAny('FACADE', facadeImages.value, existingFacade, facadeImages)
+      await uploadIfAny('INTERIOR', interiorImages.value, existingInterior, interiorImages)
+      await uploadIfAny('MASSING', massingImages.value, existingMassing, massingImages)
+      await uploadIfAny('ZONING', zoningImages.value, existingZoning, zoningImages)
     }
   } catch {
     // Silent — draft save is best-effort, always navigate away
+  } finally {
+    isSavingDraft.value = false
   }
   router.push({ name: 'OpportunityList' })
 }
 
+const errorRef = ref(null)
+
+const scrollToError = async () => {
+  await nextTick()
+  errorRef.value?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+}
+
 const handleSubmit = async () => {
   error.value = null
+
+  if (!isIdentityComplete.value) {
+    await profileStore.fetchProfile()
+  }
+  if (!isIdentityComplete.value) {
+    error.value =
+      t.value.proposalCreate?.identityIncompleteError ||
+      'Harap lengkapi data identitas berikut di halaman Profil sebelum mengirim penawaran:'
+    await scrollToError()
+    return
+  }
 
   if (wordCount.value > 200) {
     error.value = t('proposal.wordCountExceeded')
@@ -599,6 +579,7 @@ onMounted(async () => {
   projectLoading.value = true
   projectError.value = null
   try {
+    await profileStore.fetchProfile()
     project.value = await projectsStore.fetchProjectForArchitect(route.params.projectId)
 
     await bidsStore.fetchMyBids()
@@ -612,7 +593,13 @@ onMounted(async () => {
       formData.value.proposal = existingDraft.proposal || ''
       formData.value.conceptStatement = existingDraft.details?.conceptStatement || ''
       formData.value.phases = existingDraft.details?.phases || []
-      formData.value.portfolioIds = existingDraft.portfolios?.map(p => p.id) || []
+
+      try {
+        const fullDraft = await bidsStore.fetchBidById(existingDraft.id)
+        formData.value.portfolioIds = fullDraft.portfolioReferences?.map(p => p.id) || []
+      } catch {
+        formData.value.portfolioIds = []
+      }
 
       existingFacade.value = (existingDraft.facadeImages || []).map(img => ({
         id: img.id,

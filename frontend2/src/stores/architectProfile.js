@@ -22,7 +22,9 @@ export const useArchitectProfileStore = defineStore('architectProfile', {
     profileNpwpVerified: state => state.profile?.npwpVerified || false,
     profileCompanySite: state => state.profile?.companySite || '',
     profileContactName: state => state.profile?.contactName || '',
-    profilePhoneNumber: state => state.profile?.phoneNumber || ''
+    profilePhoneNumber: state => state.profile?.phoneNumber || '',
+    profileFullnameKtp: state => state.profile?.fullnameKtp || '',
+    profilePhoneVerified: state => state.profile?.phoneVerified || false
   },
 
   actions: {
@@ -55,6 +57,7 @@ export const useArchitectProfileStore = defineStore('architectProfile', {
           expertise: profileData.expertise,
           ktpNum: profileData.ktpNum,
           npwp: profileData.npwp,
+          fullnameKtp: profileData.fullnameKtp,
           companySite: profileData.companySite,
           contactName: profileData.contactName,
           phoneNum: profileData.phoneNum
@@ -86,6 +89,33 @@ export const useArchitectProfileStore = defineStore('architectProfile', {
 
     clearError() {
       this.error = null
+    },
+
+    async sendPhoneOtp(phoneNumber) {
+      try {
+        this.isLoading = true
+        this.error = null
+        await architectAPI.sendPhoneOtp({ phoneNumber })
+      } catch (error) {
+        this.error = error.response?.data?.message || 'Gagal mengirim OTP.'
+        throw error
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    async verifyPhoneOtp(phoneNumber, code) {
+      try {
+        this.isLoading = true
+        this.error = null
+        const response = await architectAPI.verifyPhoneOtp({ phoneNumber, code })
+        this.profile = response.data.data
+      } catch (error) {
+        this.error = error.response?.data?.message || 'OTP tidak valid atau sudah kadaluarsa.'
+        throw error
+      } finally {
+        this.isLoading = false
+      }
     }
   }
 })

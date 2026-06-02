@@ -30,6 +30,11 @@
         @next="handlePortfolioProjectNext"
         @back="store.previousStep()"
       />
+      <StepIdentityDocs
+        v-if="currentStep === 'IDENTITY_DOCS'"
+        @next="store.nextStep()"
+        @back="store.previousStep()"
+      />
       <StepReview v-if="currentStep === 'REVIEW'" @next="store.nextStep()" @back="store.previousStep()" />
       <StepActivated v-if="currentStep === 'ACTIVATED'" />
     </main>
@@ -107,6 +112,7 @@ import StepExpertise from '@/components/onboarding/StepExpertise.vue'
 import StepProfileConfirm from '@/components/onboarding/StepProfileConfirm.vue'
 import StepPortfolioIntro from '@/components/onboarding/StepPortfolioIntro.vue'
 import StepPortfolioProject from '@/components/onboarding/StepPortfolioProject.vue'
+import StepIdentityDocs from '@/components/onboarding/StepIdentityDocs.vue'
 import StepReview from '@/components/onboarding/StepReview.vue'
 import StepActivated from '@/components/onboarding/StepActivated.vue'
 

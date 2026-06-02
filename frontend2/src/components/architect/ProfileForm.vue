@@ -61,35 +61,6 @@
         />
         <div class="flex justify-between items-center">
           <p class="text-xs text-black/40">{{ formData.philosophy.length }} characters</p>
-          <button
-            type="button"
-            @click="handleEnhancePhilosophy"
-            :disabled="!formData.philosophy.trim() || isEnhancing"
-            :class="[
-              'px-4 py-2 rounded-xl text-sm font-semibold transition-all flex items-center gap-2',
-              formData.philosophy.trim() && !isEnhancing
-                ? 'bg-gradient-to-r from-[#7C4728] to-[#9B5E3C] text-white hover:shadow-md'
-                : 'bg-black/5 text-black/30 cursor-not-allowed'
-            ]"
-          >
-            <svg v-if="!isEnhancing" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
-              />
-            </svg>
-            <svg v-else class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              />
-            </svg>
-            {{ t.profile.form.enhanceWithAI }}
-          </button>
         </div>
         <p v-if="errors.philosophy" class="text-xs text-red-600">{{ errors.philosophy }}</p>
       </div>
@@ -197,7 +168,6 @@
 import { ref, computed, watch } from 'vue'
 import { useI18n } from '@/composables/useI18n'
 import { EXPERTISE_TAGS, EXPERIENCE_OPTIONS } from '@/constants/onboarding'
-import { polishPhilosophy } from '@/services/geminiService'
 
 const props = defineProps({
   initialData: {
@@ -245,8 +215,6 @@ const errors = ref({
   ktpNum: '',
   npwp: ''
 })
-
-const isEnhancing = ref(false)
 
 watch(
   () => props.initialData,
@@ -378,20 +346,6 @@ const toggleExpertise = tag => {
     formData.value.expertise.push(tag)
   }
   errors.value.expertise = ''
-}
-
-const handleEnhancePhilosophy = async () => {
-  if (!formData.value.philosophy.trim()) return
-
-  try {
-    isEnhancing.value = true
-    const enhanced = await polishPhilosophy(formData.value.philosophy)
-    formData.value.philosophy = enhanced
-  } catch (error) {
-    console.error('Philosophy enhancement error:', error)
-  } finally {
-    isEnhancing.value = false
-  }
 }
 
 const handleSubmit = () => {

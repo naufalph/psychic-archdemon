@@ -10,6 +10,7 @@ export default {
     temukanArsitek: 'Temukan arsitek',
     riset: 'Riset',
     untukArsitek: 'Untuk Arsitek',
+    untukKlien: 'Untuk Klien',
     masuk: 'Masuk',
     mulaiProyek: 'Mulai Proyek Gratis',
     dasbor: 'Dasbor',
@@ -422,6 +423,13 @@ export default {
     cancelBtn: 'Batal',
     submitting: 'Mengirim...',
     backToOpportunities: 'Kembali ke Peluang',
+    identityIncompleteTitle: 'Verifikasi identitas diperlukan untuk mengirim',
+    identityIncompleteDesc:
+      'Lengkapi KTP, NPWP, nama lengkap sesuai KTP, dan verifikasi OTP WhatsApp sebelum mengajukan penawaran. Anda masih dapat menyimpan draft.',
+    identityIncompleteAction: 'Lengkapi Profil',
+    identityIncompleteError:
+      'Harap lengkapi informasi identitas (KTP, NPWP, nama lengkap sesuai KTP, dan verifikasi OTP nomor HP) di halaman Profil sebelum mengirim penawaran. Draft Anda tetap tersimpan.',
+    completeProfileLink: 'Lengkapi Profil →',
     deliverableCategories: {
       siteAnalysis: 'Analisis Lokasi & Perencanaan',
       designPhases: 'Fase Desain',
@@ -446,6 +454,39 @@ export default {
       SUPERVISION: 'Pengawasan Konstruksi',
       AS_BUILT: 'Gambar As-Built'
     }
+  },
+  identityDocs: {
+    title: 'Verifikasi Identitas',
+    subtitle: 'Diperlukan sebelum mengajukan penawaran. Anda dapat melewati ini untuk sekarang.',
+    notice:
+      'KTP, NPWP, dan nama lengkap Anda akan diverifikasi secara manual oleh tim Rumantra. Nomor HP memerlukan verifikasi OTP via WhatsApp, yang dapat dilakukan di halaman Profil.',
+    fullnameKtp: 'Nama Lengkap (sesuai KTP)',
+    fullnameKtpPlaceholder: 'mis. Budi Santoso',
+    ktpNum: 'Nomor KTP',
+    ktpNumPlaceholder: '16 digit nomor KTP',
+    ktpNumError: 'Nomor KTP harus tepat 16 digit',
+    npwp: 'NPWP',
+    npwpPlaceholder: '15–16 digit nomor NPWP',
+    npwpError: 'NPWP harus 15 atau 16 digit',
+    phoneNum: 'Nomor HP (WhatsApp)',
+    phoneNumPlaceholder: 'mis. 08123456789',
+    phoneNumHint: 'Verifikasi OTP via WhatsApp dilakukan di halaman Profil.',
+    back: 'Kembali',
+    skip: 'Lewati untuk sekarang',
+    save: 'Simpan & Lanjutkan',
+    saving: 'Menyimpan...',
+    sendOtp: 'Kirim OTP via WhatsApp',
+    otpSent: 'OTP telah dikirim ke WhatsApp Anda',
+    otpCode: 'Masukkan Kode OTP',
+    otpCodePlaceholder: '6 digit OTP',
+    verify: 'Verifikasi',
+    verifying: 'Memverifikasi...',
+    verified: 'Terverifikasi',
+    notVerified: 'Belum terverifikasi',
+    verifyPhone: 'Verifikasi HP',
+    otpError: 'OTP tidak valid atau sudah kadaluarsa. Silakan coba lagi.',
+    resendOtp: 'Kirim Ulang OTP',
+    phoneVerifiedSuccess: 'Nomor HP berhasil diverifikasi.'
   },
   clientDashboard: {
     title: 'Dashboard Klien',

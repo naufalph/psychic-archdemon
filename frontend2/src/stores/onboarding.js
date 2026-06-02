@@ -1,7 +1,6 @@
 import { defineStore } from 'pinia'
 import { useAuthStore } from './auth'
 import { portfolioAPI, architectAPI } from '@/services/api'
-import { polishPhilosophy, getArchitecturalAdvice } from '@/services/geminiService'
 
 const STEPS = [
   'WELCOME',
@@ -9,6 +8,7 @@ const STEPS = [
   'PHILOSOPHY',
   'EXPERTISE',
   'PROFILE_CONFIRM',
+  'IDENTITY_DOCS',
   'PORTFOLIO_INTRO',
   'PORTFOLIO_PROJECT',
   'REVIEW',
@@ -26,10 +26,16 @@ export const useOnboardingStore = defineStore('onboarding', {
       expertise: []
     },
     portfolio: [],
+    identityDocs: {
+      fullnameKtp: '',
+      ktpNum: '',
+      npwp: '',
+      phoneNum: ''
+    },
     currentProject: null,
     isLoading: false,
     error: null,
-    aiTip: 'Welcome. I am your design guide.'
+    aiTip: ''
   }),
 
   getters: {
@@ -101,26 +107,6 @@ export const useOnboardingStore = defineStore('onboarding', {
       this.saveToLocalStorage()
     },
 
-    async enhancePhilosophy() {
-      if (!this.profile.philosophy) {
-        this.error = 'Please enter your philosophy first'
-        return
-      }
-
-      try {
-        this.isLoading = true
-        this.error = null
-        const enhanced = await polishPhilosophy(this.profile.philosophy)
-        this.profile.philosophy = enhanced
-        this.saveToLocalStorage()
-      } catch (error) {
-        console.error('Philosophy enhancement error:', error)
-        this.error = 'Failed to enhance philosophy. Please try again.'
-      } finally {
-        this.isLoading = false
-      }
-    },
-
     async saveProfileToBackend() {
       try {
         this.isLoading = true
@@ -138,6 +124,34 @@ export const useOnboardingStore = defineStore('onboarding', {
       } catch (error) {
         console.error('Save profile error:', error)
         this.error = error.response?.data?.message || 'Failed to save profile. Please try again.'
+        throw error
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    updateIdentityDocs(data) {
+      this.identityDocs = { ...this.identityDocs, ...data }
+      this.saveToLocalStorage()
+    },
+
+    async saveIdentityDocsToBackend() {
+      const { fullnameKtp, ktpNum, npwp, phoneNum } = this.identityDocs
+      const hasAnyField = fullnameKtp || ktpNum || npwp || phoneNum
+      if (!hasAnyField) return
+
+      try {
+        this.isLoading = true
+        this.error = null
+        await architectAPI.updateFullProfile({
+          fullnameKtp: fullnameKtp || undefined,
+          ktpNum: ktpNum || undefined,
+          npwp: npwp || undefined,
+          phoneNum: phoneNum || undefined
+        })
+      } catch (error) {
+        console.error('Save identity docs error:', error)
+        this.error = error.response?.data?.message || 'Gagal menyimpan data identitas.'
         throw error
       } finally {
         this.isLoading = false
@@ -223,15 +237,6 @@ export const useOnboardingStore = defineStore('onboarding', {
       }
     },
 
-    async getContextualAdvice(context) {
-      try {
-        const advice = await getArchitecturalAdvice(context)
-        this.aiTip = advice
-      } catch (error) {
-        console.error('AI advice error:', error)
-      }
-    },
-
     saveToLocalStorage() {
       const data = {
         currentStep: this.currentStep,
@@ -239,7 +244,8 @@ export const useOnboardingStore = defineStore('onboarding', {
         portfolio: this.portfolio.map(p => ({
           ...p,
           images: []
-        }))
+        })),
+        identityDocs: this.identityDocs
       }
       localStorage.setItem('onboarding_progress', JSON.stringify(data))
     },
@@ -252,6 +258,7 @@ export const useOnboardingStore = defineStore('onboarding', {
           this.currentStep = data.currentStep || 'WELCOME'
           this.profile = data.profile || this.profile
           this.portfolio = data.portfolio || []
+          this.identityDocs = data.identityDocs || this.identityDocs
         } catch (error) {
           console.error('Failed to load onboarding progress:', error)
         }

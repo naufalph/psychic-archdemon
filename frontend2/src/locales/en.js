@@ -10,6 +10,7 @@ export default {
     temukanArsitek: 'Find architects',
     riset: 'Research',
     untukArsitek: 'For Architects',
+    untukKlien: 'For Clients',
     masuk: 'Sign in',
     mulaiProyek: 'Start Free Project',
     dasbor: 'Dashboard',
@@ -417,6 +418,13 @@ export default {
     cancelBtn: 'Cancel',
     submitting: 'Submitting...',
     backToOpportunities: 'Back to Opportunities',
+    identityIncompleteTitle: 'Identity verification required to submit',
+    identityIncompleteDesc:
+      'Complete your KTP, NPWP, full name (as in KTP), and WhatsApp OTP phone verification before submitting a bid. You can still save a draft.',
+    identityIncompleteAction: 'Complete Profile',
+    identityIncompleteError:
+      'Please complete your identity information (KTP, NPWP, full legal name, and phone OTP verification) in your Profile before submitting a bid. Your draft has been saved.',
+    completeProfileLink: 'Complete your profile →',
     deliverableCategories: {
       siteAnalysis: 'Site Analysis & Planning',
       designPhases: 'Design Phases',
@@ -441,6 +449,39 @@ export default {
       SUPERVISION: 'Construction Supervision',
       AS_BUILT: 'As-Built Drawings'
     }
+  },
+  identityDocs: {
+    title: 'Identity Verification',
+    subtitle: 'Required before submitting bids. You can skip this for now.',
+    notice:
+      'KTP, NPWP, and your full name will be verified manually by the Rumantra team. Phone number requires WhatsApp OTP verification, which can be done from your Profile page.',
+    fullnameKtp: 'Full Name (as in KTP)',
+    fullnameKtpPlaceholder: 'e.g., Budi Santoso',
+    ktpNum: 'KTP Number',
+    ktpNumPlaceholder: '16-digit KTP number',
+    ktpNumError: 'KTP number must be exactly 16 digits',
+    npwp: 'NPWP',
+    npwpPlaceholder: '15–16 digit NPWP number',
+    npwpError: 'NPWP must be 15 or 16 digits',
+    phoneNum: 'Mobile Phone Number',
+    phoneNumPlaceholder: 'e.g., 08123456789',
+    phoneNumHint: 'OTP verification via WhatsApp is done from your Profile page.',
+    back: 'Back',
+    skip: 'Skip for now',
+    save: 'Save & Continue',
+    saving: 'Saving...',
+    sendOtp: 'Send OTP via WhatsApp',
+    otpSent: 'OTP sent to your WhatsApp',
+    otpCode: 'Enter OTP Code',
+    otpCodePlaceholder: '6-digit OTP',
+    verify: 'Verify',
+    verifying: 'Verifying...',
+    verified: 'Verified',
+    notVerified: 'Not verified',
+    verifyPhone: 'Verify Phone',
+    otpError: 'Invalid or expired OTP. Please try again.',
+    resendOtp: 'Resend OTP',
+    phoneVerifiedSuccess: 'Phone number successfully verified.'
   },
   clientDashboard: {
     title: 'Client Dashboard',
