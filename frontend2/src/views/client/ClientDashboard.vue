@@ -3,30 +3,30 @@
     <div class="max-w-7xl mx-auto px-6 py-10">
       <div class="flex justify-between items-center mb-10">
         <div>
-          <h1 class="text-4xl font-bold text-black">Welcome, {{ clientName }}</h1>
-          <p class="text-gray-500 mt-1">Manage your architecture projects</p>
+          <h1 class="text-4xl font-bold text-black">{{ t.clientDashboard.welcome }}, {{ clientName }}</h1>
+          <p class="text-gray-500 mt-1">{{ t.clientDashboard.manageProjects }}</p>
         </div>
         <router-link :to="{ name: 'ProjectCreate' }">
           <button
             class="bg-black text-white px-6 py-3 rounded-full font-bold tracking-widest text-sm hover:bg-[#7C4728] transition flex items-center gap-2"
           >
             <Plus :size="16" />
-            NEW PROJECT
+            {{ t.clientDashboard.newProjectBtn }}
           </button>
         </router-link>
       </div>
 
       <div class="grid grid-cols-3 gap-4 mb-10">
         <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
-          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">Active Projects</p>
+          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">{{ t.clientDashboard.activeProjects }}</p>
           <p class="text-4xl font-bold text-black">{{ activeProjectCount }}</p>
         </div>
         <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
-          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">Total Proposals</p>
+          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">{{ t.clientDashboard.totalProposals }}</p>
           <p class="text-4xl font-bold text-[#7C4728]">{{ totalProposalCount }}</p>
         </div>
         <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
-          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">Budget Used</p>
+          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">{{ t.clientDashboard.budgetUsed }}</p>
           <p class="text-2xl font-bold text-black">{{ formatCurrency(budgetUsed) }}</p>
         </div>
       </div>
@@ -34,12 +34,12 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2">
           <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold text-black tracking-wide">ACTIVE VENTURES</h2>
+            <h2 class="text-xl font-bold text-black tracking-wide">{{ t.clientDashboard.activeVentures }}</h2>
             <router-link
               :to="{ name: 'ProjectCreate' }"
               class="text-xs font-bold text-gray-500 hover:text-black tracking-widest transition"
             >
-              VIEW ALL →
+              {{ t.clientDashboard.viewAll }}
             </router-link>
           </div>
           <ProjectList />
@@ -47,9 +47,9 @@
 
         <div class="space-y-6">
           <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-soft">
-            <h2 class="text-sm font-bold text-black tracking-widest uppercase mb-4">Recent Activity</h2>
+            <h2 class="text-sm font-bold text-black tracking-widest uppercase mb-4">{{ t.clientDashboard.recentActivity }}</h2>
             <div v-if="recentBids.length === 0" class="text-center py-6">
-              <p class="text-gray-400 text-sm">No proposals yet</p>
+              <p class="text-gray-400 text-sm">{{ t.clientDashboard.noProposalsYet }}</p>
             </div>
             <div v-else class="space-y-3">
               <div
@@ -64,7 +64,7 @@
                   <p class="text-sm font-medium text-gray-900 truncate">
                     {{ bid.architectName || 'An architect' }}
                   </p>
-                  <p class="text-xs text-gray-500">submitted a proposal</p>
+                  <p class="text-xs text-gray-500">{{ t.clientDashboard.submittedProposal }}</p>
                   <p class="text-xs text-[#7C4728] font-medium mt-0.5">{{ formatCurrency(bid.bidAmount) }}</p>
                 </div>
               </div>
@@ -72,15 +72,13 @@
           </div>
 
           <div class="bg-[#7C4728] rounded-2xl p-6 text-white">
-            <p class="text-xs font-bold tracking-widest uppercase mb-2 text-white/70">Curated Selection</p>
-            <h3 class="text-lg font-bold mb-2">Find Your Architect</h3>
-            <p class="text-sm text-white/80 mb-4">
-              Browse our vetted network of architecture studios ready for your project.
-            </p>
+            <p class="text-xs font-bold tracking-widest uppercase mb-2 text-white/70">{{ t.clientDashboard.curatedSelection }}</p>
+            <h3 class="text-lg font-bold mb-2">{{ t.clientDashboard.findArchitect }}</h3>
+            <p class="text-sm text-white/80 mb-4">{{ t.clientDashboard.browseStudiosDesc }}</p>
             <button
               class="bg-white text-[#7C4728] px-4 py-2 rounded-full text-xs font-bold tracking-wider hover:bg-[#F5E6D3] transition"
             >
-              BROWSE STUDIOS →
+              {{ t.clientDashboard.browseStudios }}
             </button>
           </div>
         </div>
@@ -96,8 +94,10 @@ import { Plus, FileText } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
+import { useI18n } from '@/composables/useI18n'
 import ProjectList from './ProjectList.vue'
 
+const { t } = useI18n()
 const authStore = useAuthStore()
 const projectsStore = useProjectsStore()
 const bidsStore = useBidsStore()

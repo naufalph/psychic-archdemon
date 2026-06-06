@@ -370,8 +370,6 @@ const handleSignup = async () => {
       role: selectedRole.value
     })
 
-    console.log('Registration successful:', result)
-
     isLoading.value = false
     currentStep.value = 3
     showConfetti.value = true

@@ -3,14 +3,14 @@
     <div v-if="loading" class="flex items-center justify-center h-screen">
       <div class="text-center">
         <div class="w-10 h-10 border-2 border-[#C5A17A] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p class="text-gray-500">Loading project...</p>
+        <p class="text-gray-500">{{ t.activeProjectDashboard.loading }}</p>
       </div>
     </div>
 
     <div v-else-if="error" class="flex items-center justify-center h-screen">
       <div class="text-center">
         <p class="text-red-500 mb-4">{{ error }}</p>
-        <button @click="loadAll" class="text-[#7C4728] hover:underline">Try again</button>
+        <button @click="loadAll" class="text-[#7C4728] hover:underline">{{ t.activeProjectDashboard.tryAgain }}</button>
       </div>
     </div>
 
@@ -23,7 +23,7 @@
               <ArrowLeft :size="20" />
             </button>
             <div>
-              <p class="text-xs text-gray-400 uppercase font-bold tracking-wide">Project Dashboard</p>
+              <p class="text-xs text-gray-400 uppercase font-bold tracking-wide">{{ t.activeProjectDashboard.projectDashboard }}</p>
               <h1 class="text-lg font-bold text-black">{{ project?.title || 'Active Project' }}</h1>
             </div>
           </div>
@@ -32,15 +32,15 @@
               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700"
             >
               <span class="w-1.5 h-1.5 rounded-full bg-blue-500" />
-              In Progress
+              {{ t.activeProjectDashboard.inProgress }}
             </span>
-            <span class="text-sm text-gray-500">Phase {{ currentPhaseNumber }} of {{ phases.length }}</span>
+            <span class="text-sm text-gray-500">{{ t.activeProjectDashboard.phase }} {{ currentPhaseNumber }} {{ t.activeProjectDashboard.of }} {{ phases.length }}</span>
             <button
               @click="router.push(`/client/projects/${projectId}/workspace`)"
               class="flex items-center gap-1.5 px-4 py-1.5 bg-[#1C1C1C] text-white text-xs font-semibold rounded-full hover:bg-[#333] transition"
             >
               <Layers :size="13" />
-              Open Workspace
+              {{ t.activeProjectDashboard.openWorkspace }}
             </button>
           </div>
         </div>
@@ -81,21 +81,21 @@
 
           <!-- Budget summary -->
           <div class="bg-white rounded-xl border border-gray-200 px-4 py-4 space-y-3">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">Budget</p>
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">{{ t.activeProjectDashboard.budget }}</p>
             <div class="space-y-2">
               <div class="flex justify-between text-sm">
-                <span class="text-gray-500">Total Value</span>
+                <span class="text-gray-500">{{ t.activeProjectDashboard.totalValue }}</span>
                 <span class="font-semibold text-gray-900">{{ formatAmount(totalAmount) }}</span>
               </div>
               <div class="flex justify-between text-sm">
-                <span class="text-gray-500">Paid</span>
+                <span class="text-gray-500">{{ t.activeProjectDashboard.paid }}</span>
                 <span class="font-semibold text-green-600">{{ formatAmount(paidAmount) }}</span>
               </div>
               <div class="w-full bg-gray-100 rounded-full h-1.5 mt-1">
                 <div class="bg-green-500 h-1.5 rounded-full transition-all" :style="{ width: progressPercent + '%' }" />
               </div>
               <div class="flex justify-between text-sm">
-                <span class="text-gray-500">Remaining</span>
+                <span class="text-gray-500">{{ t.activeProjectDashboard.remaining }}</span>
                 <span class="font-semibold text-amber-600">{{ formatAmount(remainingAmount) }}</span>
               </div>
             </div>
@@ -103,7 +103,7 @@
 
           <!-- Architect card -->
           <div v-if="acceptedBid" class="bg-white rounded-xl border border-gray-200 px-4 py-4">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Architect</p>
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">{{ t.activeProjectDashboard.architect }}</p>
             <div class="flex items-center gap-3">
               <div
                 class="w-10 h-10 rounded-full bg-[#1C1C1C] text-white flex items-center justify-center text-sm font-bold shrink-0"
@@ -121,7 +121,7 @@
 
           <!-- Scope / description -->
           <div v-if="project?.scopeOfWork" class="bg-white rounded-xl border border-gray-200 px-4 py-4">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">Scope of Work</p>
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">{{ t.activeProjectDashboard.scopeOfWork }}</p>
             <p class="text-sm text-gray-600 leading-relaxed line-clamp-4">{{ project.scopeOfWork }}</p>
           </div>
         </div>
@@ -156,7 +156,7 @@
                 <span
                   class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-green-50 text-green-700"
                 >
-                  <span class="w-1.5 h-1.5 rounded-full bg-green-500" /> Paid
+                  <span class="w-1.5 h-1.5 rounded-full bg-green-500" /> {{ t.activeProjectDashboard.paid }}
                 </span>
                 <p v-if="phase.paidAt" class="text-xs text-gray-400 mt-1">{{ formatDate(phase.paidAt) }}</p>
               </div>
@@ -182,7 +182,7 @@
                     class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700"
                   >
                     <span class="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                    {{ phase.paymentStatus === 'EXPIRED' ? 'Expired' : 'Pending' }}
+                    {{ phase.paymentStatus === 'EXPIRED' ? t.activeProjectDashboard.expired : t.activeProjectDashboard.pending }}
                   </span>
                   <div class="flex items-center gap-2">
                     <button
@@ -235,7 +235,7 @@
                   <p class="text-xs text-gray-400">{{ formatAmount(phase.amount) }}</p>
                 </div>
               </div>
-              <p class="text-xs text-gray-400">Pay Phase {{ currentPhaseNumber }} first</p>
+              <p class="text-xs text-gray-400">{{ t.activeProjectDashboard.phase }} {{ currentPhaseNumber }} {{ t.activeProjectDashboard.payFirst }}</p>
             </div>
           </div>
 
@@ -244,7 +244,7 @@
             v-if="phases.length === 0"
             class="bg-white rounded-xl border border-gray-200 py-16 text-center text-gray-400"
           >
-            No payment phases found for this project.
+            {{ t.activeProjectDashboard.noPhases }}
           </div>
         </div>
       </div>

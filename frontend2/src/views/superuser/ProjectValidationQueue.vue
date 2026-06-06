@@ -1,7 +1,7 @@
 <template>
   <div class="p-8">
-    <h1 class="text-2xl font-bold text-gray-900 mb-2">Project Validation Queue</h1>
-    <p class="text-gray-500 text-sm mb-8">Projects awaiting superuser approval before opening for bids</p>
+    <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ t.projectValidationQueue.title }}</h1>
+    <p class="text-gray-500 text-sm mb-8">{{ t.projectValidationQueue.subtitle }}</p>
 
     <div v-if="loading" class="space-y-3">
       <div v-for="i in 3" :key="i" class="bg-white rounded-xl p-5 animate-pulse border border-gray-100">
@@ -11,7 +11,7 @@
     </div>
 
     <div v-else-if="projects.length === 0" class="bg-white rounded-xl border border-gray-100 p-12 text-center">
-      <p class="text-gray-400 text-sm">No projects pending approval</p>
+      <p class="text-gray-400 text-sm">{{ t.projectValidationQueue.noPending }}</p>
     </div>
 
     <div v-else class="space-y-3">
@@ -25,7 +25,7 @@
           <p class="text-sm text-gray-500 mt-0.5">
             {{ project.location }} · Budget IDR {{ formatCurrency(project.budgetTotal) }}
           </p>
-          <p class="text-xs text-gray-400 mt-1">Submitted {{ formatDate(project.createdAt) }}</p>
+          <p class="text-xs text-gray-400 mt-1">{{ t.projectValidationQueue.submittedOn }} {{ formatDate(project.createdAt) }}</p>
           <p v-if="project.validationNotes" class="text-xs text-gray-500 mt-1 italic">
             Note: {{ project.validationNotes }}
           </p>
@@ -36,7 +36,7 @@
             :disabled="processing === project.id"
             class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition disabled:opacity-50"
           >
-            Reject
+            {{ t.projectValidationQueue.reject }}
           </button>
           <button
             @click="validate(project.id, true)"
@@ -44,7 +44,7 @@
             class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition disabled:opacity-50"
           >
             <span v-if="processing === project.id">...</span>
-            <span v-else>Approve</span>
+            <span v-else>{{ t.projectValidationQueue.approve }}</span>
           </button>
         </div>
       </div>
@@ -57,6 +57,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { adminProjectsAPI, superuserProjectsAPI } from '@/services/adminApi'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 const loading = ref(true)
 const error = ref(null)

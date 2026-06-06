@@ -7,8 +7,8 @@
   >
     <div class="space-y-8">
       <div class="space-y-3">
-        <h2 class="text-5xl font-black tracking-tighter text-black">Define Your Expertise</h2>
-        <p class="text-lg text-black/60 tracking-tight">Select the architectural domains you specialize in.</p>
+        <h2 class="text-5xl font-black tracking-tighter text-black">{{ t.onboarding.expertise.title }}</h2>
+        <p class="text-lg text-black/60 tracking-tight">{{ t.onboarding.expertise.subtitle }}</p>
       </div>
 
       <div class="bg-white rounded-3xl p-8 shadow-sm border border-black/5">
@@ -36,7 +36,7 @@
       </div>
 
       <div class="flex justify-between items-center pt-4">
-        <button @click="emit('back')" class="px-6 py-3 text-black/60 hover:text-black transition-colors">Back</button>
+        <button @click="emit('back')" class="px-6 py-3 text-black/60 hover:text-black transition-colors">{{ t.onboarding.expertise.back }}</button>
         <button
           @click="handleNext"
           :disabled="!isFormValid"
@@ -58,6 +58,9 @@
 import { ref, computed } from 'vue'
 import { useOnboardingStore } from '@/stores/onboarding'
 import { EXPERTISE_TAGS } from '@/constants/onboarding'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 const emit = defineEmits(['next', 'back'])
 const store = useOnboardingStore()

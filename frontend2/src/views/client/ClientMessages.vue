@@ -3,7 +3,7 @@
     <!-- Conversation list -->
     <div class="w-72 shrink-0 bg-white border-r border-gray-200 flex flex-col">
       <div class="px-5 py-5 border-b border-gray-100">
-        <h1 class="text-lg font-bold text-gray-900">Messages</h1>
+        <h1 class="text-lg font-bold text-gray-900">{{ t.clientMessages.title }}</h1>
       </div>
 
       <div v-if="chatStore.loading && !chatStore.conversations.length" class="flex-1 flex items-center justify-center">
@@ -16,7 +16,7 @@
       >
         <div>
           <MessageSquare :size="32" class="text-gray-300 mx-auto mb-2" />
-          <p class="text-sm text-gray-400">No conversations yet</p>
+          <p class="text-sm text-gray-400">{{ t.clientMessages.noConversations }}</p>
         </div>
       </div>
 
@@ -36,7 +36,7 @@
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex items-center justify-between">
-                <p class="text-sm font-semibold text-gray-900 truncate">{{ conv.projectTitle || 'Project Chat' }}</p>
+                <p class="text-sm font-semibold text-gray-900 truncate">{{ conv.projectTitle || t.clientMessages.projectChat }}</p>
                 <span
                   v-if="conv.unreadCount > 0"
                   class="ml-2 w-5 h-5 bg-[#7C4728] text-white text-xs rounded-full flex items-center justify-center font-bold shrink-0"
@@ -44,7 +44,7 @@
                   {{ conv.unreadCount > 9 ? '9+' : conv.unreadCount }}
                 </span>
               </div>
-              <p class="text-xs text-gray-500 truncate mt-0.5">{{ conv.lastMessage || 'No messages yet' }}</p>
+              <p class="text-xs text-gray-500 truncate mt-0.5">{{ conv.lastMessage || t.clientMessages.noMessagesYet }}</p>
             </div>
           </div>
         </button>
@@ -57,8 +57,8 @@
       <div v-if="!selectedConvId" class="flex-1 flex items-center justify-center text-center px-8">
         <div>
           <MessageSquare :size="48" class="text-gray-300 mx-auto mb-3" />
-          <p class="text-gray-500 font-medium">Select a conversation</p>
-          <p class="text-sm text-gray-400 mt-1">Choose a project chat from the list to start messaging.</p>
+          <p class="text-gray-500 font-medium">{{ t.clientMessages.selectConversation }}</p>
+          <p class="text-sm text-gray-400 mt-1">{{ t.clientMessages.selectConversationHint }}</p>
         </div>
       </div>
 
@@ -69,7 +69,7 @@
             {{ getConvInitials(selectedConv) }}
           </div>
           <div>
-            <p class="font-semibold text-gray-900 text-sm">{{ selectedConv?.projectTitle || 'Project Chat' }}</p>
+            <p class="font-semibold text-gray-900 text-sm">{{ selectedConv?.projectTitle || t.clientMessages.projectChat }}</p>
             <p class="text-xs text-gray-400">{{ selectedConv?.architectName || '' }}</p>
           </div>
         </div>
@@ -109,7 +109,7 @@
             <input
               v-model="newMessage"
               type="text"
-              placeholder="Type a message..."
+              :placeholder="t.clientMessages.typeMessage"
               class="flex-1 bg-gray-100 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C4728]/30"
               :disabled="chatStore.sending"
             />
@@ -132,6 +132,9 @@ import { ref, computed, nextTick, onMounted } from 'vue'
 import { MessageSquare, Send } from 'lucide-vue-next'
 import { useChatStore } from '@/stores/chat'
 import { useAuthStore } from '@/stores/auth'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 const chatStore = useChatStore()
 const authStore = useAuthStore()

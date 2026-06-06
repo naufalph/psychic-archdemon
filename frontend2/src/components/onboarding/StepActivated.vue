@@ -27,32 +27,30 @@
       </div>
 
       <div class="space-y-4">
-        <h1 class="text-6xl md:text-7xl font-black tracking-tighter text-black">Studio Activated</h1>
-        <p class="text-xl text-black/70 tracking-tight max-w-xl mx-auto">
-          Your architectural presence is now live. Clients can discover your work and connect with your practice.
-        </p>
+        <h1 class="text-6xl md:text-7xl font-black tracking-tighter text-black">{{ t.onboarding.activated.title }}</h1>
+        <p class="text-xl text-black/70 tracking-tight max-w-xl mx-auto">{{ t.onboarding.activated.subtitle }}</p>
       </div>
 
       <div class="bg-gradient-to-r from-[#7C4728]/10 to-[#9B5E3C]/10 rounded-3xl p-8 space-y-4">
-        <h3 class="text-2xl font-bold text-black">What's Next?</h3>
+        <h3 class="text-2xl font-bold text-black">{{ t.onboarding.activated.whatsNext }}</h3>
         <div class="text-left max-w-md mx-auto space-y-3">
           <div class="flex items-start gap-3">
             <div class="w-6 h-6 rounded-full bg-[#7C4728] flex items-center justify-center flex-shrink-0 mt-0.5">
               <span class="text-white text-xs font-bold">1</span>
             </div>
-            <p class="text-black/70">Browse open project opportunities</p>
+            <p class="text-black/70">{{ t.onboarding.activated.step1 }}</p>
           </div>
           <div class="flex items-start gap-3">
             <div class="w-6 h-6 rounded-full bg-[#7C4728] flex items-center justify-center flex-shrink-0 mt-0.5">
               <span class="text-white text-xs font-bold">2</span>
             </div>
-            <p class="text-black/70">Submit proposals to interested clients</p>
+            <p class="text-black/70">{{ t.onboarding.activated.step2 }}</p>
           </div>
           <div class="flex items-start gap-3">
             <div class="w-6 h-6 rounded-full bg-[#7C4728] flex items-center justify-center flex-shrink-0 mt-0.5">
               <span class="text-white text-xs font-bold">3</span>
             </div>
-            <p class="text-black/70">Build your reputation and grow your practice</p>
+            <p class="text-black/70">{{ t.onboarding.activated.step3 }}</p>
           </div>
         </div>
       </div>
@@ -62,9 +60,9 @@
           @click="goToDashboard"
           class="px-8 py-4 bg-[#7C4728] text-white rounded-full font-semibold hover:bg-[#6A3D22] transition-all hover:scale-105 text-lg"
         >
-          Go to Dashboard
+          {{ t.onboarding.activated.dashboard }}
         </button>
-        <p class="text-sm text-black/40 tracking-wide">or wait {{ countdown }} seconds for automatic redirect</p>
+        <p class="text-sm text-black/40 tracking-wide">{{ t.onboarding.activated.redirecting.replace('{n}', countdown) }}</p>
       </div>
     </div>
   </div>
@@ -75,6 +73,9 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useOnboardingStore } from '@/stores/onboarding'
 import { useAuthStore } from '@/stores/auth'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 const router = useRouter()
 const store = useOnboardingStore()

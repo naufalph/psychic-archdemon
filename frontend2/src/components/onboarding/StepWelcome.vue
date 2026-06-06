@@ -7,10 +7,8 @@
       class="max-w-2xl mx-auto space-y-8"
     >
       <div class="space-y-4">
-        <h1 class="text-6xl md:text-7xl font-black tracking-tighter text-black">Welcome to Your Studio</h1>
-        <p class="text-xl text-black/60 tracking-tight max-w-xl mx-auto">
-          Let's craft your architectural presence and showcase your vision to clients seeking exceptional design.
-        </p>
+        <h1 class="text-6xl md:text-7xl font-black tracking-tighter text-black">{{ t.onboarding.welcome.title }}</h1>
+        <p class="text-xl text-black/60 tracking-tight max-w-xl mx-auto">{{ t.onboarding.welcome.subtitle }}</p>
       </div>
 
       <div class="pt-8">
@@ -18,16 +16,19 @@
           @click="handleNext"
           class="px-12 py-4 bg-[#7C4728] text-white rounded-full text-lg font-semibold tracking-tight hover:bg-[#6A3D22] transition-all duration-300 hover:scale-105"
         >
-          Enter Studio
+          {{ t.onboarding.welcome.enterStudio }}
         </button>
       </div>
 
-      <p class="text-sm text-black/40 tracking-wide pt-4">This will take approximately 10 minutes to complete</p>
+      <p class="text-sm text-black/40 tracking-wide pt-4">{{ t.onboarding.welcome.duration }}</p>
     </div>
   </div>
 </template>
 
 <script setup>
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 const emit = defineEmits(['next'])
 
 const handleNext = () => {

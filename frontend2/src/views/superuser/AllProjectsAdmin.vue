@@ -1,7 +1,7 @@
 <template>
   <div class="p-8">
-    <h1 class="text-2xl font-bold text-gray-900 mb-2">All Projects</h1>
-    <p class="text-gray-500 text-sm mb-6">Platform-wide project management</p>
+    <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ t.allProjectsAdmin.title }}</h1>
+    <p class="text-gray-500 text-sm mb-6">{{ t.allProjectsAdmin.subtitle }}</p>
 
     <!-- Filters -->
     <div class="flex gap-2 mb-6 flex-wrap">
@@ -31,7 +31,7 @@
     </div>
 
     <div v-else-if="projects.length === 0" class="bg-white rounded-xl border border-gray-100 p-12 text-center">
-      <p class="text-gray-400 text-sm">No projects found</p>
+      <p class="text-gray-400 text-sm">{{ t.allProjectsAdmin.noProjects }}</p>
     </div>
 
     <div v-else class="space-y-3">
@@ -56,7 +56,7 @@
               :disabled="processing === project.id"
               class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition disabled:opacity-50"
             >
-              Force IN_PROGRESS
+              {{ t.allProjectsAdmin.forceInProgress }}
             </button>
             <button
               v-if="!['CANCELLED', 'COMPLETED'].includes(project.status)"
@@ -64,7 +64,7 @@
               :disabled="processing === project.id"
               class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition disabled:opacity-50"
             >
-              Force Cancel
+              {{ t.allProjectsAdmin.forceCancel }}
             </button>
           </div>
         </div>
@@ -76,8 +76,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { adminProjectsAPI } from '@/services/adminApi'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 const loading = ref(true)
 const error = ref(null)
@@ -85,15 +88,15 @@ const processing = ref(null)
 const projects = ref([])
 const selectedStatus = ref(null)
 
-const statusFilters = [
-  { label: 'All', value: null },
-  { label: 'Pending Approval', value: 'PENDING_APPROVAL' },
-  { label: 'Open', value: 'OPEN' },
-  { label: 'Negotiation', value: 'NEGOTIATION' },
-  { label: 'In Progress', value: 'IN_PROGRESS' },
-  { label: 'Completed', value: 'COMPLETED' },
-  { label: 'Cancelled', value: 'CANCELLED' }
-]
+const statusFilters = computed(() => [
+  { label: t.value.allProjectsAdmin.filterAll, value: null },
+  { label: t.value.allProjectsAdmin.filterPendingApproval, value: 'PENDING_APPROVAL' },
+  { label: t.value.allProjectsAdmin.filterOpen, value: 'OPEN' },
+  { label: t.value.allProjectsAdmin.filterNegotiation, value: 'NEGOTIATION' },
+  { label: t.value.allProjectsAdmin.filterInProgress, value: 'IN_PROGRESS' },
+  { label: t.value.allProjectsAdmin.filterCompleted, value: 'COMPLETED' },
+  { label: t.value.allProjectsAdmin.filterCancelled, value: 'CANCELLED' }
+])
 
 const load = async () => {
   loading.value = true
@@ -109,7 +112,7 @@ const load = async () => {
 }
 
 const forceCancel = async id => {
-  if (!confirm('Force cancel this project?')) return
+  if (!confirm(t.value.allProjectsAdmin.forceCancelConfirm)) return
   processing.value = id
   try {
     await adminProjectsAPI.forceCancel(id)
@@ -122,7 +125,7 @@ const forceCancel = async id => {
 }
 
 const overrideNegotiation = async id => {
-  if (!confirm('Force this project to IN_PROGRESS, bypassing dual confirmation?')) return
+  if (!confirm(t.value.allProjectsAdmin.forceProgressConfirm)) return
   processing.value = id
   try {
     await adminProjectsAPI.overrideNegotiation(id)

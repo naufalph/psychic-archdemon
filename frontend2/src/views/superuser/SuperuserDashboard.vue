@@ -1,7 +1,7 @@
 <template>
   <div class="p-8">
-    <h1 class="text-2xl font-bold text-gray-900 mb-2">Backoffice Dashboard</h1>
-    <p class="text-gray-500 text-sm mb-8">Platform overview for superuser operations</p>
+    <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ t.superuserDashboard.title }}</h1>
+    <p class="text-gray-500 text-sm mb-8">{{ t.superuserDashboard.subtitle }}</p>
 
     <div v-if="loading" class="grid grid-cols-4 gap-4">
       <div v-for="i in 4" :key="i" class="bg-white rounded-xl p-6 animate-pulse">
@@ -15,36 +15,36 @@
         to="/superuser/projects/queue"
         class="bg-white rounded-xl p-6 border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
       >
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Pending Approval</p>
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">{{ t.superuserDashboard.pendingApproval }}</p>
         <p class="text-3xl font-bold text-amber-500">{{ stats.pendingApproval }}</p>
-        <p class="text-xs text-gray-400 mt-1">projects awaiting validation</p>
+        <p class="text-xs text-gray-400 mt-1">{{ t.superuserDashboard.pendingApprovalDesc }}</p>
       </RouterLink>
 
       <RouterLink
         to="/superuser/projects"
         class="bg-white rounded-xl p-6 border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
       >
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Negotiation</p>
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">{{ t.superuserDashboard.negotiation }}</p>
         <p class="text-3xl font-bold text-blue-500">{{ stats.negotiation }}</p>
-        <p class="text-xs text-gray-400 mt-1">projects in negotiation</p>
+        <p class="text-xs text-gray-400 mt-1">{{ t.superuserDashboard.negotiationDesc }}</p>
       </RouterLink>
 
       <RouterLink
         to="/superuser/disputes"
         class="bg-white rounded-xl p-6 border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
       >
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">Active Disputes</p>
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">{{ t.superuserDashboard.activeDisputes }}</p>
         <p class="text-3xl font-bold text-red-500">{{ stats.disputes }}</p>
-        <p class="text-xs text-gray-400 mt-1">phases in DISPUTED status</p>
+        <p class="text-xs text-gray-400 mt-1">{{ t.superuserDashboard.activeDisputesDesc }}</p>
       </RouterLink>
 
       <RouterLink
         to="/superuser/projects"
         class="bg-white rounded-xl p-6 border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
       >
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">In Progress</p>
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">{{ t.superuserDashboard.inProgress }}</p>
         <p class="text-3xl font-bold text-green-500">{{ stats.inProgress }}</p>
-        <p class="text-xs text-gray-400 mt-1">active projects</p>
+        <p class="text-xs text-gray-400 mt-1">{{ t.superuserDashboard.inProgressDesc }}</p>
       </RouterLink>
     </div>
 
@@ -57,6 +57,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { adminProjectsAPI, adminPhasesAPI } from '@/services/adminApi'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 const loading = ref(true)
 const error = ref(null)

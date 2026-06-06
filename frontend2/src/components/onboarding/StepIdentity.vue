@@ -7,38 +7,38 @@
   >
     <div class="space-y-8">
       <div class="space-y-3">
-        <h2 class="text-5xl font-black tracking-tighter text-black">Establish Your Identity</h2>
-        <p class="text-lg text-black/60 tracking-tight">Tell us about your practice and professional background.</p>
+        <h2 class="text-5xl font-black tracking-tighter text-black">{{ t.onboarding.identity.title }}</h2>
+        <p class="text-lg text-black/60 tracking-tight">{{ t.onboarding.identity.subtitle }}</p>
       </div>
 
       <div class="space-y-6 bg-white rounded-3xl p-8 shadow-sm border border-black/5">
         <div class="space-y-2">
-          <label class="block text-sm font-semibold text-black/70 tracking-tight"> Practice Name </label>
+          <label class="block text-sm font-semibold text-black/70 tracking-tight">{{ t.onboarding.identity.practiceName }}</label>
           <input
             v-model="formData.name"
             type="text"
-            placeholder="e.g., Studio Archipelago"
+            :placeholder="t.onboarding.identity.practiceNamePlaceholder"
             class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all"
           />
         </div>
 
         <div class="space-y-2">
-          <label class="block text-sm font-semibold text-black/70 tracking-tight"> City </label>
+          <label class="block text-sm font-semibold text-black/70 tracking-tight">{{ t.onboarding.identity.city }}</label>
           <input
             v-model="formData.city"
             type="text"
-            placeholder="e.g., Jakarta"
+            :placeholder="t.onboarding.identity.cityPlaceholder"
             class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all"
           />
         </div>
 
         <div class="space-y-2">
-          <label class="block text-sm font-semibold text-black/70 tracking-tight"> Years of Experience </label>
+          <label class="block text-sm font-semibold text-black/70 tracking-tight">{{ t.onboarding.identity.experience }}</label>
           <select
             v-model="formData.experienceRange"
             class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all bg-white"
           >
-            <option value="" disabled>Select experience range</option>
+            <option value="" disabled>{{ t.onboarding.identity.experiencePlaceholder }}</option>
             <option v-for="option in EXPERIENCE_OPTIONS" :key="option" :value="option">
               {{ option }}
             </option>
@@ -47,7 +47,7 @@
       </div>
 
       <div class="flex justify-between items-center pt-4">
-        <button @click="emit('back')" class="px-6 py-3 text-black/60 hover:text-black transition-colors">Back</button>
+        <button @click="emit('back')" class="px-6 py-3 text-black/60 hover:text-black transition-colors">{{ t.onboarding.identity.back }}</button>
         <button
           @click="handleNext"
           :disabled="!isFormValid"
@@ -69,6 +69,9 @@
 import { ref, computed } from 'vue'
 import { useOnboardingStore } from '@/stores/onboarding'
 import { EXPERIENCE_OPTIONS } from '@/constants/onboarding'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 const emit = defineEmits(['next', 'back'])
 const store = useOnboardingStore()

@@ -1,7 +1,7 @@
 <template>
   <div class="p-8">
-    <h1 class="text-2xl font-bold text-gray-900 mb-2">Dispute Management</h1>
-    <p class="text-gray-500 text-sm mb-8">Resolve disputed phases between clients and architects</p>
+    <h1 class="text-2xl font-bold text-gray-900 mb-2">{{ t.disputeManagement.title }}</h1>
+    <p class="text-gray-500 text-sm mb-8">{{ t.disputeManagement.subtitle }}</p>
 
     <div v-if="loading" class="space-y-3">
       <div v-for="i in 3" :key="i" class="bg-white rounded-xl p-5 animate-pulse border border-gray-100">
@@ -11,7 +11,7 @@
     </div>
 
     <div v-else-if="phases.length === 0" class="bg-white rounded-xl border border-gray-100 p-12 text-center">
-      <p class="text-gray-400 text-sm">No active disputes</p>
+      <p class="text-gray-400 text-sm">{{ t.disputeManagement.noDisputes }}</p>
     </div>
 
     <div v-else class="space-y-4">
@@ -19,7 +19,7 @@
         <div class="flex items-start justify-between gap-4">
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-1">
-              <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">DISPUTED</span>
+              <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">{{ t.disputeManagement.disputed }}</span>
               <p class="font-semibold text-gray-900">Phase {{ phase.phaseNumber }}: {{ phase.title }}</p>
             </div>
             <p class="text-sm text-gray-500">
@@ -34,11 +34,11 @@
         <!-- Resolution form -->
         <div v-if="resolving === phase.id" class="mt-4 pt-4 border-t border-gray-100">
           <div class="mb-3">
-            <label class="block text-xs font-semibold text-gray-600 mb-1">Resolution note (optional)</label>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">{{ t.disputeManagement.resolutionNote }}</label>
             <textarea
               v-model="resolutionNote"
               rows="2"
-              placeholder="Reason for your decision..."
+              :placeholder="t.disputeManagement.resolutionPlaceholder"
               class="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-gray-300 resize-none"
             ></textarea>
           </div>
@@ -48,14 +48,14 @@
               :disabled="processing === phase.id"
               class="flex-1 py-2 text-sm font-semibold rounded-lg bg-green-600 text-white hover:bg-green-700 transition disabled:opacity-50"
             >
-              Approve Deliverable
+              {{ t.disputeManagement.approveDeliverable }}
             </button>
             <button
               @click="resolve(phase.id, 'REJECT')"
               :disabled="processing === phase.id"
               class="flex-1 py-2 text-sm font-semibold rounded-lg bg-orange-500 text-white hover:bg-orange-600 transition disabled:opacity-50"
             >
-              Reject (Back to IN_PROGRESS)
+              {{ t.disputeManagement.rejectToProgress }}
             </button>
             <button
               @click="
@@ -64,7 +64,7 @@
               "
               class="px-4 py-2 text-sm font-semibold rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition"
             >
-              Cancel
+              {{ t.disputeManagement.cancel }}
             </button>
           </div>
         </div>
@@ -76,7 +76,7 @@
             "
             class="px-4 py-1.5 text-xs font-semibold rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition"
           >
-            Resolve Dispute
+            {{ t.disputeManagement.resolve }}
           </button>
         </div>
       </div>
@@ -89,6 +89,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { adminPhasesAPI } from '@/services/adminApi'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 const loading = ref(true)
 const error = ref(null)

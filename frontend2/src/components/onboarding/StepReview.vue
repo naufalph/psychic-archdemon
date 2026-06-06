@@ -7,41 +7,41 @@
   >
     <div class="space-y-8">
       <div class="space-y-3">
-        <h2 class="text-5xl font-black tracking-tighter text-black">Final Review</h2>
-        <p class="text-lg text-black/60 tracking-tight">Review your complete profile before activation.</p>
+        <h2 class="text-5xl font-black tracking-tighter text-black">{{ t.onboarding.review.title }}</h2>
+        <p class="text-lg text-black/60 tracking-tight">{{ t.onboarding.review.subtitle }}</p>
       </div>
 
       <div class="space-y-6">
         <div class="bg-white rounded-3xl p-8 shadow-sm border border-black/5">
           <div class="flex justify-between items-start mb-6">
-            <h3 class="text-2xl font-bold text-black">Professional Profile</h3>
-            <button @click="store.goToStep('IDENTITY')" class="text-sm text-[#7C4728] hover:underline">Edit</button>
+            <h3 class="text-2xl font-bold text-black">{{ t.onboarding.review.professionalProfile }}</h3>
+            <button @click="store.goToStep('IDENTITY')" class="text-sm text-[#7C4728] hover:underline">{{ t.onboarding.review.edit }}</button>
           </div>
 
           <div class="space-y-4">
             <div class="grid grid-cols-2 gap-4">
               <div class="space-y-1">
-                <p class="text-xs text-black/40 uppercase tracking-wider">Practice Name</p>
+                <p class="text-xs text-black/40 uppercase tracking-wider">{{ t.onboarding.review.practiceName }}</p>
                 <p class="text-lg font-semibold text-black">{{ store.profile.name }}</p>
               </div>
               <div class="space-y-1">
-                <p class="text-xs text-black/40 uppercase tracking-wider">City</p>
+                <p class="text-xs text-black/40 uppercase tracking-wider">{{ t.onboarding.review.city }}</p>
                 <p class="text-lg font-semibold text-black">{{ store.profile.city }}</p>
               </div>
             </div>
 
             <div class="space-y-1">
-              <p class="text-xs text-black/40 uppercase tracking-wider">Experience</p>
+              <p class="text-xs text-black/40 uppercase tracking-wider">{{ t.onboarding.review.experience }}</p>
               <p class="text-base text-black">{{ store.profile.experienceRange }}</p>
             </div>
 
             <div class="space-y-1">
-              <p class="text-xs text-black/40 uppercase tracking-wider">Philosophy</p>
+              <p class="text-xs text-black/40 uppercase tracking-wider">{{ t.onboarding.review.philosophy }}</p>
               <p class="text-base text-black/70 leading-relaxed">{{ store.profile.philosophy }}</p>
             </div>
 
             <div class="space-y-2">
-              <p class="text-xs text-black/40 uppercase tracking-wider">Expertise</p>
+              <p class="text-xs text-black/40 uppercase tracking-wider">{{ t.onboarding.review.expertise }}</p>
               <div class="flex flex-wrap gap-2">
                 <span
                   v-for="expertise in store.profile.expertise"
@@ -60,16 +60,16 @@
           class="bg-white rounded-3xl p-8 shadow-sm border border-black/5"
         >
           <div class="flex justify-between items-start mb-6">
-            <h3 class="text-2xl font-bold text-black">Identity Documents</h3>
-            <button @click="store.goToStep('IDENTITY_DOCS')" class="text-sm text-[#7C4728] hover:underline">Edit</button>
+            <h3 class="text-2xl font-bold text-black">{{ t.onboarding.review.identityDocs }}</h3>
+            <button @click="store.goToStep('IDENTITY_DOCS')" class="text-sm text-[#7C4728] hover:underline">{{ t.onboarding.review.edit }}</button>
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div v-if="store.identityDocs.fullnameKtp" class="space-y-1">
-              <p class="text-xs text-black/40 uppercase tracking-wider">Full Name (KTP)</p>
+              <p class="text-xs text-black/40 uppercase tracking-wider">{{ t.onboarding.review.fullNameKtp }}</p>
               <p class="text-base font-semibold text-black">{{ store.identityDocs.fullnameKtp }}</p>
             </div>
             <div v-if="store.identityDocs.ktpNum" class="space-y-1">
-              <p class="text-xs text-black/40 uppercase tracking-wider">KTP Number</p>
+              <p class="text-xs text-black/40 uppercase tracking-wider">{{ t.onboarding.review.ktpNumber }}</p>
               <p class="text-base font-semibold text-black">{{ store.identityDocs.ktpNum }}</p>
             </div>
             <div v-if="store.identityDocs.npwp" class="space-y-1">
@@ -77,7 +77,7 @@
               <p class="text-base font-semibold text-black">{{ store.identityDocs.npwp }}</p>
             </div>
             <div v-if="store.identityDocs.phoneNum" class="space-y-1">
-              <p class="text-xs text-black/40 uppercase tracking-wider">Mobile Phone</p>
+              <p class="text-xs text-black/40 uppercase tracking-wider">{{ t.onboarding.review.phone }}</p>
               <p class="text-base font-semibold text-black">{{ store.identityDocs.phoneNum }}</p>
             </div>
           </div>
@@ -85,9 +85,9 @@
 
         <div class="bg-white rounded-3xl p-8 shadow-sm border border-black/5">
           <div class="flex justify-between items-start mb-6">
-            <h3 class="text-2xl font-bold text-black">Portfolio Projects ({{ store.portfolio.length }})</h3>
+            <h3 class="text-2xl font-bold text-black">{{ t.onboarding.review.portfolioProjects }} ({{ store.portfolio.length }})</h3>
             <button @click="store.goToStep('PORTFOLIO_INTRO')" class="text-sm text-[#7C4728] hover:underline">
-              Edit
+              {{ t.onboarding.review.edit }}
             </button>
           </div>
 
@@ -117,19 +117,17 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h3 class="text-2xl font-bold text-black">Ready to Activate</h3>
-        <p class="text-black/70 max-w-lg mx-auto">
-          Your profile is complete. Click below to activate your architect presence and start connecting with clients.
-        </p>
+        <h3 class="text-2xl font-bold text-black">{{ t.onboarding.review.readyToActivate }}</h3>
+        <p class="text-black/70 max-w-lg mx-auto">{{ t.onboarding.review.readyDesc }}</p>
       </div>
 
       <div class="flex justify-between items-center pt-4">
-        <button @click="emit('back')" class="px-6 py-3 text-black/60 hover:text-black transition-colors">Back</button>
+        <button @click="emit('back')" class="px-6 py-3 text-black/60 hover:text-black transition-colors">{{ t.onboarding.review.back }}</button>
         <button
           @click="handleActivate"
           class="px-12 py-4 bg-gradient-to-r from-[#7C4728] to-[#9B5E3C] text-white rounded-full text-lg font-bold hover:shadow-lg transition-all hover:scale-105"
         >
-          Activate Presence
+          {{ t.onboarding.review.activate }}
         </button>
       </div>
     </div>
@@ -138,6 +136,9 @@
 
 <script setup>
 import { useOnboardingStore } from '@/stores/onboarding'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 const emit = defineEmits(['next', 'back'])
 const store = useOnboardingStore()

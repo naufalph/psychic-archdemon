@@ -147,8 +147,7 @@ onMounted(async () => {
   }
 
   try {
-    const response = await authStore.verifyEmail(token)
-    console.log('Verification response:', response)
+    await authStore.verifyEmail(token)
 
     verificationSuccess.value = true
     showConfetti.value = true

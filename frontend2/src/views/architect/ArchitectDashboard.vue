@@ -3,30 +3,30 @@
     <div class="max-w-7xl mx-auto px-6 py-10">
       <div class="flex justify-between items-center mb-10">
         <div>
-          <h1 class="text-4xl font-bold text-black">Welcome, {{ architectName }}</h1>
-          <p class="text-gray-500 mt-1">Manage your architecture bids</p>
+          <h1 class="text-4xl font-bold text-black">{{ t.architectDashboard.welcome }}, {{ architectName }}</h1>
+          <p class="text-gray-500 mt-1">{{ t.architectDashboard.manageProjects }}</p>
         </div>
         <router-link :to="{ name: 'OpportunityList' }">
           <button
             class="bg-black text-white px-6 py-3 rounded-full font-bold tracking-widest text-sm hover:bg-[#7C4728] transition flex items-center gap-2"
           >
             <Search :size="16" />
-            FIND PROJECTS
+            {{ t.architectDashboard.findProjects }}
           </button>
         </router-link>
       </div>
 
       <div class="grid grid-cols-3 gap-4 mb-10">
         <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
-          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">Active Bids</p>
+          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">{{ t.architectDashboard.activeBids }}</p>
           <p class="text-4xl font-bold text-black">{{ pendingBids.length }}</p>
         </div>
         <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
-          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">Accepted</p>
+          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">{{ t.architectDashboard.accepted }}</p>
           <p class="text-4xl font-bold text-[#7C4728]">{{ acceptedBids.length }}</p>
         </div>
         <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
-          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">Bid Tokens</p>
+          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">{{ t.architectDashboard.bidTokens }}</p>
           <p class="text-4xl font-bold text-black">{{ bidsStore.quota.tokensRemaining }}</p>
         </div>
       </div>
@@ -34,12 +34,12 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2">
           <div class="flex justify-between items-center mb-4">
-            <h2 class="text-xl font-bold text-black tracking-wide">MY BIDS</h2>
+            <h2 class="text-xl font-bold text-black tracking-wide">{{ t.architectDashboard.myBids }}</h2>
             <router-link
               :to="{ name: 'MyBids' }"
               class="text-xs font-bold text-gray-500 hover:text-black tracking-widest transition"
             >
-              VIEW ALL →
+              {{ t.architectDashboard.viewAll }}
             </router-link>
           </div>
 
@@ -48,12 +48,12 @@
             class="bg-white rounded-2xl border border-gray-200 p-12 text-center shadow-soft"
           >
             <ClipboardList :size="48" class="text-gray-300 mx-auto mb-3" />
-            <p class="text-gray-500 text-sm">No bids submitted yet</p>
+            <p class="text-gray-500 text-sm">{{ t.architectDashboard.noBidsYet }}</p>
             <router-link :to="{ name: 'OpportunityList' }">
               <button
                 class="mt-4 bg-[#7C4728] hover:bg-black text-white px-5 py-2 rounded-full text-sm font-medium transition"
               >
-                Browse Projects
+                {{ t.architectDashboard.browseProjects }}
               </button>
             </router-link>
           </div>
@@ -86,32 +86,32 @@
 
         <div class="space-y-6">
           <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-soft">
-            <h2 class="text-sm font-bold text-black tracking-widest uppercase mb-4">Bid Tokens</h2>
+            <h2 class="text-sm font-bold text-black tracking-widest uppercase mb-4">{{ t.architectDashboard.bidTokens }}</h2>
             <div class="flex items-end gap-1 mb-1">
               <span class="text-3xl font-bold text-black">{{ bidsStore.quota.tokensRemaining }}</span>
-              <span class="text-gray-400 text-sm mb-1">/ {{ bidsStore.quota.tokensAllocated }} remaining</span>
+              <span class="text-gray-400 text-sm mb-1">/ {{ bidsStore.quota.tokensAllocated }} {{ t.architectDashboard.tokensRemaining }}</span>
             </div>
             <p v-if="bidsStore.quota.tier" class="text-xs text-gray-500 mb-4">
-              Plan: <span class="font-semibold text-gray-700">{{ bidsStore.quota.tier }}</span>
+              {{ t.architectDashboard.plan }} <span class="font-semibold text-gray-700">{{ bidsStore.quota.tier }}</span>
             </p>
             <router-link :to="{ name: 'ArchitectProfile' }">
               <button
                 class="w-full bg-black text-white px-4 py-2 rounded-full text-xs font-bold tracking-wider hover:bg-[#7C4728] transition"
               >
-                BUY TOKENS →
+                {{ t.architectDashboard.buyTokens }}
               </button>
             </router-link>
           </div>
 
           <div class="bg-[#7C4728] rounded-2xl p-6 text-white">
-            <p class="text-xs font-bold tracking-widest uppercase mb-2 text-white/70">Opportunities</p>
-            <h3 class="text-lg font-bold mb-2">Find New Projects</h3>
-            <p class="text-sm text-white/80 mb-4">Browse open projects from clients looking for architects.</p>
+            <p class="text-xs font-bold tracking-widest uppercase mb-2 text-white/70">{{ t.architectDashboard.opportunities }}</p>
+            <h3 class="text-lg font-bold mb-2">{{ t.architectDashboard.findNewProjects }}</h3>
+            <p class="text-sm text-white/80 mb-4">{{ t.architectDashboard.browseProjectsDesc }}</p>
             <router-link :to="{ name: 'OpportunityList' }">
               <button
                 class="bg-white text-[#7C4728] px-4 py-2 rounded-full text-xs font-bold tracking-wider hover:bg-[#F5E6D3] transition"
               >
-                BROWSE PROJECTS →
+                {{ t.architectDashboard.browseProjectsBtn }}
               </button>
             </router-link>
           </div>
@@ -127,7 +127,9 @@ import { storeToRefs } from 'pinia'
 import { Search, ClipboardList, FileText } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 import { useBidsStore } from '@/stores/bids'
+import { useI18n } from '@/composables/useI18n'
 
+const { t } = useI18n()
 const authStore = useAuthStore()
 const bidsStore = useBidsStore()
 

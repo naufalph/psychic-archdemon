@@ -196,17 +196,13 @@ const switchToClient = () => {
 
 const activateClientRole = async () => {
   if (hasClientRole.value) {
-    console.log('Client role already exists, switching instead of activating')
     closeDropdown()
     router.push('/client/dashboard')
     return
   }
 
   try {
-    const result = await authStore.activateRole('CLIENT')
-    if (result.alreadyActivated) {
-      console.log('Role was already activated, switching to client dashboard')
-    }
+    await authStore.activateRole('CLIENT')
     closeDropdown()
     router.push('/client/dashboard')
   } catch (error) {
@@ -234,10 +230,6 @@ const handleClickOutside = event => {
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
-  console.log('ArchitectNavbar mounted', {
-    hasClientRole: hasClientRole.value,
-    registeredRoles: authStore.user?.registeredRoles
-  })
 })
 
 onUnmounted(() => {

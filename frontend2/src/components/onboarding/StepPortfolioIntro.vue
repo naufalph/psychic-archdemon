@@ -7,8 +7,8 @@
   >
     <div class="space-y-8">
       <div class="space-y-3">
-        <h2 class="text-5xl font-black tracking-tighter text-black">Build Your Portfolio</h2>
-        <p class="text-lg text-black/60 tracking-tight">Showcase your best projects to attract clients.</p>
+        <h2 class="text-5xl font-black tracking-tighter text-black">{{ t.onboarding.portfolioIntro.title }}</h2>
+        <p class="text-lg text-black/60 tracking-tight">{{ t.onboarding.portfolioIntro.subtitle }}</p>
       </div>
 
       <div v-if="store.portfolio.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -40,7 +40,7 @@
               <span>{{ project.year }}</span>
             </div>
             <button @click="deleteProject(index)" class="text-sm text-red-500 hover:text-red-600 transition-colors">
-              Remove
+              {{ t.onboarding.portfolioIntro.remove }}
             </button>
           </div>
         </div>
@@ -62,7 +62,7 @@
             </svg>
           </div>
           <p class="text-lg font-semibold text-black/60 group-hover:text-[#7C4728] transition-colors">
-            Add Another Project
+            {{ t.onboarding.portfolioIntro.addAnother }}
           </p>
         </button>
       </div>
@@ -80,20 +80,20 @@
             </svg>
           </div>
           <div class="space-y-2">
-            <h3 class="text-2xl font-bold text-black">Start Your Portfolio</h3>
-            <p class="text-black/60">Add at least one project to showcase your work to potential clients.</p>
+            <h3 class="text-2xl font-bold text-black">{{ t.onboarding.portfolioIntro.startPortfolio }}</h3>
+            <p class="text-black/60">{{ t.onboarding.portfolioIntro.startDesc }}</p>
           </div>
           <button
             @click="handleAddProject"
             class="px-8 py-3 bg-[#7C4728] text-white rounded-full font-semibold hover:bg-[#6A3D22] transition-all hover:scale-105"
           >
-            Add Your First Project
+            {{ t.onboarding.portfolioIntro.addFirst }}
           </button>
         </div>
       </div>
 
       <div class="flex justify-between items-center pt-4">
-        <button @click="emit('back')" class="px-6 py-3 text-black/60 hover:text-black transition-colors">Back</button>
+        <button @click="emit('back')" class="px-6 py-3 text-black/60 hover:text-black transition-colors">{{ t.onboarding.portfolioIntro.back }}</button>
         <button
           v-if="store.portfolio.length > 0"
           @click="handleNext"
@@ -108,6 +108,9 @@
 
 <script setup>
 import { useOnboardingStore } from '@/stores/onboarding'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 const emit = defineEmits(['next', 'back'])
 const store = useOnboardingStore()
@@ -118,7 +121,7 @@ const handleAddProject = () => {
 }
 
 const deleteProject = index => {
-  if (confirm('Are you sure you want to remove this project?')) {
+  if (confirm(t.value.onboarding.portfolioIntro.removeConfirm)) {
     store.deleteProject(index)
   }
 }

@@ -7,29 +7,29 @@
   >
     <div class="space-y-8">
       <div class="space-y-3">
-        <h2 class="text-5xl font-black tracking-tighter text-black">Add Project Details</h2>
-        <p class="text-lg text-black/60 tracking-tight">Share the story and visuals of your project.</p>
+        <h2 class="text-5xl font-black tracking-tighter text-black">{{ t.onboarding.portfolioProject.title }}</h2>
+        <p class="text-lg text-black/60 tracking-tight">{{ t.onboarding.portfolioProject.subtitle }}</p>
       </div>
 
       <div class="bg-white rounded-3xl p-8 shadow-sm border border-black/5 space-y-6">
         <div class="space-y-2">
-          <label class="block text-sm font-semibold text-black/70 tracking-tight"> Project Name </label>
+          <label class="block text-sm font-semibold text-black/70 tracking-tight">{{ t.onboarding.portfolioProject.name }}</label>
           <input
             v-model="projectData.name"
             type="text"
-            placeholder="e.g., Tropical House Jakarta"
+            :placeholder="t.onboarding.portfolioProject.namePlaceholder"
             class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all"
           />
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div class="space-y-2">
-            <label class="block text-sm font-semibold text-black/70 tracking-tight"> Project Type </label>
+            <label class="block text-sm font-semibold text-black/70 tracking-tight">{{ t.onboarding.portfolioProject.type }}</label>
             <select
               v-model="projectData.type"
               class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all bg-white"
             >
-              <option value="" disabled>Select type</option>
+              <option value="" disabled>{{ t.onboarding.portfolioProject.typePlaceholder }}</option>
               <option v-for="type in PROJECT_TYPES" :key="type" :value="type">
                 {{ type }}
               </option>
@@ -37,7 +37,7 @@
           </div>
 
           <div class="space-y-2">
-            <label class="block text-sm font-semibold text-black/70 tracking-tight"> Year Completed </label>
+            <label class="block text-sm font-semibold text-black/70 tracking-tight">{{ t.onboarding.portfolioProject.year }}</label>
             <input
               v-model.number="projectData.year"
               type="number"
@@ -50,27 +50,27 @@
         </div>
 
         <div class="space-y-2">
-          <label class="block text-sm font-semibold text-black/70 tracking-tight"> Project Challenge </label>
+          <label class="block text-sm font-semibold text-black/70 tracking-tight">{{ t.onboarding.portfolioProject.challenge }}</label>
           <textarea
             v-model="projectData.story.problem"
             rows="3"
-            placeholder="What was the key challenge or constraint?"
+            :placeholder="t.onboarding.portfolioProject.challengePlaceholder"
             class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all resize-none"
           />
         </div>
 
         <div class="space-y-2">
-          <label class="block text-sm font-semibold text-black/70 tracking-tight"> Design Solution </label>
+          <label class="block text-sm font-semibold text-black/70 tracking-tight">{{ t.onboarding.portfolioProject.solution }}</label>
           <textarea
             v-model="projectData.story.decision"
             rows="3"
-            placeholder="How did your design address this challenge?"
+            :placeholder="t.onboarding.portfolioProject.solutionPlaceholder"
             class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all resize-none"
           />
         </div>
 
         <div class="space-y-3">
-          <label class="block text-sm font-semibold text-black/70 tracking-tight"> Project Images (Maximum 8) </label>
+          <label class="block text-sm font-semibold text-black/70 tracking-tight">{{ t.onboarding.portfolioProject.images }}</label>
 
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div
@@ -106,7 +106,7 @@
           </div>
 
           <p class="text-xs text-black/40">
-            {{ projectData.images.length }}/8 images uploaded. Maximum 10MB per image.
+            {{ t.onboarding.portfolioProject.imagesCount.replace('{n}', projectData.images.length) }}
           </p>
 
           <div v-if="uploadError" class="p-3 bg-red-50 border border-red-200 rounded-2xl text-sm text-red-600">
@@ -120,7 +120,7 @@
       </div>
 
       <div class="flex justify-between items-center pt-4">
-        <button @click="handleBack" class="px-6 py-3 text-black/60 hover:text-black transition-colors">Back</button>
+        <button @click="handleBack" class="px-6 py-3 text-black/60 hover:text-black transition-colors">{{ t.onboarding.portfolioProject.back }}</button>
         <button
           @click="handleSave"
           :disabled="!isFormValid || store.isLoading"
@@ -139,7 +139,7 @@
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
             />
           </svg>
-          {{ store.isLoading ? 'Saving...' : 'Save Project' }}
+          {{ store.isLoading ? t.onboarding.portfolioProject.saving : t.onboarding.portfolioProject.save }}
         </button>
       </div>
     </div>
@@ -150,6 +150,9 @@
 import { ref, computed, reactive, onMounted } from 'vue'
 import { useOnboardingStore } from '@/stores/onboarding'
 import { PROJECT_TYPES } from '@/constants/onboarding'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 const emit = defineEmits(['next', 'back'])
 const store = useOnboardingStore()
