@@ -25,6 +25,7 @@ public class FileProxyController {
   // Portfolio images are publicly visible — marketplace showcase content
   @GetMapping("/portfolios/{*objectKey}")
   public ResponseEntity<byte[]> servePortfolioFile(@PathVariable String objectKey) {
+    if (!isSafeKey(objectKey)) return ResponseEntity.badRequest().build();
     byte[] data = fileStorageService.downloadFile("portfolios/" + objectKey);
     return ResponseEntity.ok()
         .contentType(guessContentType(objectKey))
@@ -39,6 +40,7 @@ public class FileProxyController {
   @GetMapping("/{*objectKey}")
   @PreAuthorize("isAuthenticated()")
   public ResponseEntity<byte[]> servePrivateFile(@PathVariable String objectKey) {
+    if (!isSafeKey(objectKey)) return ResponseEntity.badRequest().build();
     byte[] data = fileStorageService.downloadFile(objectKey);
     MediaType mediaType = guessContentType(objectKey);
     HttpHeaders headers = new HttpHeaders();
@@ -50,6 +52,14 @@ public class FileProxyController {
           ContentDisposition.attachment().filename(extractFilename(objectKey)).build());
     }
     return ResponseEntity.ok().headers(headers).body(data);
+  }
+
+  private boolean isSafeKey(String key) {
+    return key != null
+        && !key.contains("..")
+        && !key.contains("\\")
+        && !key.contains("\0")
+        && !key.startsWith("/");
   }
 
   private MediaType guessContentType(String key) {
