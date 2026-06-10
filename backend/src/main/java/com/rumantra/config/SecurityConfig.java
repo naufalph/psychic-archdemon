@@ -79,9 +79,7 @@ public class SecurityConfig {
             session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers("/rmtr/files/portfolios/**")
-                    .permitAll()
-
+                auth
                     // New user endpoints (public)
                     .requestMatchers("/rmtr/users/login", "/rmtr/users/register")
                     .permitAll()
