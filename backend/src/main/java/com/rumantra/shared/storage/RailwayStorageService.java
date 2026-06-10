@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.Delete;
@@ -61,6 +62,7 @@ public class RailwayStorageService implements FileStorageService {
             .endpointOverride(URI.create(endpoint))
             .credentialsProvider(
                 StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey)))
+            .httpClientBuilder(UrlConnectionHttpClient.builder())
             .build();
 
     log.info("Railway storage initialized with bucket: {}", bucketName);

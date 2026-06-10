@@ -105,6 +105,11 @@
       <artifactId>s3</artifactId>
       <version>2.20.26</version>
     </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>url-connection-client</artifactId>
+      <version>2.20.26</version>
+    </dependency>
 
     <!-- Dotenv support for loading .env files -->
     <dependency>
