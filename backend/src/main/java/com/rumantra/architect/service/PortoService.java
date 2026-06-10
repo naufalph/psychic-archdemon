@@ -347,9 +347,9 @@ public class PortoService {
   private PortoDetailResponse mapToPortoDetailResponse(PortoDetail detail) {
     return PortoDetailResponse.builder()
         .id(detail.getId())
-        .originalUrl(detail.getOriginalUrl())
-        .largeUrl(detail.getLargeUrl())
-        .mediumUrl(detail.getMediumUrl())
+        .originalUrl(fileStorageService.getPublicUrl(detail.getOriginalUrl()))
+        .largeUrl(fileStorageService.getPublicUrl(detail.getLargeUrl()))
+        .mediumUrl(fileStorageService.getPublicUrl(detail.getMediumUrl()))
         .displayOrder(detail.getDisplayOrder())
         .build();
   }

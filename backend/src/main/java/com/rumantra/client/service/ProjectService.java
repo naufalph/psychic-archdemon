@@ -568,7 +568,7 @@ public class ProjectService {
     return ProjectFileDto.builder()
         .id(projectFile.getId())
         .fileName(projectFile.getFileName())
-        .filePath(projectFile.getFilePath())
+        .filePath(fileStorageService.getPublicUrl(projectFile.getFilePath()))
         .fileType(projectFile.getFileType())
         .fileSize(projectFile.getFileSize())
         .uploadedAt(projectFile.getUploadedAt())

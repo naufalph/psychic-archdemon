@@ -20,12 +20,13 @@ public interface FileStorageService {
 
   void deleteSingleImage(String url);
 
-  /**
-   * Get the public URL for an image path. For local storage, this converts file path to accessible
-   * URL. For cloud storage, this might return the path as-is.
-   *
-   * @param path The file path or identifier
-   * @return The public URL to access the image
-   */
   String getImageUrl(String path);
+
+  default String getPublicUrl(String storedPath) {
+    return storedPath;
+  }
+
+  default byte[] downloadFile(String objectKey) {
+    throw new StorageException("Direct download not supported for this storage backend");
+  }
 }

@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +33,8 @@ import software.amazon.awssdk.services.s3.model.DeleteObjectsRequest;
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignRequest;
 
 /**
  * Railway Storage implementation of FileStorageService. Uploads files to Railway's S3-compatible
@@ -43,6 +46,7 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 public class RailwayStorageService implements FileStorageService {
 
   private final S3Client s3Client;
+  private final S3Presigner s3Presigner;
   private final String bucketName;
   private final String baseUrl;
 
@@ -56,16 +60,37 @@ public class RailwayStorageService implements FileStorageService {
     this.bucketName = bucketName;
     this.baseUrl = "https://" + bucketName + ".storage.railway.app";
 
+    StaticCredentialsProvider credentials =
+        StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey));
+
     this.s3Client =
         S3Client.builder()
             .region(Region.of(region))
             .endpointOverride(URI.create(endpoint))
-            .credentialsProvider(
-                StaticCredentialsProvider.create(AwsBasicCredentials.create(accessKey, secretKey)))
+            .credentialsProvider(credentials)
             .httpClientBuilder(UrlConnectionHttpClient.builder())
             .build();
 
+    this.s3Presigner =
+        S3Presigner.builder()
+            .region(Region.of(region))
+            .endpointOverride(URI.create(endpoint))
+            .credentialsProvider(credentials)
+            .build();
+
     log.info("Railway storage initialized with bucket: {}", bucketName);
+  }
+
+  @Override
+  public String getPublicUrl(String storedPath) {
+    String extracted = extractObjectKeyFromUrl(storedPath);
+    String objectKey = (extracted == null || extracted.isEmpty()) ? storedPath : extracted;
+    GetObjectPresignRequest presignRequest =
+        GetObjectPresignRequest.builder()
+            .signatureDuration(Duration.ofHours(1))
+            .getObjectRequest(r -> r.bucket(bucketName).key(objectKey))
+            .build();
+    return s3Presigner.presignGetObject(presignRequest).url().toString();
   }
 
   @Override

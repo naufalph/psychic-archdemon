@@ -120,7 +120,7 @@ public class BidAttachmentService {
     return BidAttachmentResponse.builder()
         .id(attachment.getId())
         .fileType(attachment.getFileType())
-        .fileUrl(attachment.getFileUrl())
+        .fileUrl(fileStorageService.getPublicUrl(attachment.getFileUrl()))
         .fileName(attachment.getFileName())
         .fileSize(attachment.getFileSize())
         .displayOrder(attachment.getDisplayOrder())

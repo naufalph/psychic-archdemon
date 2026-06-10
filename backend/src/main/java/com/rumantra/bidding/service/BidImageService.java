@@ -112,7 +112,7 @@ public class BidImageService {
     return BidImageResponse.builder()
         .id(image.getId())
         .imageType(image.getImageType())
-        .imageUrl(image.getImageUrl())
+        .imageUrl(fileStorageService.getPublicUrl(image.getImageUrl()))
         .displayOrder(image.getDisplayOrder())
         .fileName(image.getFileName())
         .fileSize(image.getFileSize())

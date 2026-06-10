@@ -842,7 +842,7 @@ public class PhasePaymentService {
   private DeliverableResponse toDeliverableResponse(PhaseDeliverable d) {
     return DeliverableResponse.builder()
         .id(d.getId())
-        .filePath(d.getFilePath())
+        .filePath(fileStorageService.getPublicUrl(d.getFilePath()))
         .fileType(d.getFileType())
         .description(d.getDescription())
         .revisionRound(d.getRevisionRound())

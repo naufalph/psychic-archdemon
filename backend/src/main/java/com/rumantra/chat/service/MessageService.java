@@ -246,7 +246,7 @@ public class MessageService {
             MessageFileResponse.builder()
                 .id(messageFile.getId())
                 .fileName(messageFile.getFileName())
-                .fileUrl(messageFile.getFileUrl())
+                .fileUrl(fileStorageService.getPublicUrl(messageFile.getFileUrl()))
                 .fileSize(messageFile.getFileSize())
                 .build();
       }
