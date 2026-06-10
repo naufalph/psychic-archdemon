@@ -1,172 +1,263 @@
-# Architect Authentication API Documentation
+# Architect API Documentation
 
 ## Overview
-This document describes the authentication APIs for the Architect module in the Rumantra platform.
+This document describes the API endpoints for the Architect module in the Rumantra platform.
 
-## Base URL
-```
-http://localhost:8080/rmtr/architects
-```
+**Base URL:** `http://localhost:8080/rmtr/architects`
 
-## Authentication
-Protected endpoints require a JWT token in the Authorization header:
-```
-Authorization: Bearer <token>
-```
+---
 
 ## Endpoints
 
-### 1. Register (Create Architect Account)
-**Endpoint:** `POST /rmtr/architects/register`  
-**Authentication:** Not required  
-**Description:** Creates a new architect account with user credentials and architect profile.
+---
+
+### 1. Register Architect
+
+**POST** `/rmtr/architects/register`
+
+Creates a new architect account. This endpoint requires an authenticated base user — call `POST /rmtr/users/register` and verify email first, then call this endpoint to activate the ARCHITECT role.
+
+```bash
+curl --location 'http://localhost:8080/rmtr/architects/register' \
+--header 'Authorization: Bearer {{JWT_TOKEN}}' \
+--header 'Content-Type: application/json' \
+--data '{
+  "userName": "pt_karya_desain",
+  "email": "info@karyadesain.com",
+  "password": "SecurePass123!",
+  "companyName": "PT Karya Desain",
+  "companySite": "https://karyadesain.com",
+  "contactName": "Budi Santoso",
+  "phoneNum": "08123456789012345",
+  "category": "Residential",
+  "ktpNum": "3273012345678901",
+  "npwp": "123456789012345"
+}'
+```
 
 **Request Body:**
-```json
-{
-  "userName": "john_architect",
-  "email": "john@architecture.com",
-  "password": "SecurePass123!",
-  "companyName": "John Architecture Studio",
-  "companySite": "https://johnarchitecture.com",
-  "contactName": "John Doe",
-  "ktpNum": "1234567890123456",
-  "npwp": "123456789012345"
-}
-```
+| Field | Type | Required | Validation |
+|-------|------|----------|-----------|
+| `userName` | String | Yes | 3–50 chars, alphanumeric + underscore |
+| `email` | String | Yes | Valid email |
+| `password` | String | Yes | Min 8 chars, must include digit, lowercase, uppercase, special char |
+| `companyName` | String | Yes | Max 255 chars |
+| `companySite` | String | No | Valid URL, max 255 chars |
+| `contactName` | String | Yes | Max 255 chars |
+| `phoneNum` | String | Yes | Exactly 16 digits |
+| `category` | String | Yes | Architect specialization category |
+| `ktpNum` | String | Yes | Exactly 16 digits |
+| `npwp` | String | Yes | 15–16 digits |
 
-**Validation Rules:**
-- `userName`: Required, 3-50 characters, alphanumeric and underscore only
-- `email`: Required, valid email format
-- `password`: Required, min 8 characters, must contain uppercase, lowercase, digit, and special character
-- `companyName`: Required, max 255 characters
-- `companySite`: Optional, valid URL format
-- `contactName`: Required, max 255 characters
-- `ktpNum`: Required, exactly 16 digits
-- `npwp`: Required, 15-16 digits
-
-**Success Response (201 Created):**
+**Expected Response (200 OK):**
 ```json
 {
   "success": true,
-  "message": "Architect registered successfully!",
   "data": {
     "id": 1,
-    "userId": 1,
-    "companyName": "John Architecture Studio",
-    "companySite": "https://johnarchitecture.com",
-    "contactName": "John Doe",
-    "ktpNum": "1234567890123456",
+    "userId": 42,
+    "email": "info@karyadesain.com",
+    "companyName": "PT Karya Desain",
+    "companySite": "https://karyadesain.com",
+    "category": "Residential",
+    "phoneNumber": "08123456789012345",
+    "contactName": "Budi Santoso",
+    "ktpNum": "3273012345678901",
     "ktpVerified": false,
     "npwp": "123456789012345",
     "npwpVerified": false,
-    "bidLeft": 10,
+    "fullnameKtp": null,
+    "phoneVerified": false,
+    "bidLeft": 0,
     "successMatch": 0,
-    "successProject": 0
-  }
+    "successProject": 0,
+    "city": null,
+    "experienceRange": null,
+    "philosophy": null,
+    "expertise": [],
+    "needsOnboarding": true,
+    "onboardingCompletedAt": null
+  },
+  "timestamp": "2026-06-01T10:00:00"
 }
 ```
 
-**Error Response (400 Bad Request):**
-```json
-{
-  "success": false,
-  "message": "Username is already taken!"
-}
+---
+
+### 2. Get Architect Profile
+
+**GET** `/rmtr/architects/profile`
+
+Returns the authenticated architect's full profile.
+
+```bash
+curl --location 'http://localhost:8080/rmtr/architects/profile' \
+--header 'Authorization: Bearer {{JWT_TOKEN}}'
 ```
 
-### 3. Update Architect Profile
-**Endpoint:** `PUT /rmtr/architects/profile`  
-**Authentication:** Required  
-**Description:** Updates architect profile information. Note that some fields like `ktpVerified`, `npwpVerified`, `bidLeft`, `successMatch`, and `successProject` cannot be updated by the user.
+Returns `ApiResponse<ArchitectDto>`.
 
-**Request Headers:**
-```
-Authorization: Bearer <token>
-```
+---
 
-**Request Body (all fields optional):**
-```json
-{
-  "companyName": "Updated Architecture Studio",
-  "companySite": "https://newsite.com",
-  "contactName": "John Updated",
-  "ktpNum": "9876543210987654",
-  "npwp": "987654321098765",
-  "email": "newemail@architecture.com",
-  "password": "NewSecurePass123!"
-}
-```
+### 3. Update Profile
 
-**Success Response (200 OK):**
-```json
-{
-  "success": true,
-  "message": "Profile updated successfully!",
-  "data": {
-    "id": 1,
-    "userId": 1,
-    "companyName": "Updated Architecture Studio",
-    "companySite": "https://newsite.com",
-    "contactName": "John Updated",
-    "ktpNum": "9876543210987654",
-    "ktpVerified": false,
-    "npwp": "987654321098765",
-    "npwpVerified": false,
-    "bidLeft": 10,
-    "successMatch": 0,
-    "successProject": 0
-  }
-}
+**PUT** `/rmtr/architects/profile`
+
+Updates the architect's editable profile fields.
+
+```bash
+curl --location --request PUT 'http://localhost:8080/rmtr/architects/profile' \
+--header 'Authorization: Bearer {{JWT_TOKEN}}' \
+--header 'Content-Type: application/json' \
+--data '{
+  "companyName": "PT Karya Desain Nusantara",
+  "companySite": "https://karyadesain.co.id",
+  "contactName": "Budi Santoso",
+  "phoneNum": "08123456789012345",
+  "category": "Commercial",
+  "ktpNum": "3273012345678901",
+  "npwp": "123456789012345",
+  "fullnameKtp": "Budi Santoso Wijaya"
+}'
 ```
 
-### 4. Get Profile
-**Endpoint:** `GET /rmtr/architects/profile`  
-**Authentication:** Required  
-**Description:** Retrieves the authenticated architect's profile information.
+**Request Body (all optional):**
+| Field | Type | Validation |
+|-------|------|-----------|
+| `companyName` | String | Max 255 chars |
+| `companySite` | String | Valid URL, max 255 chars |
+| `contactName` | String | Max 255 chars |
+| `phoneNum` | String | 8–16 digits |
+| `category` | String | |
+| `ktpNum` | String | Exactly 16 digits |
+| `npwp` | String | 15–16 digits |
+| `fullnameKtp` | String | Max 255 chars |
 
-**Request Headers:**
+Returns `ApiResponse<ArchitectDto>`.
+
+---
+
+### 4. Update Onboarding Profile
+
+**PUT** `/rmtr/architects/onboarding-profile`
+
+Updates the extended profile shown on the architect's public page. Called after initial registration to complete onboarding.
+
+```bash
+curl --location --request PUT 'http://localhost:8080/rmtr/architects/onboarding-profile' \
+--header 'Authorization: Bearer {{JWT_TOKEN}}' \
+--header 'Content-Type: application/json' \
+--data '{
+  "companyName": "PT Karya Desain",
+  "city": "Jakarta",
+  "experienceRange": "5-10 years",
+  "philosophy": "We believe architecture should enhance daily life through thoughtful space design.",
+  "expertise": ["Residential", "Interior Design", "Sustainable Architecture"]
+}'
 ```
-Authorization: Bearer <token>
+
+**Request Body:**
+| Field | Type | Notes |
+|-------|------|-------|
+| `companyName` | String | |
+| `city` | String | City where the firm is based |
+| `experienceRange` | String | e.g. `"5-10 years"` |
+| `philosophy` | String | Design philosophy statement |
+| `expertise` | List\<String\> | List of specialization areas |
+
+Returns `ApiResponse<ArchitectDto>`.
+
+---
+
+### 5. Send Phone OTP
+
+**POST** `/rmtr/architects/phone/send-otp`
+
+Sends an OTP to the provided phone number for verification.
+
+```bash
+curl --location 'http://localhost:8080/rmtr/architects/phone/send-otp' \
+--header 'Authorization: Bearer {{JWT_TOKEN}}' \
+--header 'Content-Type: application/json' \
+--data '{
+  "phoneNumber": "+6281234567890"
+}'
 ```
 
-**Success Response (200 OK):**
-```json
-{
-  "success": true,
-  "message": "Profile retrieved successfully!",
-  "data": {
-    "id": 1,
-    "userId": 1,
-    "companyName": "John Architecture Studio",
-    "companySite": "https://johnarchitecture.com",
-    "contactName": "John Doe",
-    "ktpNum": "1234567890123456",
-    "ktpVerified": false,
-    "npwp": "123456789012345",
-    "npwpVerified": false,
-    "bidLeft": 10,
-    "successMatch": 0,
-    "successProject": 0
-  }
-}
+**Request Body:**
+| Field | Type | Required |
+|-------|------|----------|
+| `phoneNumber` | String | Yes |
+
+Returns `ApiResponse<Void>` on success.
+
+---
+
+### 6. Verify Phone OTP
+
+**POST** `/rmtr/architects/phone/verify-otp`
+
+Verifies the OTP entered by the architect. Sets `phoneVerified = true` on success.
+
+```bash
+curl --location 'http://localhost:8080/rmtr/architects/phone/verify-otp' \
+--header 'Authorization: Bearer {{JWT_TOKEN}}' \
+--header 'Content-Type: application/json' \
+--data '{
+  "phoneNumber": "+6281234567890",
+  "code": "123456"
+}'
 ```
 
-## Error Codes
-- `400 Bad Request`: Invalid input data or business rule violation
-- `401 Unauthorized`: Invalid credentials or missing/invalid token
-- `404 Not Found`: Resource not found
-- `500 Internal Server Error`: Server error
+**Request Body:**
+| Field | Type | Validation |
+|-------|------|-----------|
+| `phoneNumber` | String | Required |
+| `code` | String | Required, exactly 6 digits |
 
-## Notes
-1. The JWT token expires after 24 hours (86400000 ms)
-2. Fields that cannot be edited by users:
-   - `ktpVerified`: KTP verification status (admin only)
-   - `npwpVerified`: NPWP verification status (admin only)
-   - `bidLeft`: Number of bids remaining (system managed)
-   - `successMatch`: Number of successful matches (system managed)
-   - `successProject`: Number of successful projects (system managed)
-3. Username must be unique across the system
-4. Email must be unique across the system
-5. KTP number must be unique across all architects
-6. NPWP must be unique across all architects
+Returns `ApiResponse<ArchitectDto>` with `phoneVerified: true`.
+
+---
+
+## DTO Reference
+
+### ArchitectDto
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `id` | Long | Architect record ID |
+| `userId` | Long | Base user ID |
+| `email` | String | |
+| `companyName` | String | |
+| `companySite` | String | |
+| `category` | String | Specialization category |
+| `phoneNumber` | String | |
+| `contactName` | String | |
+| `ktpNum` | String | |
+| `ktpVerified` | boolean | Admin-verified KTP |
+| `npwp` | String | |
+| `npwpVerified` | boolean | Admin-verified NPWP |
+| `fullnameKtp` | String | Full name as on KTP |
+| `phoneVerified` | boolean | Phone OTP verified |
+| `bidLeft` | int | Remaining bid tokens |
+| `successMatch` | int | Number of accepted bids |
+| `successProject` | int | Number of completed projects |
+| `city` | String | |
+| `experienceRange` | String | |
+| `philosophy` | String | |
+| `expertise` | List\<String\> | |
+| `needsOnboarding` | Boolean | True until onboarding-profile is completed |
+| `onboardingCompletedAt` | Timestamp | |
+
+---
+
+## Endpoint Summary
+
+| Method | Path | Auth Required | Description |
+|--------|------|--------------|-------------|
+| POST | `/rmtr/architects/register` | Yes (authenticated user) | Create architect profile |
+| GET | `/rmtr/architects/profile` | Yes (ARCHITECT) | Get own profile |
+| PUT | `/rmtr/architects/profile` | Yes (ARCHITECT) | Update profile fields |
+| PUT | `/rmtr/architects/onboarding-profile` | Yes (ARCHITECT) | Update extended onboarding fields |
+| POST | `/rmtr/architects/phone/send-otp` | Yes (ARCHITECT) | Send phone verification OTP |
+| POST | `/rmtr/architects/phone/verify-otp` | Yes (ARCHITECT) | Verify phone OTP |

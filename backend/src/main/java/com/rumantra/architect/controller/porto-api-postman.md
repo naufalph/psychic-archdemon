@@ -1,306 +1,262 @@
-# Porto API - cURL Commands for Postman Import
+# Porto (Portfolio) API - cURL Commands for Postman/Bruno
 
 ## Prerequisites
-- Replace `{{JWT_TOKEN}}` with your actual JWT token from architect login
-- Replace `{{ARCHITECT_ID}}` with your architect ID (e.g., 1)
-- Replace `{{PORTO_ID}}` with the portfolio ID from create response
-- Replace `{{IMAGE_ID}}` with the image ID from portfolio response
-- Replace image file paths with actual image files on your system
+- Replace `{{JWT_TOKEN}}` with your actual JWT token (architect)
+- Replace `{{PORTO_ID}}` with the portfolio ID from response
+- Replace `{{IMAGE_ID}}` with the image ID from response
+- All endpoints require `ROLE_ARCHITECT`
+
+**Base URL:** `http://localhost:8080/rmtr/porto`
+
+**Important:** The architect ID is derived from the authenticated user's JWT — do NOT pass it as a path or body parameter.
 
 ---
 
-## 1. Create Portfolio with Images
+## API Endpoints
 
-**POST** `/api/architects/{{ARCHITECT_ID}}/portos`
+---
+
+### 1. Create Portfolio
+
+**POST** `/rmtr/porto`
+
+**Content-Type:** `multipart/form-data`
 
 ```bash
-curl --location 'http://localhost:8080/api/architects/1/portos' \
+# With images
+curl --location 'http://localhost:8080/rmtr/porto' \
 --header 'Authorization: Bearer {{JWT_TOKEN}}' \
---form 'title="Modern Villa Design"' \
---form 'description="A stunning modern villa with contemporary architecture and sustainable features"' \
---form 'location="Jakarta, Indonesia"' \
---form 'year="2024"' \
---form 'category="RESIDENTIAL"' \
---form 'images=@"/home/naufal-hadi/Downloads/nami.jpg"' \
+--form 'title="Modern Residential House"' \
+--form 'description="A 250sqm family home in South Jakarta featuring biophilic design principles."' \
+--form 'projectDate="2025-03-15"' \
+--form 'location="Jakarta Selatan"' \
+--form 'projectType="Residential"' \
 --form 'isBuilt="true"' \
---form 'projectDate="2025-10-10"'
-```
+--form 'images=@"/home/user/photos/exterior.jpg"' \
+--form 'images=@"/home/user/photos/interior.jpg"'
 
-**Expected Response (201 Created):**
-```json
-{
-  "success": true,
-  "message": null,
-  "data": [
-    {
-      "id": 1,
-      "architectId": 1,
-      "title": "Modern Villa Design",
-      "description": "A stunning modern villa with contemporary architecture and sustainable features",
-      "projectDate": "2025-10-10",
-      "location": "Jakarta, Indonesia",
-      "projectType": null,
-      "firstImage": {
-        "id": 1,
-        "originalUrl": "http://localhost:8080/uploads/1/1/89eb13e4-6073-49bf-902e-6b3481cf4d71_original.jpg",
-        "largeUrl": "http://localhost:8080/uploads/1/1/89eb13e4-6073-49bf-902e-6b3481cf4d71_large.jpg",
-        "mediumUrl": "http://localhost:8080/uploads/1/1/89eb13e4-6073-49bf-902e-6b3481cf4d71_medium.jpg",
-        "displayOrder": 0
-      },
-      "built": true
-    }
-  ],
-  "timestamp": "2025-10-19T15:36:25.550021306"
-}
-```
-
----
-
-## 2. Create Portfolio WITHOUT Images
-
-**POST** `/api/architects/{{ARCHITECT_ID}}/portos`
-
-```bash
-curl --location 'http://localhost:8080/api/architects/1/portos' \
+# Without images
+curl --location 'http://localhost:8080/rmtr/porto' \
 --header 'Authorization: Bearer {{JWT_TOKEN}}' \
---form 'title="Office Building Design"' \
---form 'description="Modern commercial office space"' \
---form 'location="Surabaya, Indonesia"' \
---form 'year="2023"' \
---form 'category="COMMERCIAL"'
+--form 'title="Office Tower Concept"' \
+--form 'projectDate="2024-08-01"' \
+--form 'isBuilt="false"'
 ```
 
----
-
-## 3. Get All Portfolios for an Architect
-
-**GET** `/api/architects/{{ARCHITECT_ID}}/portos`
-
-```bash
-curl --location 'http://localhost:8080/api/architects/1/portos' \
---header 'Authorization: Bearer {{JWT_TOKEN}}'
-```
+**Form Fields:**
+| Field | Type | Required | Notes |
+|-------|------|----------|-------|
+| `title` | String | Yes | |
+| `description` | String | No | |
+| `projectDate` | LocalDate (`YYYY-MM-DD`) | Yes | |
+| `location` | String | No | |
+| `projectType` | String | No | e.g. "Residential", "Commercial" |
+| `isBuilt` | Boolean | Yes | `true` = built project, `false` = concept/unbuilt |
+| `images` | MultipartFile[] | No | Multiple files accepted |
 
 **Expected Response (200 OK):**
 ```json
 {
   "success": true,
-  "message": null,
-  "data": [
-    {
-      "id": 3,
-      "architectId": 1,
-      "title": "Modern Villa Design",
-      "description": "A stunning modern villa with contemporary architecture and sustainable features",
-      "projectDate": "2025-10-10",
-      "location": "Jakarta, Indonesia",
-      "projectType": null,
-      "firstImage": {
-        "id": 3,
-        "originalUrl": "http://localhost:8080/uploads/1/3/83ef7d70-8938-46a6-a1e3-0b78b34202a8_original.jpg",
-        "largeUrl": "http://localhost:8080/uploads/1/3/83ef7d70-8938-46a6-a1e3-0b78b34202a8_large.jpg",
-        "mediumUrl": "http://localhost:8080/uploads/1/3/83ef7d70-8938-46a6-a1e3-0b78b34202a8_medium.jpg",
-        "displayOrder": 0
-      },
-      "built": true
-    }
-  ],
-  "timestamp": "2025-10-19T22:22:13.849299681"
-}
-```
-
----
-
-## 4. Get Single Portfolio by ID
-
-**GET** `/api/portos/{{PORTO_ID}}`
-
-```bash
-curl --location 'http://localhost:8080/api/portos/1' \
---header 'Authorization: Bearer {{JWT_TOKEN}}'
-```
-
-**Expected Response (200 OK):**
-```json
-{
-  "success": true,
-  "message": null,
   "data": {
-    "id": 3,
-    "architectId": 1,
-    "title": "Modern Villa Design",
-    "description": "A stunning modern villa with contemporary architecture and sustainable features",
-    "projectDate": "2025-10-10",
-    "location": "Jakarta, Indonesia",
-    "projectType": null,
+    "id": 1,
+    "architectId": 42,
+    "title": "Modern Residential House",
+    "description": "A 250sqm family home in South Jakarta.",
+    "projectDate": "2025-03-15",
+    "location": "Jakarta Selatan",
+    "projectType": "Residential",
+    "isBuilt": true,
     "images": [
       {
-        "id": 3,
-        "originalUrl": "http://localhost:8080/uploads/1/3/83ef7d70-8938-46a6-a1e3-0b78b34202a8_original.jpg",
-        "largeUrl": "http://localhost:8080/uploads/1/3/83ef7d70-8938-46a6-a1e3-0b78b34202a8_large.jpg",
-        "mediumUrl": "http://localhost:8080/uploads/1/3/83ef7d70-8938-46a6-a1e3-0b78b34202a8_medium.jpg",
-        "displayOrder": 0
-      },
-      {
-        "id": 4,
-        "originalUrl": "http://localhost:8080/uploads/1/3/cac1208f-c5ad-44f9-98cd-aa0194f1b203_original.jpg",
-        "largeUrl": "http://localhost:8080/uploads/1/3/cac1208f-c5ad-44f9-98cd-aa0194f1b203_large.jpg",
-        "mediumUrl": "http://localhost:8080/uploads/1/3/cac1208f-c5ad-44f9-98cd-aa0194f1b203_medium.jpg",
+        "id": 10,
+        "originalUrl": "https://storage.example.com/porto/1/exterior_orig.jpg",
+        "largeUrl": "https://storage.example.com/porto/1/exterior_large.jpg",
+        "mediumUrl": "https://storage.example.com/porto/1/exterior_medium.jpg",
         "displayOrder": 1
       }
-    ],
-    "built": true
+    ]
   },
-  "timestamp": "2025-10-19T22:24:35.118219194"
+  "timestamp": "2026-06-01T10:00:00"
 }
 ```
 
 ---
 
-## 5. Update Portfolio Metadata
+### 2. Get My Portfolios
 
-**PUT** `/api/portos/{{PORTO_ID}}`
+**GET** `/rmtr/porto`
+
+Returns all portfolios for the authenticated architect.
 
 ```bash
-curl --location --request PUT 'http://localhost:8080/api/portos/3' \
+curl --location 'http://localhost:8080/rmtr/porto' \
+--header 'Authorization: Bearer {{JWT_TOKEN}}'
+```
+
+**Expected Response (200 OK):** `ApiResponse<List<PortoListResponse>>`
+
+Each item in the list:
+```json
+{
+  "id": 1,
+  "architectId": 42,
+  "title": "Modern Residential House",
+  "description": "A 250sqm family home in South Jakarta.",
+  "projectDate": "2025-03-15",
+  "location": "Jakarta Selatan",
+  "projectType": "Residential",
+  "isBuilt": true,
+  "images": [
+    {
+      "id": 10,
+      "originalUrl": "https://storage.example.com/porto/1/img_orig.jpg",
+      "largeUrl": "https://storage.example.com/porto/1/img_large.jpg",
+      "mediumUrl": "https://storage.example.com/porto/1/img_medium.jpg",
+      "displayOrder": 1
+    }
+  ]
+}
+```
+
+---
+
+### 3. Get Portfolio by ID
+
+**GET** `/rmtr/porto/{{PORTO_ID}}`
+
+```bash
+curl --location 'http://localhost:8080/rmtr/porto/1' \
+--header 'Authorization: Bearer {{JWT_TOKEN}}'
+```
+
+Returns `ApiResponse<PortoResponse>` (same structure as create response).
+
+**Authorization:** Only the portfolio owner can access this endpoint.
+
+---
+
+### 4. Update Portfolio
+
+**PUT** `/rmtr/porto/{{PORTO_ID}}`
+
+All fields are optional — only provided fields are updated.
+
+```bash
+curl --location --request PUT 'http://localhost:8080/rmtr/porto/1' \
 --header 'Authorization: Bearer {{JWT_TOKEN}}' \
 --header 'Content-Type: application/json' \
 --data '{
-  "title": "Modern Villa Design - Updated",
-  "description": "An award-winning modern villa with contemporary architecture, sustainable features, and eco-friendly materials",
-  "location": "Bali, Indonesia CHANGE",
-  "year": 2024,
-  "category": "RESIDENTIAL"
+  "title": "Modern Residential House - Revised",
+  "description": "Updated description with award recognition.",
+  "projectDate": "2025-06-01",
+  "location": "Jakarta Selatan, DKI Jakarta",
+  "projectType": "Residential",
+  "isBuilt": true
 }'
 ```
 
-**Expected Response (200 OK):**
-```json
-{
-  "success": true,
-  "message": null,
-  "data": {
-    "id": 3,
-    "architectId": 1,
-    "title": "Modern Villa Design - Updated",
-    "description": "An award-winning modern villa with contemporary architecture, sustainable features, and eco-friendly materials",
-    "projectDate": "2025-10-10",
-    "location": "Bali, Indonesia CHANGE",
-    "projectType": null,
-    "images": [
-      {
-        "id": 3,
-        "originalUrl": "http://localhost:8080/uploads/1/3/83ef7d70-8938-46a6-a1e3-0b78b34202a8_original.jpg",
-        "largeUrl": "http://localhost:8080/uploads/1/3/83ef7d70-8938-46a6-a1e3-0b78b34202a8_large.jpg",
-        "mediumUrl": "http://localhost:8080/uploads/1/3/83ef7d70-8938-46a6-a1e3-0b78b34202a8_medium.jpg",
-        "displayOrder": 0
-      },
-      {
-        "id": 4,
-        "originalUrl": "http://localhost:8080/uploads/1/3/cac1208f-c5ad-44f9-98cd-aa0194f1b203_original.jpg",
-        "largeUrl": "http://localhost:8080/uploads/1/3/cac1208f-c5ad-44f9-98cd-aa0194f1b203_large.jpg",
-        "mediumUrl": "http://localhost:8080/uploads/1/3/cac1208f-c5ad-44f9-98cd-aa0194f1b203_medium.jpg",
-        "displayOrder": 1
-      }
-    ],
-    "built": true
-  },
-  "timestamp": "2025-10-19T22:27:47.084246996"
-}
+**Request Body (all optional):**
+| Field | Type |
+|-------|------|
+| `title` | String |
+| `description` | String |
+| `projectDate` | LocalDate |
+| `location` | String |
+| `projectType` | String |
+| `isBuilt` | Boolean |
+
+Returns `ApiResponse<PortoResponse>`.
+
+---
+
+### 5. Delete Portfolio
+
+**DELETE** `/rmtr/porto/{{PORTO_ID}}`
+
+```bash
+curl --location --request DELETE 'http://localhost:8080/rmtr/porto/1' \
+--header 'Authorization: Bearer {{JWT_TOKEN}}'
 ```
 
 ---
 
-## 6. Add Images to Existing Portfolio
+### 6. Add Images to Portfolio
 
-**POST** `/api/portos/{{PORTO_ID}}/images`
+**POST** `/rmtr/porto/{{PORTO_ID}}/images`
+
+Upload additional images to an existing portfolio.
 
 ```bash
-curl --location 'http://localhost:8080/api/portos/3/images' \
+curl --location 'http://localhost:8080/rmtr/porto/1/images' \
 --header 'Authorization: Bearer {{JWT_TOKEN}}' \
---form 'images=@"/home/naufal-hadi/Desktop/safa/luffy.jpg"'
+--form 'images=@"/home/user/photos/new_angle.jpg"' \
+--form 'images=@"/home/user/photos/detail.jpg"'
 ```
 
-**Expected Response (200 OK):**
-```json
-{
-  "success": true,
-  "message": "Images added successfully!",
-  "data": {
-    "id": 3,
-    "architectId": 1,
-    "title": "Modern Villa Design - Updated",
-    "description": "An award-winning modern villa with contemporary architecture, sustainable features, and eco-friendly materials",
-    "projectDate": "2025-10-10",
-    "location": "Bali, Indonesia CHANGE",
-    "projectType": null,
-    "images": [
-      {
-        "id": 3,
-        "originalUrl": "http://localhost:8080/uploads/1/3/83ef7d70-8938-46a6-a1e3-0b78b34202a8_original.jpg",
-        "largeUrl": "http://localhost:8080/uploads/1/3/83ef7d70-8938-46a6-a1e3-0b78b34202a8_large.jpg",
-        "mediumUrl": "http://localhost:8080/uploads/1/3/83ef7d70-8938-46a6-a1e3-0b78b34202a8_medium.jpg",
-        "displayOrder": 0
-      },
-      {
-        "id": 4,
-        "originalUrl": "http://localhost:8080/uploads/1/3/cac1208f-c5ad-44f9-98cd-aa0194f1b203_original.jpg",
-        "largeUrl": "http://localhost:8080/uploads/1/3/cac1208f-c5ad-44f9-98cd-aa0194f1b203_large.jpg",
-        "mediumUrl": "http://localhost:8080/uploads/1/3/cac1208f-c5ad-44f9-98cd-aa0194f1b203_medium.jpg",
-        "displayOrder": 1
-      },
-      {
-        "id": 5,
-        "originalUrl": "http://localhost:8080/uploads/1/3/335de1e2-3807-44fc-a76c-97a6f8adcc0b_original.jpg",
-        "largeUrl": "http://localhost:8080/uploads/1/3/335de1e2-3807-44fc-a76c-97a6f8adcc0b_large.jpg",
-        "mediumUrl": "http://localhost:8080/uploads/1/3/335de1e2-3807-44fc-a76c-97a6f8adcc0b_medium.jpg",
-        "displayOrder": 2
-      }
-    ],
-    "built": true
-  },
-  "timestamp": "2025-10-19T22:55:28.279344334"
-}
+Returns `ApiResponse<PortoResponse>` with the full updated portfolio including all images.
+
+---
+
+### 7. Delete Portfolio Image
+
+**DELETE** `/rmtr/porto/images/{{IMAGE_ID}}`
+
+```bash
+curl --location --request DELETE 'http://localhost:8080/rmtr/porto/images/10' \
+--header 'Authorization: Bearer {{JWT_TOKEN}}'
 ```
 
 ---
 
-## 7. Delete Specific Image
+## DTO Reference
 
-**DELETE** `/api/portos/images/{{IMAGE_ID}}`
+### PortoResponse / PortoListResponse
 
-```bash
-curl --location --request DELETE 'http://localhost:8080/api/portos/images/1' \
---header 'Authorization: Bearer {{JWT_TOKEN}}'
-```
+Both have identical fields:
 
-**Expected Response (200 OK):**
-```json
-{
-  "success": true,
-  "message": "Image deleted successfully!",
-  "data": null,
-  "timestamp": "2025-10-19T22:57:01.813040026"
-}
-```
+| Field | Type |
+|-------|------|
+| `id` | Long |
+| `architectId` | Long |
+| `title` | String |
+| `description` | String |
+| `projectDate` | LocalDate |
+| `location` | String |
+| `projectType` | String |
+| `isBuilt` | boolean |
+| `images` | List\<PortoDetailResponse\> |
+
+### PortoDetailResponse (image item)
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `id` | Long | |
+| `originalUrl` | String | Full-resolution image |
+| `largeUrl` | String | Resized to 1920px width |
+| `mediumUrl` | String | Resized to 800px width |
+| `displayOrder` | int | 1-based ordering |
 
 ---
 
-## 8. Delete Entire Portfolio
+## Testing Sequence
 
-**DELETE** `/api/portos/{{PORTO_ID}}`
+1. **Login as Architect** → Get JWT token
+2. **Create Portfolio** → `POST /rmtr/porto` with images
+3. **View My Portfolios** → `GET /rmtr/porto`
+4. **View Single Portfolio** → `GET /rmtr/porto/{id}`
+5. **Update Portfolio** → `PUT /rmtr/porto/{id}`
+6. **Add More Images** → `POST /rmtr/porto/{id}/images`
+7. **Delete an Image** → `DELETE /rmtr/porto/images/{imageId}`
+8. **Delete Portfolio** → `DELETE /rmtr/porto/{id}`
 
-```bash
-curl --location --request DELETE 'http://localhost:8080/api/portos/1' \
---header 'Authorization: Bearer {{JWT_TOKEN}}'
-```
+---
 
-**Expected Response (200 OK):**
-```json
-{
-  "success": true,
-  "message": "Portfolio deleted successfully!",
-  "data": null,
-  "timestamp": "2025-10-19T22:58:31.982084524"
-}
-```
+## Error Responses
+
+| Status | Reason |
+|--------|--------|
+| `401 Unauthorized` | Invalid or expired JWT token |
+| `403 Forbidden` | Not your portfolio |
+| `404 Not Found` | Portfolio or image not found |
+| `400 Bad Request` | Validation error (missing required fields) |

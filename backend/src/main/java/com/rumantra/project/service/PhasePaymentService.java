@@ -279,6 +279,39 @@ public class PhasePaymentService {
   }
 
   @Transactional
+  public void handleInvoiceExpired(XenditInvoiceWebhook webhook) {
+    String externalId = webhook.getExternalId();
+
+    PhasePayment payment =
+        phasePaymentRepository
+            .findByXenditReferenceId(externalId)
+            .filter(p -> p.getProjectPhase() != null)
+            .orElse(null);
+
+    if (payment == null) {
+      log.info("No project-phase payment found for expired invoice: {}", externalId);
+      return;
+    }
+
+    if (payment.getStatus() != PhasePaymentStatus.PENDING) {
+      log.info("Skipping expired webhook for non-pending payment: {}", payment.getId());
+      return;
+    }
+
+    payment.setStatus(PhasePaymentStatus.EXPIRED);
+    phasePaymentRepository.save(payment);
+
+    ProjectPhase phase = payment.getProjectPhase();
+    PhaseStatus prev = phase.getStatus();
+    phase.setStatus(PhaseStatus.PENDING);
+    projectPhaseRepository.save(phase);
+
+    log(phase, null, PhaseActorType.XENDIT, "INVOICE_EXPIRED", prev, PhaseStatus.PENDING, null);
+
+    log.info("Project phase {} reset to PENDING after invoice expiry", phase.getId());
+  }
+
+  @Transactional
   public DeliverableResponse addDeliverable(
       Long phaseId, Long architectUserId, DeliverableUploadRequest req) {
     ProjectPhase phase =

@@ -139,19 +139,15 @@ public class SecurityConfig {
                     .requestMatchers("/rmtr/subscriptions/**")
                     .hasRole("ARCHITECT")
 
-                    // Token purchase endpoints - require ARCHITECT role (except webhooks)
-                    .requestMatchers("/rmtr/tokens/webhook", "/rmtr/tokens/webhook/invoice")
-                    .permitAll()
+                    // Token purchase endpoints - require ARCHITECT role
                     .requestMatchers("/rmtr/tokens/**")
                     .hasRole("ARCHITECT")
 
-                    // Phase lifecycle webhook (public, token-verified)
-                    .requestMatchers("/rmtr/phases/webhook/**")
+                    // Unified Xendit webhook endpoints (public, token-verified)
+                    .requestMatchers("/rmtr/xendit/webhook/**")
                     .permitAll()
 
-                    // Phase payment endpoints - require CLIENT role (except unified webhook)
-                    .requestMatchers("/rmtr/payments/webhook/invoice")
-                    .permitAll()
+                    // Phase payment endpoints - require CLIENT role
                     .requestMatchers(HttpMethod.GET, "/rmtr/payments/projects/**")
                     .hasRole("CLIENT")
                     .requestMatchers(HttpMethod.POST, "/rmtr/payments/phases/**")

@@ -1,554 +1,414 @@
-# Project API - cURL Commands for Postman Import
+# Project API - cURL Commands for Postman/Bruno
 
 ## Prerequisites
-- Replace `{{JWT_TOKEN}}` with your actual JWT token from client login
-- Replace `{{CLIENT_ID}}` with your client ID (e.g., 1)
-- Replace `{{PROJECT_ID}}` with the project ID from create response
-- Replace file paths with actual document files on your system (PNG, JPG, or PDF)
-- Budget values are in the smallest currency unit (e.g., cents for USD, sen for IDR)
+- Replace `{{JWT_TOKEN}}` with your actual JWT token (client or architect depending on endpoint)
+- Replace `{{PROJECT_ID}}` with the project ID from response
+
+**Base URL:** `http://localhost:8080/rmtr/projects`
 
 ---
 
-## 1. Create Project with Files
+## Project Lifecycle
 
-**POST** `/api/v1/projects`
+```
+PENDING_APPROVAL → [Superuser validates] → OPEN → [Bid accepted] → NEGOTIATION
+                                       ↘ REJECTED
+NEGOTIATION → [Both parties confirm] → IN_PROGRESS → COMPLETED
+           → [Client rejects] → OPEN (back to bidding)
+```
+
+**All project statuses:** `PENDING_APPROVAL`, `REJECTED`, `OPEN`, `BIDDING_CLOSED`, `NEGOTIATION`, `IN_PROGRESS`, `COMPLETED`, `CANCELLED`
+
+---
+
+## API Endpoints
+
+---
+
+### 1. Create Project (Client)
+
+**POST** `/rmtr/projects`
+
+Creates a new project. Requires `CLIENT` role. The `clientId` is derived from the authenticated user — do NOT pass it in the body.
+
+**Content-Type:** `multipart/form-data`
 
 ```bash
-curl --location 'http://localhost:8080/api/v1/projects' \
+curl --location 'http://localhost:8080/rmtr/projects' \
 --header 'Authorization: Bearer {{JWT_TOKEN}}' \
---form 'clientId="1"' \
---form 'budgetMin="50000000"' \
---form 'budgetMax="100000000"' \
---form 'projectCategory="Residential"' \
---form 'buildingFunction="Single Family Home"' \
---form 'estimatedBuildArea="250"' \
---form 'numberOfFloors="2"' \
---form 'ownsLand="true"' \
---form 'hasLegalDocuments="true"' \
---form 'scopeOfWork="Complete architectural design including structural, MEP, and interior design"' \
---form 'deliverables=["Architectural Drawings","3D Renderings","Construction Documents","BOQ (Bill of Quantities)"]' \
---form 'designPreferences="Modern minimalist style with open floor plan and large windows for natural lighting"' \
---form 'contactPerson="John Doe - +628123456789"' \
---form 'expectedStartDate="2025-12-01"' \
---form 'files=@"/home/user/documents/site-plan.pdf"' \
---form 'files=@"/home/user/documents/land-certificate.jpg"'
+--form 'project={"title":"Modern Family Home","location":"Jakarta Selatan","budgetTotal":800000000,"designBudgetMin":50000000,"designBudgetMax":80000000,"projectCategory":"Residential","buildingFunction":"Single Family House","estimatedBuildArea":250,"numberOfFloors":2,"ownsLand":true,"hasLegalDocuments":true,"scopeOfWork":"Full architectural design from concept to construction documents","deliverables":["Floor plans","Elevations","3D renders","Construction drawings"],"designPreferences":"Modern minimalist with natural materials","contactPerson":"Budi Santoso","startDateType":"SPECIFIC_DATE","expectedStartDate":"2026-09-01","biddingDeadline":"2026-07-15"};type=application/json' \
+--form 'files=@"/home/user/documents/site_plan.pdf"' \
+--form 'files=@"/home/user/photos/site_photo.jpg"'
 ```
+
+**Important:** The project data is sent as a JSON blob in the `project` form part with `type=application/json`. Files are sent in the `files` form part (optional).
+
+**CreateProjectRequest fields:**
+| Field | Type | Required | Validation |
+|-------|------|----------|-----------|
+| `title` | String | Yes | max 255 chars |
+| `location` | String | Yes | max 255 chars |
+| `budgetTotal` | Long | No | min 0 |
+| `designBudgetMin` | Long | No | min 0 |
+| `designBudgetMax` | Long | No | min 0 |
+| `projectCategory` | String | No | max 255 chars |
+| `buildingFunction` | String | No | max 255 chars |
+| `estimatedBuildArea` | Integer | No | min 1 |
+| `numberOfFloors` | Integer | No | min 1 |
+| `ownsLand` | Boolean | No | |
+| `hasLegalDocuments` | Boolean | No | |
+| `scopeOfWork` | String | No | |
+| `deliverables` | List\<String\> | No | |
+| `designPreferences` | String | No | |
+| `contactPerson` | String | No | max 255 chars |
+| `startDateType` | StartDateType | No | `IMMEDIATELY` or `SPECIFIC_DATE` |
+| `expectedStartDate` | LocalDate | No | |
+| `biddingDeadline` | LocalDate | No | |
 
 **Expected Response (201 Created):**
 ```json
 {
   "success": true,
-  "message": "Project created successfully!",
   "data": {
     "id": 1,
-    "clientId": 1,
-    "budgetMin": 50000000,
-    "budgetMax": 100000000,
+    "clientId": 5,
+    "title": "Modern Family Home",
+    "location": "Jakarta Selatan",
+    "budgetTotal": 800000000,
+    "designBudgetMin": 50000000,
+    "designBudgetMax": 80000000,
     "projectCategory": "Residential",
-    "buildingFunction": "Single Family Home",
+    "buildingFunction": "Single Family House",
     "estimatedBuildArea": 250,
     "numberOfFloors": 2,
     "ownsLand": true,
     "hasLegalDocuments": true,
-    "scopeOfWork": "Complete architectural design including structural, MEP, and interior design",
-    "deliverables": [
-      "Architectural Drawings",
-      "3D Renderings",
-      "Construction Documents",
-      "BOQ (Bill of Quantities)"
-    ],
-    "designPreferences": "Modern minimalist style with open floor plan and large windows for natural lighting",
-    "contactPerson": "John Doe - +628123456789",
-    "expectedStartDate": "2025-12-01",
+    "scopeOfWork": "Full architectural design from concept to construction documents",
+    "deliverables": ["Floor plans", "Elevations", "3D renders", "Construction drawings"],
+    "designPreferences": "Modern minimalist with natural materials",
+    "contactPerson": "Budi Santoso",
+    "startDateType": "SPECIFIC_DATE",
+    "expectedStartDate": "2026-09-01",
+    "status": "PENDING_APPROVAL",
+    "isValid": null,
+    "validationNotes": null,
+    "biddingDeadline": "2026-07-15T00:00:00",
     "files": [
       {
         "id": 1,
-        "fileName": "site-plan.pdf",
-        "filePath": "uploads/projects/a1b2c3d4-e5f6-7890-1234-56789abcdef0.pdf",
+        "fileName": "site_plan.pdf",
+        "filePath": "https://storage.example.com/projects/1/site_plan.pdf",
         "fileType": "application/pdf",
-        "fileSize": 245678,
-        "uploadedAt": "2025-10-19T23:40:15.123456"
-      },
-      {
-        "id": 2,
-        "fileName": "land-certificate.jpg",
-        "filePath": "uploads/projects/b2c3d4e5-f6a7-8901-2345-6789abcdef01.jpg",
-        "fileType": "image/jpeg",
-        "fileSize": 152340,
-        "uploadedAt": "2025-10-19T23:40:15.234567"
+        "fileSize": 524288,
+        "uploadedAt": "2026-06-01T10:00:00"
       }
     ],
-    "createdAt": "2025-10-19T23:40:15.012345",
-    "updatedAt": null
+    "clientConfirmed": false,
+    "architectConfirmed": false,
+    "bidCount": 0,
+    "createdAt": "2026-06-01T10:00:00",
+    "updatedAt": "2026-06-01T10:00:00"
   },
-  "timestamp": "2025-10-19T23:40:15.345678"
+  "timestamp": "2026-06-01T10:00:00"
 }
 ```
 
 ---
 
-## 2. Create Project WITHOUT Files
+### 2. Get Project by ID (Client)
 
-**POST** `/api/v1/projects`
+**GET** `/rmtr/projects/{{PROJECT_ID}}`
 
-```bash
-curl --location 'http://localhost:8080/api/v1/projects' \
---header 'Authorization: Bearer {{JWT_TOKEN}}' \
---form 'clientId="1"' \
---form 'budgetMin="30000000"' \
---form 'budgetMax="75000000"' \
---form 'projectCategory="Commercial"' \
---form 'buildingFunction="Office Building"' \
---form 'estimatedBuildArea="500"' \
---form 'numberOfFloors="3"' \
---form 'ownsLand="false"' \
---form 'hasLegalDocuments="false"' \
---form 'scopeOfWork="Architectural design and permit processing"' \
---form 'deliverables=["Conceptual Design","Permit Documents"]' \
---form 'designPreferences="Contemporary office design with efficient space utilization"' \
---form 'contactPerson="Jane Smith - +628234567890"' \
---form 'expectedStartDate="2026-01-15"'
-```
-
-**Expected Response (201 Created):**
-```json
-{
-  "success": true,
-  "message": "Project created successfully!",
-  "data": {
-    "id": 2,
-    "clientId": 1,
-    "budgetMin": 30000000,
-    "budgetMax": 75000000,
-    "projectCategory": "Commercial",
-    "buildingFunction": "Office Building",
-    "estimatedBuildArea": 500,
-    "numberOfFloors": 3,
-    "ownsLand": false,
-    "hasLegalDocuments": false,
-    "scopeOfWork": "Architectural design and permit processing",
-    "deliverables": [
-      "Conceptual Design",
-      "Permit Documents"
-    ],
-    "designPreferences": "Contemporary office design with efficient space utilization",
-    "contactPerson": "Jane Smith - +628234567890",
-    "expectedStartDate": "2026-01-15",
-    "files": [],
-    "createdAt": "2025-10-19T23:45:22.123456",
-    "updatedAt": null
-  },
-  "timestamp": "2025-10-19T23:45:22.234567"
-}
-```
-
----
-
-## 3. Get Single Project by ID
-
-**GET** `/api/v1/projects/{{PROJECT_ID}}`
+Returns a project owned by the authenticated client.
 
 ```bash
-curl --location 'http://localhost:8080/api/v1/projects/1' \
+curl --location 'http://localhost:8080/rmtr/projects/1' \
 --header 'Authorization: Bearer {{JWT_TOKEN}}'
 ```
 
-**Expected Response (200 OK):**
-```json
-{
-  "success": true,
-  "message": "Project retrieved successfully",
-  "data": {
-    "id": 1,
-    "clientId": 1,
-    "budgetMin": 50000000,
-    "budgetMax": 100000000,
-    "projectCategory": "Residential",
-    "buildingFunction": "Single Family Home",
-    "estimatedBuildArea": 250,
-    "numberOfFloors": 2,
-    "ownsLand": true,
-    "hasLegalDocuments": true,
-    "scopeOfWork": "Complete architectural design including structural, MEP, and interior design",
-    "deliverables": [
-      "Architectural Drawings",
-      "3D Renderings",
-      "Construction Documents",
-      "BOQ (Bill of Quantities)"
-    ],
-    "designPreferences": "Modern minimalist style with open floor plan and large windows for natural lighting",
-    "contactPerson": "John Doe - +628123456789",
-    "expectedStartDate": "2025-12-01",
-    "files": [
-      {
-        "id": 1,
-        "fileName": "site-plan.pdf",
-        "filePath": "uploads/projects/a1b2c3d4-e5f6-7890-1234-56789abcdef0.pdf",
-        "fileType": "application/pdf",
-        "fileSize": 245678,
-        "uploadedAt": "2025-10-19T23:40:15.123456"
-      },
-      {
-        "id": 2,
-        "fileName": "land-certificate.jpg",
-        "filePath": "uploads/projects/b2c3d4e5-f6a7-8901-2345-6789abcdef01.jpg",
-        "fileType": "image/jpeg",
-        "fileSize": 152340,
-        "uploadedAt": "2025-10-19T23:40:15.234567"
-      }
-    ],
-    "createdAt": "2025-10-19T23:40:15.012345",
-    "updatedAt": null
-  },
-  "timestamp": "2025-10-19T23:50:10.123456"
-}
-```
-
 ---
 
-## 4. Get All Projects for a Client
+### 3. Get My Projects (Client)
 
-**GET** `/api/v1/projects/client/{{CLIENT_ID}}`
+**GET** `/rmtr/projects`
+
+Returns all projects owned by the authenticated client.
 
 ```bash
-curl --location 'http://localhost:8080/api/v1/projects/client/1' \
+curl --location 'http://localhost:8080/rmtr/projects' \
 --header 'Authorization: Bearer {{JWT_TOKEN}}'
 ```
 
-**Expected Response (200 OK):**
-```json
-{
-  "success": true,
-  "message": "Projects retrieved successfully",
-  "data": [
-    {
-      "id": 2,
-      "clientId": 1,
-      "budgetMin": 30000000,
-      "budgetMax": 75000000,
-      "projectCategory": "Commercial",
-      "buildingFunction": "Office Building",
-      "estimatedBuildArea": 500,
-      "numberOfFloors": 3,
-      "ownsLand": false,
-      "hasLegalDocuments": false,
-      "scopeOfWork": "Architectural design and permit processing",
-      "deliverables": [
-        "Conceptual Design",
-        "Permit Documents"
-      ],
-      "designPreferences": "Contemporary office design with efficient space utilization",
-      "contactPerson": "Jane Smith - +628234567890",
-      "expectedStartDate": "2026-01-15",
-      "files": [],
-      "createdAt": "2025-10-19T23:45:22.123456",
-      "updatedAt": null
-    },
-    {
-      "id": 1,
-      "clientId": 1,
-      "budgetMin": 50000000,
-      "budgetMax": 100000000,
-      "projectCategory": "Residential",
-      "buildingFunction": "Single Family Home",
-      "estimatedBuildArea": 250,
-      "numberOfFloors": 2,
-      "ownsLand": true,
-      "hasLegalDocuments": true,
-      "scopeOfWork": "Complete architectural design including structural, MEP, and interior design",
-      "deliverables": [
-        "Architectural Drawings",
-        "3D Renderings",
-        "Construction Documents",
-        "BOQ (Bill of Quantities)"
-      ],
-      "designPreferences": "Modern minimalist style with open floor plan and large windows for natural lighting",
-      "contactPerson": "John Doe - +628123456789",
-      "expectedStartDate": "2025-12-01",
-      "files": [
-        {
-          "id": 1,
-          "fileName": "site-plan.pdf",
-          "filePath": "uploads/projects/a1b2c3d4-e5f6-7890-1234-56789abcdef0.pdf",
-          "fileType": "application/pdf",
-          "fileSize": 245678,
-          "uploadedAt": "2025-10-19T23:40:15.123456"
-        },
-        {
-          "id": 2,
-          "fileName": "land-certificate.jpg",
-          "filePath": "uploads/projects/b2c3d4e5-f6a7-8901-2345-6789abcdef01.jpg",
-          "fileType": "image/jpeg",
-          "fileSize": 152340,
-          "uploadedAt": "2025-10-19T23:40:15.234567"
-        }
-      ],
-      "createdAt": "2025-10-19T23:40:15.012345",
-      "updatedAt": null
-    }
-  ],
-  "timestamp": "2025-10-19T23:52:30.123456"
-}
-```
-
 ---
 
-## 5. Delete Project
+### 4. Delete Project (Client)
 
-**DELETE** `/api/v1/projects/{{PROJECT_ID}}`
+**DELETE** `/rmtr/projects/{{PROJECT_ID}}`
 
 ```bash
-curl --location --request DELETE 'http://localhost:8080/api/v1/projects/1' \
+curl --location --request DELETE 'http://localhost:8080/rmtr/projects/1' \
 --header 'Authorization: Bearer {{JWT_TOKEN}}'
 ```
 
-**Expected Response (200 OK):**
-```json
-{
-  "success": true,
-  "message": "Project deleted successfully",
-  "data": null,
-  "timestamp": "2025-10-19T23:55:45.123456"
-}
-```
-
 ---
 
-## 6. Update Project Validation Status (Superuser Only)
+### 5. Validate Project (Superuser)
 
-**PUT** `/api/v1/projects/{{PROJECT_ID}}/validate`
+**PUT** `/rmtr/projects/{{PROJECT_ID}}/validate`
+
+Sets the project as valid (→ OPEN) or invalid (→ REJECTED). Requires `SUPERUSER` role.
 
 ```bash
-curl --location --request PUT 'http://localhost:8080/api/v1/projects/1/validate' \
+# Approve
+curl --location --request PUT 'http://localhost:8080/rmtr/projects/1/validate' \
 --header 'Authorization: Bearer {{SUPERUSER_JWT_TOKEN}}' \
 --header 'Content-Type: application/json' \
 --data '{
-  "isValid": true
+  "isValid": true,
+  "validationNotes": "Project looks well-scoped. Approved."
 }'
-```
 
-**Expected Response (200 OK):**
-```json
-{
-  "success": true,
-  "message": "Project validation status updated successfully",
-  "data": {
-    "id": 1,
-    "clientId": 1,
-    "budgetMin": 50000000,
-    "budgetMax": 100000000,
-    "projectCategory": "Residential",
-    "buildingFunction": "Single Family Home",
-    "estimatedBuildArea": 250,
-    "numberOfFloors": 2,
-    "ownsLand": true,
-    "hasLegalDocuments": true,
-    "scopeOfWork": "Complete architectural design including structural, MEP, and interior design",
-    "deliverables": [
-      "Architectural Drawings",
-      "3D Renderings",
-      "Construction Documents",
-      "BOQ (Bill of Quantities)"
-    ],
-    "designPreferences": "Modern minimalist style with open floor plan and large windows for natural lighting",
-    "contactPerson": "John Doe - +628123456789",
-    "expectedStartDate": "2025-12-01",
-    "isValid": true,
-    "files": [
-      {
-        "id": 1,
-        "fileName": "site-plan.pdf",
-        "filePath": "uploads/projects/a1b2c3d4-e5f6-7890-1234-56789abcdef0.pdf",
-        "fileType": "application/pdf",
-        "fileSize": 245678,
-        "uploadedAt": "2025-10-19T23:40:15.123456"
-      }
-    ],
-    "createdAt": "2025-10-19T23:40:15.012345",
-    "updatedAt": "2025-10-20T10:30:00.123456"
-  },
-  "timestamp": "2025-10-20T10:30:00.234567"
-}
-```
-
-**To Invalidate a Project:**
-```bash
-curl --location --request PUT 'http://localhost:8080/api/v1/projects/1/validate' \
+# Reject
+curl --location --request PUT 'http://localhost:8080/rmtr/projects/1/validate' \
 --header 'Authorization: Bearer {{SUPERUSER_JWT_TOKEN}}' \
 --header 'Content-Type: application/json' \
 --data '{
-  "isValid": false
+  "isValid": false,
+  "validationNotes": "Budget range is incomplete. Please revise and resubmit."
 }'
 ```
 
+**Request Body:**
+| Field | Type | Required |
+|-------|------|----------|
+| `isValid` | Boolean | Yes |
+| `validationNotes` | String | No |
+
 ---
 
-## 7. Get All Projects (Superuser Only)
+### 6. Get All Projects (Superuser)
 
-**GET** `/api/v1/projects/all`
+**GET** `/rmtr/projects/all`
+
+Returns all projects regardless of status or owner. Requires `SUPERUSER` role.
 
 ```bash
-curl --location 'http://localhost:8080/api/v1/projects/all' \
+curl --location 'http://localhost:8080/rmtr/projects/all' \
 --header 'Authorization: Bearer {{SUPERUSER_JWT_TOKEN}}'
 ```
 
-**Expected Response (200 OK):**
-```json
-{
-  "success": true,
-  "message": "All projects retrieved successfully",
-  "data": [
-    {
-      "id": 1,
-      "clientId": 1,
-      "budgetMin": 50000000,
-      "budgetMax": 100000000,
-      "projectCategory": "Residential",
-      "buildingFunction": "Single Family Home",
-      "estimatedBuildArea": 250,
-      "numberOfFloors": 2,
-      "ownsLand": true,
-      "hasLegalDocuments": true,
-      "scopeOfWork": "Complete architectural design including structural, MEP, and interior design",
-      "deliverables": [
-        "Architectural Drawings",
-        "3D Renderings",
-        "Construction Documents",
-        "BOQ (Bill of Quantities)"
-      ],
-      "designPreferences": "Modern minimalist style with open floor plan and large windows for natural lighting",
-      "contactPerson": "John Doe - +628123456789",
-      "expectedStartDate": "2025-12-01",
-      "isValid": true,
-      "files": [
-        {
-          "id": 1,
-          "fileName": "site-plan.pdf",
-          "filePath": "uploads/projects/a1b2c3d4-e5f6-7890-1234-56789abcdef0.pdf",
-          "fileType": "application/pdf",
-          "fileSize": 245678,
-          "uploadedAt": "2025-10-19T23:40:15.123456"
-        }
-      ],
-      "createdAt": "2025-10-19T23:40:15.012345",
-      "updatedAt": "2025-10-20T10:30:00.123456"
-    },
-    {
-      "id": 2,
-      "clientId": 1,
-      "budgetMin": 30000000,
-      "budgetMax": 75000000,
-      "projectCategory": "Commercial",
-      "buildingFunction": "Office Building",
-      "estimatedBuildArea": 500,
-      "numberOfFloors": 3,
-      "ownsLand": false,
-      "hasLegalDocuments": false,
-      "scopeOfWork": "Architectural design and permit processing",
-      "deliverables": [
-        "Conceptual Design",
-        "Permit Documents"
-      ],
-      "designPreferences": "Contemporary office design with efficient space utilization",
-      "contactPerson": "Jane Smith - +628234567890",
-      "expectedStartDate": "2026-01-15",
-      "isValid": false,
-      "files": [],
-      "createdAt": "2025-10-19T23:45:22.123456",
-      "updatedAt": null
-    }
-  ],
-  "timestamp": "2025-10-20T10:35:00.123456"
-}
+---
+
+### 7. Get Open Projects (Architect)
+
+**GET** `/rmtr/projects/open`
+
+Returns all validated, open projects available for bidding.
+
+```bash
+# Default sort (newest first)
+curl --location 'http://localhost:8080/rmtr/projects/open' \
+--header 'Authorization: Bearer {{JWT_TOKEN}}'
+
+# Sort by budget, exclude own projects (if user is also a client)
+curl --location 'http://localhost:8080/rmtr/projects/open?sortBy=budgetTotal&sortDirection=desc&excludeOwnProjects=true' \
+--header 'Authorization: Bearer {{JWT_TOKEN}}'
+```
+
+**Query Parameters:**
+| Param | Type | Default | Notes |
+|-------|------|---------|-------|
+| `sortBy` | String | `createdAt` | Field to sort by |
+| `sortDirection` | String | `desc` | `asc` or `desc` |
+| `excludeOwnProjects` | boolean | `false` | Exclude projects created by this user (for dual-role users) |
+
+---
+
+### 8. Get Project for Architect
+
+**GET** `/rmtr/projects/{{PROJECT_ID}}/for-architect`
+
+Returns project detail for an architect to view. Access rules:
+- `OPEN` / `NEGOTIATION` → any architect can view (for bidding purposes)
+- `IN_PROGRESS` / `COMPLETED` → only the architect with the accepted bid can view
+
+```bash
+curl --location 'http://localhost:8080/rmtr/projects/1/for-architect' \
+--header 'Authorization: Bearer {{ARCHITECT_JWT_TOKEN}}'
 ```
 
 ---
 
-## Notes
+### 9. Get Project Bids (Client)
 
-### Superuser Role
-- **SUPERUSER role** is required for validation and viewing all projects
-- Superuser must be assigned manually via database:
-  ```sql
-  UPDATE rmtr_user SET is_superuser = true WHERE email = 'admin@rumantra.com';
-  ```
-- After updating the database, user needs to login again to get new JWT token with SUPERUSER role
-- Use `{{SUPERUSER_JWT_TOKEN}}` variable in Postman for superuser endpoints
+**GET** `/rmtr/projects/{{PROJECT_ID}}/bids`
 
-### Project Validation
-- All projects are created with `isValid: false` by default
-- Only superusers can change the `isValid` status
-- Clients can see the `isValid` status but cannot modify it
-- Superusers can validate/invalidate projects without ownership verification
+Returns all bids submitted on a project. Client must own the project.
 
-### Budget Values
-- Budget is stored in the smallest currency unit (e.g., cents)
-- Example: IDR 50,000,000 = 50000000 cents
-- Frontend should convert display values accordingly
-
-### Deliverables Format
-- Deliverables are sent as a JSON array string
-- Example: `'deliverables=["Item 1","Item 2","Item 3"]'`
-- Backend stores this as JSONB in PostgreSQL
-
-### File Upload Constraints
-- Accepted file types: PNG, JPG, JPEG, PDF
-- Files are validated server-side
-- Invalid file types will be skipped with a warning log
-- Files are stored in `uploads/projects/` directory
-- File names are UUID-based to prevent conflicts
-
-### Expected Start Date Format
-- Format: `YYYY-MM-DD`
-- Example: `2025-12-01`
-
-### Error Responses
-
-**Validation Error (400 Bad Request):**
-```json
-{
-  "success": false,
-  "message": "Maximum budget must be greater than minimum budget",
-  "data": null,
-  "timestamp": "2025-10-19T23:58:00.123456"
-}
-```
-
-**Not Found (404 Not Found):**
-```json
-{
-  "success": false,
-  "message": "Project not found with id: 999",
-  "data": null,
-  "timestamp": "2025-10-19T23:59:00.123456"
-}
-```
-
-**Server Error (500 Internal Server Error):**
-```json
-{
-  "success": false,
-  "message": "An error occurred while creating project",
-  "data": null,
-  "timestamp": "2025-10-20T00:00:00.123456"
-}
+```bash
+curl --location 'http://localhost:8080/rmtr/projects/1/bids' \
+--header 'Authorization: Bearer {{JWT_TOKEN}}'
 ```
 
 ---
 
-## Testing Tips
+### 10. Confirm Negotiation (Client)
 
-1. **Create a client first** before creating projects
-2. **Use valid file paths** on your local system
-3. **Check file permissions** if upload fails
-4. **Verify budget range** (budgetMax >= budgetMin)
-5. **Test with and without files** to ensure both scenarios work
-6. **Use proper JWT token** from client authentication
+**POST** `/rmtr/projects/{{PROJECT_ID}}/confirm-negotiation`
 
-## Import to Postman
+Client confirms the bid terms. Project moves to `IN_PROGRESS` only when BOTH client and architect have confirmed.
 
-1. Copy the cURL commands above
-2. In Postman, click "Import" → "Raw text"
-3. Paste the cURL command
-4. Postman will automatically create the request
-5. Set up environment variables for `{{JWT_TOKEN}}`, `{{CLIENT_ID}}`, and `{{PROJECT_ID}}`
+```bash
+curl --location 'http://localhost:8080/rmtr/projects/1/confirm-negotiation' \
+--header 'Authorization: Bearer {{CLIENT_JWT_TOKEN}}'
+```
+
+**Business Logic:**
+- Sets `clientConfirmed = true` on the project
+- If `architectConfirmed` is also true → project transitions to `IN_PROGRESS`
+- Backend auto-creates `ProjectPhase` records from `BidPaymentPhase` data
+
+---
+
+### 11. Confirm Negotiation (Architect)
+
+**POST** `/rmtr/projects/{{PROJECT_ID}}/architect-confirm-negotiation`
+
+Architect confirms the bid terms.
+
+```bash
+curl --location 'http://localhost:8080/rmtr/projects/1/architect-confirm-negotiation' \
+--header 'Authorization: Bearer {{ARCHITECT_JWT_TOKEN}}'
+```
+
+**Business Logic:**
+- Sets `architectConfirmed = true` on the project
+- If `clientConfirmed` is also true → project transitions to `IN_PROGRESS`
+- Only callable by the architect with the accepted bid
+
+---
+
+### 12. Reject Negotiation (Client)
+
+**POST** `/rmtr/projects/{{PROJECT_ID}}/reject-negotiation`
+
+Client rejects the negotiation. Project reopens for bidding (status → `OPEN`).
+
+```bash
+curl --location 'http://localhost:8080/rmtr/projects/1/reject-negotiation' \
+--header 'Authorization: Bearer {{CLIENT_JWT_TOKEN}}'
+```
+
+**Business Logic:**
+- Project status returns to `OPEN`
+- Resets confirmation flags
+- The previously accepted bid is rejected
+
+---
+
+### 13. Initialize Phases (Recovery)
+
+**POST** `/rmtr/projects/{{PROJECT_ID}}/initialize-phases`
+
+Manually creates `ProjectPhase` records from `BidPaymentPhase` data. Use this as a recovery tool for existing `IN_PROGRESS` projects that are missing phase records.
+
+```bash
+curl --location 'http://localhost:8080/rmtr/projects/1/initialize-phases' \
+--header 'Authorization: Bearer {{CLIENT_JWT_TOKEN}}'
+```
+
+---
+
+## DTO Reference
+
+### ProjectResponse
+
+| Field | Type | Notes |
+|-------|------|-------|
+| `id` | Long | |
+| `clientId` | Long | |
+| `title` | String | |
+| `location` | String | |
+| `budgetTotal` | Long | |
+| `designBudgetMin` | Long | |
+| `designBudgetMax` | Long | |
+| `projectCategory` | String | |
+| `buildingFunction` | String | |
+| `estimatedBuildArea` | Integer | |
+| `numberOfFloors` | Integer | |
+| `ownsLand` | Boolean | |
+| `hasLegalDocuments` | Boolean | |
+| `scopeOfWork` | String | |
+| `deliverables` | List\<String\> | |
+| `designPreferences` | String | |
+| `contactPerson` | String | |
+| `startDateType` | StartDateType | `IMMEDIATELY` or `SPECIFIC_DATE` |
+| `expectedStartDate` | LocalDate | |
+| `status` | ProjectStatus | See lifecycle above |
+| `isValid` | Boolean | null = pending superuser review |
+| `validationNotes` | String | Set by superuser on validation |
+| `biddingDeadline` | LocalDateTime | |
+| `files` | List\<ProjectFileDto\> | |
+| `clientConfirmed` | Boolean | For NEGOTIATION phase |
+| `architectConfirmed` | Boolean | For NEGOTIATION phase |
+| `bidCount` | Long | Number of bids submitted |
+| `createdAt` | LocalDateTime | |
+| `updatedAt` | LocalDateTime | |
+
+### ProjectFileDto
+
+| Field | Type |
+|-------|------|
+| `id` | Long |
+| `fileName` | String |
+| `filePath` | String |
+| `fileType` | String |
+| `fileSize` | Long |
+| `uploadedAt` | LocalDateTime |
+
+---
+
+## Enums
+
+| Enum | Values |
+|------|--------|
+| `ProjectStatus` | `PENDING_APPROVAL`, `REJECTED`, `OPEN`, `BIDDING_CLOSED`, `NEGOTIATION`, `IN_PROGRESS`, `COMPLETED`, `CANCELLED` |
+| `StartDateType` | `IMMEDIATELY`, `SPECIFIC_DATE` |
+
+---
+
+## Testing Sequence
+
+1. **Login as Client** → Get JWT token
+2. **Create Project** → `POST /rmtr/projects`
+3. **Login as Superuser** → Get superuser JWT token
+4. **View All Projects** → `GET /rmtr/projects/all`
+5. **Validate Project** → `PUT /rmtr/projects/{id}/validate` with `isValid: true`
+6. **Login as Architect** → Get architect JWT token
+7. **Browse Open Projects** → `GET /rmtr/projects/open`
+8. **View Project Details** → `GET /rmtr/projects/{id}/for-architect`
+9. *(Architect creates and submits a bid via bidding API)*
+10. **Client Views Bids** → `GET /rmtr/projects/{id}/bids`
+11. *(Client accepts bid via bidding API — project → NEGOTIATION)*
+12. **Client Confirms** → `POST /rmtr/projects/{id}/confirm-negotiation`
+13. **Architect Confirms** → `POST /rmtr/projects/{id}/architect-confirm-negotiation`
+14. *(Project → IN_PROGRESS, phases initialized automatically)*
+
+---
+
+## Error Responses
+
+```json
+{
+  "success": false,
+  "message": "Project not found",
+  "timestamp": "2026-06-01T12:00:00"
+}
+```
+
+| Status | Reason |
+|--------|--------|
+| `401 Unauthorized` | Invalid or expired JWT token |
+| `403 Forbidden` | Not your project, or wrong role |
+| `404 Not Found` | Project not found |
+| `400 Bad Request` | Validation error or invalid project state transition |

@@ -58,10 +58,7 @@
               {{ t.disputeManagement.rejectToProgress }}
             </button>
             <button
-              @click="
-                resolving = null
-                resolutionNote = ''
-              "
+              @click="resolving = null; resolutionNote = ''"
               class="px-4 py-2 text-sm font-semibold rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition"
             >
               {{ t.disputeManagement.cancel }}
@@ -70,10 +67,7 @@
         </div>
         <div v-else class="mt-3">
           <button
-            @click="
-              resolving = phase.id
-              resolutionNote = ''
-            "
+            @click="resolving = phase.id; resolutionNote = ''"
             class="px-4 py-1.5 text-xs font-semibold rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition"
           >
             {{ t.disputeManagement.resolve }}
