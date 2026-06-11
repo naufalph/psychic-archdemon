@@ -295,7 +295,7 @@ const startPollingPaymentStatus = purchaseId => {
     }
 
     try {
-      const response = await tokenPurchaseAPI.getPurchaseStatus(purchaseId)
+      const response = await tokenPurchaseAPI.getPurchaseById(purchaseId)
       const status = response.data.data.status
 
       if (status === 'COMPLETED') {

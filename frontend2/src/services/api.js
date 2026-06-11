@@ -337,9 +337,11 @@ export const supportAPI = {
 }
 
 export const tokenPurchaseAPI = {
-  getPricing: () => api.get('/rmtr/tokens/purchases/pricing'),
-  initiatePurchase: quantity => api.post('/rmtr/tokens/purchases', { quantity }),
-  getPurchaseStatus: id => api.get(`/rmtr/tokens/purchases/${id}`)
+  getPricing: () => api.get('/rmtr/tokens/pricing'),
+  initiatePurchase: quantity => api.post('/rmtr/tokens', { quantity }),
+  getPurchaseById: id => api.get(`/rmtr/tokens/${id}`),
+  getPurchaseHistory: (page = 0, size = 10) =>
+    api.get('/rmtr/tokens/history', { params: { page, size } })
 }
 
 export const paymentAPI = {
