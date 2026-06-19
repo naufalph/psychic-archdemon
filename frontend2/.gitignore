@@ -169,5 +169,10 @@ test-results/
 playwright-report/
 test-results.xml
 
+# Playwright MCP artifacts (Claude browser snapshots, console logs, screenshots)
+.playwright-mcp/
+*.png
+*.jpeg
+
 # Generated documentation
 docs/dist/

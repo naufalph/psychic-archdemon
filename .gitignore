@@ -52,6 +52,11 @@ nb-configuration.xml
 *.db
 *.sqlite
 
+# Test screenshots and browser snapshots saved by Playwright MCP
+*.png
+*.jpeg
+.playwright-mcp/
+
 # Temporary files
 *.tmp
 *.bak

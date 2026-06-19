@@ -1,4 +1,18 @@
 import { defineConfig, devices } from '@playwright/test'
+import { readFileSync, existsSync } from 'fs'
+import { resolve, dirname } from 'path'
+import { fileURLToPath } from 'url'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
+const envFile = resolve(__dirname, 'e2e/.env.test.local')
+if (existsSync(envFile)) {
+  for (const line of readFileSync(envFile, 'utf8').split('\n')) {
+    const [key, ...vals] = line.split('=')
+    if (key?.trim() && !key.startsWith('#')) {
+      process.env[key.trim()] ??= vals.join('=').trim()
+    }
+  }
+}
 
 export default defineConfig({
   testDir: './e2e',
@@ -13,13 +27,17 @@ export default defineConfig({
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
-    actionTimeout: 15000
+    actionTimeout: 15000,
+    viewport: null,
+    launchOptions: {
+      args: ['--start-maximized']
+    }
   },
 
   projects: [
     {
       name: 'chromium',
-      use: { ...devices['Desktop Chrome'] }
+      use: { ...devices['Desktop Chrome'], viewport: null, deviceScaleFactor: undefined }
     }
   ],
 

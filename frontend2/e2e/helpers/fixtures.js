@@ -1,17 +1,18 @@
-/**
- * Test fixtures for E2E tests
- */
-
 export const TEST_USERS = {
   architect: {
-    email: 'test.architect1@rumantra.com',
-    password: 'password123',
+    email: process.env.E2E_ARCHITECT_EMAIL || '',
+    password: process.env.E2E_TEST_PASSWORD || '',
     role: 'ARCHITECT'
   },
   client: {
-    email: 'test.client1@rumantra.com',
-    password: 'password123',
+    email: process.env.E2E_CLIENT_EMAIL || '',
+    password: process.env.E2E_TEST_PASSWORD || '',
     role: 'CLIENT'
+  },
+  superuser: {
+    email: process.env.E2E_SUPERUSER_EMAIL || '',
+    password: process.env.E2E_TEST_PASSWORD || '',
+    role: 'SUPERUSER'
   }
 }
 
@@ -33,6 +34,18 @@ export const ROUTES = {
   login: '/login',
   signup: '/signup',
   authCallback: '/auth/callback',
+  verifyEmail: '/verify-email',
   architectDashboard: '/architect/dashboard',
-  clientDashboard: '/client/dashboard'
+  architectPortfolios: '/architect/portfolios',
+  architectOpportunities: '/architect/opportunities',
+  architectBids: '/architect/bids',
+  architectProfile: '/architect/profile',
+  architectOnboarding: '/architect/onboarding',
+  clientDashboard: '/client/dashboard',
+  clientProjects: '/client/projects',
+  clientProjectCreate: '/client/projects/create',
+  clientMessages: '/client/messages',
+  clientProfile: '/client/profile',
+  superuserDashboard: '/superuser/dashboard',
+  superuserProjectQueue: '/superuser/projects/queue'
 }
