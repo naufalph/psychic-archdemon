@@ -26,7 +26,7 @@ public class PhasePayment {
   private Long id;
 
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name = "phase_id", nullable = false)
+  @JoinColumn(name = "phase_id")
   @ToString.Exclude
   private BidPaymentPhase phase;
 

@@ -19,7 +19,7 @@ public class EnvConfig implements EnvironmentPostProcessor {
       // Load .env file from the current working directory
       Dotenv dotenv =
           Dotenv.configure()
-              .directory("./backend") // Look in current directory first
+              .directory("./") // Maven's forked process already runs from backend/
               .ignoreIfMalformed()
               .ignoreIfMissing()
               .load();

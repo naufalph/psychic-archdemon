@@ -273,7 +273,7 @@
                   to="/architect/profile"
                   class="inline-block text-sm font-semibold text-[#7C4728] underline"
                 >
-                  {{ t.value.proposalCreate?.completeProfileLink || 'Lengkapi Profil →' }}
+                  {{ t.value.proposalCreate?.completeProfileLink || 'Complete your profile →' }}
                 </router-link>
               </div>
 
