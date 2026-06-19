@@ -18,15 +18,21 @@
 
       <div class="grid grid-cols-3 gap-4 mb-10">
         <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
-          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">{{ t.architectDashboard.activeBids }}</p>
+          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">
+            {{ t.architectDashboard.activeBids }}
+          </p>
           <p class="text-4xl font-bold text-black">{{ pendingBids.length }}</p>
         </div>
         <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
-          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">{{ t.architectDashboard.accepted }}</p>
+          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">
+            {{ t.architectDashboard.accepted }}
+          </p>
           <p class="text-4xl font-bold text-[#7C4728]">{{ acceptedBids.length }}</p>
         </div>
         <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
-          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">{{ t.architectDashboard.bidTokens }}</p>
+          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">
+            {{ t.architectDashboard.bidTokens }}
+          </p>
           <p class="text-4xl font-bold text-black">{{ bidsStore.quota.tokensRemaining }}</p>
         </div>
       </div>
@@ -86,25 +92,29 @@
 
         <div class="space-y-6">
           <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-soft">
-            <h2 class="text-sm font-bold text-black tracking-widest uppercase mb-4">{{ t.architectDashboard.bidTokens }}</h2>
+            <h2 class="text-sm font-bold text-black tracking-widest uppercase mb-4">
+              {{ t.architectDashboard.bidTokens }}
+            </h2>
             <div class="flex items-end gap-1 mb-1">
               <span class="text-3xl font-bold text-black">{{ bidsStore.quota.tokensRemaining }}</span>
-              <span class="text-gray-400 text-sm mb-1">/ {{ bidsStore.quota.tokensAllocated }} {{ t.architectDashboard.tokensRemaining }}</span>
+              <span class="text-gray-400 text-sm mb-1">{{ t.architectDashboard.tokensRemaining }}</span>
             </div>
             <p v-if="bidsStore.quota.tier" class="text-xs text-gray-500 mb-4">
-              {{ t.architectDashboard.plan }} <span class="font-semibold text-gray-700">{{ bidsStore.quota.tier }}</span>
+              {{ t.architectDashboard.plan }}
+              <span class="font-semibold text-gray-700">{{ bidsStore.quota.tier }}</span>
             </p>
-            <router-link :to="{ name: 'ArchitectProfile' }">
-              <button
-                class="w-full bg-black text-white px-4 py-2 rounded-full text-xs font-bold tracking-wider hover:bg-[#7C4728] transition"
-              >
-                {{ t.architectDashboard.buyTokens }}
-              </button>
-            </router-link>
+            <button
+              @click="tokenPurchaseStore.openModal()"
+              class="w-full bg-black text-white px-4 py-2 rounded-full text-xs font-bold tracking-wider hover:bg-[#7C4728] transition"
+            >
+              {{ t.architectDashboard.buyTokens }}
+            </button>
           </div>
 
           <div class="bg-[#7C4728] rounded-2xl p-6 text-white">
-            <p class="text-xs font-bold tracking-widest uppercase mb-2 text-white/70">{{ t.architectDashboard.opportunities }}</p>
+            <p class="text-xs font-bold tracking-widest uppercase mb-2 text-white/70">
+              {{ t.architectDashboard.opportunities }}
+            </p>
             <h3 class="text-lg font-bold mb-2">{{ t.architectDashboard.findNewProjects }}</h3>
             <p class="text-sm text-white/80 mb-4">{{ t.architectDashboard.browseProjectsDesc }}</p>
             <router-link :to="{ name: 'OpportunityList' }">
@@ -119,6 +129,8 @@
       </div>
     </div>
   </div>
+
+  <TokenPurchaseModal />
 </template>
 
 <script setup>
@@ -127,11 +139,14 @@ import { storeToRefs } from 'pinia'
 import { Search, ClipboardList, FileText } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 import { useBidsStore } from '@/stores/bids'
+import { useTokenPurchaseStore } from '@/stores/tokenPurchase'
 import { useI18n } from '@/composables/useI18n'
+import TokenPurchaseModal from '@/components/architect/TokenPurchaseModal.vue'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
 const bidsStore = useBidsStore()
+const tokenPurchaseStore = useTokenPurchaseStore()
 
 const { myBids, pendingBids, acceptedBids } = storeToRefs(bidsStore)
 

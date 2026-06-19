@@ -564,6 +564,43 @@ public class ProjectService {
         .build();
   }
 
+  @Transactional(readOnly = true)
+  public List<com.rumantra.client.dto.ProjectPublicPreviewResponse> getPublicProjectPreviews() {
+    List<ProjectStatus> publicStatuses =
+        java.util.Arrays.asList(
+            ProjectStatus.OPEN, ProjectStatus.IN_PROGRESS, ProjectStatus.COMPLETED);
+
+    return projectRepository.findPublicProjects(publicStatuses).stream()
+        .limit(20)
+        .map(this::mapToPublicPreview)
+        .collect(Collectors.toList());
+  }
+
+  private com.rumantra.client.dto.ProjectPublicPreviewResponse mapToPublicPreview(Project project) {
+    String firstImageUrl =
+        project.getFiles().stream()
+            .filter(f -> f.getFileType() != null && f.getFileType().startsWith("image/"))
+            .findFirst()
+            .map(f -> fileStorageService.getPublicUrl(f.getFilePath()))
+            .orElse(null);
+
+    Long budgetDisplay =
+        project.getDesignBudgetMax() != null
+            ? project.getDesignBudgetMax()
+            : project.getBudgetTotal();
+
+    return com.rumantra.client.dto.ProjectPublicPreviewResponse.builder()
+        .id(project.getId())
+        .title(project.getTitle())
+        .location(project.getLocation())
+        .budgetDisplay(budgetDisplay)
+        .projectCategory(project.getProjectCategory())
+        .buildingFunction(project.getBuildingFunction())
+        .status(project.getStatus())
+        .firstImageUrl(firstImageUrl)
+        .build();
+  }
+
   private ProjectFileDto mapToProjectFileDto(ProjectFile projectFile) {
     return ProjectFileDto.builder()
         .id(projectFile.getId())

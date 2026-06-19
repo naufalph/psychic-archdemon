@@ -92,15 +92,31 @@
         </div>
       </div>
 
+      <div class="pt-2">
+        <BaseAlert v-if="store.portfolio.length === 0" variant="warning">
+          Portofolio membantu menarik klien. Anda tetap bisa melanjutkan dan menambahkannya nanti di halaman profil.
+        </BaseAlert>
+      </div>
+
       <div class="flex justify-between items-center pt-4">
-        <button @click="emit('back')" class="px-6 py-3 text-black/60 hover:text-black transition-colors">{{ t.onboarding.portfolioIntro.back }}</button>
-        <button
-          v-if="store.portfolio.length > 0"
-          @click="handleNext"
-          class="px-8 py-3 bg-[#7C4728] text-white rounded-full font-semibold hover:bg-[#6A3D22] transition-all hover:scale-105"
-        >
-          Continue
+        <button @click="emit('back')" class="px-6 py-3 text-black/60 hover:text-black transition-colors">
+          {{ t.onboarding.portfolioIntro.back }}
         </button>
+        <div class="flex items-center gap-3">
+          <button
+            v-if="store.portfolio.length === 0"
+            @click="emit('skip')"
+            class="px-6 py-3 text-black/40 hover:text-black/70 transition-colors text-sm font-medium"
+          >
+            Lewati
+          </button>
+          <button
+            @click="handleNext"
+            class="px-8 py-3 bg-[#7C4728] text-white rounded-full font-semibold hover:bg-[#6A3D22] transition-all hover:scale-105"
+          >
+            Continue
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -109,10 +125,11 @@
 <script setup>
 import { useOnboardingStore } from '@/stores/onboarding'
 import { useI18n } from '@/composables/useI18n'
+import BaseAlert from '@/components/ui/BaseAlert.vue'
 
 const { t } = useI18n()
 
-const emit = defineEmits(['next', 'back'])
+const emit = defineEmits(['next', 'back', 'skip'])
 const store = useOnboardingStore()
 
 const handleAddProject = () => {

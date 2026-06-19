@@ -31,13 +31,14 @@ export default {
       desc: 'dari 1.200+ ulasan pengguna'
     },
     jelajahi: {
-      trending: 'Sedang trending',
+      trending: 'Daftar Proyek',
       searchPlaceholder: 'Cari proyek, arsitek, atau gaya desain...',
       filterAll: 'Semua',
       filterHunian: 'Hunian',
       filterKomersil: 'Komersial',
       filterIndustrial: 'Industrial',
-      filterLainnya: 'Lainnya'
+      filterLainnya: 'Lainnya',
+      emptyState: 'Belum ada proyek yang tersedia.'
     },
     howItWorks: {
       eyebrow: 'Cara Kerja',
@@ -749,7 +750,8 @@ export default {
   opportunityList: {
     title: 'Peluang Tersedia',
     subtitle: 'Jelajahi proyek terbuka dan kirim proposal Anda',
-    tokensAvailable: 'Token Bid Tersedia',
+    tokensAvailable: 'Token Bid Tersisa',
+    tokensUsedThisMonth: 'Digunakan Bulan Ini',
     purchaseTokens: 'Beli Token',
     empty: {
       title: 'Tidak ada proyek terbuka',
@@ -800,7 +802,7 @@ export default {
     draftSavedDesc: 'Lanjutkan mengedit untuk melengkapi proposal Anda.',
     bidRejected: 'Penawaran Tidak Terpilih',
     bidRejectedDesc: 'Penawaran Anda tidak terpilih untuk proyek ini.',
-    noBidYet: 'Belum Ada Penawaran',
+    noBidYet: 'Buat Proposal',
     noBidYetDesc: 'Kirim proposal untuk bersaing mendapatkan proyek ini.',
     projectClosedBidding: 'Proyek Ditutup',
     projectClosedBiddingDesc: 'Periode bidding untuk proyek ini telah berakhir.'
@@ -1117,7 +1119,8 @@ export default {
   onboarding: {
     welcome: {
       title: 'Selamat Datang di Studio Anda',
-      subtitle: 'Mari ciptakan kehadiran arsitektur Anda dan tampilkan visi Anda kepada klien yang mencari desain luar biasa.',
+      subtitle:
+        'Mari ciptakan kehadiran arsitektur Anda dan tampilkan visi Anda kepada klien yang mencari desain luar biasa.',
       enterStudio: 'Masuk Studio',
       duration: 'Ini akan memakan waktu sekitar 10 menit untuk diselesaikan'
     },
@@ -1153,7 +1156,8 @@ export default {
       title: 'Bangun Portofolio Anda',
       subtitle: 'Tampilkan proyek terbaik Anda untuk menarik klien.',
       startPortfolio: 'Mulai Portofolio Anda',
-      startDesc: 'Tambahkan setidaknya satu proyek untuk menampilkan karya Anda kepada klien potensial.',
+      startDesc:
+        'Tambahkan setidaknya satu proyek untuk menampilkan karya Anda kepada klien potensial.',
       addFirst: 'Tambah Proyek Pertama Anda',
       addAnother: 'Tambah Proyek Lain',
       remove: 'Hapus',
@@ -1209,13 +1213,15 @@ export default {
       phone: 'Nomor HP',
       portfolioProjects: 'Proyek Portofolio',
       readyToActivate: 'Siap Diaktifkan',
-      readyDesc: 'Profil Anda lengkap. Klik di bawah untuk mengaktifkan kehadiran arsitek Anda dan mulai terhubung dengan klien.',
+      readyDesc:
+        'Profil Anda lengkap. Klik di bawah untuk mengaktifkan kehadiran arsitek Anda dan mulai terhubung dengan klien.',
       back: 'Kembali',
       activate: 'Aktifkan Kehadiran'
     },
     activated: {
       title: 'Studio Diaktifkan',
-      subtitle: 'Kehadiran arsitektur Anda kini aktif. Klien dapat menemukan karya Anda dan terhubung dengan studio Anda.',
+      subtitle:
+        'Kehadiran arsitektur Anda kini aktif. Klien dapat menemukan karya Anda dan terhubung dengan studio Anda.',
       whatsNext: 'Apa Selanjutnya?',
       step1: 'Jelajahi peluang proyek terbuka',
       step2: 'Ajukan proposal kepada klien yang tertarik',

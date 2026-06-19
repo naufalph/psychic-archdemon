@@ -50,7 +50,7 @@
                       {{ getT('tokenPurchase.modal.currentQuota') }}
                     </div>
                     <div class="mt-1 text-3xl font-bold">
-                      {{ quota?.tokensRemaining || 0 }} / {{ quota?.tokensAllocated || 0 }}
+                      {{ quota?.tokensRemaining || 0 }}
                     </div>
                     <div class="mt-1 text-xs opacity-75">tokens</div>
                   </div>

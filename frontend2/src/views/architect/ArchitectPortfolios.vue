@@ -75,6 +75,7 @@
             v-for="portfolio in store.portfolios"
             :key="portfolio.id"
             :portfolio="portfolio"
+            @view="handleViewPortfolio(portfolio)"
             @edit="handleEditPortfolio(portfolio)"
             @delete="handleDeletePortfolio(portfolio)"
           />
@@ -90,6 +91,8 @@
       @close="store.closeModal"
       @save="handleSavePortfolio"
     />
+
+    <PortfolioLightbox :portfolio="viewingPortfolio" @close="viewingPortfolio = null" />
 
     <Transition
       enter-active-class="transition ease-out duration-300"
@@ -148,6 +151,7 @@ import { usePortfoliosStore } from '@/stores/portfolios'
 import { useI18n } from '@/composables/useI18n'
 import PortfolioCard from '@/components/architect/PortfolioCard.vue'
 import PortfolioModal from '@/components/architect/PortfolioModal.vue'
+import PortfolioLightbox from '@/components/architect/PortfolioLightbox.vue'
 
 const store = usePortfoliosStore()
 const { t, getT } = useI18n()
@@ -157,6 +161,7 @@ const toastMessage = ref('')
 const toastType = ref('success')
 const showDeleteConfirm = ref(false)
 const portfolioToDelete = ref(null)
+const viewingPortfolio = ref(null)
 
 const displayToast = (message, type = 'success') => {
   toastMessage.value = message
@@ -165,6 +170,10 @@ const displayToast = (message, type = 'success') => {
   setTimeout(() => {
     showToast.value = false
   }, 5000)
+}
+
+const handleViewPortfolio = portfolio => {
+  viewingPortfolio.value = portfolio
 }
 
 const handleAddPortfolio = () => {

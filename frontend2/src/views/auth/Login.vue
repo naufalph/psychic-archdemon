@@ -9,6 +9,14 @@
     ></div>
 
     <div v-motion :initial="{ opacity: 0, y: 20 }" :enter="{ opacity: 1, y: 0 }" class="w-full max-w-md relative z-10">
+      <router-link
+        to="/"
+        class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black transition mb-4 font-medium"
+      >
+        <ArrowLeft :size="16" />
+        Kembali
+      </router-link>
+
       <div class="bg-white rounded-3xl shadow-2xl p-12 border border-gray-100">
         <div class="text-center mb-10">
           <router-link to="/" class="inline-block mb-6">
@@ -54,9 +62,7 @@
             </a>
           </div>
 
-          <p v-if="errorMessage" class="text-red-500 text-sm bg-red-50 p-4 rounded-2xl border border-red-200">
-            {{ errorMessage }}
-          </p>
+          <BaseAlert v-if="errorMessage" variant="error">{{ errorMessage }}</BaseAlert>
 
           <BaseButton
             type="submit"
@@ -125,8 +131,8 @@
         </form>
       </div>
 
-      <div v-if="route.query.verified === 'true'" class="mt-6 bg-green-50 border border-green-200 rounded-2xl p-4">
-        <p class="text-green-800 text-sm text-center">Email verified successfully! Please sign in to continue.</p>
+      <div v-if="route.query.verified === 'true'" class="mt-4">
+        <BaseAlert variant="success">Email verified successfully! Please sign in to continue.</BaseAlert>
       </div>
     </div>
   </div>
@@ -135,10 +141,12 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { ArrowLeft } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 import { useI18n } from '@/composables/useI18n'
 import BaseButton from '@/components/ui/BaseButton.vue'
 import BaseInput from '@/components/ui/BaseInput.vue'
+import BaseAlert from '@/components/ui/BaseAlert.vue'
 import Logo from '@/components/ui/Logo.vue'
 
 const router = useRouter()

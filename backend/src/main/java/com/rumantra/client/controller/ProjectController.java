@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.rumantra.bidding.dto.BidResponse;
 import com.rumantra.client.dto.CreateProjectRequest;
+import com.rumantra.client.dto.ProjectPublicPreviewResponse;
 import com.rumantra.client.dto.ProjectResponse;
 import com.rumantra.client.dto.UpdateValidationRequest;
 import com.rumantra.client.service.ProjectService;
@@ -190,6 +191,29 @@ public class ProjectController {
               ApiResponse.<ProjectResponse>builder()
                   .success(false)
                   .message("An error occurred while updating project validation status")
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
+  }
+
+  @GetMapping("/public-preview")
+  public ResponseEntity<ApiResponse<List<ProjectPublicPreviewResponse>>>
+      getPublicProjectPreviews() {
+    try {
+      List<ProjectPublicPreviewResponse> previews = projectService.getPublicProjectPreviews();
+      return ResponseEntity.ok(
+          ApiResponse.<List<ProjectPublicPreviewResponse>>builder()
+              .success(true)
+              .data(previews)
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+    } catch (Exception e) {
+      log.error("Error retrieving public project previews", e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(
+              ApiResponse.<List<ProjectPublicPreviewResponse>>builder()
+                  .success(false)
+                  .message("An error occurred while retrieving projects")
                   .timestamp(LocalDateTime.now().toString())
                   .build());
     }

@@ -15,9 +15,7 @@
         </div>
 
         <div class="p-8">
-          <div v-if="error" class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p class="text-sm text-red-600">{{ error }}</p>
-          </div>
+          <BaseAlert v-if="error" variant="error" class="mb-6">{{ error }}</BaseAlert>
 
           <div v-if="isLoading && !hasProfile" class="space-y-4">
             <div class="animate-pulse">
@@ -132,6 +130,7 @@ import { useRouter } from 'vue-router'
 import { useClientProfileStore } from '@/stores/clientProfile'
 import { useI18n } from '@/composables/useI18n'
 import ProfileForm from '@/components/client/ProfileForm.vue'
+import BaseAlert from '@/components/ui/BaseAlert.vue'
 import { ArrowLeftIcon } from '@heroicons/vue/24/outline'
 
 const router = useRouter()

@@ -1,19 +1,25 @@
 package com.rumantra.bidding.service;
 
+import java.time.LocalDateTime;
+import java.time.YearMonth;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.rumantra.architect.domain.Architect;
 import com.rumantra.bidding.domain.BidQuota;
+import com.rumantra.bidding.domain.BidUsageAction;
 import com.rumantra.bidding.dto.BidQuotaResponse;
 import com.rumantra.bidding.repository.BidQuotaRepository;
+import com.rumantra.bidding.repository.BidUsageLogRepository;
 import com.rumantra.subscription.domain.SubscriptionTier;
 
 @Service
 public class BidQuotaService {
 
   @Autowired private BidQuotaRepository bidQuotaRepository;
+  @Autowired private BidUsageLogRepository bidUsageLogRepository;
 
   @Transactional
   public BidQuota initializeBidQuota(Architect architect) {
@@ -42,10 +48,18 @@ public class BidQuotaService {
   public BidQuotaResponse getQuotaResponse(Long architectId) {
     BidQuota quota = getQuotaByArchitectId(architectId);
 
+    YearMonth currentMonth = YearMonth.now();
+    LocalDateTime monthStart = currentMonth.atDay(1).atStartOfDay();
+    LocalDateTime monthEnd = currentMonth.atEndOfMonth().atTime(23, 59, 59);
+
+    long usedThisMonth =
+        bidUsageLogRepository.countByArchitectIdAndActionAndTimestampBetween(
+            architectId, BidUsageAction.BID_PLACED, monthStart, monthEnd);
+
     return BidQuotaResponse.builder()
         .tier(quota.getTier())
         .tokensRemaining(quota.getTokensRemaining())
-        .tokensAllocated(quota.getTokensAllocated())
+        .tokensUsedThisMonth((int) usedThisMonth)
         .build();
   }
 

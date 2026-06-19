@@ -17,4 +17,7 @@ public interface BidUsageLogRepository extends JpaRepository<BidUsageLog, Long> 
   List<BidUsageLog> findByArchitectIdOrderByTimestampDesc(Long architectId);
 
   long countByArchitectIdAndAction(Long architectId, BidUsageAction action);
+
+  long countByArchitectIdAndActionAndTimestampBetween(
+      Long architectId, BidUsageAction action, LocalDateTime from, LocalDateTime to);
 }

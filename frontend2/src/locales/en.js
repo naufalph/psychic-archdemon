@@ -31,13 +31,14 @@ export default {
       desc: 'from 1,200+ user reviews'
     },
     jelajahi: {
-      trending: 'Trending now',
+      trending: 'Project List',
       searchPlaceholder: 'Search projects, architects, or design styles...',
       filterAll: 'All',
       filterHunian: 'Residential',
       filterKomersil: 'Commercial',
       filterIndustrial: 'Industrial',
-      filterLainnya: 'Other'
+      filterLainnya: 'Other',
+      emptyState: 'No projects available yet.'
     },
     howItWorks: {
       eyebrow: 'How It Works',
@@ -743,7 +744,8 @@ export default {
   opportunityList: {
     title: 'Available Opportunities',
     subtitle: 'Browse open projects and submit your proposals',
-    tokensAvailable: 'Bid Tokens Available',
+    tokensAvailable: 'Bid Tokens Remaining',
+    tokensUsedThisMonth: 'Used This Month',
     purchaseTokens: 'Purchase Tokens',
     empty: {
       title: 'No open projects',
@@ -794,7 +796,7 @@ export default {
     draftSavedDesc: 'Continue editing to complete your proposal.',
     bidRejected: 'Bid Not Selected',
     bidRejectedDesc: 'Your bid was not selected for this project.',
-    noBidYet: 'No Bid Submitted',
+    noBidYet: 'Create Proposal',
     noBidYetDesc: 'Submit a proposal to compete for this project.',
     projectClosedBidding: 'Project is Closed',
     projectClosedBiddingDesc: 'Bidding has ended for this project.'
@@ -1108,7 +1110,8 @@ export default {
   onboarding: {
     welcome: {
       title: 'Welcome to Your Studio',
-      subtitle: "Let's craft your architectural presence and showcase your vision to clients seeking exceptional design.",
+      subtitle:
+        "Let's craft your architectural presence and showcase your vision to clients seeking exceptional design.",
       enterStudio: 'Enter Studio',
       duration: 'This will take approximately 10 minutes to complete'
     },
@@ -1200,13 +1203,15 @@ export default {
       phone: 'Mobile Phone',
       portfolioProjects: 'Portfolio Projects',
       readyToActivate: 'Ready to Activate',
-      readyDesc: 'Your profile is complete. Click below to activate your architect presence and start connecting with clients.',
+      readyDesc:
+        'Your profile is complete. Click below to activate your architect presence and start connecting with clients.',
       back: 'Back',
       activate: 'Activate Presence'
     },
     activated: {
       title: 'Studio Activated',
-      subtitle: 'Your architectural presence is now live. Clients can discover your work and connect with your practice.',
+      subtitle:
+        'Your architectural presence is now live. Clients can discover your work and connect with your practice.',
       whatsNext: "What's Next?",
       step1: 'Browse open project opportunities',
       step2: 'Submit proposals to interested clients',

@@ -93,11 +93,9 @@
               </BaseButton>
             </div>
 
-            <div v-else-if="resendSuccess" class="bg-green-50 border border-green-200 rounded-2xl p-4">
-              <p class="text-green-800 text-sm">
-                {{ t.auth?.verifyEmail?.resendSuccess || 'Verification email sent! Please check your inbox.' }}
-              </p>
-            </div>
+            <BaseAlert v-else-if="resendSuccess" variant="success">
+              {{ t.auth?.verifyEmail?.resendSuccess || 'Verification email sent! Please check your inbox.' }}
+            </BaseAlert>
 
             <router-link to="/login">
               <button
@@ -120,6 +118,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useI18n } from '@/composables/useI18n'
 import BaseButton from '@/components/ui/BaseButton.vue'
 import BaseInput from '@/components/ui/BaseInput.vue'
+import BaseAlert from '@/components/ui/BaseAlert.vue'
 import Logo from '@/components/ui/Logo.vue'
 import ConfettiExplosion from 'vue-confetti-explosion'
 import { CheckCircle2, XCircle } from 'lucide-vue-next'

@@ -201,11 +201,24 @@ public class UserService {
     saveVerificationToken(user.getId(), verificationToken);
     emailService.sendVerificationEmail(user.getEmail(), verificationToken);
 
-    // Create client profile (but user can't log in until verified)
-    ClientSignupRequestDto clientSignupRequestDto =
-        ClientSignupRequestDto.builder().userId(user.getId()).build();
-
-    clientService.register(clientSignupRequestDto);
+    if (RumantraConstants.ARCH_ROLE.equals(signupRequest.getRole())) {
+      Architect architect =
+          Architect.builder()
+              .user(user)
+              .ktpVerified(false)
+              .npwpVerified(false)
+              .successMatch(0)
+              .successProject(0)
+              .needsOnboarding(true)
+              .build();
+      architect = architectRepository.save(architect);
+      bidQuotaService.initializeBidQuota(architect);
+      subscriptionService.initializeFreeTier(architect);
+    } else {
+      ClientSignupRequestDto clientSignupRequestDto =
+          ClientSignupRequestDto.builder().userId(user.getId()).build();
+      clientService.register(clientSignupRequestDto);
+    }
 
     return mapToDto(user);
   }

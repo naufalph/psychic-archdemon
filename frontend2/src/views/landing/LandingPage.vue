@@ -127,40 +127,78 @@
 
       <!-- Project grid -->
       <div class="max-w-[1440px] mx-auto px-10">
-        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5">
+        <!-- Loading skeleton -->
+        <div
+          v-if="isLoading"
+          class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5"
+        >
+          <div
+            v-for="i in 8"
+            :key="i"
+            class="rounded-[20px] overflow-hidden border border-[#E8E8E8] bg-white animate-pulse"
+          >
+            <div class="bg-gray-200" style="aspect-ratio: 4/3"></div>
+            <div class="p-4 space-y-2">
+              <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+              <div class="h-3 bg-gray-200 rounded w-1/2"></div>
+              <div class="h-3 bg-gray-200 rounded w-2/3"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty state -->
+        <div v-else-if="filteredProjects.length === 0" class="py-20 text-center">
+          <p class="text-[15px] text-[#888888]">{{ t.landing.jelajahi.emptyState }}</p>
+        </div>
+
+        <!-- Cards -->
+        <div v-else class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-5">
           <div
             v-for="project in filteredProjects"
             :key="project.id"
-            class="group rounded-[20px] overflow-hidden border border-[#E8E8E8] bg-white cursor-pointer transition-all duration-300 hover:-translate-y-1.5"
-            :class="{
-              'hover:shadow-[0_20px_30px_-10px_rgba(6,78,59,0.4)] hover:border-[#064e3b]':
-                project.category === 'hunian',
-              'hover:shadow-[0_20px_30px_-10px_rgba(30,58,138,0.4)] hover:border-[#1e3a8a]':
-                project.category === 'komersil',
-              'hover:shadow-[0_20px_30px_-10px_rgba(120,53,15,0.4)] hover:border-[#78350f]':
-                project.category === 'industrial',
-              'hover:shadow-[0_20px_30px_-10px_rgba(127,29,29,0.4)] hover:border-[#7f1d1d]':
-                project.category === 'lainnya'
-            }"
+            class="group rounded-[20px] overflow-hidden border border-[#E8E8E8] bg-white cursor-pointer transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_30px_-10px_rgba(0,0,0,0.12)] hover:border-[#CCCCCC]"
           >
-            <div class="relative overflow-hidden" style="aspect-ratio: 4/3">
+            <div class="relative overflow-hidden bg-[#F5F5F5]" style="aspect-ratio: 4/3">
               <img
-                :src="project.img"
+                v-if="project.firstImageUrl"
+                :src="project.firstImageUrl"
                 :alt="project.title"
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
+              <div v-else class="w-full h-full flex items-center justify-center">
+                <svg class="w-12 h-12 text-[#CCCCCC]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="1.5"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
               <span
+                v-if="project.buildingFunction || project.projectCategory"
                 class="absolute top-3 left-3 text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide text-[#0A0A0A]"
                 style="background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(4px)"
               >
-                {{ project.categoryLabel }}
+                {{ project.buildingFunction || project.projectCategory }}
+              </span>
+              <span
+                class="absolute top-3 right-3 text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide"
+                :class="statusBadgeClass(project.status)"
+              >
+                {{ formatStatus(project.status) }}
               </span>
             </div>
             <div class="p-4">
-              <h3 class="text-[15px] font-semibold text-[#0A0A0A] mb-1" style="letter-spacing: -0.01em">
+              <h3 class="text-[15px] font-semibold text-[#0A0A0A] mb-1 line-clamp-1" style="letter-spacing: -0.01em">
                 {{ project.title }}
               </h3>
-              <p class="text-[12px] text-[#888888] leading-snug">{{ project.location }}</p>
+              <p v-if="project.location" class="text-[12px] text-[#888888] leading-snug line-clamp-1">
+                📍 {{ project.location }}
+              </p>
+              <p v-if="project.budgetDisplay" class="text-[12px] font-semibold text-[#0A0A0A] mt-2">
+                {{ formatBudget(project.budgetDisplay) }}
+              </p>
             </div>
           </div>
         </div>
@@ -251,17 +289,20 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { ShieldCheck, Tag, Lock, MessageSquare, Layers, MapPin } from 'lucide-vue-next'
 import Navbar from '@/components/layout/Navbar.vue'
 import Footer from '@/components/layout/Footer.vue'
 import HeroStepper from '@/components/landing/HeroStepper.vue'
 import { useI18n } from '@/composables/useI18n'
+import { projectAPI } from '@/services/api'
 
 const { t } = useI18n()
 
 const searchQuery = ref('')
 const activeCategory = ref('semua')
+const projects = ref([])
+const isLoading = ref(true)
 
 const CATEGORIES = [
   { value: 'semua', labelKey: 'filterAll' },
@@ -286,98 +327,78 @@ const WHY_CARDS = [
   { icon: MapPin, titleKey: 'card6Title', descKey: 'card6Desc' }
 ]
 
-const STATIC_PROJECTS = [
-  {
-    id: 1,
-    title: 'Villa Tropis Ubud',
-    location: 'Bali, Indonesia',
-    category: 'hunian',
-    categoryLabel: 'Hunian',
-    img: 'https://picsum.photos/seed/arch1/400/300'
-  },
-  {
-    id: 2,
-    title: 'Kantor Modern Sudirman',
-    location: 'Jakarta Pusat',
-    category: 'komersil',
-    categoryLabel: 'Komersial',
-    img: 'https://picsum.photos/seed/arch2/400/300'
-  },
-  {
-    id: 3,
-    title: 'Gudang Logistik Karawang',
-    location: 'Karawang, Jawa Barat',
-    category: 'industrial',
-    categoryLabel: 'Industrial',
-    img: 'https://picsum.photos/seed/arch3/400/300'
-  },
-  {
-    id: 4,
-    title: 'Rumah Minimalis BSD',
-    location: 'Tangerang Selatan',
-    category: 'hunian',
-    categoryLabel: 'Hunian',
-    img: 'https://picsum.photos/seed/arch4/400/300'
-  },
-  {
-    id: 5,
-    title: 'Kafe Konsep Bandung',
-    location: 'Bandung, Jawa Barat',
-    category: 'komersil',
-    categoryLabel: 'Komersial',
-    img: 'https://picsum.photos/seed/arch5/400/300'
-  },
-  {
-    id: 6,
-    title: 'Apartemen Surabaya',
-    location: 'Surabaya, Jawa Timur',
-    category: 'hunian',
-    categoryLabel: 'Hunian',
-    img: 'https://picsum.photos/seed/arch6/400/300'
-  },
-  {
-    id: 7,
-    title: 'Pabrik Tekstil Bekasi',
-    location: 'Bekasi, Jawa Barat',
-    category: 'industrial',
-    categoryLabel: 'Industrial',
-    img: 'https://picsum.photos/seed/arch7/400/300'
-  },
-  {
-    id: 8,
-    title: 'Toko Retail Yogyakarta',
-    location: 'Yogyakarta',
-    category: 'lainnya',
-    categoryLabel: 'Lainnya',
-    img: 'https://picsum.photos/seed/arch8/400/300'
-  },
-  {
-    id: 9,
-    title: 'Rumah Pantai Lombok',
-    location: 'Lombok, NTB',
-    category: 'hunian',
-    categoryLabel: 'Hunian',
-    img: 'https://picsum.photos/seed/arch9/400/300'
-  },
-  {
-    id: 10,
-    title: 'Hotel Butik Semarang',
-    location: 'Semarang, Jawa Tengah',
-    category: 'komersil',
-    categoryLabel: 'Komersial',
-    img: 'https://picsum.photos/seed/arch10/400/300'
+const CATEGORY_MAP = {
+  hunian: ['hunian', 'rumah', 'residential', 'villa', 'apartemen', 'apartment', 'townhouse'],
+  komersil: [
+    'komersil',
+    'komersial',
+    'commercial',
+    'kantor',
+    'office',
+    'hotel',
+    'mall',
+    'retail',
+    'kafe',
+    'cafe',
+    'restoran',
+    'restaurant',
+    'ruko'
+  ],
+  industrial: ['industri', 'industrial', 'pabrik', 'factory', 'gudang', 'warehouse', 'manufaktur']
+}
+
+const resolveCategory = project => {
+  const haystack = `${project.buildingFunction || ''} ${project.projectCategory || ''}`.toLowerCase()
+  for (const [cat, keywords] of Object.entries(CATEGORY_MAP)) {
+    if (keywords.some(kw => haystack.includes(kw))) return cat
   }
-]
+  return 'lainnya'
+}
+
+const formatBudget = amount => {
+  if (!amount) return null
+  if (amount >= 1_000_000_000) return `Rp ${(amount / 1_000_000_000).toFixed(1).replace('.0', '')} M`
+  if (amount >= 1_000_000) return `Rp ${(amount / 1_000_000).toFixed(0)} jt`
+  return `Rp ${amount.toLocaleString('id-ID')}`
+}
+
+const formatStatus = status => {
+  const map = { OPEN: 'Open', IN_PROGRESS: 'Berjalan', COMPLETED: 'Selesai' }
+  return map[status] || status
+}
+
+const statusBadgeClass = status => {
+  if (status === 'OPEN') return 'bg-green-100 text-green-800'
+  if (status === 'IN_PROGRESS') return 'bg-blue-100 text-blue-800'
+  if (status === 'COMPLETED') return 'bg-gray-100 text-gray-600'
+  return 'bg-gray-100 text-gray-600'
+}
 
 const filteredProjects = computed(() => {
-  let result = STATIC_PROJECTS
+  let result = projects.value
   if (activeCategory.value !== 'semua') {
-    result = result.filter(p => p.category === activeCategory.value)
+    result = result.filter(p => resolveCategory(p) === activeCategory.value)
   }
   if (searchQuery.value.trim()) {
     const q = searchQuery.value.toLowerCase()
-    result = result.filter(p => p.title.toLowerCase().includes(q) || p.location.toLowerCase().includes(q))
+    result = result.filter(
+      p =>
+        p.title?.toLowerCase().includes(q) ||
+        p.location?.toLowerCase().includes(q) ||
+        p.buildingFunction?.toLowerCase().includes(q)
+    )
   }
   return result
+})
+
+onMounted(async () => {
+  try {
+    const res = await projectAPI.getPublicPreviews()
+    projects.value = res.data?.data || []
+  } catch {
+    // silently fail — landing page works without projects
+  } finally {
+    isLoading.value = false
+  }
 })
 </script>

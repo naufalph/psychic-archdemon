@@ -1,6 +1,7 @@
 package com.rumantra.client.repository;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +28,12 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
   @Query("SELECT p FROM Project p LEFT JOIN FETCH p.files WHERE p.status = :status")
   List<Project> findByStatusWithFiles(@Param("status") ProjectStatus status, Sort sort);
+
+  @Query(
+      "SELECT p FROM Project p LEFT JOIN FETCH p.files"
+          + " WHERE p.status IN :statuses"
+          + " ORDER BY p.createdAt DESC")
+  List<Project> findPublicProjects(@Param("statuses") Collection<ProjectStatus> statuses);
 
   @Query(
       "SELECT p FROM Project p JOIN FETCH p.client c JOIN FETCH c.user"

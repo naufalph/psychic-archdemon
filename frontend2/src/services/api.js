@@ -255,7 +255,8 @@ export const projectAPI = {
   rejectNegotiation: projectId => api.post(`/rmtr/projects/${projectId}/reject-negotiation`),
   architectConfirmNegotiation: projectId =>
     api.post(`/rmtr/projects/${projectId}/architect-confirm-negotiation`),
-  initializePhases: projectId => api.post(`/rmtr/projects/${projectId}/initialize-phases`)
+  initializePhases: projectId => api.post(`/rmtr/projects/${projectId}/initialize-phases`),
+  getPublicPreviews: () => api.get('/rmtr/projects/public-preview')
 }
 
 export const chatAPI = {

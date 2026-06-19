@@ -128,9 +128,11 @@
       </div>
     </div>
 
-    <div v-if="error" class="p-4 bg-red-50 border border-red-200 rounded-2xl text-sm text-red-600">
-      {{ error }}
-    </div>
+    <BaseAlert v-if="error" variant="error">{{ error }}</BaseAlert>
+
+    <BaseAlert v-if="hasIncompleteIdentity" variant="warning">
+      Lengkapi KTP dan NPWP untuk dapat mengajukan penawaran pada proyek.
+    </BaseAlert>
 
     <div class="flex justify-end items-center gap-4">
       <button
@@ -168,6 +170,7 @@
 import { ref, computed, watch } from 'vue'
 import { useI18n } from '@/composables/useI18n'
 import { EXPERTISE_TAGS, EXPERIENCE_OPTIONS } from '@/constants/onboarding'
+import BaseAlert from '@/components/ui/BaseAlert.vue'
 
 const props = defineProps({
   initialData: {
@@ -321,17 +324,16 @@ const hasDataChanged = computed(() => {
 })
 
 const meetsValidationRequirements = computed(() => {
-  const ktpValid = /^[0-9]{16}$/.test(formData.value.ktpNum.trim())
-  const npwpValid = /^[0-9]{15,16}$/.test(formData.value.npwp.trim())
-
   return (
     formData.value.name.trim().length >= 2 &&
     formData.value.city.trim().length >= 2 &&
     formData.value.experienceRange &&
-    formData.value.expertise.length > 0 &&
-    ktpValid &&
-    npwpValid
+    formData.value.expertise.length > 0
   )
+})
+
+const hasIncompleteIdentity = computed(() => {
+  return !formData.value.ktpNum.trim() || !formData.value.npwp.trim()
 })
 
 const isFormValid = computed(() => {

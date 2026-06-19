@@ -1,17 +1,11 @@
 package com.rumantra.architect.service;
 
-import java.util.Optional;
-
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.rumantra.architect.domain.Architect;
 import com.rumantra.architect.dto.*;
 import com.rumantra.architect.repository.ArchitectRepository;
-import com.rumantra.security.JwtUtils;
 import com.rumantra.shared.exception.ResourceNotFoundException;
-import com.rumantra.user.domain.User;
-import com.rumantra.user.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -21,56 +15,6 @@ import lombok.RequiredArgsConstructor;
 public class ArchitectService {
 
   private final ArchitectRepository architectRepository;
-  private final UserRepository userRepository;
-  private final PasswordEncoder passwordEncoder;
-  private final JwtUtils jwtUtils;
-
-  @Transactional
-  public ArchitectDto register(ArchitectSignupRequestDto signupRequest) {
-
-    // Check if email already exists
-    if (userRepository.existsByEmail(signupRequest.getEmail())) {
-      throw new IllegalArgumentException("Email is already in use!");
-    }
-
-    // Check if KTP number already exists
-    if (architectRepository.existsByKtpNum(signupRequest.getKtpNum())) {
-      throw new IllegalArgumentException("KTP number is already registered!");
-    }
-
-    // Check if NPWP already exists
-    if (architectRepository.existsByNpwp(signupRequest.getNpwp())) {
-      throw new IllegalArgumentException("NPWP is already registered!");
-    }
-
-    // Create new user
-    Optional<User> user = userRepository.findByEmailAndIsActive(signupRequest.getEmail(), true);
-
-    if (user.isEmpty()) {
-      throw new IllegalArgumentException("user is not found!");
-    } else {
-      // Create architect profile
-      Architect architect =
-          Architect.builder()
-              .user(user.get())
-              .companyName(signupRequest.getCompanyName())
-              .companySite(signupRequest.getCompanySite())
-              .contactName(signupRequest.getContactName())
-              .phoneNumber(signupRequest.getPhoneNum())
-              .category(signupRequest.getCategory())
-              .ktpNum(signupRequest.getKtpNum())
-              .ktpVerified(false)
-              .npwp(signupRequest.getNpwp())
-              .npwpVerified(false)
-              .successMatch(0)
-              .successProject(0)
-              .build();
-
-      architect = architectRepository.save(architect);
-
-      return mapToDto(architect);
-    }
-  }
 
   @Transactional
   public ArchitectDto updateArchitect(Long userId, UpdateArchitectDto updateRequest) {

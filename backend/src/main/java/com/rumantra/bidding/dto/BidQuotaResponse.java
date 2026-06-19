@@ -15,5 +15,5 @@ public class BidQuotaResponse {
 
   private SubscriptionTier tier;
   private Integer tokensRemaining;
-  private Integer tokensAllocated;
+  private Integer tokensUsedThisMonth;
 }

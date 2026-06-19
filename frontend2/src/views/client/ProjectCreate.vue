@@ -244,9 +244,7 @@
             </div>
           </section>
 
-          <div v-if="error" class="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
-            {{ error }}
-          </div>
+          <BaseAlert v-if="error" variant="error">{{ error }}</BaseAlert>
 
           <div class="flex gap-4 pt-6 border-t border-gray-100">
             <button
@@ -280,6 +278,7 @@ import { useProjectsStore } from '@/stores/projects'
 import DeliverablesSelector from '@/components/project/DeliverablesSelector.vue'
 import BudgetRangeSlider from '@/components/project/BudgetRangeSlider.vue'
 import MultiImageUploader from '@/components/upload/MultiImageUploader.vue'
+import BaseAlert from '@/components/ui/BaseAlert.vue'
 
 const router = useRouter()
 const projectsStore = useProjectsStore()

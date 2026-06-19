@@ -24,17 +24,14 @@
         v-if="currentStep === 'PORTFOLIO_INTRO'"
         @next="store.nextStep()"
         @back="store.previousStep()"
+        @skip="store.goToStep('REVIEW')"
       />
       <StepPortfolioProject
         v-if="currentStep === 'PORTFOLIO_PROJECT'"
         @next="handlePortfolioProjectNext"
         @back="store.previousStep()"
       />
-      <StepIdentityDocs
-        v-if="currentStep === 'IDENTITY_DOCS'"
-        @next="store.nextStep()"
-        @back="store.previousStep()"
-      />
+      <StepIdentityDocs v-if="currentStep === 'IDENTITY_DOCS'" @next="store.nextStep()" @back="store.previousStep()" />
       <StepReview v-if="currentStep === 'REVIEW'" @next="store.nextStep()" @back="store.previousStep()" />
       <StepActivated v-if="currentStep === 'ACTIVATED'" />
     </main>
@@ -124,10 +121,6 @@ const showRecoveryModal = ref(false)
 const currentStep = computed(() => store.currentStep)
 
 const handlePortfolioProjectNext = () => {
-  if (store.portfolio.length === 0) {
-    store.error = 'Please add at least one project'
-    return
-  }
   store.nextStep()
 }
 

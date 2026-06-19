@@ -30,7 +30,14 @@
 
       <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <button
-          @click="$emit('edit')"
+          @click.stop="$emit('view')"
+          class="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-blue-50 transition-colors"
+          title="View"
+        >
+          <Eye class="w-4 h-4 text-blue-600" />
+        </button>
+        <button
+          @click.stop="$emit('edit')"
           class="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-amber-50 transition-colors"
           :title="t.portfolio.card.edit"
         >
@@ -44,7 +51,7 @@
           </svg>
         </button>
         <button
-          @click="$emit('delete')"
+          @click.stop="$emit('delete')"
           class="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-red-50 transition-colors"
           :title="t.portfolio.card.delete"
         >
@@ -93,6 +100,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import { Eye } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
 
 const props = defineProps({
@@ -102,7 +110,7 @@ const props = defineProps({
   }
 })
 
-defineEmits(['edit', 'delete'])
+defineEmits(['view', 'edit', 'delete'])
 
 const { t } = useI18n()
 

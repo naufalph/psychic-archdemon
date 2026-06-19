@@ -22,31 +22,6 @@ public class ArchitectController {
   private final ArchitectService architectService;
   private final OtpService otpService;
 
-  @PostMapping("/register")
-  public ResponseEntity<ApiResponse<ArchitectDto>> register(
-      @Valid @RequestBody ArchitectSignupRequestDto signupRequest) {
-    try {
-      ArchitectDto architect = architectService.register(signupRequest);
-      return ResponseEntity.status(HttpStatus.CREATED)
-          .body(
-              ApiResponse.<ArchitectDto>builder()
-                  .success(true)
-                  .message("Architect registered successfully!")
-                  .data(architect)
-                  .build());
-    } catch (IllegalArgumentException e) {
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(ApiResponse.<ArchitectDto>builder().success(false).message(e.getMessage()).build());
-    } catch (Exception e) {
-      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-          .body(
-              ApiResponse.<ArchitectDto>builder()
-                  .success(false)
-                  .message("An error occurred during registration")
-                  .build());
-    }
-  }
-
   @PutMapping("/profile")
   public ResponseEntity<ApiResponse<ArchitectDto>> updateProfile(
       @Valid @RequestBody UpdateArchitectDto updateRequest, Authentication authentication) {

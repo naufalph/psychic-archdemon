@@ -22,13 +22,23 @@
       </div>
 
       <div v-if="quota" class="bg-white rounded-2xl border border-gray-200 p-6 mb-8 flex items-center justify-between">
-        <div class="flex items-center gap-4">
-          <div class="w-12 h-12 bg-[#F5E6D3] rounded-full flex items-center justify-center">
+        <div class="flex items-center gap-6">
+          <div class="w-12 h-12 bg-[#F5E6D3] rounded-full flex items-center justify-center shrink-0">
             <Coins :size="24" class="text-[#7C4728]" />
           </div>
-          <div>
-            <p class="text-sm text-gray-500">{{ t.opportunityList.tokensAvailable }}</p>
-            <p class="text-2xl font-bold text-[#7C4728]">{{ quota.tokensRemaining }} / {{ quota.tokensAllocated }}</p>
+          <div class="flex gap-8">
+            <div>
+              <p class="text-xs text-gray-500 uppercase font-bold tracking-wide">
+                {{ t.opportunityList.tokensAvailable }}
+              </p>
+              <p class="text-2xl font-bold text-[#7C4728]">{{ quota.tokensRemaining }}</p>
+            </div>
+            <div class="border-l border-gray-200 pl-8">
+              <p class="text-xs text-gray-500 uppercase font-bold tracking-wide">
+                {{ t.opportunityList.tokensUsedThisMonth }}
+              </p>
+              <p class="text-2xl font-bold text-gray-700">{{ quota.tokensUsedThisMonth ?? 0 }}</p>
+            </div>
           </div>
         </div>
         <button

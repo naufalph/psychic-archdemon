@@ -77,7 +77,7 @@
                 class="absolute right-0 top-full mt-3 w-56 bg-white rounded-2xl shadow-xl border border-[#E8E8E8] overflow-hidden z-50"
               >
                 <router-link
-                  to="/signup?role=ARCHITECT"
+                  to="/login"
                   class="flex items-center gap-3 px-4 py-3.5 hover:bg-[#F5F5F5] transition-colors"
                   @click="isLoginDropdownOpen = false"
                 >
@@ -189,7 +189,7 @@ const handleLogout = async () => {
   router.push('/')
 }
 
-const handleClickOutside = (e) => {
+const handleClickOutside = e => {
   if (loginDropdownRef.value && !loginDropdownRef.value.contains(e.target)) {
     isLoginDropdownOpen.value = false
   }

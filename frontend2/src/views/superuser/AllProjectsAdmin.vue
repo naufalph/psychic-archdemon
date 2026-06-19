@@ -8,7 +8,10 @@
       <button
         v-for="s in statusFilters"
         :key="s.value"
-        @click="selectedStatus = s.value; load()"
+        @click="
+          selectedStatus = s.value
+          load()
+        "
         class="px-3 py-1.5 text-xs font-semibold rounded-lg transition"
         :class="
           selectedStatus === s.value
@@ -68,7 +71,9 @@
       </div>
     </div>
 
-    <div v-if="error" class="mt-4 bg-red-50 border border-red-200 text-red-700 rounded-lg p-4 text-sm">{{ error }}</div>
+    <div v-if="error" class="mt-4">
+      <BaseAlert variant="error">{{ error }}</BaseAlert>
+    </div>
   </div>
 </template>
 
@@ -76,6 +81,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { adminProjectsAPI } from '@/services/adminApi'
 import { useI18n } from '@/composables/useI18n'
+import BaseAlert from '@/components/ui/BaseAlert.vue'
 
 const { t } = useI18n()
 

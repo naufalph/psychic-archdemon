@@ -8,7 +8,7 @@ export const useBidsStore = defineStore('bids', {
     currentBid: null,
     quota: {
       tokensRemaining: 0,
-      tokensAllocated: 0,
+      tokensUsedThisMonth: 0,
       tier: null
     },
     loading: false,
@@ -72,7 +72,11 @@ export const useBidsStore = defineStore('bids', {
     async fetchQuota() {
       try {
         const response = await bidAPI.getQuota()
-        this.quota = response.data.data || { tokensRemaining: 0, tokensAllocated: 0, tier: null }
+        this.quota = response.data.data || {
+          tokensRemaining: 0,
+          tokensUsedThisMonth: 0,
+          tier: null
+        }
       } catch (error) {
         console.error('Failed to fetch quota:', error)
         throw error

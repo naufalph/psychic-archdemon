@@ -115,8 +115,6 @@ public class SecurityConfig {
                     .hasRole("SUPERUSER")
 
                     // Architect profile & OTP endpoints - require ARCHITECT role
-                    .requestMatchers("/rmtr/architects/register")
-                    .authenticated()
                     .requestMatchers("/rmtr/architects/**")
                     .hasRole("ARCHITECT")
 
@@ -172,14 +170,19 @@ public class SecurityConfig {
                     .hasRole("ARCHITECT")
                     .requestMatchers("/rmtr/projects/open")
                     .hasRole("ARCHITECT")
-                    .requestMatchers("/rmtr/projects/**")
-                    .hasRole("CLIENT")
+                    .requestMatchers(HttpMethod.GET, "/rmtr/projects/public-preview")
+                    .permitAll()
 
-                    // Phase lifecycle endpoints
+                    // Phase lifecycle endpoints — must be declared before the broad
+                    // "/rmtr/projects/**" CLIENT-only catch-all below, otherwise that
+                    // catch-all matches first and architects get 403 on these (which
+                    // are documented as accessible to both parties).
                     .requestMatchers(HttpMethod.POST, "/rmtr/projects/*/phases")
                     .hasRole("CLIENT")
                     .requestMatchers(HttpMethod.GET, "/rmtr/projects/*/phases/**")
                     .authenticated()
+                    .requestMatchers("/rmtr/projects/**")
+                    .hasRole("CLIENT")
                     .requestMatchers(HttpMethod.POST, "/rmtr/phases/*/bill")
                     .hasRole("CLIENT")
                     .requestMatchers(HttpMethod.POST, "/rmtr/phases/*/approve")

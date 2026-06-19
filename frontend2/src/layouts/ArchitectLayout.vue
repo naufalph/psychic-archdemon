@@ -61,17 +61,29 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { LayoutDashboard, Search, ClipboardList, Layout, Settings, LogOut } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
+import { useArchitectProfileStore } from '@/stores/architectProfile'
 
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+const architectProfileStore = useArchitectProfileStore()
+
+onMounted(async () => {
+  if (!architectProfileStore.hasProfile) {
+    try {
+      await architectProfileStore.fetchProfile()
+    } catch {
+      // silently ignore — sidebar will fall back to auth name
+    }
+  }
+})
 
 const logoHovered = ref(false)
-const userName = computed(() => authStore.userName || 'Architect')
+const userName = computed(() => architectProfileStore.profileName || authStore.userName || 'Architect')
 const userInitials = computed(() => {
   const name = userName.value
   return name

@@ -9,6 +9,15 @@
     ></div>
 
     <div class="w-full max-w-5xl relative z-10">
+      <router-link
+        v-if="currentStep <= 2"
+        to="/"
+        class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black transition mb-4 font-medium"
+      >
+        <ArrowLeft :size="16" />
+        Kembali
+      </router-link>
+
       <div
         v-if="currentStep === 1"
         v-motion
@@ -136,9 +145,7 @@
           </div>
           <p v-if="errors.agreeTerms" class="text-sm text-red-500 -mt-3">{{ errors.agreeTerms }}</p>
 
-          <p v-if="errorMessage" class="text-red-500 text-sm bg-red-50 p-4 rounded-2xl border border-red-200">
-            {{ errorMessage }}
-          </p>
+          <BaseAlert v-if="errorMessage" variant="error">{{ errorMessage }}</BaseAlert>
 
           <BaseButton
             type="submit"
@@ -250,7 +257,8 @@ import BaseButton from '@/components/ui/BaseButton.vue'
 import BaseInput from '@/components/ui/BaseInput.vue'
 import Logo from '@/components/ui/Logo.vue'
 import ConfettiExplosion from 'vue-confetti-explosion'
-import { Building2, PenTool, CheckCircle2 } from 'lucide-vue-next'
+import { Building2, PenTool, CheckCircle2, ArrowLeft } from 'lucide-vue-next'
+import BaseAlert from '@/components/ui/BaseAlert.vue'
 
 const router = useRouter()
 const route = useRoute()
