@@ -24,4 +24,5 @@ public class PortoListResponse {
   private String projectType;
   private boolean isBuilt;
   private List<PortoDetailResponse> images; // Images array (usually just first image for list view)
+  private boolean madeWithRumantra;
 }

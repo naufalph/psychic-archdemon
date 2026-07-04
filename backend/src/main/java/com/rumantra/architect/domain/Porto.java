@@ -45,6 +45,13 @@ public class Porto {
   @Builder.Default
   private boolean isBuilt = false;
 
+  @Column(name = "made_with_rumantra", nullable = false)
+  @Builder.Default
+  private Boolean madeWithRumantra = false;
+
+  @Column(name = "source_project_id")
+  private Long sourceProjectId;
+
   @OneToMany(
       mappedBy = "porto",
       cascade = CascadeType.ALL,

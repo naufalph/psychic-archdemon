@@ -49,10 +49,12 @@
                     v-model="formData.title"
                     type="text"
                     :placeholder="t.portfolio.form.titlePlaceholder"
+                    :disabled="isLocked"
                     class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all"
-                    :class="{ 'border-red-300': errors.title }"
+                    :class="{ 'border-red-300': errors.title, 'bg-black/5 text-black/50 cursor-not-allowed': isLocked }"
                   />
                   <p v-if="errors.title" class="text-xs text-red-600">{{ errors.title }}</p>
+                  <p v-else-if="isLocked" class="text-xs text-black/40">{{ t.portfolio.form.lockedHint }}</p>
                 </div>
 
                 <div class="space-y-2">
@@ -63,8 +65,11 @@
                     v-model="formData.description"
                     rows="4"
                     :placeholder="t.portfolio.form.descriptionPlaceholder"
+                    :disabled="isLocked"
                     class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all resize-none"
+                    :class="{ 'bg-black/5 text-black/50 cursor-not-allowed': isLocked }"
                   />
+                  <p v-if="isLocked" class="text-xs text-black/40">{{ t.portfolio.form.lockedHint }}</p>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -168,7 +173,7 @@
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                       />
                     </svg>
-                    {{ isLoading ? 'Saving...' : t.portfolio.modal.save }}
+                    {{ isLoading ? t.portfolio.modal.saving : t.portfolio.modal.save }}
                   </button>
                 </div>
               </div>
@@ -232,6 +237,7 @@ const errors = ref({
 })
 
 const isEditMode = computed(() => props.portfolio !== null)
+const isLocked = computed(() => props.portfolio?.madeWithRumantra === true)
 const today = computed(() => new Date().toISOString().split('T')[0])
 
 const totalImageCount = computed(() => {

@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.rumantra.architect.domain.Porto;
+import com.rumantra.architect.repository.PortoRepository;
 import com.rumantra.bidding.domain.Bid;
 import com.rumantra.bidding.domain.BidPaymentPhase;
 import com.rumantra.bidding.domain.BidStatus;
@@ -57,6 +59,7 @@ public class ProjectService {
   private final ConversationService conversationService;
   private final BidPaymentPhaseRepository bidPaymentPhaseRepository;
   private final ProjectPhaseRepository projectPhaseRepository;
+  private final PortoRepository portoRepository;
 
   @PersistenceContext private EntityManager entityManager;
 
@@ -320,7 +323,12 @@ public class ProjectService {
       boolean isWinningArchitect =
           acceptedBids.stream().anyMatch(b -> b.getArchitect().getUser().getId().equals(userId));
       if (isWinningArchitect) {
-        return mapToProjectResponse(project);
+        ProjectResponse response = mapToProjectResponse(project);
+        if (project.getStatus() == ProjectStatus.COMPLETED) {
+          response.setArchivedPortoId(
+              portoRepository.findBySourceProjectId(projectId).map(Porto::getId).orElse(null));
+        }
+        return response;
       }
     }
 

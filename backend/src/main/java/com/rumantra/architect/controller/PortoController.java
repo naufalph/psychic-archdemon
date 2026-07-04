@@ -90,6 +90,59 @@ public class PortoController {
   }
 
   /**
+   * Archive a completed project into a new portfolio entry, flagged as made with Rumantra. Only the
+   * architect with the accepted bid on the project may call this, and only once per project.
+   *
+   * @param projectId The completed project to archive
+   * @return Created portfolio
+   */
+  @PostMapping("/from-project/{projectId}")
+  public ResponseEntity<ApiResponse<PortoResponse>> createPortoFromProject(
+      @PathVariable Long projectId) {
+
+    try {
+      log.info("Archiving project {} to portfolio", projectId);
+
+      PortoResponse response = portoService.createPortoFromProject(projectId);
+
+      return ResponseEntity.status(HttpStatus.CREATED)
+          .body(
+              ApiResponse.<PortoResponse>builder()
+                  .success(true)
+                  .message("Project archived to portfolio successfully!")
+                  .data(response)
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    } catch (AccessDeniedException e) {
+      return ResponseEntity.status(HttpStatus.FORBIDDEN)
+          .body(
+              ApiResponse.<PortoResponse>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    } catch (RuntimeException e) {
+      log.error("Error archiving project {} to portfolio", projectId, e);
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              ApiResponse.<PortoResponse>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    } catch (Exception e) {
+      log.error("Unexpected error archiving project {} to portfolio", projectId, e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(
+              ApiResponse.<PortoResponse>builder()
+                  .success(false)
+                  .message("An error occurred while archiving project to portfolio")
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
+  }
+
+  /**
    * Get all portfolios for the authenticated architect. Returns lightweight responses with first
    * image for each portfolio.
    *

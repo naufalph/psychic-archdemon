@@ -325,7 +325,8 @@ export default {
     card: {
       photos: 'foto',
       edit: 'Edit',
-      delete: 'Hapus'
+      delete: 'Hapus',
+      madeWithRumantra: 'Dibuat dengan Rumantra'
     },
     modal: {
       createTitle: 'Buat Portofolio',
@@ -333,7 +334,8 @@ export default {
       save: 'Simpan Portofolio',
       cancel: 'Batal',
       close: 'Tutup',
-      unsavedChanges: 'Anda memiliki perubahan yang belum disimpan. Yakin ingin menutup?'
+      unsavedChanges: 'Anda memiliki perubahan yang belum disimpan. Yakin ingin menutup?',
+      saving: 'Menyimpan...'
     },
     form: {
       title: 'Judul Proyek',
@@ -347,7 +349,8 @@ export default {
       projectType: 'Tipe Proyek',
       projectTypePlaceholder: 'Pilih tipe',
       isBuilt: 'Proyek ini sudah dibangun',
-      images: 'Gambar Proyek'
+      images: 'Gambar Proyek',
+      lockedHint: 'Diambil dari data proyek asli dan tidak dapat diubah'
     },
     imageManager: {
       uploadZone: 'Klik atau seret gambar ke sini',
@@ -1019,7 +1022,13 @@ export default {
     revisionModalPlaceholder: 'mis. Mohon sesuaikan denah lantai untuk mencakup...',
     revisionModalSubmit: 'Minta Revisi',
     revisionModalCancel: 'Batal',
-    revisionModalRequired: 'Silakan jelaskan perubahan yang diperlukan.'
+    revisionModalRequired: 'Silakan jelaskan perubahan yang diperlukan.',
+    completed: 'Proyek Selesai',
+    active: 'Proyek Aktif',
+    archiving: 'Mengarsipkan...',
+    archiveToPortfolio: 'Arsipkan ke Portofolio',
+    viewInPortfolio: 'Lihat di Portofolio',
+    archiveError: 'Gagal mengarsipkan proyek ke portofolio'
   },
   architectDashboard: {
     welcome: 'Selamat datang',

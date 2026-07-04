@@ -20,6 +20,14 @@
         </svg>
       </div>
 
+      <div v-if="portfolio.madeWithRumantra" class="absolute top-3 left-3">
+        <span
+          class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full font-medium text-xs shadow-sm"
+        >
+          {{ t.portfolio.card.madeWithRumantra }}
+        </span>
+      </div>
+
       <div
         class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
       >

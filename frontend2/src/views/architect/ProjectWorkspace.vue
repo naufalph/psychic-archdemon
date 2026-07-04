@@ -41,13 +41,37 @@
               {{ t.projectWorkspace?.deadline }}: {{ countdownText(activePhase.dueDate) }}
             </span>
             <span
+              v-if="isCompleted"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-green-100 text-green-700"
+            >
+              <span class="w-1.5 h-1.5 rounded-full bg-green-600" />
+              {{ t.projectWorkspace?.completed }}
+            </span>
+            <span
+              v-else
               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-[#F5E6D3] text-[#7C4728]"
             >
               <span class="w-1.5 h-1.5 rounded-full bg-[#7C4728]" />
-              Proyek Aktif
+              {{ t.projectWorkspace?.active }}
             </span>
+            <button
+              v-if="isCompleted && !project?.archivedPortoId"
+              @click="archiveToPortfolio"
+              :disabled="archiving"
+              class="px-4 py-1.5 rounded-full text-xs font-bold bg-black text-white hover:bg-black/80 transition disabled:opacity-50"
+            >
+              {{ archiving ? t.projectWorkspace?.archiving : t.projectWorkspace?.archiveToPortfolio }}
+            </button>
+            <button
+              v-else-if="isCompleted"
+              @click="router.push({ name: 'ArchitectPortfolios' })"
+              class="px-4 py-1.5 rounded-full text-xs font-bold bg-white border border-gray-300 text-black hover:border-black transition"
+            >
+              {{ t.projectWorkspace?.viewInPortfolio }}
+            </button>
           </div>
         </div>
+        <p v-if="archiveError" class="max-w-7xl mx-auto text-xs text-red-600 mt-2">{{ archiveError }}</p>
       </div>
 
       <!-- Body -->
@@ -908,6 +932,7 @@ import {
   Clock
 } from 'lucide-vue-next'
 import { useProjectsStore } from '@/stores/projects'
+import { usePortfoliosStore } from '@/stores/portfolios'
 import { phaseAPI, chatAPI, bidAPI } from '@/services/api'
 import ChatPanel from '@/components/chat/ChatPanel.vue'
 import { useI18n } from '@/composables/useI18n'
@@ -915,7 +940,8 @@ import { useI18n } from '@/composables/useI18n'
 const route = useRoute()
 const router = useRouter()
 const projectsStore = useProjectsStore()
-const { t } = useI18n()
+const portfoliosStore = usePortfoliosStore()
+const { t, getT } = useI18n()
 
 const projectId = route.params.id
 
@@ -934,9 +960,27 @@ const deliverableDesc = reactive({})
 const conversationId = ref(null)
 const showProjectModal = ref(false)
 const myBid = ref(null)
+const archiving = ref(false)
+const archiveError = ref(null)
 let countdownTimer = null
 
 const project = computed(() => projectsStore.currentProject)
+const isCompleted = computed(() => project.value?.status === 'COMPLETED')
+
+const archiveToPortfolio = async () => {
+  archiving.value = true
+  archiveError.value = null
+  try {
+    const newPortfolio = await portfoliosStore.createPortfolioFromProject(projectId)
+    if (projectsStore.currentProject) {
+      projectsStore.currentProject.archivedPortoId = newPortfolio.id
+    }
+  } catch (err) {
+    archiveError.value = err.response?.data?.message || getT('projectWorkspace.archiveError')
+  } finally {
+    archiving.value = false
+  }
+}
 
 const coverImage = computed(() => {
   const files = project.value?.files

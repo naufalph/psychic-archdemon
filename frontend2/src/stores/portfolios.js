@@ -79,6 +79,25 @@ export const usePortfoliosStore = defineStore('portfolios', {
       }
     },
 
+    async createPortfolioFromProject(projectId) {
+      try {
+        this.isLoading = true
+        this.error = null
+
+        const response = await portfolioAPI.createFromProject(projectId)
+        const newPortfolio = response.data.data
+
+        this.portfolios.unshift(newPortfolio)
+        return newPortfolio
+      } catch (error) {
+        console.error('Archive project to portfolio error:', error)
+        this.error = error.response?.data?.message || 'Failed to archive project to portfolio'
+        throw error
+      } finally {
+        this.isLoading = false
+      }
+    },
+
     async deletePortfolio(id) {
       try {
         this.isLoading = true

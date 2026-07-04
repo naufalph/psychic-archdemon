@@ -297,7 +297,8 @@ export const portfolioAPI = {
       headers: { 'Content-Type': 'multipart/form-data' }
     })
   },
-  deleteImage: imageId => api.delete(`/rmtr/porto/images/${imageId}`)
+  deleteImage: imageId => api.delete(`/rmtr/porto/images/${imageId}`),
+  createFromProject: projectId => api.post(`/rmtr/porto/from-project/${projectId}`)
 }
 
 export const clientAPI = {

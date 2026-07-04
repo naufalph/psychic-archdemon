@@ -1,6 +1,7 @@
 package com.rumantra.architect.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -26,4 +27,8 @@ public interface PortoRepository extends JpaRepository<Porto, Long> {
 
   /** Find all portfolios by architect ID (without details). */
   List<Porto> findByArchitectIdOrderByCreatedAtDesc(Long architectId);
+
+  boolean existsBySourceProjectId(Long sourceProjectId);
+
+  Optional<Porto> findBySourceProjectId(Long sourceProjectId);
 }

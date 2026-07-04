@@ -45,6 +45,7 @@ public class ProjectResponse {
   private Boolean clientConfirmed;
   private Boolean architectConfirmed;
   private Long bidCount;
+  private Long archivedPortoId;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 }

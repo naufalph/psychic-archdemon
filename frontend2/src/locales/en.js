@@ -321,7 +321,8 @@ export default {
     card: {
       photos: 'photos',
       edit: 'Edit',
-      delete: 'Delete'
+      delete: 'Delete',
+      madeWithRumantra: 'Made with Rumantra'
     },
     modal: {
       createTitle: 'Create Portfolio',
@@ -329,7 +330,8 @@ export default {
       save: 'Save Portfolio',
       cancel: 'Cancel',
       close: 'Close',
-      unsavedChanges: 'You have unsaved changes. Are you sure you want to close?'
+      unsavedChanges: 'You have unsaved changes. Are you sure you want to close?',
+      saving: 'Saving...'
     },
     form: {
       title: 'Project Title',
@@ -343,7 +345,8 @@ export default {
       projectType: 'Project Type',
       projectTypePlaceholder: 'Select type',
       isBuilt: 'This project has been built',
-      images: 'Project Images'
+      images: 'Project Images',
+      lockedHint: 'Pulled from the original project data and cannot be changed'
     },
     imageManager: {
       uploadZone: 'Click or drag images here',
@@ -1010,7 +1013,13 @@ export default {
     revisionModalPlaceholder: 'e.g., Please adjust the floor plan to include...',
     revisionModalSubmit: 'Request Revision',
     revisionModalCancel: 'Cancel',
-    revisionModalRequired: 'Please describe what changes are needed.'
+    revisionModalRequired: 'Please describe what changes are needed.',
+    completed: 'Project Completed',
+    active: 'Active Project',
+    archiving: 'Archiving...',
+    archiveToPortfolio: 'Archive to Portfolio',
+    viewInPortfolio: 'View in Portfolio',
+    archiveError: 'Failed to archive project to portfolio'
   },
   architectDashboard: {
     welcome: 'Welcome',

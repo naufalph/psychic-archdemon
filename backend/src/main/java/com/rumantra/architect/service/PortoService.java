@@ -1,5 +1,6 @@
 package com.rumantra.architect.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -17,6 +18,16 @@ import com.rumantra.architect.dto.*;
 import com.rumantra.architect.repository.ArchitectRepository;
 import com.rumantra.architect.repository.PortoDetailRepository;
 import com.rumantra.architect.repository.PortoRepository;
+import com.rumantra.bidding.domain.Bid;
+import com.rumantra.bidding.domain.BidStatus;
+import com.rumantra.bidding.repository.BidRepository;
+import com.rumantra.client.domain.Project;
+import com.rumantra.client.domain.ProjectStatus;
+import com.rumantra.client.repository.ProjectRepository;
+import com.rumantra.project.domain.PhaseDeliverable;
+import com.rumantra.project.domain.ProjectPhase;
+import com.rumantra.project.repository.PhaseDeliverableRepository;
+import com.rumantra.project.repository.ProjectPhaseRepository;
 import com.rumantra.security.SecurityUtils;
 import com.rumantra.shared.storage.FileStorageService;
 import com.rumantra.shared.storage.ImageSize;
@@ -36,6 +47,10 @@ public class PortoService {
   private final PortoDetailRepository portoDetailRepository;
   private final ArchitectRepository architectRepository;
   private final FileStorageService fileStorageService;
+  private final ProjectRepository projectRepository;
+  private final BidRepository bidRepository;
+  private final ProjectPhaseRepository projectPhaseRepository;
+  private final PhaseDeliverableRepository phaseDeliverableRepository;
 
   @PersistenceContext private EntityManager entityManager;
 
@@ -146,6 +161,92 @@ public class PortoService {
     return mapToPortoResponse(porto);
   }
 
+  @Transactional
+  public PortoResponse createPortoFromProject(Long projectId) {
+    Long userId = SecurityUtils.getCurrentUserId();
+    Long architectId = getCurrentUserArchitectId();
+
+    Project project =
+        projectRepository
+            .findById(projectId)
+            .orElseThrow(() -> new RuntimeException("Project not found with id: " + projectId));
+
+    if (project.getStatus() != ProjectStatus.COMPLETED) {
+      throw new RuntimeException(
+          "Project must be completed before it can be archived to portfolio");
+    }
+
+    List<Bid> acceptedBids = bidRepository.findByProjectIdAndStatus(projectId, BidStatus.ACCEPTED);
+    boolean isWinningArchitect =
+        acceptedBids.stream().anyMatch(b -> b.getArchitect().getUser().getId().equals(userId));
+    if (!isWinningArchitect) {
+      throw new AccessDeniedException("You are not the architect assigned to this project");
+    }
+
+    if (portoRepository.existsBySourceProjectId(projectId)) {
+      throw new RuntimeException("This project has already been archived to a portfolio");
+    }
+
+    Architect architect = entityManager.getReference(Architect.class, architectId);
+
+    Porto porto =
+        Porto.builder()
+            .architect(architect)
+            .title(project.getTitle())
+            .description(project.getScopeOfWork())
+            .projectDate(LocalDate.now())
+            .location(project.getLocation())
+            .projectType(project.getProjectCategory())
+            .isBuilt(true)
+            .madeWithRumantra(true)
+            .sourceProjectId(projectId)
+            .build();
+
+    porto = portoRepository.save(porto);
+
+    addFinalDeliverableImages(porto, projectId);
+
+    porto = portoRepository.findByIdWithDetails(porto.getId());
+
+    log.info(
+        "Architect {} archived project {} to portfolio {}", architectId, projectId, porto.getId());
+
+    return mapToPortoResponse(porto);
+  }
+
+  private void addFinalDeliverableImages(Porto porto, Long projectId) {
+    List<ProjectPhase> phases =
+        projectPhaseRepository.findByProjectIdOrderByPhaseNumberAsc(projectId);
+
+    int displayOrder = 0;
+    for (ProjectPhase phase : phases) {
+      List<PhaseDeliverable> deliverables =
+          phaseDeliverableRepository.findByPhaseIdOrderByUploadedAtAsc(phase.getId());
+
+      int latestRevision =
+          deliverables.stream().mapToInt(PhaseDeliverable::getRevisionRound).max().orElse(-1);
+
+      for (PhaseDeliverable deliverable : deliverables) {
+        boolean isImage =
+            deliverable.getFileType() != null && deliverable.getFileType().startsWith("image/");
+        if (!isImage || deliverable.getRevisionRound() != latestRevision) {
+          continue;
+        }
+
+        PortoDetail detail =
+            PortoDetail.builder()
+                .porto(porto)
+                .originalUrl(deliverable.getFilePath())
+                .largeUrl(deliverable.getFilePath())
+                .mediumUrl(deliverable.getFilePath())
+                .displayOrder(displayOrder++)
+                .build();
+
+        portoDetailRepository.save(detail);
+      }
+    }
+  }
+
   public List<PortoListResponse> getPortosByArchitect() {
     // Get current user's architect ID
     Long architectId = getCurrentUserArchitectId();
@@ -172,6 +273,7 @@ public class PortoService {
                   .projectType(porto.getProjectType())
                   .isBuilt(porto.isBuilt())
                   .images(images)
+                  .madeWithRumantra(Boolean.TRUE.equals(porto.getMadeWithRumantra()))
                   .build();
             })
         .collect(Collectors.toList());
@@ -200,11 +302,14 @@ public class PortoService {
             .findById(portoId)
             .orElseThrow(() -> new RuntimeException("Portfolio not found with id: " + portoId));
 
+    // Title and description are locked for portfolios archived from a completed project
+    boolean isLocked = Boolean.TRUE.equals(porto.getMadeWithRumantra());
+
     // Update fields if provided
-    if (request.getTitle() != null) {
+    if (request.getTitle() != null && !isLocked) {
       porto.setTitle(request.getTitle());
     }
-    if (request.getDescription() != null) {
+    if (request.getDescription() != null && !isLocked) {
       porto.setDescription(request.getDescription());
     }
     if (request.getProjectDate() != null) {
@@ -341,6 +446,7 @@ public class PortoService {
         .projectType(porto.getProjectType())
         .isBuilt(porto.isBuilt())
         .images(imageResponses)
+        .madeWithRumantra(Boolean.TRUE.equals(porto.getMadeWithRumantra()))
         .build();
   }
 
