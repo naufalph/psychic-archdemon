@@ -88,6 +88,10 @@ public class SecurityConfig {
                     .requestMatchers("/rmtr/users/oauth2/**")
                     .permitAll()
 
+                    // Legal document endpoints (public - read before/at signup)
+                    .requestMatchers("/api/legal/**")
+                    .permitAll()
+
                     // User profile endpoints (authenticated)
                     .requestMatchers("/rmtr/users/me/**")
                     .authenticated()

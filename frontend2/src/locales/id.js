@@ -177,6 +177,17 @@ export default {
       password: 'Kata Sandi',
       confirmPassword: 'Konfirmasi Kata Sandi',
       agreeTerms: 'Saya setuju dengan Syarat & Ketentuan dan Kebijakan Privasi',
+      legal: {
+        prefix: 'Saya telah membaca dan menyetujui',
+        termsLabel: 'Syarat & Ketentuan',
+        and: 'dan',
+        privacyLabel: 'Kebijakan Privasi',
+        suffix: 'Rumantra.',
+        loading: 'Memuat dokumen...',
+        staleTerms: 'Syarat & Ketentuan telah diperbarui, silakan tinjau dan setujui kembali.',
+        noticePrefix: 'Dengan melanjutkan, Anda menyetujui',
+        noticeSuffix: 'kami.'
+      },
       createAccount: 'Buat Akun',
       alreadyHave: 'Sudah punya akun?',
       signInHere: 'Masuk di sini',
@@ -610,7 +621,8 @@ export default {
   common: {
     saving: 'Menyimpan...',
     notSet: 'Belum diatur',
-    backToDashboard: 'Kembali ke Dashboard'
+    backToDashboard: 'Kembali ke Dashboard',
+    back: 'Kembali'
   },
   errors: {
     'firstName.required': 'Nama depan wajib diisi',
@@ -957,7 +969,9 @@ export default {
     ATTACHMENT_INVALID_TYPE: 'Tipe file tidak valid.',
     ATTACHMENT_SIZE_EXCEEDED: 'Ukuran file melebihi batas maksimum.',
     PHASE_NOT_FOUND: 'Fase pembayaran tidak ditemukan.',
-    PHASE_ALREADY_PAID: 'Fase ini sudah dibayar.'
+    PHASE_ALREADY_PAID: 'Fase ini sudah dibayar.',
+    STALE_TERMS: 'Syarat & Ketentuan telah diperbarui, silakan tinjau dan setujui kembali.',
+    MISSING_REQUIRED_ACCEPTANCE: 'Mohon setujui Syarat & Ketentuan dan Kebijakan Privasi.'
   },
   clientNav: {
     dashboard: 'Dasbor',

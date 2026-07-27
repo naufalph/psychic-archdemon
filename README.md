@@ -122,6 +122,45 @@ mvn spotless:apply         # format code (required before commits)
 5. Client approves work → architect requests payout → repeat per phase
 6. All phases complete → project auto-closes as COMPLETED
 
+## Updating Legal Documents (Terms & Conditions / Privacy Policy)
+
+Legal documents (Account T&C, Privacy Policy) are served from the database via
+`GET /api/legal/current?type={ACCOUNT_TC|PRIVACY_POLICY}&lang={en|id}`, and
+every user's consent is recorded as a versioned, hashed row in
+`rmtr_user_agreement_acceptance` at signup (email or OAuth). The source
+Markdown files live at `backend/src/main/resources/legal/`.
+
+**Files are append-only — a revision is always a new file, never an edit to an
+existing one.** Filename format:
+
+```
+{doc_type}.{lang}.v{version}.md
+```
+
+- `doc_type`: `account-tc` or `privacy-policy`
+- `lang`: `en` or `id`
+- `version`: e.g. `0.2`, `1.0` (compared numerically component-by-component,
+  so `v0.10` is newer than `v0.9`)
+
+To publish a new version:
+
+1. Add a new file, e.g. `account-tc.en.v0.3.md` — do **not** edit or delete
+   `account-tc.en.v0.2.md`.
+2. Restart the app. `LegalDocumentSeeder` (an `ApplicationRunner`) runs on
+   every boot, upserts any new files by `(doc_type, lang, version)`, and sets
+   `is_current = true` on the highest version per `(doc_type, lang)` pair —
+   all older versions remain in the table and stay fetchable via
+   `GET /api/legal/{type}/{lang}/{version}` for historical/audit purposes.
+3. If a shipped file's content ever changes in place (it shouldn't — this
+   violates the append-only guarantee), the seeder logs a WARNING and updates
+   the stored hash to match, but existing user acceptance rows are never
+   touched — they remain proof of exactly what a user saw at the time they
+   accepted, by content hash.
+
+Bump the `en` and `id` files together for a joint revision; each language's
+current version is tracked independently, so partial rollout is possible but
+not recommended.
+
 ## Debugging
 
 ```bash

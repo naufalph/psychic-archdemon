@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rumantra.architect.domain.Architect;
@@ -28,8 +29,13 @@ import com.rumantra.client.domain.Client;
 import com.rumantra.client.dto.ClientSignupRequestDto;
 import com.rumantra.client.repository.ClientRepository;
 import com.rumantra.client.service.ClientService;
+import com.rumantra.legal.dto.AcceptanceRequest;
+import com.rumantra.legal.service.AgreementService;
 import com.rumantra.security.JwtUtils;
+import com.rumantra.shared.RequestUtils;
 import com.rumantra.shared.RumantraConstants;
+import com.rumantra.shared.exception.BusinessException;
+import com.rumantra.shared.exception.ExceptionConstants;
 import com.rumantra.shared.exception.ResourceNotFoundException;
 import com.rumantra.subscription.service.SubscriptionService;
 import com.rumantra.user.domain.EmailVerification;
@@ -40,6 +46,7 @@ import com.rumantra.user.dto.LinkedInUserInfoDto;
 import com.rumantra.user.repository.EmailVerificationRepository;
 import com.rumantra.user.repository.UserRepository;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -56,6 +63,7 @@ public class UserService {
   private final EmailService emailService;
   private final BidQuotaService bidQuotaService;
   private final SubscriptionService subscriptionService;
+  private final AgreementService agreementService;
 
   @Value("${spring.security.oauth2.client.registration.google.client-id}")
   private String googleClientId;
@@ -176,7 +184,7 @@ public class UserService {
   }
 
   @Transactional
-  public UserDto register(UserSignupRequestDto signupRequest) {
+  public UserDto register(UserSignupRequestDto signupRequest, String ipAddress, String userAgent) {
     // Check if email already exists for EMAIL social type
     if (userRepository.existsByEmailAndSocialType(signupRequest.getEmail(), SocialType.EMAIL)) {
       throw new IllegalArgumentException("Email is already in use!");
@@ -195,6 +203,9 @@ public class UserService {
             .build();
 
     user = userRepository.save(user);
+
+    agreementService.recordAcceptances(
+        user.getId(), signupRequest.getAcceptances(), ipAddress, userAgent);
 
     // Generate and send verification email
     String verificationToken = generateVerificationToken();
@@ -223,34 +234,64 @@ public class UserService {
     return mapToDto(user);
   }
 
-  public String getGoogleAuthorizationUrl(String role) {
+  public String getGoogleAuthorizationUrl(String role, String acceptancesJson) {
     String baseUrl = "https://accounts.google.com/o/oauth2/v2/auth";
     String scope = "email profile";
-    String state = encodeOAuthState(role);
+    String state = encodeOAuthState(role, acceptancesJson);
 
     return String.format(
         "%s?client_id=%s&response_type=code&scope=%s&redirect_uri=%s&access_type=offline&state=%s",
         baseUrl, googleClientId, scope, redirectUri, state);
   }
 
-  private String encodeOAuthState(String role) {
+  private String encodeOAuthState(String role, String acceptancesJson) {
     String roleToEncode = (role != null && !role.isEmpty()) ? role : RumantraConstants.CLIENT_ROLE;
-    return Base64.getUrlEncoder().encodeToString(roleToEncode.getBytes(StandardCharsets.UTF_8));
+    try {
+      List<AcceptanceRequest> acceptances =
+          (acceptancesJson != null && !acceptancesJson.isEmpty())
+              ? objectMapper.readValue(
+                  acceptancesJson, new TypeReference<List<AcceptanceRequest>>() {})
+              : List.of();
+      OAuthState oauthState =
+          OAuthState.builder().role(roleToEncode).acceptances(acceptances).build();
+      String json = objectMapper.writeValueAsString(oauthState);
+      return Base64.getUrlEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
+    } catch (Exception e) {
+      // Fall back to a role-only state rather than failing the whole OAuth redirect;
+      // the acceptances will simply be empty, which the callback already handles by
+      // rejecting new-signup consent as missing.
+      OAuthState fallback = OAuthState.builder().role(roleToEncode).acceptances(List.of()).build();
+      try {
+        return Base64.getUrlEncoder()
+            .encodeToString(
+                objectMapper.writeValueAsString(fallback).getBytes(StandardCharsets.UTF_8));
+      } catch (Exception inner) {
+        return Base64.getUrlEncoder().encodeToString(roleToEncode.getBytes(StandardCharsets.UTF_8));
+      }
+    }
   }
 
-  private String decodeOAuthState(String state) {
+  private OAuthState decodeOAuthState(String state) {
     if (state == null || state.isEmpty()) {
-      return RumantraConstants.CLIENT_ROLE;
+      return OAuthState.builder()
+          .role(RumantraConstants.CLIENT_ROLE)
+          .acceptances(List.of())
+          .build();
     }
     try {
-      return new String(Base64.getUrlDecoder().decode(state), StandardCharsets.UTF_8);
-    } catch (IllegalArgumentException e) {
-      return RumantraConstants.CLIENT_ROLE;
+      String json = new String(Base64.getUrlDecoder().decode(state), StandardCharsets.UTF_8);
+      return objectMapper.readValue(json, OAuthState.class);
+    } catch (Exception e) {
+      return OAuthState.builder()
+          .role(RumantraConstants.CLIENT_ROLE)
+          .acceptances(List.of())
+          .build();
     }
   }
 
   @Transactional
-  public UserAuthResponseDto processGoogleCallback(String code, String state) {
+  public UserAuthResponseDto processGoogleCallback(
+      String code, String state, HttpServletRequest request) {
     try {
       String tokenUrl = "https://oauth2.googleapis.com/token";
       HttpHeaders headers = new HttpHeaders();
@@ -288,17 +329,30 @@ public class UserService {
               .emailVerified(userInfo.get("email_verified").asBoolean())
               .build();
 
-      User user =
-          userRepository
-              .findByEmailAndSocialType(googleUser.getEmail(), SocialType.GOOGLE)
-              .orElseGet(() -> createGoogleUser(googleUser));
+      var existingGoogleUser =
+          userRepository.findByEmailAndSocialType(googleUser.getEmail(), SocialType.GOOGLE);
+      boolean isNewUser = existingGoogleUser.isEmpty();
+      User user = existingGoogleUser.orElseGet(() -> createGoogleUser(googleUser));
 
       String jwt = jwtUtils.generateJwtToken(user.getEmail());
       List<String> registeredRoles = new ArrayList<>();
       Boolean needsArchitectOnboarding = null;
       Boolean needsClientOnboarding = null;
 
-      String requestedRole = decodeOAuthState(state);
+      OAuthState oauthState = decodeOAuthState(state);
+      String requestedRole = oauthState.getRole();
+
+      if (isNewUser) {
+        List<AcceptanceRequest> acceptances = oauthState.getAcceptances();
+        if (acceptances == null || acceptances.isEmpty()) {
+          throw new BusinessException(ExceptionConstants.MISSING_REQUIRED_ACCEPTANCE);
+        }
+        agreementService.recordAcceptances(
+            user.getId(),
+            acceptances,
+            RequestUtils.getClientIp(request),
+            RequestUtils.getUserAgent(request));
+      }
 
       if (RumantraConstants.ARCH_ROLE.equals(requestedRole)) {
         if (architectRepository.findByUserId(user.getId()).isEmpty()) {
@@ -354,6 +408,10 @@ public class UserService {
           .lastLoginRole(user.getLastLoginRole())
           .build();
 
+    } catch (BusinessException e) {
+      // Rethrow as-is so its stable error code (e.g. STALE_TERMS) isn't flattened
+      // into a generic IllegalArgumentException message below.
+      throw e;
     } catch (Exception e) {
       throw new IllegalArgumentException("Failed to process Google login: " + e.getMessage());
     }
@@ -383,10 +441,10 @@ public class UserService {
     return userRepository.save(newUser);
   }
 
-  public String getLinkedInAuthorizationUrl(String role) {
+  public String getLinkedInAuthorizationUrl(String role, String acceptancesJson) {
     String baseUrl = "https://www.linkedin.com/oauth/v2/authorization";
     String scope = "openid profile email";
-    String state = encodeOAuthState(role);
+    String state = encodeOAuthState(role, acceptancesJson);
 
     return String.format(
         "%s?response_type=code&client_id=%s&redirect_uri=%s&scope=%s&state=%s",
@@ -394,7 +452,8 @@ public class UserService {
   }
 
   @Transactional
-  public UserAuthResponseDto processLinkedInCallback(String code, String state) {
+  public UserAuthResponseDto processLinkedInCallback(
+      String code, String state, HttpServletRequest request) {
     try {
       String tokenUrl = "https://www.linkedin.com/oauth/v2/accessToken";
       HttpHeaders headers = new HttpHeaders();
@@ -479,17 +538,30 @@ public class UserService {
               .emailVerified(true)
               .build();
 
-      User user =
-          userRepository
-              .findByEmailAndSocialType(linkedinUser.getEmail(), SocialType.LINKEDIN)
-              .orElseGet(() -> createLinkedInUser(linkedinUser));
+      var existingLinkedInUser =
+          userRepository.findByEmailAndSocialType(linkedinUser.getEmail(), SocialType.LINKEDIN);
+      boolean isNewUser = existingLinkedInUser.isEmpty();
+      User user = existingLinkedInUser.orElseGet(() -> createLinkedInUser(linkedinUser));
 
       String jwt = jwtUtils.generateJwtToken(user.getEmail());
       List<String> registeredRoles = new ArrayList<>();
       Boolean needsArchitectOnboarding = null;
       Boolean needsClientOnboarding = null;
 
-      String requestedRole = decodeOAuthState(state);
+      OAuthState oauthState = decodeOAuthState(state);
+      String requestedRole = oauthState.getRole();
+
+      if (isNewUser) {
+        List<AcceptanceRequest> acceptances = oauthState.getAcceptances();
+        if (acceptances == null || acceptances.isEmpty()) {
+          throw new BusinessException(ExceptionConstants.MISSING_REQUIRED_ACCEPTANCE);
+        }
+        agreementService.recordAcceptances(
+            user.getId(),
+            acceptances,
+            RequestUtils.getClientIp(request),
+            RequestUtils.getUserAgent(request));
+      }
 
       if (RumantraConstants.ARCH_ROLE.equals(requestedRole)) {
         if (architectRepository.findByUserId(user.getId()).isEmpty()) {
@@ -545,6 +617,10 @@ public class UserService {
           .lastLoginRole(user.getLastLoginRole())
           .build();
 
+    } catch (BusinessException e) {
+      // Rethrow as-is so its stable error code (e.g. STALE_TERMS) isn't flattened
+      // into a generic IllegalArgumentException message below.
+      throw e;
     } catch (Exception e) {
       throw new IllegalArgumentException("Failed to process LinkedIn login: " + e.getMessage());
     }

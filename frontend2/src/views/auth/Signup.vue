@@ -15,7 +15,7 @@
         class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black transition mb-4 font-medium"
       >
         <ArrowLeft :size="16" />
-        Kembali
+        {{ t.common.back }}
       </router-link>
 
       <div
@@ -132,17 +132,7 @@
             required
           />
 
-          <div class="flex items-start gap-3">
-            <input
-              v-model="formData.agreeTerms"
-              type="checkbox"
-              id="agreeTerms"
-              class="mt-1 w-5 h-5 rounded border-gray-300 text-[#C5A17A] focus:ring-[#C5A17A]"
-            />
-            <label for="agreeTerms" class="text-sm text-gray-600 cursor-pointer">
-              {{ t.auth.signup.agreeTerms }}
-            </label>
-          </div>
+          <LegalAcceptance v-model="formData.agreeTerms" ref="legalAcceptance" />
           <p v-if="errors.agreeTerms" class="text-sm text-red-500 -mt-3">{{ errors.agreeTerms }}</p>
 
           <BaseAlert v-if="errorMessage" variant="error">{{ errorMessage }}</BaseAlert>
@@ -164,6 +154,8 @@
               <span class="px-4 bg-white text-gray-500">{{ t.auth.signup.orContinueWith }}</span>
             </div>
           </div>
+
+          <LegalConsentNotice ref="legalConsentNotice" class="-mt-2 mb-2" />
 
           <div class="grid grid-cols-2 gap-4">
             <button
@@ -252,10 +244,13 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useLegalStore } from '@/stores/legal'
 import { useI18n } from '@/composables/useI18n'
 import BaseButton from '@/components/ui/BaseButton.vue'
 import BaseInput from '@/components/ui/BaseInput.vue'
 import Logo from '@/components/ui/Logo.vue'
+import LegalAcceptance from '@/components/legal/LegalAcceptance.vue'
+import LegalConsentNotice from '@/components/legal/LegalConsentNotice.vue'
 import ConfettiExplosion from 'vue-confetti-explosion'
 import { Building2, PenTool, CheckCircle2, ArrowLeft } from 'lucide-vue-next'
 import BaseAlert from '@/components/ui/BaseAlert.vue'
@@ -263,7 +258,10 @@ import BaseAlert from '@/components/ui/BaseAlert.vue'
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
-const { t } = useI18n()
+const legalStore = useLegalStore()
+const { t, locale } = useI18n()
+const legalAcceptance = ref(null)
+const legalConsentNotice = ref(null)
 
 const currentStep = ref(1)
 const selectedRole = ref(null)
@@ -293,6 +291,13 @@ onMounted(() => {
   if (route.query.role) {
     selectedRole.value = route.query.role.toUpperCase()
     currentStep.value = 2
+  }
+
+  if (route.query.termsUpdated === 'true') {
+    legalStore.invalidate('ACCOUNT_TC', locale.value)
+    legalStore.invalidate('PRIVACY_POLICY', locale.value)
+    formData.value.agreeTerms = false
+    errorMessage.value = t.value.auth.signup.legal.staleTerms
   }
 })
 
@@ -370,12 +375,15 @@ const handleSignup = async () => {
   errorMessage.value = ''
 
   try {
+    const acceptances = legalAcceptance.value?.acceptances || []
+
     const result = await authStore.register({
       firstName: formData.value.firstName,
       lastName: formData.value.lastName,
       email: formData.value.email,
       password: formData.value.password,
-      role: selectedRole.value
+      role: selectedRole.value,
+      acceptances
     })
 
     isLoading.value = false
@@ -393,14 +401,23 @@ const handleSignup = async () => {
   } catch (error) {
     console.error('Signup failed:', error)
     console.error('Error details:', error.response?.data)
-    errorMessage.value = error.response?.data?.message || 'Registration failed. Please try again.'
+
+    if (error.response?.status === 409 && error.response?.data?.errorCode === 'STALE_TERMS') {
+      legalStore.invalidate('ACCOUNT_TC', locale.value)
+      legalStore.invalidate('PRIVACY_POLICY', locale.value)
+      formData.value.agreeTerms = false
+      errorMessage.value = t.value.auth.signup.legal.staleTerms
+    } else {
+      errorMessage.value = error.response?.data?.message || 'Registration failed. Please try again.'
+    }
     isLoading.value = false
   }
 }
 
 const handleGoogleLogin = async () => {
   try {
-    await authStore.loginWithGoogle(selectedRole.value || 'CLIENT')
+    const acceptances = legalConsentNotice.value?.acceptances || []
+    await authStore.loginWithGoogle(selectedRole.value || 'CLIENT', acceptances)
   } catch (error) {
     console.error('Google login failed:', error)
     errorMessage.value = 'Google login failed. Please try again.'
@@ -409,7 +426,8 @@ const handleGoogleLogin = async () => {
 
 const handleLinkedInLogin = async () => {
   try {
-    await authStore.loginWithLinkedIn(selectedRole.value || 'CLIENT')
+    const acceptances = legalConsentNotice.value?.acceptances || []
+    await authStore.loginWithLinkedIn(selectedRole.value || 'CLIENT', acceptances)
   } catch (error) {
     console.error('LinkedIn login failed:', error)
     errorMessage.value = 'LinkedIn login failed. Please try again.'

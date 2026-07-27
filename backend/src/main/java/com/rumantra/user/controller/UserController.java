@@ -10,8 +10,10 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.rumantra.security.JwtUtils;
 import com.rumantra.security.SecurityUtils;
+import com.rumantra.shared.RequestUtils;
 import com.rumantra.shared.RumantraConstants;
 import com.rumantra.shared.dto.ApiResponse;
+import com.rumantra.shared.exception.BusinessException;
 import com.rumantra.shared.exception.ResourceNotFoundException;
 import com.rumantra.user.dto.UserAuthResponseDto;
 import com.rumantra.user.dto.UserDto;
@@ -19,6 +21,7 @@ import com.rumantra.user.dto.UserLoginRequestDto;
 import com.rumantra.user.dto.UserSignupRequestDto;
 import com.rumantra.user.service.UserService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,6 +61,13 @@ public class UserController {
                   .success(false)
                   .message(e.getMessage())
                   .build());
+    } catch (ResourceNotFoundException e) {
+      return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+          .body(
+              ApiResponse.<UserAuthResponseDto>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .build());
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(
@@ -70,16 +80,18 @@ public class UserController {
 
   @GetMapping("/oauth2/google")
   public ResponseEntity<String> googleLogin(
-      @RequestParam(value = "role", required = false) String role) {
-    return ResponseEntity.ok(userService.getGoogleAuthorizationUrl(role));
+      @RequestParam(value = "role", required = false) String role,
+      @RequestParam(value = "acceptances", required = false) String acceptances) {
+    return ResponseEntity.ok(userService.getGoogleAuthorizationUrl(role, acceptances));
   }
 
   @GetMapping("/oauth2/callback/google")
   public RedirectView googleCallback(
       @RequestParam("code") String code,
-      @RequestParam(value = "state", required = false) String state) {
+      @RequestParam(value = "state", required = false) String state,
+      HttpServletRequest request) {
     try {
-      UserAuthResponseDto authResponse = userService.processGoogleCallback(code, state);
+      UserAuthResponseDto authResponse = userService.processGoogleCallback(code, state, request);
 
       String jwtToken = jwtUtils.generateJwtToken(authResponse.getEmail());
       authResponse.setToken(jwtToken);
@@ -109,6 +121,17 @@ public class UserController {
               + (authResponse.getLastLoginRole() != null ? authResponse.getLastLoginRole() : "");
 
       return new RedirectView(callbackUrl);
+    } catch (BusinessException e) {
+      // Surface the stable error code (e.g. STALE_TERMS) rather than a free-text
+      // message, so the frontend can branch on it reliably.
+      String callbackUrl =
+          frontendUrl
+              + "/auth/callback?"
+              + "success=false"
+              + "&error="
+              + e.getExceptionCode().getCode();
+
+      return new RedirectView(callbackUrl);
     } catch (Exception e) {
       String callbackUrl =
           frontendUrl + "/auth/callback?" + "success=false" + "&error=" + e.getMessage();
@@ -119,9 +142,11 @@ public class UserController {
 
   @PostMapping("/register")
   public ResponseEntity<ApiResponse<String>> register(
-      @Valid @RequestBody UserSignupRequestDto signupRequest) {
+      @Valid @RequestBody UserSignupRequestDto signupRequest, HttpServletRequest request) {
     try {
-      UserDto userDto = userService.register(signupRequest);
+      String ipAddress = RequestUtils.getClientIp(request);
+      String userAgent = RequestUtils.getUserAgent(request);
+      UserDto userDto = userService.register(signupRequest, ipAddress, userAgent);
       return ResponseEntity.status(HttpStatus.CREATED)
           .body(
               ApiResponse.<String>builder()
@@ -134,6 +159,10 @@ public class UserController {
     } catch (IllegalArgumentException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(ApiResponse.<String>builder().success(false).message(e.getMessage()).build());
+    } catch (BusinessException e) {
+      // Let GlobalExceptionHandler map this to its configured HTTP status + errorCode
+      // (e.g. STALE_TERMS -> 409) instead of flattening it into a generic 500 below.
+      throw e;
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(
@@ -221,8 +250,9 @@ public class UserController {
 
   @GetMapping("/oauth2/linkedin")
   public ResponseEntity<String> linkedinLogin(
-      @RequestParam(value = "role", required = false) String role) {
-    return ResponseEntity.ok(userService.getLinkedInAuthorizationUrl(role));
+      @RequestParam(value = "role", required = false) String role,
+      @RequestParam(value = "acceptances", required = false) String acceptances) {
+    return ResponseEntity.ok(userService.getLinkedInAuthorizationUrl(role, acceptances));
   }
 
   @GetMapping("/oauth2/callback/linkedin")
@@ -230,7 +260,8 @@ public class UserController {
       @RequestParam(value = "code", required = false) String code,
       @RequestParam(value = "state", required = false) String state,
       @RequestParam(value = "error", required = false) String error,
-      @RequestParam(value = "error_description", required = false) String errorDescription) {
+      @RequestParam(value = "error_description", required = false) String errorDescription,
+      HttpServletRequest request) {
     try {
       if (error != null) {
         String errorMsg = errorDescription != null ? errorDescription : error;
@@ -241,7 +272,7 @@ public class UserController {
         throw new IllegalArgumentException("Authorization code is missing from LinkedIn callback");
       }
 
-      UserAuthResponseDto authResponse = userService.processLinkedInCallback(code, state);
+      UserAuthResponseDto authResponse = userService.processLinkedInCallback(code, state, request);
 
       String jwtToken = jwtUtils.generateJwtToken(authResponse.getEmail());
       authResponse.setToken(jwtToken);
@@ -269,6 +300,17 @@ public class UserController {
                   : "")
               + "&lastLoginRole="
               + (authResponse.getLastLoginRole() != null ? authResponse.getLastLoginRole() : "");
+
+      return new RedirectView(callbackUrl);
+    } catch (BusinessException e) {
+      // Surface the stable error code (e.g. STALE_TERMS) rather than a free-text
+      // message, so the frontend can branch on it reliably.
+      String callbackUrl =
+          frontendUrl
+              + "/auth/callback?"
+              + "success=false"
+              + "&error="
+              + e.getExceptionCode().getCode();
 
       return new RedirectView(callbackUrl);
     } catch (Exception e) {

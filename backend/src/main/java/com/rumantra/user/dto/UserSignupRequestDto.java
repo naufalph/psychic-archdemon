@@ -1,7 +1,13 @@
 package com.rumantra.user.dto;
 
+import java.util.List;
+
+import com.rumantra.legal.dto.AcceptanceRequest;
+
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
@@ -32,4 +38,8 @@ public class UserSignupRequestDto {
 
   @NotBlank(message = "Role is required") // this from FE to create architect / client profile
   private String role;
+
+  @NotEmpty(message = "Acceptance of Terms & Conditions and Privacy Policy is required")
+  @Valid
+  private List<AcceptanceRequest> acceptances;
 }

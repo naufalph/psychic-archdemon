@@ -173,6 +173,17 @@ export default {
       password: 'Password',
       confirmPassword: 'Confirm Password',
       agreeTerms: 'I agree to the Terms & Conditions and Privacy Policy',
+      legal: {
+        prefix: 'I have read and agree to the',
+        termsLabel: 'Terms & Conditions',
+        and: 'and',
+        privacyLabel: 'Privacy Policy',
+        suffix: 'of Rumantra.',
+        loading: 'Loading document...',
+        staleTerms: 'Terms were updated, please review and accept again.',
+        noticePrefix: 'By continuing, you agree to our',
+        noticeSuffix: '.'
+      },
       createAccount: 'Create Account',
       alreadyHave: 'Already have an account?',
       signInHere: 'Sign in here',
@@ -605,7 +616,8 @@ export default {
   common: {
     saving: 'Saving...',
     notSet: 'Not set',
-    backToDashboard: 'Back to Dashboard'
+    backToDashboard: 'Back to Dashboard',
+    back: 'Back'
   },
   errors: {
     'firstName.required': 'First name is required',
@@ -949,7 +961,9 @@ export default {
     ATTACHMENT_INVALID_TYPE: 'Invalid file type.',
     ATTACHMENT_SIZE_EXCEEDED: 'File size exceeds the maximum allowed limit.',
     PHASE_NOT_FOUND: 'Payment phase not found.',
-    PHASE_ALREADY_PAID: 'This phase has already been paid.'
+    PHASE_ALREADY_PAID: 'This phase has already been paid.',
+    STALE_TERMS: 'Terms were updated, please review and accept again.',
+    MISSING_REQUIRED_ACCEPTANCE: 'Please agree to the Terms & Conditions and Privacy Policy.'
   },
   clientNav: {
     dashboard: 'Dashboard',

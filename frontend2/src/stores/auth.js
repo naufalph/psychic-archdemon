@@ -201,9 +201,9 @@ export const useAuthStore = defineStore('auth', {
     },
 
     // Handle Google OAuth login
-    async loginWithGoogle(role = 'CLIENT') {
+    async loginWithGoogle(role = 'CLIENT', acceptances = []) {
       try {
-        const response = await authAPI.getGoogleAuthUrl(role)
+        const response = await authAPI.getGoogleAuthUrl(role, acceptances)
         const authUrl = response.data
 
         window.location.href = authUrl
@@ -249,9 +249,9 @@ export const useAuthStore = defineStore('auth', {
     },
 
     // Handle LinkedIn OAuth login
-    async loginWithLinkedIn(role = 'CLIENT') {
+    async loginWithLinkedIn(role = 'CLIENT', acceptances = []) {
       try {
-        const response = await authAPI.getLinkedInAuthUrl(role)
+        const response = await authAPI.getLinkedInAuthUrl(role, acceptances)
         const authUrl = response.data
 
         window.location.href = authUrl

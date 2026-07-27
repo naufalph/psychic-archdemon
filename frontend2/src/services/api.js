@@ -12,6 +12,15 @@ const translateErrorCode = code => {
   )
 }
 
+// URLSearchParams (unlike axios's default serializer) stringifies undefined as
+// the literal text "undefined" instead of omitting the key, so build a clean object first.
+const buildOAuthLoginParams = (role, acceptances) => {
+  const params = {}
+  if (role) params.role = role
+  if (acceptances && acceptances.length) params.acceptances = JSON.stringify(acceptances)
+  return params
+}
+
 // Create axios instance with default configuration
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/',
@@ -193,11 +202,19 @@ export const authAPI = {
   resendVerification: email => api.post(`/rmtr/users/resend-verification?email=${email}`),
 
   // Google OAuth endpoints
-  getGoogleAuthUrl: role => api.get('/rmtr/users/oauth2/google', { params: { role } }),
+  getGoogleAuthUrl: (role, acceptances) =>
+    api.get('/rmtr/users/oauth2/google', {
+      params: buildOAuthLoginParams(role, acceptances),
+      paramsSerializer: params => new URLSearchParams(params).toString()
+    }),
   googleCallback: code => api.get(`/rmtr/users/oauth2/callback/google?code=${code}`),
 
   // LinkedIn OAuth endpoints
-  getLinkedInAuthUrl: role => api.get('/rmtr/users/oauth2/linkedin', { params: { role } }),
+  getLinkedInAuthUrl: (role, acceptances) =>
+    api.get('/rmtr/users/oauth2/linkedin', {
+      params: buildOAuthLoginParams(role, acceptances),
+      paramsSerializer: params => new URLSearchParams(params).toString()
+    }),
   linkedinCallback: code => api.get(`/rmtr/users/oauth2/callback/linkedin?code=${code}`),
 
   // Get current authenticated user
@@ -367,6 +384,11 @@ export const phaseAPI = {
   disputeDeliverable: (phaseId, data) => api.post(`/rmtr/phases/${phaseId}/dispute`, data),
   disburse: (phaseId, data) => api.post(`/rmtr/phases/${phaseId}/disburse`, data),
   getLogs: phaseId => api.get(`/rmtr/phases/${phaseId}/logs`)
+}
+
+export const legalAPI = {
+  getCurrent: (docType, lang) => api.get('/api/legal/current', { params: { type: docType, lang } }),
+  getVersion: (docType, lang, version) => api.get(`/api/legal/${docType}/${lang}/${version}`)
 }
 
 // Default export

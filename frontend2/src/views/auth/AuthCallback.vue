@@ -136,7 +136,14 @@ const processCallback = () => {
       router.push(redirectPath)
     }, 1500)
   } else if (success === 'false' || error) {
-    errorMessage.value = error ? decodeURIComponent(error) : ''
+    const decodedError = error ? decodeURIComponent(error) : ''
+
+    if (decodedError === 'STALE_TERMS') {
+      router.replace('/signup?termsUpdated=true')
+      return
+    }
+
+    errorMessage.value = t.value.errors?.[decodedError] || decodedError
     isSuccess.value = false
     isProcessing.value = false
   } else {

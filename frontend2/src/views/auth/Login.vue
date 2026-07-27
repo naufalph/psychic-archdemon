@@ -8,13 +8,13 @@
       "
     ></div>
 
-    <div v-motion :initial="{ opacity: 0, y: 20 }" :enter="{ opacity: 1, y: 0 }" class="w-full max-w-md relative z-10">
+    <div v-motion :initial="{ opacity: 0, y: 20 }" :enter="{ opacity: 1, y: 0 }" class="w-full max-w-lg relative z-10">
       <router-link
         to="/"
         class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black transition mb-4 font-medium"
       >
         <ArrowLeft :size="16" />
-        Kembali
+        {{ t.common.back }}
       </router-link>
 
       <div class="bg-white rounded-3xl shadow-2xl p-12 border border-gray-100">
@@ -82,6 +82,8 @@
             </div>
           </div>
 
+          <LegalConsentNotice ref="legalConsentNotice" />
+
           <div class="grid grid-cols-2 gap-4">
             <button
               type="button"
@@ -148,11 +150,13 @@ import BaseButton from '@/components/ui/BaseButton.vue'
 import BaseInput from '@/components/ui/BaseInput.vue'
 import BaseAlert from '@/components/ui/BaseAlert.vue'
 import Logo from '@/components/ui/Logo.vue'
+import LegalConsentNotice from '@/components/legal/LegalConsentNotice.vue'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
 const { t } = useI18n()
+const legalConsentNotice = ref(null)
 
 const isLoading = ref(false)
 const errorMessage = ref('')
@@ -302,7 +306,8 @@ const handleLogin = async () => {
 
 const handleGoogleLogin = async () => {
   try {
-    await authStore.loginWithGoogle(null)
+    const acceptances = legalConsentNotice.value?.acceptances || []
+    await authStore.loginWithGoogle(null, acceptances)
   } catch (error) {
     console.error('Google login failed:', error)
     errorMessage.value = 'Google login failed. Please try again.'
@@ -311,7 +316,8 @@ const handleGoogleLogin = async () => {
 
 const handleLinkedInLogin = async () => {
   try {
-    await authStore.loginWithLinkedIn(null)
+    const acceptances = legalConsentNotice.value?.acceptances || []
+    await authStore.loginWithLinkedIn(null, acceptances)
   } catch (error) {
     console.error('LinkedIn login failed:', error)
     errorMessage.value = 'LinkedIn login failed. Please try again.'
