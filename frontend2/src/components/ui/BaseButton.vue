@@ -15,7 +15,12 @@ const props = defineProps({
   variant: {
     type: String,
     default: 'primary',
-    validator: value => ['primary', 'secondary', 'success', 'ghost'].includes(value)
+    validator: value => ['primary', 'secondary', 'outline', 'success', 'ghost'].includes(value)
+  },
+  size: {
+    type: String,
+    default: 'lg',
+    validator: value => ['sm', 'md', 'lg'].includes(value)
   },
   fullWidth: {
     type: Boolean,
@@ -37,14 +42,19 @@ const baseStyles =
 const variants = {
   primary: 'bg-black text-white hover:bg-gray-800 shadow-lg hover:shadow-xl focus:ring-black',
   secondary: 'bg-white text-black border-2 border-black hover:bg-black hover:text-white focus:ring-gray-500',
+  outline: 'bg-white text-ink-900 border border-hairline-alt hover:border-ink-900 focus:ring-ink-200',
   success: 'bg-brand-green text-white hover:bg-green-600 focus:ring-green-500 shadow-glow',
   ghost: 'bg-transparent text-gray-600 hover:text-black hover:bg-gray-100'
 }
 
-const sizes = 'px-10 py-3.5 text-base'
+const sizes = {
+  sm: 'px-6 py-2.5 text-caption',
+  md: 'px-8 py-3 text-body-sm',
+  lg: 'px-10 py-3.5 text-base'
+}
 
 const buttonClasses = computed(() => {
-  const classes = [baseStyles, variants[props.variant], sizes]
+  const classes = [baseStyles, variants[props.variant], sizes[props.size]]
   if (props.fullWidth) classes.push('w-full')
   return classes.join(' ')
 })

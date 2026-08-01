@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-full bg-[#F4F5F7]">
+  <div class="min-h-full bg-surface-alt">
     <div class="max-w-7xl mx-auto px-6 py-10">
       <div class="flex justify-between items-center mb-10">
         <div>
@@ -8,7 +8,7 @@
         </div>
         <router-link :to="{ name: 'OpportunityList' }">
           <button
-            class="bg-black text-white px-6 py-3 rounded-full font-bold tracking-widest text-sm hover:bg-[#7C4728] transition flex items-center gap-2"
+            class="bg-black text-white px-6 py-3 rounded-full font-bold tracking-widest text-sm hover:bg-brand-brown transition flex items-center gap-2"
           >
             <Search :size="16" />
             {{ t.architectDashboard.findProjects }}
@@ -27,7 +27,7 @@
           <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">
             {{ t.architectDashboard.accepted }}
           </p>
-          <p class="text-4xl font-bold text-[#7C4728]">{{ acceptedBids.length }}</p>
+          <p class="text-4xl font-bold text-brand-brown">{{ acceptedBids.length }}</p>
         </div>
         <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
           <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">
@@ -57,7 +57,7 @@
             <p class="text-gray-500 text-sm">{{ t.architectDashboard.noBidsYet }}</p>
             <router-link :to="{ name: 'OpportunityList' }">
               <button
-                class="mt-4 bg-[#7C4728] hover:bg-black text-white px-5 py-2 rounded-full text-sm font-medium transition"
+                class="mt-4 bg-brand-brown hover:bg-black text-white px-5 py-2 rounded-full text-sm font-medium transition"
               >
                 {{ t.architectDashboard.browseProjects }}
               </button>
@@ -72,12 +72,12 @@
               class="bg-white rounded-2xl border border-gray-200 p-5 shadow-soft flex items-center justify-between hover:shadow-md transition block"
             >
               <div class="flex items-center gap-4 min-w-0">
-                <div class="w-10 h-10 rounded-full bg-[#F5E6D3] flex items-center justify-center flex-shrink-0">
-                  <FileText :size="18" class="text-[#7C4728]" />
+                <div class="w-10 h-10 rounded-full bg-brand-tan flex items-center justify-center flex-shrink-0">
+                  <FileText :size="18" class="text-brand-brown" />
                 </div>
                 <div class="min-w-0">
                   <p class="font-semibold text-gray-900 truncate">{{ bid.projectTitle || 'Untitled Project' }}</p>
-                  <p class="text-xs text-[#7C4728] font-medium mt-0.5">IDR {{ formatNumber(bid.bidAmount) }}</p>
+                  <p class="text-xs text-brand-brown font-medium mt-0.5">IDR {{ formatNumber(bid.bidAmount) }}</p>
                 </div>
               </div>
               <span
@@ -105,13 +105,13 @@
             </p>
             <button
               @click="tokenPurchaseStore.openModal()"
-              class="w-full bg-black text-white px-4 py-2 rounded-full text-xs font-bold tracking-wider hover:bg-[#7C4728] transition"
+              class="w-full bg-black text-white px-4 py-2 rounded-full text-xs font-bold tracking-wider hover:bg-brand-brown transition"
             >
               {{ t.architectDashboard.buyTokens }}
             </button>
           </div>
 
-          <div class="bg-[#7C4728] rounded-2xl p-6 text-white">
+          <div class="bg-brand-brown rounded-2xl p-6 text-white">
             <p class="text-xs font-bold tracking-widest uppercase mb-2 text-white/70">
               {{ t.architectDashboard.opportunities }}
             </p>
@@ -119,7 +119,7 @@
             <p class="text-sm text-white/80 mb-4">{{ t.architectDashboard.browseProjectsDesc }}</p>
             <router-link :to="{ name: 'OpportunityList' }">
               <button
-                class="bg-white text-[#7C4728] px-4 py-2 rounded-full text-xs font-bold tracking-wider hover:bg-[#F5E6D3] transition"
+                class="bg-white text-brand-brown px-4 py-2 rounded-full text-xs font-bold tracking-wider hover:bg-brand-tan transition"
               >
                 {{ t.architectDashboard.browseProjectsBtn }}
               </button>

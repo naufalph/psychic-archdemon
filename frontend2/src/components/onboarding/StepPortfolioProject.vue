@@ -13,21 +13,25 @@
 
       <div class="bg-white rounded-3xl p-8 shadow-sm border border-black/5 space-y-6">
         <div class="space-y-2">
-          <label class="block text-sm font-semibold text-black/70 tracking-tight">{{ t.onboarding.portfolioProject.name }}</label>
+          <label class="block text-sm font-semibold text-black/70 tracking-tight">{{
+            t.onboarding.portfolioProject.name
+          }}</label>
           <input
             v-model="projectData.name"
             type="text"
             :placeholder="t.onboarding.portfolioProject.namePlaceholder"
-            class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all"
+            class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
           />
         </div>
 
         <div class="grid grid-cols-2 gap-4">
           <div class="space-y-2">
-            <label class="block text-sm font-semibold text-black/70 tracking-tight">{{ t.onboarding.portfolioProject.type }}</label>
+            <label class="block text-sm font-semibold text-black/70 tracking-tight">{{
+              t.onboarding.portfolioProject.type
+            }}</label>
             <select
               v-model="projectData.type"
-              class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all bg-white"
+              class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all bg-white"
             >
               <option value="" disabled>{{ t.onboarding.portfolioProject.typePlaceholder }}</option>
               <option v-for="type in PROJECT_TYPES" :key="type" :value="type">
@@ -37,40 +41,48 @@
           </div>
 
           <div class="space-y-2">
-            <label class="block text-sm font-semibold text-black/70 tracking-tight">{{ t.onboarding.portfolioProject.year }}</label>
+            <label class="block text-sm font-semibold text-black/70 tracking-tight">{{
+              t.onboarding.portfolioProject.year
+            }}</label>
             <input
               v-model.number="projectData.year"
               type="number"
               :min="1950"
               :max="new Date().getFullYear()"
               placeholder="2024"
-              class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all"
+              class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
             />
           </div>
         </div>
 
         <div class="space-y-2">
-          <label class="block text-sm font-semibold text-black/70 tracking-tight">{{ t.onboarding.portfolioProject.challenge }}</label>
+          <label class="block text-sm font-semibold text-black/70 tracking-tight">{{
+            t.onboarding.portfolioProject.challenge
+          }}</label>
           <textarea
             v-model="projectData.story.problem"
             rows="3"
             :placeholder="t.onboarding.portfolioProject.challengePlaceholder"
-            class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all resize-none"
+            class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all resize-none"
           />
         </div>
 
         <div class="space-y-2">
-          <label class="block text-sm font-semibold text-black/70 tracking-tight">{{ t.onboarding.portfolioProject.solution }}</label>
+          <label class="block text-sm font-semibold text-black/70 tracking-tight">{{
+            t.onboarding.portfolioProject.solution
+          }}</label>
           <textarea
             v-model="projectData.story.decision"
             rows="3"
             :placeholder="t.onboarding.portfolioProject.solutionPlaceholder"
-            class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all resize-none"
+            class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all resize-none"
           />
         </div>
 
         <div class="space-y-3">
-          <label class="block text-sm font-semibold text-black/70 tracking-tight">{{ t.onboarding.portfolioProject.images }}</label>
+          <label class="block text-sm font-semibold text-black/70 tracking-tight">{{
+            t.onboarding.portfolioProject.images
+          }}</label>
 
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div
@@ -91,11 +103,11 @@
 
             <label
               v-if="projectData.images.length < 8"
-              class="aspect-square rounded-2xl border-2 border-dashed border-black/20 hover:border-[#7C4728] hover:bg-[#7C4728]/5 transition-all flex items-center justify-center cursor-pointer group"
+              class="aspect-square rounded-2xl border-2 border-dashed border-black/20 hover:border-brand-brown hover:bg-brand-brown/5 transition-all flex items-center justify-center cursor-pointer group"
             >
               <input ref="fileInput" type="file" accept="image/*" multiple class="hidden" @change="handleImageUpload" />
               <svg
-                class="w-8 h-8 text-black/40 group-hover:text-[#7C4728] transition-colors"
+                class="w-8 h-8 text-black/40 group-hover:text-brand-brown transition-colors"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -120,14 +132,16 @@
       </div>
 
       <div class="flex justify-between items-center pt-4">
-        <button @click="handleBack" class="px-6 py-3 text-black/60 hover:text-black transition-colors">{{ t.onboarding.portfolioProject.back }}</button>
+        <button @click="handleBack" class="px-6 py-3 text-black/60 hover:text-black transition-colors">
+          {{ t.onboarding.portfolioProject.back }}
+        </button>
         <button
           @click="handleSave"
           :disabled="!isFormValid || store.isLoading"
           :class="[
             'px-8 py-3 rounded-full font-semibold transition-all flex items-center gap-2',
             isFormValid && !store.isLoading
-              ? 'bg-[#7C4728] text-white hover:bg-[#6A3D22] hover:scale-105'
+              ? 'bg-brand-brown text-white hover:bg-brand-brown-dark hover:scale-105'
               : 'bg-black/10 text-black/30 cursor-not-allowed'
           ]"
         >

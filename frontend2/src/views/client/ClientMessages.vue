@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-full bg-[#F4F5F7]" style="height: calc(100vh)">
+  <div class="flex h-full bg-surface-alt" style="height: calc(100vh)">
     <!-- Conversation list -->
     <div class="w-72 shrink-0 bg-white border-r border-gray-200 flex flex-col">
       <div class="px-5 py-5 border-b border-gray-100">
@@ -7,7 +7,7 @@
       </div>
 
       <div v-if="chatStore.loading && !chatStore.conversations.length" class="flex-1 flex items-center justify-center">
-        <div class="w-6 h-6 border-2 border-[#C5A17A] border-t-transparent rounded-full animate-spin" />
+        <div class="w-6 h-6 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />
       </div>
 
       <div
@@ -25,26 +25,30 @@
           v-for="conv in chatStore.conversations"
           :key="conv.id"
           class="w-full text-left px-5 py-4 border-b border-gray-50 hover:bg-gray-50 transition"
-          :class="selectedConvId === conv.id ? 'bg-[#F5E6D3]' : ''"
+          :class="selectedConvId === conv.id ? 'bg-brand-tan' : ''"
           @click="selectConversation(conv)"
         >
           <div class="flex items-start gap-3">
             <div
-              class="w-9 h-9 rounded-full bg-[#1C1C1C] text-white flex items-center justify-center text-xs font-bold shrink-0"
+              class="w-9 h-9 rounded-full bg-ink-700 text-white flex items-center justify-center text-xs font-bold shrink-0"
             >
               {{ getConvInitials(conv) }}
             </div>
             <div class="flex-1 min-w-0">
               <div class="flex items-center justify-between">
-                <p class="text-sm font-semibold text-gray-900 truncate">{{ conv.projectTitle || t.clientMessages.projectChat }}</p>
+                <p class="text-sm font-semibold text-gray-900 truncate">
+                  {{ conv.projectTitle || t.clientMessages.projectChat }}
+                </p>
                 <span
                   v-if="conv.unreadCount > 0"
-                  class="ml-2 w-5 h-5 bg-[#7C4728] text-white text-xs rounded-full flex items-center justify-center font-bold shrink-0"
+                  class="ml-2 w-5 h-5 bg-brand-brown text-white text-xs rounded-full flex items-center justify-center font-bold shrink-0"
                 >
                   {{ conv.unreadCount > 9 ? '9+' : conv.unreadCount }}
                 </span>
               </div>
-              <p class="text-xs text-gray-500 truncate mt-0.5">{{ conv.lastMessage || t.clientMessages.noMessagesYet }}</p>
+              <p class="text-xs text-gray-500 truncate mt-0.5">
+                {{ conv.lastMessage || t.clientMessages.noMessagesYet }}
+              </p>
             </div>
           </div>
         </button>
@@ -65,11 +69,13 @@
       <template v-else>
         <!-- Chat header -->
         <div class="bg-white border-b border-gray-200 px-6 py-4 flex items-center gap-3 shrink-0">
-          <div class="w-9 h-9 rounded-full bg-[#1C1C1C] text-white flex items-center justify-center text-xs font-bold">
+          <div class="w-9 h-9 rounded-full bg-ink-700 text-white flex items-center justify-center text-xs font-bold">
             {{ getConvInitials(selectedConv) }}
           </div>
           <div>
-            <p class="font-semibold text-gray-900 text-sm">{{ selectedConv?.projectTitle || t.clientMessages.projectChat }}</p>
+            <p class="font-semibold text-gray-900 text-sm">
+              {{ selectedConv?.projectTitle || t.clientMessages.projectChat }}
+            </p>
             <p class="text-xs text-gray-400">{{ selectedConv?.architectName || '' }}</p>
           </div>
         </div>
@@ -77,7 +83,7 @@
         <!-- Messages -->
         <div ref="messagesEl" class="flex-1 overflow-y-auto px-6 py-4 space-y-3">
           <div v-if="chatStore.loading" class="flex justify-center py-8">
-            <div class="w-6 h-6 border-2 border-[#C5A17A] border-t-transparent rounded-full animate-spin" />
+            <div class="w-6 h-6 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />
           </div>
           <template v-else>
             <div
@@ -90,7 +96,7 @@
                 class="max-w-xs lg:max-w-md px-4 py-2.5 rounded-2xl text-sm"
                 :class="
                   isMine(msg)
-                    ? 'bg-[#1C1C1C] text-white rounded-br-sm'
+                    ? 'bg-ink-700 text-white rounded-br-sm'
                     : 'bg-white border border-gray-200 text-gray-800 rounded-bl-sm'
                 "
               >
@@ -110,13 +116,13 @@
               v-model="newMessage"
               type="text"
               :placeholder="t.clientMessages.typeMessage"
-              class="flex-1 bg-gray-100 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#7C4728]/30"
+              class="flex-1 bg-gray-100 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-brand-brown/30"
               :disabled="chatStore.sending"
             />
             <button
               type="submit"
               :disabled="!newMessage.trim() || chatStore.sending"
-              class="w-10 h-10 bg-[#1C1C1C] text-white rounded-full flex items-center justify-center hover:bg-[#7C4728] disabled:opacity-50 disabled:cursor-not-allowed transition"
+              class="w-10 h-10 bg-ink-700 text-white rounded-full flex items-center justify-center hover:bg-brand-brown disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
               <Send :size="16" />
             </button>

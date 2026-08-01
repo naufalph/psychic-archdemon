@@ -19,7 +19,9 @@
         <div class="flex items-start justify-between gap-4">
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-1">
-              <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">{{ t.disputeManagement.disputed }}</span>
+              <span class="text-xs font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">{{
+                t.disputeManagement.disputed
+              }}</span>
               <p class="font-semibold text-gray-900">Phase {{ phase.phaseNumber }}: {{ phase.title }}</p>
             </div>
             <p class="text-sm text-gray-500">
@@ -34,7 +36,9 @@
         <!-- Resolution form -->
         <div v-if="resolving === phase.id" class="mt-4 pt-4 border-t border-gray-100">
           <div class="mb-3">
-            <label class="block text-xs font-semibold text-gray-600 mb-1">{{ t.disputeManagement.resolutionNote }}</label>
+            <label class="block text-xs font-semibold text-gray-600 mb-1">{{
+              t.disputeManagement.resolutionNote
+            }}</label>
             <textarea
               v-model="resolutionNote"
               rows="2"
@@ -58,7 +62,10 @@
               {{ t.disputeManagement.rejectToProgress }}
             </button>
             <button
-              @click="resolving = null; resolutionNote = ''"
+              @click="
+                resolving = null;
+                resolutionNote = ''
+              "
               class="px-4 py-2 text-sm font-semibold rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition"
             >
               {{ t.disputeManagement.cancel }}
@@ -67,7 +74,10 @@
         </div>
         <div v-else class="mt-3">
           <button
-            @click="resolving = phase.id; resolutionNote = ''"
+            @click="
+              resolving = phase.id;
+              resolutionNote = ''
+            "
             class="px-4 py-1.5 text-xs font-semibold rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition"
           >
             {{ t.disputeManagement.resolve }}

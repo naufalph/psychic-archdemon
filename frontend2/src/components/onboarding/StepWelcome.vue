@@ -14,7 +14,7 @@
       <div class="pt-8">
         <button
           @click="handleNext"
-          class="px-12 py-4 bg-[#7C4728] text-white rounded-full text-lg font-semibold tracking-tight hover:bg-[#6A3D22] transition-all duration-300 hover:scale-105"
+          class="px-12 py-4 bg-brand-brown text-white rounded-full text-lg font-semibold tracking-tight hover:bg-brand-brown-dark transition-all duration-300 hover:scale-105"
         >
           {{ t.onboarding.welcome.enterStudio }}
         </button>

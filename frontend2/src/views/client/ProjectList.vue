@@ -7,7 +7,7 @@
       </div>
       <router-link :to="{ name: 'ProjectCreate' }">
         <button
-          class="bg-[#7C4728] hover:bg-black text-white px-6 py-3 rounded-full font-medium transition flex items-center gap-2"
+          class="bg-brand-brown hover:bg-black text-white px-6 py-3 rounded-full font-medium transition flex items-center gap-2"
         >
           <Plus :size="20" />
           {{ t.clientDashboard.newProject }}
@@ -29,7 +29,7 @@
 
     <div v-else-if="error" class="text-center py-12">
       <p class="text-red-600 mb-4">{{ error }}</p>
-      <button @click="fetchProjects" class="text-[#7C4728] hover:underline">Try again</button>
+      <button @click="fetchProjects" class="text-brand-brown hover:underline">Try again</button>
     </div>
 
     <div v-else-if="projects.length === 0" class="text-center py-20">
@@ -37,7 +37,7 @@
       <h3 class="text-xl font-bold text-gray-900 mb-2">{{ t.clientDashboard.noProjectsYet }}</h3>
       <p class="text-gray-500 mb-6">{{ t.clientDashboard.noProjectsMessage }}</p>
       <router-link :to="{ name: 'ProjectCreate' }">
-        <button class="bg-[#7C4728] hover:bg-black text-white px-6 py-3 rounded-full font-medium transition">
+        <button class="bg-brand-brown hover:bg-black text-white px-6 py-3 rounded-full font-medium transition">
           {{ t.clientDashboard.createProject }}
         </button>
       </router-link>

@@ -21,7 +21,7 @@
     </div>
 
     <div v-else class="border border-gray-200 rounded-xl p-4 flex items-center gap-3">
-      <FileText :size="24" class="text-[#7C4728]" />
+      <FileText :size="24" class="text-brand-brown" />
       <div class="flex-1 min-w-0">
         <p class="text-sm font-medium text-gray-900 truncate">{{ file.name }}</p>
         <p class="text-xs text-gray-500">{{ formatFileSize(file.size) }}</p>
@@ -61,7 +61,7 @@ const fileInput = ref(null)
 
 const dropzoneClasses = computed(() => [
   'border-2 border-dashed rounded-xl transition-all',
-  isDragging.value ? 'border-[#7C4728] bg-[#F5E6D3]/20' : 'border-gray-300 hover:border-[#C5A17A]'
+  isDragging.value ? 'border-brand-brown bg-brand-tan/20' : 'border-gray-300 hover:border-brand-gold'
 ])
 
 const formatFileSize = bytes => {

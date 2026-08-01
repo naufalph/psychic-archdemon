@@ -1,10 +1,12 @@
 <template>
-  <div class="group flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-lg hover:border-gray-300 transition-all cursor-default select-none">
+  <div
+    class="group flex items-center gap-1.5 px-3 py-1.5 border border-gray-200 rounded-lg hover:border-gray-300 transition-all cursor-default select-none"
+  >
     <Globe class="w-4 h-4 text-gray-500 flex-shrink-0" />
-    <span class="text-sm font-bold text-[#0A0A0A]">{{ locale.toUpperCase() }}</span>
+    <span class="text-sm font-bold text-ink-900">{{ locale.toUpperCase() }}</span>
     <span class="hidden group-hover:inline text-gray-400 text-sm font-medium transition-all"> | </span>
     <button
-      class="hidden group-hover:inline text-sm font-medium text-[#888888] hover:text-[#0A0A0A] transition-colors"
+      class="hidden group-hover:inline text-sm font-medium text-ink-300 hover:text-ink-900 transition-colors"
       @click="switchLocale"
     >
       {{ otherLocale }}

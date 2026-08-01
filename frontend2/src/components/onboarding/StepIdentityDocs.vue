@@ -41,7 +41,7 @@
             v-model="formData.fullnameKtp"
             type="text"
             :placeholder="t.identityDocs?.fullnameKtpPlaceholder || 'e.g., Budi Santoso'"
-            class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all"
+            class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
           />
         </div>
 
@@ -54,7 +54,7 @@
             type="text"
             maxlength="16"
             :placeholder="t.identityDocs?.ktpNumPlaceholder || '16-digit KTP number'"
-            class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all"
+            class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
             @input="formData.ktpNum = formData.ktpNum.replace(/\D/g, '')"
           />
           <p v-if="formData.ktpNum && !/^[0-9]{16}$/.test(formData.ktpNum)" class="text-xs text-red-500">
@@ -71,7 +71,7 @@
             type="text"
             maxlength="16"
             :placeholder="t.identityDocs?.npwpPlaceholder || '15–16 digit NPWP number'"
-            class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all"
+            class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
             @input="formData.npwp = formData.npwp.replace(/\D/g, '')"
           />
           <p v-if="formData.npwp && !/^[0-9]{15,16}$/.test(formData.npwp)" class="text-xs text-red-500">
@@ -87,7 +87,7 @@
             v-model="formData.phoneNum"
             type="tel"
             :placeholder="t.identityDocs?.phoneNumPlaceholder || 'e.g., 08123456789'"
-            class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all"
+            class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
           />
           <p class="text-xs text-black/40">
             {{ t.identityDocs?.phoneNumHint || 'OTP verification via WhatsApp is done from your Profile page.' }}
@@ -114,7 +114,7 @@
             :class="[
               'px-8 py-3 rounded-full font-semibold transition-all text-sm',
               hasAnyField && isFormValid && !store.isLoading
-                ? 'bg-[#7C4728] text-white hover:bg-[#6A3D22] hover:scale-105'
+                ? 'bg-brand-brown text-white hover:bg-brand-brown-dark hover:scale-105'
                 : 'bg-black/10 text-black/30 cursor-not-allowed'
             ]"
           >

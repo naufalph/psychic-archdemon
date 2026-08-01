@@ -18,7 +18,15 @@ const isHovered = ref(false)
 
 <style scoped>
 .logo-default {
-  background: linear-gradient(to right, #6b7786, #000000, #6b7786, #185c93, #000000, #185c93);
+  background: linear-gradient(
+    to right,
+    #6b7786,
+    theme('colors.black'),
+    #6b7786,
+    #185c93,
+    theme('colors.black'),
+    #185c93
+  );
   background-size: 200% 100%;
   background-position: 0% 50%;
   background-clip: text;
@@ -28,7 +36,15 @@ const isHovered = ref(false)
 }
 
 .logo-hover {
-  background: linear-gradient(to right, #6b7786, #000000, #6b7786, #185c93, #000000, #185c93);
+  background: linear-gradient(
+    to right,
+    #6b7786,
+    theme('colors.black'),
+    #6b7786,
+    #185c93,
+    theme('colors.black'),
+    #185c93
+  );
   background-size: 200% 100%;
   background-clip: text;
   -webkit-background-clip: text;

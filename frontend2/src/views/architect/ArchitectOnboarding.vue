@@ -1,10 +1,10 @@
 <template>
-  <div class="min-h-screen bg-[#FAFAFA]">
-    <nav class="py-8 px-6 md:px-12 sticky top-0 bg-[#FAFAFA]/90 backdrop-blur-xl z-50 border-b border-black/5">
+  <div class="min-h-screen bg-surface">
+    <nav class="py-8 px-6 md:px-12 sticky top-0 bg-surface/90 backdrop-blur-xl z-50 border-b border-black/5">
       <div class="max-w-7xl mx-auto flex justify-between items-center">
         <div class="flex items-center gap-4">
-          <div class="text-2xl font-black text-[#7C4728]">Rumantra</div>
-          <span class="text-[10px] uppercase tracking-[0.4em] text-black/40"> Studio Onboarding </span>
+          <div class="text-2xl font-black text-brand-brown">Rumantra</div>
+          <span class="text-nano uppercase tracking-[0.4em] text-black/40"> Studio Onboarding </span>
         </div>
         <ProgressBar :current-step="store.currentStep" />
       </div>
@@ -58,7 +58,7 @@
             </button>
             <button
               @click="continueOnboarding"
-              class="flex-1 px-6 py-3 bg-[#7C4728] text-white rounded-2xl font-semibold hover:bg-[#6A3D22] transition-all"
+              class="flex-1 px-6 py-3 bg-brand-brown text-white rounded-2xl font-semibold hover:bg-brand-brown-dark transition-all"
             >
               Continue
             </button>

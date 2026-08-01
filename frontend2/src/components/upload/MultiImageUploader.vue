@@ -6,14 +6,7 @@
     </label>
 
     <!-- Single hidden input always in DOM -->
-    <input
-      ref="fileInputRef"
-      type="file"
-      accept="image/*"
-      multiple
-      class="hidden"
-      @change="handleFileSelect"
-    />
+    <input ref="fileInputRef" type="file" accept="image/*" multiple class="hidden" @change="handleFileSelect" />
 
     <!-- Empty state drop zone -->
     <div
@@ -75,7 +68,7 @@
       <div
         v-if="totalCount < maxFiles"
         @click="openPicker"
-        class="aspect-square border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer hover:border-[#C5A17A] transition"
+        class="aspect-square border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer hover:border-brand-gold transition"
       >
         <Plus :size="32" class="text-gray-400" />
       </div>
@@ -166,13 +159,13 @@ watch(
 
 const dropzoneClasses = ref([
   'border-2 border-dashed rounded-xl cursor-pointer transition-all',
-  isDragging.value ? 'border-[#7C4728] bg-[#F5E6D3]/20' : 'border-gray-300 hover:border-[#C5A17A]'
+  isDragging.value ? 'border-brand-brown bg-brand-tan/20' : 'border-gray-300 hover:border-brand-gold'
 ])
 
 watch(isDragging, newValue => {
   dropzoneClasses.value = [
     'border-2 border-dashed rounded-xl cursor-pointer transition-all',
-    newValue ? 'border-[#7C4728] bg-[#F5E6D3]/20' : 'border-gray-300 hover:border-[#C5A17A]'
+    newValue ? 'border-brand-brown bg-brand-tan/20' : 'border-gray-300 hover:border-brand-gold'
   ]
 })
 </script>

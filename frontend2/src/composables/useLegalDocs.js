@@ -56,5 +56,13 @@ export function useLegalDocs(locale) {
     activeDocType.value = null
   }
 
-  return { isReady, acceptances, activeDocType, activeDoc, renderedActiveDoc, openModal, closeModal }
+  return {
+    isReady,
+    acceptances,
+    activeDocType,
+    activeDoc,
+    renderedActiveDoc,
+    openModal,
+    closeModal
+  }
 }

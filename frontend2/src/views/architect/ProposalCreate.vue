@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-[#F4F5F7] py-12">
+  <div class="min-h-screen bg-surface-alt py-12">
     <div class="max-w-7xl mx-auto px-6">
       <button @click="saveDraftAndLeave" class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition">
         <ArrowLeft :size="20" />
@@ -13,7 +13,7 @@
 
       <div v-else-if="projectError" class="bg-white rounded-3xl border border-gray-200 p-12 text-center">
         <p class="text-red-600 mb-4">{{ projectError }}</p>
-        <button @click="router.push({ name: 'OpportunityList' })" class="text-[#7C4728] hover:underline">
+        <button @click="router.push({ name: 'OpportunityList' })" class="text-brand-brown hover:underline">
           {{ t.proposalCreate?.backToOpportunities || 'Back to Opportunities' }}
         </button>
       </div>
@@ -76,7 +76,7 @@
                       <span
                         v-for="d in group.items"
                         :key="d"
-                        class="bg-[#F5E6D3] text-[#7C4728] px-2 py-0.5 rounded-full text-xs font-medium"
+                        class="bg-brand-tan text-brand-brown px-2 py-0.5 rounded-full text-xs font-medium"
                       >
                         {{ t.proposalCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ') }}
                       </span>
@@ -94,7 +94,7 @@
 
         <div class="lg:col-span-2">
           <div class="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
-            <div class="bg-[#7C4728] p-8 text-white">
+            <div class="bg-brand-brown p-8 text-white">
               <h1 class="text-3xl font-bold flex items-center gap-3">
                 <FileText :size="32" />
                 {{
@@ -141,7 +141,7 @@
                 </p>
                 <router-link
                   to="/architect/profile"
-                  class="inline-block mt-2 text-sm font-semibold text-amber-900 underline hover:text-[#7C4728]"
+                  class="inline-block mt-2 text-sm font-semibold text-amber-900 underline hover:text-brand-brown"
                 >
                   {{ t.proposalCreate?.identityIncompleteAction || 'Complete Profile' }} →
                 </router-link>
@@ -159,7 +159,7 @@
                     required
                     type="number"
                     placeholder="e.g., 50000000"
-                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#7C4728] focus:border-[#7C4728] outline-none"
+                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
                   />
                 </div>
               </div>
@@ -170,7 +170,7 @@
                   v-model="formData.proposal"
                   rows="6"
                   placeholder="Tell the client about your studio's expertise, experience, and approach..."
-                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#7C4728] focus:border-[#7C4728] outline-none"
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
                 />
               </div>
 
@@ -186,7 +186,7 @@
                   rows="6"
                   required
                   placeholder="Explain your design concept, key features, and how you'll address the client's needs..."
-                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#7C4728] focus:border-[#7C4728] outline-none"
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
                   @input="validateWordCount"
                 />
                 <p class="text-xs text-gray-500 mt-1">{{ wordCount }}/200 words</p>
@@ -271,7 +271,7 @@
                 <router-link
                   v-if="!isIdentityComplete"
                   to="/architect/profile"
-                  class="inline-block text-sm font-semibold text-[#7C4728] underline"
+                  class="inline-block text-sm font-semibold text-brand-brown underline"
                 >
                   {{ t.value.proposalCreate?.completeProfileLink || 'Complete your profile →' }}
                 </router-link>
@@ -288,7 +288,7 @@
                 <button
                   type="submit"
                   :disabled="(loading && !isSavingDraft) || uploadProgress > 0"
-                  class="flex-1 px-6 py-3 text-white bg-[#7C4728] rounded-full hover:bg-black shadow-md hover:shadow-lg transition-all font-bold flex items-center justify-center gap-2 disabled:opacity-50"
+                  class="flex-1 px-6 py-3 text-white bg-brand-brown rounded-full hover:bg-black shadow-md hover:shadow-lg transition-all font-bold flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <Loader v-if="loading && !isSavingDraft" :size="20" class="animate-spin" />
                   <Send v-else :size="20" />

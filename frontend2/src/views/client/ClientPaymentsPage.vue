@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-full bg-[#F4F5F7] px-6 py-8">
+  <div class="min-h-full bg-surface-alt px-6 py-8">
     <div class="max-w-3xl mx-auto">
       <div class="mb-8">
         <p class="text-xs text-gray-400 uppercase font-bold tracking-wide mb-1">{{ t.clientPaymentsPage?.title }}</p>
@@ -26,7 +26,7 @@
         <p class="text-sm text-gray-400 mt-1">{{ t.clientPaymentsPage?.noProjectsHint }}</p>
         <RouterLink
           to="/client/projects"
-          class="inline-block mt-4 text-sm font-semibold text-[#7C4728] hover:underline"
+          class="inline-block mt-4 text-sm font-semibold text-brand-brown hover:underline"
         >
           {{ t.clientPaymentsPage?.viewProjects }}
         </RouterLink>

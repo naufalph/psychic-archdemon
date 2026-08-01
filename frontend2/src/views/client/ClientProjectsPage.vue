@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-full bg-[#F4F5F7] px-6 py-8">
+  <div class="min-h-full bg-surface-alt px-6 py-8">
     <ProjectList />
   </div>
 </template>

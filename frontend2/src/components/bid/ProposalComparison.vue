@@ -14,7 +14,7 @@
         <button
           v-if="bid.status === 'PENDING'"
           @click="handleAppoint(bid.id)"
-          class="bg-[#7C4728] text-white px-5 py-2 rounded-full text-sm font-bold hover:bg-black transition"
+          class="bg-brand-brown text-white px-5 py-2 rounded-full text-sm font-bold hover:bg-black transition"
         >
           {{ t.proposalComparison.appointLead }}
         </button>
@@ -39,7 +39,7 @@
             @click="switchType(type)"
             :class="[
               'px-4 py-1.5 rounded-full text-xs font-bold transition',
-              activeImageType === type ? 'bg-[#7C4728] text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              activeImageType === type ? 'bg-brand-brown text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             ]"
           >
             {{ imageTypeLabel[type] }}
@@ -193,7 +193,7 @@
             <th class="text-left px-6 py-3 text-xs text-gray-500 font-bold uppercase tracking-wider">
               {{ t.proposalComparison.metricHeader }}
             </th>
-            <th class="text-center px-6 py-3 text-xs text-[#7C4728] font-bold uppercase tracking-wider">
+            <th class="text-center px-6 py-3 text-xs text-brand-brown font-bold uppercase tracking-wider">
               {{ t.proposalComparison.proposalA }}
             </th>
             <th class="text-center px-6 py-3 text-xs font-bold uppercase tracking-wider">
@@ -204,7 +204,7 @@
         <tbody>
           <tr class="border-t border-gray-100">
             <td class="px-6 py-4 text-gray-700 font-medium">{{ t.proposalComparison.costEstimate }}</td>
-            <td class="px-6 py-4 text-center font-bold text-[#7C4728]">{{ formatCurrency(bidA.bidAmount) }}</td>
+            <td class="px-6 py-4 text-center font-bold text-brand-brown">{{ formatCurrency(bidA.bidAmount) }}</td>
             <td class="px-6 py-4 text-center font-bold">{{ formatCurrency(bidB.bidAmount) }}</td>
           </tr>
           <tr class="border-t border-gray-100">
@@ -249,14 +249,14 @@
           >
             <div class="flex items-center justify-between mb-2">
               <div class="flex items-center gap-1.5">
-                <span class="text-xs font-bold px-1.5 py-0 rounded-full bg-[#7C4728] text-white"
+                <span class="text-xs font-bold px-1.5 py-0 rounded-full bg-brand-brown text-white"
                   >P{{ phase.phaseNumber }}</span
                 >
                 <span class="text-sm font-medium text-gray-800">{{
                   phase.title || `${t.paymentPhaseBuilder.phase} ${phase.phaseNumber}`
                 }}</span>
               </div>
-              <span class="text-xs font-bold text-[#7C4728]">{{ formatCurrency(phase.amount) }}</span>
+              <span class="text-xs font-bold text-brand-brown">{{ formatCurrency(phase.amount) }}</span>
             </div>
             <div v-if="phase.deliverables?.length" class="flex flex-wrap gap-1 mb-1.5">
               <span

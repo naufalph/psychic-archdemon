@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-full bg-[#F4F5F7]">
+  <div class="min-h-full bg-surface-alt">
     <div class="max-w-4xl mx-auto px-6 py-12">
       <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200">
-        <div class="bg-[#1C1C1C] px-8 py-6">
+        <div class="bg-ink-700 px-8 py-6">
           <button
             @click="goToDashboard"
             class="flex items-center gap-2 text-white hover:text-white/70 transition-colors mb-4 group"
@@ -31,7 +31,7 @@
               <h2 class="text-xl font-semibold text-gray-900">{{ t.clientProfile.viewMode.title }}</h2>
               <button
                 @click="enableEdit"
-                class="px-4 py-2 bg-[#1C1C1C] text-white font-semibold rounded-lg hover:bg-[#7C4728] focus:outline-none focus:ring-2 focus:ring-[#7C4728] focus:ring-offset-2 transition-colors"
+                class="px-4 py-2 bg-ink-700 text-white font-semibold rounded-lg hover:bg-brand-brown focus:outline-none focus:ring-2 focus:ring-brand-brown focus:ring-offset-2 transition-colors"
               >
                 {{ t.clientProfile.editProfile }}
               </button>
@@ -87,7 +87,7 @@
               </h3>
               <div class="grid grid-cols-2 gap-4">
                 <div class="bg-white rounded-lg p-4 text-center">
-                  <p class="text-3xl font-bold text-[#1C1C1C]">{{ projectStats.matched }}</p>
+                  <p class="text-3xl font-bold text-ink-700">{{ projectStats.matched }}</p>
                   <p class="text-sm text-gray-600 mt-1">{{ t.clientProfile.viewMode.projectsMatched }}</p>
                 </div>
                 <div class="bg-white rounded-lg p-4 text-center">

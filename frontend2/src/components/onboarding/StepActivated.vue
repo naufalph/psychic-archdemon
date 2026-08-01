@@ -8,7 +8,7 @@
     >
       <div class="relative">
         <div
-          class="w-32 h-32 mx-auto rounded-full bg-gradient-to-r from-[#7C4728] to-[#9B5E3C] flex items-center justify-center animate-bounce"
+          class="w-32 h-32 mx-auto rounded-full bg-gradient-to-r from-brand-brown to-brand-brown-light flex items-center justify-center animate-bounce"
         >
           <svg class="w-16 h-16 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
@@ -20,7 +20,7 @@
           :key="i"
           :class="[
             'absolute w-2 h-2 rounded-full',
-            i % 3 === 0 ? 'bg-[#7C4728]' : i % 3 === 1 ? 'bg-[#9B5E3C]' : 'bg-yellow-400'
+            i % 3 === 0 ? 'bg-brand-brown' : i % 3 === 1 ? 'bg-brand-brown-light' : 'bg-yellow-400'
           ]"
           :style="confettiStyle(i)"
         />
@@ -31,23 +31,23 @@
         <p class="text-xl text-black/70 tracking-tight max-w-xl mx-auto">{{ t.onboarding.activated.subtitle }}</p>
       </div>
 
-      <div class="bg-gradient-to-r from-[#7C4728]/10 to-[#9B5E3C]/10 rounded-3xl p-8 space-y-4">
+      <div class="bg-gradient-to-r from-brand-brown/10 to-brand-brown-light/10 rounded-3xl p-8 space-y-4">
         <h3 class="text-2xl font-bold text-black">{{ t.onboarding.activated.whatsNext }}</h3>
         <div class="text-left max-w-md mx-auto space-y-3">
           <div class="flex items-start gap-3">
-            <div class="w-6 h-6 rounded-full bg-[#7C4728] flex items-center justify-center flex-shrink-0 mt-0.5">
+            <div class="w-6 h-6 rounded-full bg-brand-brown flex items-center justify-center flex-shrink-0 mt-0.5">
               <span class="text-white text-xs font-bold">1</span>
             </div>
             <p class="text-black/70">{{ t.onboarding.activated.step1 }}</p>
           </div>
           <div class="flex items-start gap-3">
-            <div class="w-6 h-6 rounded-full bg-[#7C4728] flex items-center justify-center flex-shrink-0 mt-0.5">
+            <div class="w-6 h-6 rounded-full bg-brand-brown flex items-center justify-center flex-shrink-0 mt-0.5">
               <span class="text-white text-xs font-bold">2</span>
             </div>
             <p class="text-black/70">{{ t.onboarding.activated.step2 }}</p>
           </div>
           <div class="flex items-start gap-3">
-            <div class="w-6 h-6 rounded-full bg-[#7C4728] flex items-center justify-center flex-shrink-0 mt-0.5">
+            <div class="w-6 h-6 rounded-full bg-brand-brown flex items-center justify-center flex-shrink-0 mt-0.5">
               <span class="text-white text-xs font-bold">3</span>
             </div>
             <p class="text-black/70">{{ t.onboarding.activated.step3 }}</p>
@@ -58,11 +58,13 @@
       <div class="flex flex-col items-center gap-3 pt-4">
         <button
           @click="goToDashboard"
-          class="px-8 py-4 bg-[#7C4728] text-white rounded-full font-semibold hover:bg-[#6A3D22] transition-all hover:scale-105 text-lg"
+          class="px-8 py-4 bg-brand-brown text-white rounded-full font-semibold hover:bg-brand-brown-dark transition-all hover:scale-105 text-lg"
         >
           {{ t.onboarding.activated.dashboard }}
         </button>
-        <p class="text-sm text-black/40 tracking-wide">{{ t.onboarding.activated.redirecting.replace('{n}', countdown) }}</p>
+        <p class="text-sm text-black/40 tracking-wide">
+          {{ t.onboarding.activated.redirecting.replace('{n}', countdown) }}
+        </p>
       </div>
     </div>
   </div>

@@ -38,7 +38,8 @@ export default {
       filterKomersil: 'Komersial',
       filterIndustrial: 'Industrial',
       filterLainnya: 'Lainnya',
-      emptyState: 'Belum ada proyek yang tersedia.'
+      emptyState: 'Belum ada proyek yang tersedia.',
+      addDesign: 'Tambah Desain'
     },
     howItWorks: {
       eyebrow: 'Cara Kerja',
@@ -75,6 +76,33 @@ export default {
         'Bergabunglah dengan ribuan klien yang membangun dengan percaya diri bersama Rumantra.',
       primary: 'Mulai Proyek Gratis',
       secondary: 'Daftar sebagai Arsitek'
+    }
+  },
+  mulaiProyek: {
+    title: 'Cari desain impian Kamu',
+    subline:
+      'Jelajahi desain yang Rumantra bisa akomodir, atau isi formulir singkat kalau Kamu sudah tahu apa yang dicari.',
+    toggleToForm: 'Isi formulir manual',
+    toggleToBrowse: 'Kembali jelajahi desain',
+    form: {
+      heading: 'Ceritakan brief proyek Kamu',
+      projectType: 'Jenis Proyek',
+      designStyle: 'Gaya Desain',
+      location: 'Lokasi',
+      locationPlaceholder: 'cth. Jakarta Selatan',
+      budget: 'Budget',
+      budgetPlaceholder: 'cth. Rp 100jt – 300jt',
+      contact: 'Kontak (nama & WhatsApp)',
+      contactPlaceholder: 'cth. Dinda, 0812xxxxxxx',
+      submit: 'Kirim Brief',
+      submitted: 'Terima kasih! Tim kami akan segera menghubungi Kamu.',
+      styles: {
+        modern: 'Modern',
+        minimalis: 'Minimalis',
+        tropis: 'Tropis',
+        industrial: 'Industrial',
+        klasik: 'Klasik'
+      }
     }
   },
   navbar: {

@@ -1,7 +1,7 @@
 <template>
-  <div class="flex h-screen overflow-hidden bg-[#F4F5F7]">
+  <div class="flex h-screen overflow-hidden bg-surface-alt">
     <!-- Sidebar -->
-    <aside class="w-56 shrink-0 flex flex-col bg-[#1C1C1C] h-screen">
+    <aside class="w-56 shrink-0 flex flex-col bg-ink-700 h-screen">
       <div class="px-5 py-6 cursor-pointer" @mouseenter="logoHovered = true" @mouseleave="logoHovered = false">
         <span class="text-lg font-black tracking-tighter logo" :class="logoHovered ? 'logo-hover' : 'logo-default'"
           >rumantra.</span
@@ -109,7 +109,13 @@ const handleLogout = async () => {
 
 <style scoped>
 .logo-default {
-  background: linear-gradient(to right, #ffffff, #c5a17a, #ffffff, #ffffff);
+  background: linear-gradient(
+    to right,
+    theme('colors.white'),
+    theme('colors.brand-gold'),
+    theme('colors.white'),
+    theme('colors.white')
+  );
   background-size: 200% 100%;
   background-position: 0% 50%;
   background-clip: text;
@@ -118,7 +124,14 @@ const handleLogout = async () => {
   transition: background-position 0.8s ease-in-out;
 }
 .logo-hover {
-  background: linear-gradient(to right, #ffffff, #c5a17a, #7c4728, #c5a17a, #ffffff);
+  background: linear-gradient(
+    to right,
+    theme('colors.white'),
+    theme('colors.brand-gold'),
+    theme('colors.brand-brown'),
+    theme('colors.brand-gold'),
+    theme('colors.white')
+  );
   background-size: 200% 100%;
   background-clip: text;
   -webkit-background-clip: text;

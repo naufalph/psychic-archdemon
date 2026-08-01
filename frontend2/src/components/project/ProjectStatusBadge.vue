@@ -37,7 +37,7 @@ const statusConfig = {
   },
   COMPLETED: {
     text: 'Completed',
-    classes: 'bg-[#7C4728] text-white border-[#7C4728]'
+    classes: 'bg-brand-brown text-white border-brand-brown'
   },
   CANCELLED: {
     text: 'Cancelled',
@@ -49,7 +49,7 @@ const statusConfig = {
   },
   // Legacy values kept for backwards compatibility
   CLOSED: { text: 'Closed', classes: 'bg-gray-100 text-gray-700 border-gray-200' },
-  AWARDED: { text: 'Awarded', classes: 'bg-[#7C4728] text-white border-[#7C4728]' },
+  AWARDED: { text: 'Awarded', classes: 'bg-brand-brown text-white border-brand-brown' },
   PENDING: { text: 'Pending Validation', classes: 'bg-yellow-100 text-yellow-700 border-yellow-200' }
 }
 

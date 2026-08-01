@@ -8,6 +8,11 @@ const routes = [
     component: () => import('@/views/landing/LandingPage.vue')
   },
   {
+    path: '/mulai-proyek',
+    name: 'StartProject',
+    component: () => import('@/views/landing/StartProject.vue')
+  },
+  {
     path: '/signup',
     name: 'Signup',
     component: () => import('@/views/auth/Signup.vue'),

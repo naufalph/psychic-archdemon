@@ -25,7 +25,7 @@
             leave-to="opacity-0 scale-95"
           >
             <DialogPanel class="w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden">
-              <div class="bg-[#7C4728] text-white p-6 flex justify-between items-center">
+              <div class="bg-brand-brown text-white p-6 flex justify-between items-center">
                 <div>
                   <h2 class="text-2xl font-bold">{{ proposal.architectName }}'s Proposal</h2>
                   <p v-if="proposal.architectCompany" class="text-white/80">
@@ -52,7 +52,7 @@
                   <a
                     :href="pdfUrl"
                     :download="fileName"
-                    class="px-6 py-3 bg-[#7C4728] text-white rounded-full font-medium hover:bg-black transition flex items-center gap-2"
+                    class="px-6 py-3 bg-brand-brown text-white rounded-full font-medium hover:bg-black transition flex items-center gap-2"
                   >
                     <Download :size="18" />
                     Download PDF

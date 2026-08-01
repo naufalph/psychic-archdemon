@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-[#F4F5F7] flex items-center justify-center p-6">
+  <div class="min-h-screen bg-surface-alt flex items-center justify-center p-6">
     <div
       class="absolute inset-0 opacity-[0.03] pointer-events-none"
       style="
@@ -39,13 +39,13 @@
           :enter="{ opacity: 1, x: 0 }"
           :delay="100"
           @click="selectRole('CLIENT')"
-          class="bg-white rounded-3xl p-12 border-2 border-gray-100 hover:border-[#C5A17A] hover:shadow-xl transition-all cursor-pointer group"
-          :class="{ 'border-[#C5A17A] shadow-xl': selectedRole === 'CLIENT' }"
+          class="bg-white rounded-3xl p-12 border-2 border-gray-100 hover:border-brand-gold hover:shadow-xl transition-all cursor-pointer group"
+          :class="{ 'border-brand-gold shadow-xl': selectedRole === 'CLIENT' }"
         >
           <div
-            class="w-16 h-16 bg-[#F4F5F7] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#C5A17A]/10 transition-colors"
+            class="w-16 h-16 bg-surface-alt rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-gold/10 transition-colors"
           >
-            <Building2 class="w-8 h-8 text-[#C5A17A]" />
+            <Building2 class="w-8 h-8 text-brand-gold" />
           </div>
           <h3 class="text-2xl font-bold mb-3 text-black">{{ t.auth.signup.roleSelection.client.title }}</h3>
           <p class="text-gray-500 leading-relaxed">{{ t.auth.signup.roleSelection.client.desc }}</p>
@@ -57,13 +57,13 @@
           :enter="{ opacity: 1, x: 0 }"
           :delay="200"
           @click="selectRole('ARCHITECT')"
-          class="bg-white rounded-3xl p-12 border-2 border-gray-100 hover:border-[#7C4728] hover:shadow-xl transition-all cursor-pointer group"
-          :class="{ 'border-[#7C4728] shadow-xl': selectedRole === 'ARCHITECT' }"
+          class="bg-white rounded-3xl p-12 border-2 border-gray-100 hover:border-brand-brown hover:shadow-xl transition-all cursor-pointer group"
+          :class="{ 'border-brand-brown shadow-xl': selectedRole === 'ARCHITECT' }"
         >
           <div
-            class="w-16 h-16 bg-[#F4F5F7] rounded-2xl flex items-center justify-center mb-6 group-hover:bg-[#7C4728]/10 transition-colors"
+            class="w-16 h-16 bg-surface-alt rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-brown/10 transition-colors"
           >
-            <PenTool class="w-8 h-8 text-[#7C4728]" />
+            <PenTool class="w-8 h-8 text-brand-brown" />
           </div>
           <h3 class="text-2xl font-bold mb-3 text-black">{{ t.auth.signup.roleSelection.architect.title }}</h3>
           <p class="text-gray-500 leading-relaxed">{{ t.auth.signup.roleSelection.architect.desc }}</p>
@@ -141,7 +141,7 @@
             type="submit"
             :fullWidth="true"
             :isLoading="isLoading"
-            class="bg-[#C5A17A] hover:bg-[#B39069] text-white border-none"
+            class="bg-brand-gold hover:bg-brand-gold-light text-white border-none"
           >
             {{ t.auth.signup.createAccount }}
           </BaseButton>
@@ -199,7 +199,7 @@
 
           <p class="text-center text-gray-500 text-sm">
             {{ t.auth.signup.alreadyHave }}
-            <router-link to="/login" class="text-[#C5A17A] hover:text-[#B39069] font-semibold">
+            <router-link to="/login" class="text-brand-gold hover:text-brand-gold-light font-semibold">
               {{ t.auth.signup.signInHere }}
             </router-link>
           </p>
@@ -231,8 +231,8 @@
           {{ t.auth.signup.success.message }}
         </p>
 
-        <div class="flex items-center justify-center gap-3 text-[#C5A17A]">
-          <div class="w-5 h-5 border-2 border-[#C5A17A] border-t-transparent rounded-full animate-spin"></div>
+        <div class="flex items-center justify-center gap-3 text-brand-gold">
+          <div class="w-5 h-5 border-2 border-brand-gold border-t-transparent rounded-full animate-spin"></div>
           <span class="font-medium">{{ t.auth.signup.success.redirecting }}</span>
         </div>
       </div>

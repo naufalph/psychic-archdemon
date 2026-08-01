@@ -15,7 +15,9 @@
         to="/superuser/projects/queue"
         class="bg-white rounded-xl p-6 border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
       >
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">{{ t.superuserDashboard.pendingApproval }}</p>
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
+          {{ t.superuserDashboard.pendingApproval }}
+        </p>
         <p class="text-3xl font-bold text-amber-500">{{ stats.pendingApproval }}</p>
         <p class="text-xs text-gray-400 mt-1">{{ t.superuserDashboard.pendingApprovalDesc }}</p>
       </RouterLink>
@@ -24,7 +26,9 @@
         to="/superuser/projects"
         class="bg-white rounded-xl p-6 border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
       >
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">{{ t.superuserDashboard.negotiation }}</p>
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
+          {{ t.superuserDashboard.negotiation }}
+        </p>
         <p class="text-3xl font-bold text-blue-500">{{ stats.negotiation }}</p>
         <p class="text-xs text-gray-400 mt-1">{{ t.superuserDashboard.negotiationDesc }}</p>
       </RouterLink>
@@ -33,7 +37,9 @@
         to="/superuser/disputes"
         class="bg-white rounded-xl p-6 border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
       >
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">{{ t.superuserDashboard.activeDisputes }}</p>
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
+          {{ t.superuserDashboard.activeDisputes }}
+        </p>
         <p class="text-3xl font-bold text-red-500">{{ stats.disputes }}</p>
         <p class="text-xs text-gray-400 mt-1">{{ t.superuserDashboard.activeDisputesDesc }}</p>
       </RouterLink>
@@ -42,7 +48,9 @@
         to="/superuser/projects"
         class="bg-white rounded-xl p-6 border border-gray-100 hover:shadow-md transition-shadow cursor-pointer"
       >
-        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">{{ t.superuserDashboard.inProgress }}</p>
+        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">
+          {{ t.superuserDashboard.inProgress }}
+        </p>
         <p class="text-3xl font-bold text-green-500">{{ stats.inProgress }}</p>
         <p class="text-xs text-gray-400 mt-1">{{ t.superuserDashboard.inProgressDesc }}</p>
       </RouterLink>

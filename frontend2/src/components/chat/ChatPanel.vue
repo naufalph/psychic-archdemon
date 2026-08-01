@@ -2,7 +2,7 @@
   <div class="flex flex-col h-full">
     <div v-if="loading && !messages.length" class="flex-1 flex items-center justify-center">
       <div class="text-center text-gray-400">
-        <div class="w-8 h-8 border-2 border-[#C5A17A] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+        <div class="w-8 h-8 border-2 border-brand-gold border-t-transparent rounded-full animate-spin mx-auto mb-2" />
         <p class="text-sm">Loading messages...</p>
       </div>
     </div>
@@ -10,7 +10,7 @@
     <div v-else-if="error" class="flex-1 flex items-center justify-center">
       <div class="text-center text-red-500">
         <p class="text-sm mb-2">{{ error }}</p>
-        <button @click="loadMessages" class="text-xs text-[#7C4728] hover:underline">Retry</button>
+        <button @click="loadMessages" class="text-xs text-brand-brown hover:underline">Retry</button>
       </div>
     </div>
 

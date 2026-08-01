@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-4">
     <div v-if="loading" class="text-center py-8">
-      <div class="animate-spin h-8 w-8 border-4 border-[#7C4728] border-t-transparent rounded-full mx-auto"></div>
+      <div class="animate-spin h-8 w-8 border-4 border-brand-brown border-t-transparent rounded-full mx-auto"></div>
       <p class="text-gray-500 mt-2">Loading portfolios...</p>
     </div>
 
@@ -15,7 +15,7 @@
         :key="portfolio.id"
         @click="toggleSelection(portfolio.id)"
         class="cursor-pointer border-2 rounded-2xl p-4 transition-all hover:shadow-md"
-        :class="isSelected(portfolio.id) ? 'border-[#7C4728] bg-[#F5E6D3]' : 'border-gray-200 bg-white'"
+        :class="isSelected(portfolio.id) ? 'border-brand-brown bg-brand-tan' : 'border-gray-200 bg-white'"
       >
         <div class="flex gap-4">
           <div v-if="portfolio.images && portfolio.images.length > 0" class="flex-shrink-0">
@@ -31,7 +31,7 @@
               <input
                 type="checkbox"
                 :checked="isSelected(portfolio.id)"
-                class="mt-1 h-5 w-5 text-[#7C4728] border-gray-300 rounded focus:ring-[#7C4728]"
+                class="mt-1 h-5 w-5 text-brand-brown border-gray-300 rounded focus:ring-brand-brown"
                 @click.stop="toggleSelection(portfolio.id)"
               />
             </div>

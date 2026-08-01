@@ -15,7 +15,7 @@
           @blur="formatTotalDisplay"
           :required="required"
           placeholder="e.g., 2.000.000.000"
-          class="w-full pl-16 pr-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#7C4728] focus:border-[#7C4728] outline-none text-right font-medium"
+          class="w-full pl-16 pr-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-right font-medium"
         />
       </div>
     </div>
@@ -31,7 +31,7 @@
       <div class="relative pt-6 pb-4">
         <div class="relative h-2 bg-gray-200 rounded-full">
           <div
-            class="absolute h-2 bg-[#7C4728] rounded-full"
+            class="absolute h-2 bg-brand-brown rounded-full"
             :style="{
               left: minPercent + '%',
               width: maxPercent - minPercent + '%'
@@ -75,8 +75,8 @@
       </div>
     </div>
 
-    <div v-if="hint" class="bg-[#F5E6D3]/30 p-4 rounded-xl border border-[#C5A17A]/20 flex gap-3">
-      <Info :size="20" class="text-[#7C4728] flex-shrink-0" />
+    <div v-if="hint" class="bg-brand-tan/30 p-4 rounded-xl border border-brand-gold/20 flex gap-3">
+      <Info :size="20" class="text-brand-brown flex-shrink-0" />
       <p class="text-xs text-gray-700 leading-relaxed" v-html="hint" />
     </div>
   </div>
@@ -232,7 +232,7 @@ input[type='range']::-webkit-slider-thumb {
   pointer-events: all;
   width: 20px;
   height: 20px;
-  background-color: #7c4728;
+  background-color: theme('colors.brand-brown');
   border-radius: 50%;
   cursor: pointer;
   border: 3px solid white;
@@ -244,7 +244,7 @@ input[type='range']::-moz-range-thumb {
   pointer-events: all;
   width: 20px;
   height: 20px;
-  background-color: #7c4728;
+  background-color: theme('colors.brand-brown');
   border-radius: 50%;
   cursor: pointer;
   border: 3px solid white;
@@ -252,10 +252,10 @@ input[type='range']::-moz-range-thumb {
 }
 
 input[type='range']::-webkit-slider-thumb:hover {
-  background-color: #5a3319;
+  background-color: theme('colors.brand-brown-hover');
 }
 
 input[type='range']::-moz-range-thumb:hover {
-  background-color: #5a3319;
+  background-color: theme('colors.brand-brown-hover');
 }
 </style>

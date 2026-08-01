@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-[#F4F5F7]">
+  <div class="min-h-screen bg-surface-alt">
     <!-- Header -->
     <div class="bg-white border-b border-gray-200 px-6 py-4">
       <div class="max-w-7xl mx-auto flex items-center gap-4">
@@ -28,7 +28,7 @@
             :key="conv.id"
             @click="selectConversation(conv)"
             class="bg-white rounded-2xl border p-4 cursor-pointer transition hover:shadow-md"
-            :class="selectedConversation?.id === conv.id ? 'border-[#C5A17A] shadow-md' : 'border-gray-200'"
+            :class="selectedConversation?.id === conv.id ? 'border-brand-gold shadow-md' : 'border-gray-200'"
           >
             <div class="flex items-start justify-between gap-2">
               <div class="min-w-0">
@@ -42,7 +42,7 @@
               </div>
               <span
                 v-if="conv.unreadCount > 0"
-                class="flex-shrink-0 bg-[#C5A17A] text-white text-xs font-bold rounded-full px-2 py-0.5"
+                class="flex-shrink-0 bg-brand-gold text-white text-xs font-bold rounded-full px-2 py-0.5"
               >
                 {{ conv.unreadCount }}
               </span>

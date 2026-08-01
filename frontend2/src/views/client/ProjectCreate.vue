@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen bg-[#F4F5F7] py-12">
+  <div class="min-h-screen bg-surface-alt py-12">
     <div class="max-w-4xl mx-auto px-6">
       <div class="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
-        <div class="bg-[#7C4728] p-8 text-white">
+        <div class="bg-brand-brown p-8 text-white">
           <h1 class="text-3xl font-bold flex items-center gap-3">
             <Home :size="32" />
             Post New Project
@@ -13,7 +13,7 @@
         <form @submit.prevent="handleSubmit" class="p-8 space-y-10">
           <section class="space-y-6">
             <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
-              <span class="bg-[#F5E6D3] text-[#7C4728] font-bold px-3 py-1 rounded-full text-sm">Part 0</span>
+              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm">Part 0</span>
               <h2 class="text-xl font-bold text-black">Project Images</h2>
             </div>
             <p class="text-xs text-gray-500">
@@ -24,7 +24,7 @@
 
           <section class="space-y-6">
             <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
-              <span class="bg-[#F5E6D3] text-[#7C4728] font-bold px-3 py-1 rounded-full text-sm">Part 1</span>
+              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm">Part 1</span>
               <h2 class="text-xl font-bold text-black">General Information</h2>
             </div>
 
@@ -37,7 +37,7 @@
                 required
                 type="text"
                 placeholder="e.g., Modern Student Housing in Depok"
-                class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#7C4728] focus:border-[#7C4728] outline-none transition"
+                class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none transition"
               />
             </div>
 
@@ -51,7 +51,7 @@
                   required
                   type="text"
                   placeholder="City, Area"
-                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#7C4728] focus:border-[#7C4728] outline-none"
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
                 />
               </div>
 
@@ -64,7 +64,7 @@
                   required
                   type="number"
                   placeholder="e.g., 200"
-                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#7C4728] focus:border-[#7C4728] outline-none"
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
                 />
               </div>
             </div>
@@ -75,7 +75,7 @@
               >
               <select
                 v-model="formData.buildingType"
-                class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#7C4728] focus:border-[#7C4728] outline-none"
+                class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
               >
                 <option value="RESIDENTIAL">Residential Home</option>
                 <option value="STUDENT_HOUSING">Student Housing (Kost)</option>
@@ -94,14 +94,14 @@
                 required
                 rows="4"
                 placeholder="Describe number of rooms, style preference (e.g., Industrial, Tropical), timeline constraints..."
-                class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#7C4728] focus:border-[#7C4728] outline-none"
+                class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
               />
             </div>
           </section>
 
           <section class="space-y-6">
             <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
-              <span class="bg-[#F5E6D3] text-[#7C4728] font-bold px-3 py-1 rounded-full text-sm">Part 2</span>
+              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm">Part 2</span>
               <h2 class="text-xl font-bold text-black">Required Deliverables</h2>
             </div>
 
@@ -110,7 +110,7 @@
 
           <section class="space-y-6">
             <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
-              <span class="bg-[#F5E6D3] text-[#7C4728] font-bold px-3 py-1 rounded-full text-sm">Part 3</span>
+              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm">Part 3</span>
               <h2 class="text-xl font-bold text-black">Budgeting</h2>
             </div>
 
@@ -127,7 +127,7 @@
                     type="text"
                     placeholder="e.g., 2.000.000.000 (optional)"
                     @input="formatConstructionBudget"
-                    class="w-full pl-16 pr-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#7C4728] focus:border-[#7C4728] outline-none text-right font-medium"
+                    class="w-full pl-16 pr-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-right font-medium"
                   />
                 </div>
               </div>
@@ -146,7 +146,7 @@
 
           <section class="space-y-6">
             <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
-              <span class="bg-[#F5E6D3] text-[#7C4728] font-bold px-3 py-1 rounded-full text-sm">Part 4</span>
+              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm">Part 4</span>
               <h2 class="text-xl font-bold text-black">Expected Start Date</h2>
             </div>
             <p class="text-xs text-gray-500">Let architects know when you expect construction to begin.</p>
@@ -156,7 +156,7 @@
                 :class="[
                   'flex items-center gap-4 p-5 rounded-2xl border-2 cursor-pointer transition',
                   formData.startDateType === 'IMMEDIATELY'
-                    ? 'border-[#7C4728] bg-[#F5E6D3]/30'
+                    ? 'border-brand-brown bg-brand-tan/30'
                     : 'border-gray-200 hover:border-gray-300'
                 ]"
               >
@@ -164,10 +164,13 @@
                 <div
                   :class="[
                     'w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0',
-                    formData.startDateType === 'IMMEDIATELY' ? 'border-[#7C4728]' : 'border-gray-300'
+                    formData.startDateType === 'IMMEDIATELY' ? 'border-brand-brown' : 'border-gray-300'
                   ]"
                 >
-                  <div v-if="formData.startDateType === 'IMMEDIATELY'" class="w-2.5 h-2.5 rounded-full bg-[#7C4728]" />
+                  <div
+                    v-if="formData.startDateType === 'IMMEDIATELY'"
+                    class="w-2.5 h-2.5 rounded-full bg-brand-brown"
+                  />
                 </div>
                 <div>
                   <p class="font-semibold text-gray-900">Immediately</p>
@@ -179,7 +182,7 @@
                 :class="[
                   'flex items-center gap-4 p-5 rounded-2xl border-2 cursor-pointer transition',
                   formData.startDateType === 'SPECIFIC_DATE'
-                    ? 'border-[#7C4728] bg-[#F5E6D3]/30'
+                    ? 'border-brand-brown bg-brand-tan/30'
                     : 'border-gray-200 hover:border-gray-300'
                 ]"
               >
@@ -187,12 +190,12 @@
                 <div
                   :class="[
                     'w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0',
-                    formData.startDateType === 'SPECIFIC_DATE' ? 'border-[#7C4728]' : 'border-gray-300'
+                    formData.startDateType === 'SPECIFIC_DATE' ? 'border-brand-brown' : 'border-gray-300'
                   ]"
                 >
                   <div
                     v-if="formData.startDateType === 'SPECIFIC_DATE'"
-                    class="w-2.5 h-2.5 rounded-full bg-[#7C4728]"
+                    class="w-2.5 h-2.5 rounded-full bg-brand-brown"
                   />
                 </div>
                 <div>
@@ -211,14 +214,14 @@
                 type="date"
                 :min="minStartDate"
                 required
-                class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#7C4728] focus:border-[#7C4728] outline-none transition"
+                class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none transition"
               />
             </div>
           </section>
 
           <section class="space-y-6">
             <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
-              <span class="bg-[#F5E6D3] text-[#7C4728] font-bold px-3 py-1 rounded-full text-sm">Part 5</span>
+              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm">Part 5</span>
               <h2 class="text-xl font-bold text-black">Bid Deadline</h2>
             </div>
             <p class="text-xs text-gray-500">
@@ -236,9 +239,9 @@
                 required
                 :min="minBiddingDeadline"
                 :max="maxBiddingDeadline"
-                class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#7C4728] focus:border-[#7C4728] outline-none transition"
+                class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none transition"
               />
-              <p v-if="biddingDaysLeft !== null" class="mt-2 text-sm font-medium text-[#7C4728]">
+              <p v-if="biddingDaysLeft !== null" class="mt-2 text-sm font-medium text-brand-brown">
                 {{ biddingDaysLeft }} day{{ biddingDaysLeft === 1 ? '' : 's' }} of bidding time
               </p>
             </div>
@@ -257,7 +260,7 @@
             <button
               type="submit"
               :disabled="loading"
-              class="flex-1 px-6 py-3 text-white bg-[#7C4728] rounded-full hover:bg-black shadow-md hover:shadow-lg transition-all font-bold flex items-center justify-center gap-2 disabled:opacity-50"
+              class="flex-1 px-6 py-3 text-white bg-brand-brown rounded-full hover:bg-black shadow-md hover:shadow-lg transition-all font-bold flex items-center justify-center gap-2 disabled:opacity-50"
             >
               <Loader v-if="loading" :size="20" class="animate-spin" />
               <CheckSquare v-else :size="20" />

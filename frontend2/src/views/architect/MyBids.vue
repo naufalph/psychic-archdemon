@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-full bg-[#F4F5F7]">
+  <div class="min-h-full bg-surface-alt">
     <div
       class="absolute inset-0 opacity-[0.03] pointer-events-none"
       style="
@@ -46,7 +46,7 @@
         <h3 class="text-xl font-bold text-gray-900 mb-2">{{ t.myBids.empty.title }}</h3>
         <p class="text-gray-500 mb-6">{{ t.myBids.empty.message }}</p>
         <router-link :to="{ name: 'OpportunityList' }">
-          <button class="bg-[#7C4728] hover:bg-black text-white px-6 py-3 rounded-full font-medium transition">
+          <button class="bg-brand-brown hover:bg-black text-white px-6 py-3 rounded-full font-medium transition">
             {{ t.myBids.empty.cta }}
           </button>
         </router-link>

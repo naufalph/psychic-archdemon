@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen bg-[#F4F5F7]">
+  <div class="min-h-screen bg-surface-alt">
     <div v-if="loading" class="flex items-center justify-center h-screen">
       <div class="text-center">
-        <div class="w-10 h-10 border-2 border-[#C5A17A] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <div class="w-10 h-10 border-2 border-brand-gold border-t-transparent rounded-full animate-spin mx-auto mb-4" />
         <p class="text-gray-500">{{ t.activeProjectDashboard.loading }}</p>
       </div>
     </div>
@@ -10,7 +10,9 @@
     <div v-else-if="error" class="flex items-center justify-center h-screen">
       <div class="text-center">
         <p class="text-red-500 mb-4">{{ error }}</p>
-        <button @click="loadAll" class="text-[#7C4728] hover:underline">{{ t.activeProjectDashboard.tryAgain }}</button>
+        <button @click="loadAll" class="text-brand-brown hover:underline">
+          {{ t.activeProjectDashboard.tryAgain }}
+        </button>
       </div>
     </div>
 
@@ -23,7 +25,9 @@
               <ArrowLeft :size="20" />
             </button>
             <div>
-              <p class="text-xs text-gray-400 uppercase font-bold tracking-wide">{{ t.activeProjectDashboard.projectDashboard }}</p>
+              <p class="text-xs text-gray-400 uppercase font-bold tracking-wide">
+                {{ t.activeProjectDashboard.projectDashboard }}
+              </p>
               <h1 class="text-lg font-bold text-black">{{ project?.title || 'Active Project' }}</h1>
             </div>
           </div>
@@ -34,10 +38,13 @@
               <span class="w-1.5 h-1.5 rounded-full bg-blue-500" />
               {{ t.activeProjectDashboard.inProgress }}
             </span>
-            <span class="text-sm text-gray-500">{{ t.activeProjectDashboard.phase }} {{ currentPhaseNumber }} {{ t.activeProjectDashboard.of }} {{ phases.length }}</span>
+            <span class="text-sm text-gray-500"
+              >{{ t.activeProjectDashboard.phase }} {{ currentPhaseNumber }} {{ t.activeProjectDashboard.of }}
+              {{ phases.length }}</span
+            >
             <button
               @click="router.push(`/client/projects/${projectId}/workspace`)"
-              class="flex items-center gap-1.5 px-4 py-1.5 bg-[#1C1C1C] text-white text-xs font-semibold rounded-full hover:bg-[#333] transition"
+              class="flex items-center gap-1.5 px-4 py-1.5 bg-ink-700 text-white text-xs font-semibold rounded-full hover:bg-ink-500 transition"
             >
               <Layers :size="13" />
               {{ t.activeProjectDashboard.openWorkspace }}
@@ -103,10 +110,12 @@
 
           <!-- Architect card -->
           <div v-if="acceptedBid" class="bg-white rounded-xl border border-gray-200 px-4 py-4">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">{{ t.activeProjectDashboard.architect }}</p>
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">
+              {{ t.activeProjectDashboard.architect }}
+            </p>
             <div class="flex items-center gap-3">
               <div
-                class="w-10 h-10 rounded-full bg-[#1C1C1C] text-white flex items-center justify-center text-sm font-bold shrink-0"
+                class="w-10 h-10 rounded-full bg-ink-700 text-white flex items-center justify-center text-sm font-bold shrink-0"
               >
                 {{ architectInitials }}
               </div>
@@ -121,7 +130,9 @@
 
           <!-- Scope / description -->
           <div v-if="project?.scopeOfWork" class="bg-white rounded-xl border border-gray-200 px-4 py-4">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">{{ t.activeProjectDashboard.scopeOfWork }}</p>
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">
+              {{ t.activeProjectDashboard.scopeOfWork }}
+            </p>
             <p class="text-sm text-gray-600 leading-relaxed line-clamp-4">{{ project.scopeOfWork }}</p>
           </div>
         </div>
@@ -182,7 +193,11 @@
                     class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700"
                   >
                     <span class="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                    {{ phase.paymentStatus === 'EXPIRED' ? t.activeProjectDashboard.expired : t.activeProjectDashboard.pending }}
+                    {{
+                      phase.paymentStatus === 'EXPIRED'
+                        ? t.activeProjectDashboard.expired
+                        : t.activeProjectDashboard.pending
+                    }}
                   </span>
                   <div class="flex items-center gap-2">
                     <button
@@ -195,7 +210,7 @@
                     <button
                       :disabled="payingPhaseId === phase.phaseId"
                       @click="payPhase(phase)"
-                      class="px-4 py-2 bg-[#1C1C1C] text-white text-sm font-semibold rounded-lg hover:bg-[#333] disabled:opacity-50 disabled:cursor-not-allowed transition"
+                      class="px-4 py-2 bg-ink-700 text-white text-sm font-semibold rounded-lg hover:bg-ink-500 disabled:opacity-50 disabled:cursor-not-allowed transition"
                     >
                       <span v-if="payingPhaseId === phase.phaseId">{{ t.activeProjectDashboard?.processing }}</span>
                       <span v-else>{{
@@ -235,7 +250,9 @@
                   <p class="text-xs text-gray-400">{{ formatAmount(phase.amount) }}</p>
                 </div>
               </div>
-              <p class="text-xs text-gray-400">{{ t.activeProjectDashboard.phase }} {{ currentPhaseNumber }} {{ t.activeProjectDashboard.payFirst }}</p>
+              <p class="text-xs text-gray-400">
+                {{ t.activeProjectDashboard.phase }} {{ currentPhaseNumber }} {{ t.activeProjectDashboard.payFirst }}
+              </p>
             </div>
           </div>
 

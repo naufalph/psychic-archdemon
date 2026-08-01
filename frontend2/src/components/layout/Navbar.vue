@@ -11,22 +11,21 @@
 
       <!-- Center nav links -->
       <div class="hidden md:flex items-center gap-8 flex-none">
-        <router-link to="/" class="text-[14px] font-medium text-[#666666] hover:text-[#0A0A0A] transition-colors">
+        <router-link to="/" class="text-caption font-medium text-ink-400 hover:text-ink-900 transition-colors">
           {{ t.nav.caraKerja }}
         </router-link>
-        <router-link to="/" class="text-[14px] font-medium text-[#666666] hover:text-[#0A0A0A] transition-colors">
+        <router-link to="/" class="text-caption font-medium text-ink-400 hover:text-ink-900 transition-colors">
           {{ t.nav.inspirasi }}
         </router-link>
-        <router-link to="/" class="text-[14px] font-medium text-[#666666] hover:text-[#0A0A0A] transition-colors">
+        <router-link to="/" class="text-caption font-medium text-ink-400 hover:text-ink-900 transition-colors">
           {{ t.nav.temukanArsitek }}
         </router-link>
         <span class="flex items-center gap-1.5">
-          <router-link to="/" class="text-[14px] font-medium text-[#666666] hover:text-[#0A0A0A] transition-colors">
+          <router-link to="/" class="text-caption font-medium text-ink-400 hover:text-ink-900 transition-colors">
             {{ t.nav.riset }}
           </router-link>
           <span
-            class="text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider"
-            style="background: #0a0a0a"
+            class="text-white text-micro-cap font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider bg-ink-900"
             >NEW</span
           >
         </span>
@@ -38,12 +37,12 @@
         <template v-if="isAuthenticated">
           <router-link
             :to="dashboardPath"
-            class="text-[13px] font-medium text-[#666666] hover:text-[#0A0A0A] transition-colors"
+            class="text-caption-sm font-medium text-ink-400 hover:text-ink-900 transition-colors"
           >
             {{ t.nav.dasbor }}
           </router-link>
           <button
-            class="px-5 py-2 bg-[#0A0A0A] text-white rounded-full text-[14px] font-semibold hover:opacity-90 transition-all hover:-translate-y-px whitespace-nowrap border-none cursor-pointer"
+            class="px-5 py-2 bg-ink-900 text-white rounded-full text-caption font-semibold hover:opacity-90 transition-all hover:-translate-y-px whitespace-nowrap border-none cursor-pointer"
             style="box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08)"
             @click="handleLogout"
           >
@@ -54,7 +53,7 @@
           <!-- Login dropdown -->
           <div ref="loginDropdownRef" class="relative">
             <button
-              class="flex items-center gap-1 text-[13px] font-medium text-[#888888] hover:text-[#0A0A0A] transition-colors"
+              class="flex items-center gap-1 text-caption-sm font-medium text-ink-300 hover:text-ink-900 transition-colors"
               @click="isLoginDropdownOpen = !isLoginDropdownOpen"
             >
               {{ t.nav.masuk }}
@@ -74,33 +73,33 @@
             >
               <div
                 v-if="isLoginDropdownOpen"
-                class="absolute right-0 top-full mt-3 w-56 bg-white rounded-2xl shadow-xl border border-[#E8E8E8] overflow-hidden z-50"
+                class="absolute right-0 top-full mt-3 w-56 bg-white rounded-2xl shadow-xl border border-hairline overflow-hidden z-50"
               >
                 <router-link
                   to="/login"
-                  class="flex items-center gap-3 px-4 py-3.5 hover:bg-[#F5F5F5] transition-colors"
+                  class="flex items-center gap-3 px-4 py-3.5 hover:bg-surface-muted transition-colors"
                   @click="isLoginDropdownOpen = false"
                 >
-                  <div class="w-8 h-8 rounded-xl bg-[#F5F5F5] flex items-center justify-center flex-shrink-0">
-                    <HardHat class="w-4 h-4 text-[#0A0A0A]" />
+                  <div class="w-8 h-8 rounded-xl bg-surface-muted flex items-center justify-center flex-shrink-0">
+                    <HardHat class="w-4 h-4 text-ink-900" />
                   </div>
                   <div>
-                    <p class="text-[13px] font-semibold text-[#0A0A0A]">{{ t.nav.untukArsitek }}</p>
-                    <p class="text-[11px] text-[#888888]">{{ t.nav.masuk }}</p>
+                    <p class="text-caption-sm font-semibold text-ink-900">{{ t.nav.untukArsitek }}</p>
+                    <p class="text-micro-sm text-ink-300">{{ t.nav.masuk }}</p>
                   </div>
                 </router-link>
                 <div class="h-px bg-[#F0F0F0]" />
                 <router-link
                   to="/login"
-                  class="flex items-center gap-3 px-4 py-3.5 hover:bg-[#F5F5F5] transition-colors"
+                  class="flex items-center gap-3 px-4 py-3.5 hover:bg-surface-muted transition-colors"
                   @click="isLoginDropdownOpen = false"
                 >
-                  <div class="w-8 h-8 rounded-xl bg-[#F5F5F5] flex items-center justify-center flex-shrink-0">
-                    <User class="w-4 h-4 text-[#0A0A0A]" />
+                  <div class="w-8 h-8 rounded-xl bg-surface-muted flex items-center justify-center flex-shrink-0">
+                    <User class="w-4 h-4 text-ink-900" />
                   </div>
                   <div>
-                    <p class="text-[13px] font-semibold text-[#0A0A0A]">{{ t.nav.untukKlien }}</p>
-                    <p class="text-[11px] text-[#888888]">{{ t.nav.masuk }}</p>
+                    <p class="text-caption-sm font-semibold text-ink-900">{{ t.nav.untukKlien }}</p>
+                    <p class="text-micro-sm text-ink-300">{{ t.nav.masuk }}</p>
                   </div>
                 </router-link>
               </div>
@@ -109,7 +108,7 @@
 
           <router-link to="/signup">
             <button
-              class="px-5 py-2 bg-[#0A0A0A] text-white rounded-full text-[14px] font-semibold hover:opacity-90 transition-all hover:-translate-y-px whitespace-nowrap border-none cursor-pointer"
+              class="px-5 py-2 bg-ink-900 text-white rounded-full text-caption font-semibold hover:opacity-90 transition-all hover:-translate-y-px whitespace-nowrap border-none cursor-pointer"
               style="box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08)"
             >
               {{ t.nav.mulaiProyek }}

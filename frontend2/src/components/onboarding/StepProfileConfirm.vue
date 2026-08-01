@@ -40,7 +40,7 @@
               <span
                 v-for="expertise in store.profile.expertise"
                 :key="expertise"
-                class="px-3 py-1 bg-[#7C4728]/10 text-[#7C4728] rounded-full text-sm font-medium"
+                class="px-3 py-1 bg-brand-brown/10 text-brand-brown rounded-full text-sm font-medium"
               >
                 {{ expertise }}
               </span>
@@ -59,11 +59,13 @@
       </div>
 
       <div class="flex justify-between items-center pt-4">
-        <button @click="emit('back')" class="px-6 py-3 text-black/60 hover:text-black transition-colors">{{ t.onboarding.profileConfirm.back }}</button>
+        <button @click="emit('back')" class="px-6 py-3 text-black/60 hover:text-black transition-colors">
+          {{ t.onboarding.profileConfirm.back }}
+        </button>
         <button
           @click="handleNext"
           :disabled="store.isLoading"
-          class="px-8 py-3 bg-[#7C4728] text-white rounded-full font-semibold hover:bg-[#6A3D22] transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+          class="px-8 py-3 bg-brand-brown text-white rounded-full font-semibold hover:bg-brand-brown-dark transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {{ store.isLoading ? t.onboarding.profileConfirm.saving : t.onboarding.profileConfirm.proceed }}
         </button>

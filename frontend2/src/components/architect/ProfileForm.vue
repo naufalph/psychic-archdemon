@@ -9,7 +9,7 @@
           v-model="formData.name"
           type="text"
           :placeholder="t.profile.form.practiceNamePlaceholder"
-          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all"
+          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
           :class="{ 'border-red-300': errors.name }"
         />
         <p v-if="errors.name" class="text-xs text-red-600">{{ errors.name }}</p>
@@ -23,7 +23,7 @@
           v-model="formData.city"
           type="text"
           :placeholder="t.profile.form.cityPlaceholder"
-          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all"
+          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
           :class="{ 'border-red-300': errors.city }"
         />
         <p v-if="errors.city" class="text-xs text-red-600">{{ errors.city }}</p>
@@ -35,7 +35,7 @@
         </label>
         <select
           v-model="formData.experienceRange"
-          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all bg-white"
+          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all bg-white"
           :class="{ 'border-red-300': errors.experienceRange }"
         >
           <option value="" disabled>{{ t.profile.form.experiencePlaceholder }}</option>
@@ -56,7 +56,7 @@
           v-model="formData.philosophy"
           rows="6"
           :placeholder="t.profile.form.philosophyPlaceholder"
-          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all resize-none"
+          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all resize-none"
           :class="{ 'border-red-300': errors.philosophy }"
         />
         <div class="flex justify-between items-center">
@@ -78,7 +78,7 @@
             :class="[
               'px-4 py-3 rounded-2xl font-medium text-sm transition-all',
               formData.expertise.includes(tag)
-                ? 'bg-[#7C4728] text-white shadow-md scale-105'
+                ? 'bg-brand-brown text-white shadow-md scale-105'
                 : 'bg-black/5 text-black/60 hover:bg-black/10'
             ]"
           >
@@ -101,7 +101,7 @@
           maxlength="16"
           inputmode="numeric"
           :placeholder="t.profile.form.ktpNumPlaceholder"
-          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all"
+          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
           :class="{ 'border-red-300': errors.ktpNum }"
           @input="formData.ktpNum = formData.ktpNum.replace(/\D/g, '')"
         />
@@ -119,7 +119,7 @@
           maxlength="16"
           inputmode="numeric"
           :placeholder="t.profile.form.npwpPlaceholder"
-          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all"
+          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
           :class="{ 'border-red-300': errors.npwp }"
           @input="formData.npwp = formData.npwp.replace(/\D/g, '')"
         />
@@ -148,7 +148,7 @@
         :class="[
           'px-8 py-3 rounded-full font-semibold transition-all flex items-center gap-2',
           isFormValid && !isLoading
-            ? 'bg-[#7C4728] text-white hover:bg-[#6A3D22] hover:scale-105'
+            ? 'bg-brand-brown text-white hover:bg-brand-brown-dark hover:scale-105'
             : 'bg-black/10 text-black/30 cursor-not-allowed'
         ]"
       >

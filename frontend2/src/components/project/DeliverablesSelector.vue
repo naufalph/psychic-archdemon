@@ -122,13 +122,13 @@ const toggleDeliverable = value => {
 const labelClasses = value => {
   const baseClasses = 'block p-4 rounded-xl border-2 cursor-pointer transition-all'
   return isSelected(value)
-    ? `${baseClasses} border-[#7C4728] bg-[#F5E6D3]/30`
-    : `${baseClasses} border-gray-200 hover:border-[#C5A17A] bg-white`
+    ? `${baseClasses} border-brand-brown bg-brand-tan/30`
+    : `${baseClasses} border-gray-200 hover:border-brand-gold bg-white`
 }
 
 const checkboxClasses = value => {
   const baseClasses = 'w-5 h-5 rounded flex items-center justify-center flex-shrink-0'
-  return isSelected(value) ? `${baseClasses} bg-[#7C4728]` : `${baseClasses} border-2 border-gray-300`
+  return isSelected(value) ? `${baseClasses} bg-brand-brown` : `${baseClasses} border-2 border-gray-300`
 }
 
 const isAllSelected = category => {
@@ -158,12 +158,12 @@ const toggleAllInGroup = category => {
 const selectAllLabelClasses = category => {
   const baseClasses = 'border-2'
   return isAllSelected(category)
-    ? `${baseClasses} border-[#7C4728] bg-[#F5E6D3]/50`
-    : `${baseClasses} border-gray-300 hover:border-[#C5A17A] bg-white`
+    ? `${baseClasses} border-brand-brown bg-brand-tan/50`
+    : `${baseClasses} border-gray-300 hover:border-brand-gold bg-white`
 }
 
 const selectAllCheckboxClasses = category => {
   const baseClasses = 'w-4 h-4 rounded flex items-center justify-center flex-shrink-0'
-  return isAllSelected(category) ? `${baseClasses} bg-[#7C4728]` : `${baseClasses} border-2 border-gray-400`
+  return isAllSelected(category) ? `${baseClasses} bg-brand-brown` : `${baseClasses} border-2 border-gray-400`
 }
 </script>

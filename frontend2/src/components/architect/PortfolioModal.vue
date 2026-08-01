@@ -50,7 +50,7 @@
                     type="text"
                     :placeholder="t.portfolio.form.titlePlaceholder"
                     :disabled="isLocked"
-                    class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all"
+                    class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
                     :class="{ 'border-red-300': errors.title, 'bg-black/5 text-black/50 cursor-not-allowed': isLocked }"
                   />
                   <p v-if="errors.title" class="text-xs text-red-600">{{ errors.title }}</p>
@@ -66,7 +66,7 @@
                     rows="4"
                     :placeholder="t.portfolio.form.descriptionPlaceholder"
                     :disabled="isLocked"
-                    class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all resize-none"
+                    class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all resize-none"
                     :class="{ 'bg-black/5 text-black/50 cursor-not-allowed': isLocked }"
                   />
                   <p v-if="isLocked" class="text-xs text-black/40">{{ t.portfolio.form.lockedHint }}</p>
@@ -80,7 +80,7 @@
                     <input
                       v-model="formData.projectDate"
                       type="date"
-                      class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all"
+                      class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
                       :class="{ 'border-red-300': errors.projectDate }"
                       :max="today"
                     />
@@ -95,7 +95,7 @@
                       v-model="formData.location"
                       type="text"
                       :placeholder="t.portfolio.form.locationPlaceholder"
-                      class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all"
+                      class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
                     />
                   </div>
                 </div>
@@ -106,7 +106,7 @@
                   </label>
                   <select
                     v-model="formData.projectType"
-                    class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all bg-white"
+                    class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all bg-white"
                     :class="{ 'border-red-300': errors.projectType }"
                   >
                     <option value="" disabled>{{ t.portfolio.form.projectTypePlaceholder }}</option>
@@ -122,7 +122,7 @@
                     id="isBuilt"
                     v-model="formData.isBuilt"
                     type="checkbox"
-                    class="w-5 h-5 rounded border-gray-300 text-[#7C4728] focus:ring-[#7C4728]"
+                    class="w-5 h-5 rounded border-gray-300 text-brand-brown focus:ring-brand-brown"
                   />
                   <label for="isBuilt" class="text-sm font-medium text-black/70 cursor-pointer">
                     {{ t.portfolio.form.isBuilt }}
@@ -161,7 +161,7 @@
                     :class="[
                       'px-8 py-3 rounded-full font-semibold transition-all flex items-center gap-2',
                       isFormValid && !isLoading
-                        ? 'bg-[#7C4728] text-white hover:bg-[#6A3D22] hover:scale-105'
+                        ? 'bg-brand-brown text-white hover:bg-brand-brown-dark hover:scale-105'
                         : 'bg-black/10 text-black/30 cursor-not-allowed'
                     ]"
                   >

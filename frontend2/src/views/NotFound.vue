@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-[#F4F5F7] flex items-center justify-center p-6">
+  <div class="min-h-screen bg-surface-alt flex items-center justify-center p-6">
     <div
       class="absolute inset-0 opacity-[0.03] pointer-events-none"
       style="
@@ -27,8 +27,8 @@
         :delay="200"
         class="bg-white rounded-3xl shadow-2xl p-16 border border-gray-100"
       >
-        <div class="w-32 h-32 bg-[#F5E6D3] rounded-full flex items-center justify-center mx-auto mb-8">
-          <span class="text-6xl font-black text-[#7C4728]">404</span>
+        <div class="w-32 h-32 bg-brand-tan rounded-full flex items-center justify-center mx-auto mb-8">
+          <span class="text-6xl font-black text-brand-brown">404</span>
         </div>
 
         <h1 class="text-4xl md:text-5xl font-bold mb-4 text-black">
@@ -43,7 +43,7 @@
 
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
           <router-link to="/">
-            <BaseButton class="bg-[#C5A17A] hover:bg-[#B39069] text-white border-none px-12">
+            <BaseButton class="bg-brand-gold hover:bg-brand-gold-light text-white border-none px-12">
               {{ t.notFound?.backHome || 'Back to Home' }}
             </BaseButton>
           </router-link>
@@ -67,7 +67,7 @@
           to="/"
           class="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-gray-100 hover:shadow-lg hover:bg-white transition-all group"
         >
-          <Home class="w-8 h-8 text-[#C5A17A] mb-3 mx-auto group-hover:scale-110 transition-transform" />
+          <Home class="w-8 h-8 text-brand-gold mb-3 mx-auto group-hover:scale-110 transition-transform" />
           <p class="font-semibold text-gray-800">{{ t.nav?.home || 'Home' }}</p>
         </router-link>
 
@@ -75,7 +75,7 @@
           to="/login"
           class="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-gray-100 hover:shadow-lg hover:bg-white transition-all group"
         >
-          <LogIn class="w-8 h-8 text-[#7C4728] mb-3 mx-auto group-hover:scale-110 transition-transform" />
+          <LogIn class="w-8 h-8 text-brand-brown mb-3 mx-auto group-hover:scale-110 transition-transform" />
           <p class="font-semibold text-gray-800">{{ t.nav?.signIn || 'Sign In' }}</p>
         </router-link>
 

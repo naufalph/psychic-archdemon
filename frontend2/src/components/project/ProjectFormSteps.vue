@@ -36,9 +36,9 @@ const props = defineProps({
 const stepCircleClasses = stepNumber => {
   const baseClasses = 'w-12 h-12 rounded-full flex items-center justify-center transition-all'
   if (stepNumber < props.currentStep) {
-    return `${baseClasses} bg-[#7C4728] text-white`
+    return `${baseClasses} bg-brand-brown text-white`
   } else if (stepNumber === props.currentStep) {
-    return `${baseClasses} bg-[#7C4728] text-white ring-4 ring-[#7C4728]/20`
+    return `${baseClasses} bg-brand-brown text-white ring-4 ring-brand-brown/20`
   } else {
     return `${baseClasses} bg-gray-200 text-gray-500`
   }
@@ -51,6 +51,6 @@ const stepLabelClasses = stepNumber => {
 
 const stepLineClasses = stepNumber => {
   const baseClasses = 'w-16 h-1 transition-all'
-  return stepNumber < props.currentStep ? `${baseClasses} bg-[#7C4728]` : `${baseClasses} bg-gray-200`
+  return stepNumber < props.currentStep ? `${baseClasses} bg-brand-brown` : `${baseClasses} bg-gray-200`
 }
 </script>

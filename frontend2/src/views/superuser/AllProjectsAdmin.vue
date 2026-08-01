@@ -9,7 +9,7 @@
         v-for="s in statusFilters"
         :key="s.value"
         @click="
-          selectedStatus = s.value
+          selectedStatus = s.value;
           load()
         "
         class="px-3 py-1.5 text-xs font-semibold rounded-lg transition"

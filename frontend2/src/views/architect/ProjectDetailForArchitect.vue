@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-[#F4F5F7] py-12">
+  <div class="min-h-screen bg-surface-alt py-12">
     <div class="max-w-7xl mx-auto px-6">
       <button @click="router.back()" class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition">
         <ArrowLeft :size="20" />
@@ -16,7 +16,7 @@
         <div class="flex flex-col items-center gap-4">
           <AlertCircle :size="64" class="text-red-400" />
           <p class="text-red-600 mb-2 text-lg font-medium">{{ error }}</p>
-          <button @click="router.back()" class="text-[#7C4728] hover:underline font-medium">Back</button>
+          <button @click="router.back()" class="text-brand-brown hover:underline font-medium">Back</button>
         </div>
       </div>
 
@@ -65,9 +65,9 @@
                   <span
                     v-for="value in group.matched"
                     :key="value"
-                    class="bg-white border border-[#C5A17A]/30 px-3 py-1.5 rounded-full text-sm font-medium text-gray-800 flex items-center gap-1.5"
+                    class="bg-white border border-brand-gold/30 px-3 py-1.5 rounded-full text-sm font-medium text-gray-800 flex items-center gap-1.5"
                   >
-                    <Check :size="12" class="text-[#7C4728]" />
+                    <Check :size="12" class="text-brand-brown" />
                     {{ t.proposalCreate.deliverableItems[value] || value.replace(/_/g, ' ') }}
                   </span>
                 </div>
@@ -141,7 +141,7 @@
             <button
               v-if="existingBid.status === 'ACCEPTED' && project.status === 'NEGOTIATION'"
               @click="router.push({ name: 'ArchitectFinalizationView', params: { projectId: route.params.projectId } })"
-              class="w-full bg-[#7C4728] text-white py-4 px-6 rounded-2xl hover:bg-black transition flex items-center justify-center gap-3 text-lg font-bold"
+              class="w-full bg-brand-brown text-white py-4 px-6 rounded-2xl hover:bg-black transition flex items-center justify-center gap-3 text-lg font-bold"
             >
               <CheckCircle :size="24" />
               {{ t.projectDetailArchitect.finalizeAgreement }}
@@ -176,7 +176,7 @@
             <button
               v-if="existingBid.status === 'DRAFT'"
               @click="goToProposal"
-              class="w-full bg-[#7C4728] text-white py-4 px-6 rounded-2xl hover:bg-[#5a3419] transition flex items-center justify-center gap-3 text-lg font-bold"
+              class="w-full bg-brand-brown text-white py-4 px-6 rounded-2xl hover:bg-brand-brown-hover transition flex items-center justify-center gap-3 text-lg font-bold"
             >
               <Send :size="24" />
               {{ t.projectDetailArchitect.draftSaved }}
@@ -196,7 +196,7 @@
             v-else
             @click="goToProposal"
             :disabled="project.status !== 'OPEN'"
-            class="w-full bg-[#7C4728] text-white py-4 px-6 rounded-2xl hover:bg-[#5a3419] transition flex items-center justify-center gap-3 text-lg font-bold disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-500"
+            class="w-full bg-brand-brown text-white py-4 px-6 rounded-2xl hover:bg-brand-brown-hover transition flex items-center justify-center gap-3 text-lg font-bold disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-500"
           >
             <Send :size="24" />
             {{ t.projectDetailArchitect.noBidYet }}
@@ -236,7 +236,7 @@
               target="_blank"
               class="flex items-center gap-3 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition border border-gray-200"
             >
-              <FileText :size="24" class="text-[#7C4728]" />
+              <FileText :size="24" class="text-brand-brown" />
               <div class="flex-1">
                 <p class="font-medium text-gray-900">{{ file.fileName }}</p>
                 <p class="text-sm text-gray-500">{{ file.fileType }}</p>

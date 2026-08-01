@@ -8,11 +8,7 @@
         :disabled="!isReady"
         @click="toggle"
         class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-all disabled:cursor-not-allowed disabled:opacity-40"
-        :class="
-          modelValue
-            ? 'border-black bg-black'
-            : 'border-gray-300 bg-white hover:border-gray-400'
-        "
+        :class="modelValue ? 'border-black bg-black' : 'border-gray-300 bg-white hover:border-gray-400'"
       >
         <Check v-if="modelValue" :size="14" class="text-white" stroke-width="3" />
       </button>
@@ -47,11 +43,7 @@
         leave-from-class="opacity-100"
         leave-to-class="opacity-0"
       >
-        <div
-          v-if="activeDocType"
-          class="fixed inset-0 z-50 overflow-y-auto"
-          @click.self="closeModal"
-        >
+        <div v-if="activeDocType" class="fixed inset-0 z-50 overflow-y-auto" @click.self="closeModal">
           <div class="flex min-h-screen items-center justify-center p-4">
             <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" @click="closeModal"></div>
 
@@ -83,9 +75,7 @@
 
                 <div class="max-h-[calc(100vh-200px)] overflow-y-auto px-6 py-6">
                   <div v-if="!activeDoc" class="flex items-center justify-center py-16">
-                    <div
-                      class="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-black"
-                    ></div>
+                    <div class="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-black"></div>
                   </div>
                   <div v-else class="legal-doc-content" v-html="renderedActiveDoc"></div>
                 </div>
@@ -132,24 +122,24 @@ const toggle = () => {
 .legal-doc-content {
   font-size: 0.875rem;
   line-height: 1.7;
-  color: #374151;
+  color: theme('colors.gray.700');
 }
 .legal-doc-content :deep(h1) {
   font-size: 1.375rem;
   font-weight: 700;
-  color: #000;
+  color: theme('colors.black');
   margin: 0 0 1rem;
 }
 .legal-doc-content :deep(h2) {
   font-size: 1.125rem;
   font-weight: 700;
-  color: #000;
+  color: theme('colors.black');
   margin: 1.75rem 0 0.75rem;
 }
 .legal-doc-content :deep(h3) {
   font-size: 1rem;
   font-weight: 600;
-  color: #000;
+  color: theme('colors.black');
   margin: 1.25rem 0 0.5rem;
 }
 .legal-doc-content :deep(p) {
@@ -164,10 +154,10 @@ const toggle = () => {
   margin-bottom: 0.25rem;
 }
 .legal-doc-content :deep(blockquote) {
-  border-left: 3px solid #e5e7eb;
+  border-left: 3px solid theme('colors.border-gray');
   padding-left: 1rem;
   margin: 0 0 0.875rem;
-  color: #6b7280;
+  color: theme('colors.gray.500');
   font-style: italic;
 }
 .legal-doc-content :deep(table) {
@@ -177,16 +167,16 @@ const toggle = () => {
 }
 .legal-doc-content :deep(th),
 .legal-doc-content :deep(td) {
-  border: 1px solid #e5e7eb;
+  border: 1px solid theme('colors.border-gray');
   padding: 0.5rem 0.75rem;
   text-align: left;
 }
 .legal-doc-content :deep(hr) {
   border: none;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid theme('colors.border-gray');
   margin: 1.5rem 0;
 }
 .legal-doc-content :deep(strong) {
-  color: #000;
+  color: theme('colors.black');
 }
 </style>

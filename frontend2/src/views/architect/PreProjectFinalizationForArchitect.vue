@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen bg-[#F4F5F7]">
+  <div class="min-h-screen bg-surface-alt">
     <div v-if="loading && !bid" class="flex items-center justify-center h-screen">
       <div class="text-center">
-        <div class="w-10 h-10 border-2 border-[#C5A17A] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <div class="w-10 h-10 border-2 border-brand-gold border-t-transparent rounded-full animate-spin mx-auto mb-4" />
         <p class="text-gray-500">{{ t.finalization?.loading }}</p>
       </div>
     </div>
@@ -10,7 +10,7 @@
     <div v-else-if="error" class="flex items-center justify-center h-screen">
       <div class="text-center">
         <p class="text-red-500 mb-4">{{ error }}</p>
-        <button @click="loadData" class="text-[#7C4728] hover:underline">{{ t.finalization?.tryAgain }}</button>
+        <button @click="loadData" class="text-brand-brown hover:underline">{{ t.finalization?.tryAgain }}</button>
       </div>
     </div>
 
@@ -73,9 +73,9 @@
               </div>
 
               <div class="grid grid-cols-2 gap-3">
-                <div class="bg-[#FDF6EE] rounded-2xl p-4">
+                <div class="bg-brand-cream rounded-2xl p-4">
                   <p class="text-xs text-gray-500 uppercase font-bold mb-1">{{ t.finalization?.proposedPrice }}</p>
-                  <p class="text-2xl font-bold text-[#7C4728]">{{ formatCurrency(bid.bidAmount) }}</p>
+                  <p class="text-2xl font-bold text-brand-brown">{{ formatCurrency(bid.bidAmount) }}</p>
                 </div>
                 <div class="bg-gray-50 rounded-2xl p-4">
                   <p class="text-xs text-gray-500 uppercase font-bold mb-1">{{ t.finalization?.timeline }}</p>
@@ -94,18 +94,18 @@
                 <div
                   v-for="phase in bid.details.phases"
                   :key="phase.phaseNumber"
-                  class="rounded-2xl border border-gray-100 p-4 bg-[#FDF6EE]"
+                  class="rounded-2xl border border-gray-100 p-4 bg-brand-cream"
                 >
                   <div class="flex items-center justify-between mb-2">
                     <div class="flex items-center gap-2">
-                      <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-[#7C4728] text-white">
+                      <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-brand-brown text-white">
                         Phase {{ phase.phaseNumber }}
                       </span>
                       <span class="text-sm font-bold text-black">{{
                         phase.title || `Phase ${phase.phaseNumber}`
                       }}</span>
                     </div>
-                    <span class="text-sm font-bold text-[#7C4728]">{{ formatCurrency(phase.amount) }}</span>
+                    <span class="text-sm font-bold text-brand-brown">{{ formatCurrency(phase.amount) }}</span>
                   </div>
                   <div v-if="phase.deliverables?.length" class="flex flex-wrap gap-1 mb-2">
                     <span
@@ -122,7 +122,7 @@
               </div>
               <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between text-sm">
                 <span class="text-gray-500 font-bold">Total</span>
-                <span class="font-bold text-[#7C4728]">{{ formatCurrency(bid.bidAmount) }}</span>
+                <span class="font-bold text-brand-brown">{{ formatCurrency(bid.bidAmount) }}</span>
               </div>
             </div>
 
@@ -175,7 +175,9 @@
               <div class="px-5 py-4 border-b border-gray-100">
                 <div class="flex items-center gap-2">
                   <h3 class="font-bold text-black">{{ t.finalization?.discussion }}</h3>
-                  <span v-if="itSupportRequested" class="text-xs text-[#7C4728] font-medium">· IT Support invited</span>
+                  <span v-if="itSupportRequested" class="text-xs text-brand-brown font-medium"
+                    >· IT Support invited</span
+                  >
                 </div>
                 <p class="text-xs text-gray-500 mt-0.5">{{ t.finalization?.discussionSubtitle }}</p>
               </div>
@@ -220,7 +222,7 @@
                 <button
                   @click="handleConfirm"
                   :disabled="actionLoading"
-                  class="w-full px-5 py-3.5 bg-[#7C4728] text-white rounded-full font-bold hover:bg-black transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="w-full px-5 py-3.5 bg-brand-brown text-white rounded-full font-bold hover:bg-black transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <CheckCircle :size="18" />
                   {{ actionLoading ? t.finalization?.confirming : t.finalization?.confirmButton }}

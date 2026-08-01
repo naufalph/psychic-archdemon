@@ -4,7 +4,7 @@
     class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-soft hover:shadow-glow transition-all cursor-pointer group"
     @click="handleClick"
   >
-    <div class="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-[#7C4728] to-[#3D2114]">
+    <div class="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-brand-brown to-brand-brown-900">
       <img
         v-if="coverImage"
         :src="coverImage"
@@ -48,7 +48,7 @@
           {{ proposalCount === 1 ? t.clientDashboard.proposalSingular : t.clientDashboard.proposalPlural }}
         </span>
         <button
-          class="bg-black text-white text-xs font-bold px-4 py-2 rounded-full tracking-wider hover:bg-[#7C4728] transition"
+          class="bg-black text-white text-xs font-bold px-4 py-2 rounded-full tracking-wider hover:bg-brand-brown transition"
         >
           {{ t.projectCard.manage }}
         </button>
@@ -98,7 +98,7 @@
         </span>
         <span
           v-if="showProposalCount && proposalCount > 0"
-          class="bg-[#7C4728] text-white px-3 py-1.5 rounded-full text-xs font-bold"
+          class="bg-brand-brown text-white px-3 py-1.5 rounded-full text-xs font-bold"
         >
           {{ proposalCount }}
           {{ proposalCount === 1 ? t.clientDashboard.proposalSingular : t.clientDashboard.proposalPlural }}

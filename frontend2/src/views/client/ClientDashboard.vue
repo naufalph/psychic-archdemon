@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-full bg-[#F4F5F7]">
+  <div class="min-h-full bg-surface-alt">
     <div class="max-w-7xl mx-auto px-6 py-10">
       <div class="flex justify-between items-center mb-10">
         <div>
@@ -8,7 +8,7 @@
         </div>
         <router-link :to="{ name: 'ProjectCreate' }">
           <button
-            class="bg-black text-white px-6 py-3 rounded-full font-bold tracking-widest text-sm hover:bg-[#7C4728] transition flex items-center gap-2"
+            class="bg-black text-white px-6 py-3 rounded-full font-bold tracking-widest text-sm hover:bg-brand-brown transition flex items-center gap-2"
           >
             <Plus :size="16" />
             {{ t.clientDashboard.newProjectBtn }}
@@ -18,15 +18,21 @@
 
       <div class="grid grid-cols-3 gap-4 mb-10">
         <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
-          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">{{ t.clientDashboard.activeProjects }}</p>
+          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">
+            {{ t.clientDashboard.activeProjects }}
+          </p>
           <p class="text-4xl font-bold text-black">{{ activeProjectCount }}</p>
         </div>
         <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
-          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">{{ t.clientDashboard.totalProposals }}</p>
-          <p class="text-4xl font-bold text-[#7C4728]">{{ totalProposalCount }}</p>
+          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">
+            {{ t.clientDashboard.totalProposals }}
+          </p>
+          <p class="text-4xl font-bold text-brand-brown">{{ totalProposalCount }}</p>
         </div>
         <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
-          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">{{ t.clientDashboard.budgetUsed }}</p>
+          <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">
+            {{ t.clientDashboard.budgetUsed }}
+          </p>
           <p class="text-2xl font-bold text-black">{{ formatCurrency(budgetUsed) }}</p>
         </div>
       </div>
@@ -47,7 +53,9 @@
 
         <div class="space-y-6">
           <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-soft">
-            <h2 class="text-sm font-bold text-black tracking-widest uppercase mb-4">{{ t.clientDashboard.recentActivity }}</h2>
+            <h2 class="text-sm font-bold text-black tracking-widest uppercase mb-4">
+              {{ t.clientDashboard.recentActivity }}
+            </h2>
             <div v-if="recentBids.length === 0" class="text-center py-6">
               <p class="text-gray-400 text-sm">{{ t.clientDashboard.noProposalsYet }}</p>
             </div>
@@ -57,26 +65,28 @@
                 :key="bid.id"
                 class="flex items-start gap-3 pb-3 border-b border-gray-100 last:border-0 last:pb-0"
               >
-                <div class="w-8 h-8 rounded-full bg-[#F5E6D3] flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <FileText :size="14" class="text-[#7C4728]" />
+                <div class="w-8 h-8 rounded-full bg-brand-tan flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <FileText :size="14" class="text-brand-brown" />
                 </div>
                 <div class="min-w-0">
                   <p class="text-sm font-medium text-gray-900 truncate">
                     {{ bid.architectName || 'An architect' }}
                   </p>
                   <p class="text-xs text-gray-500">{{ t.clientDashboard.submittedProposal }}</p>
-                  <p class="text-xs text-[#7C4728] font-medium mt-0.5">{{ formatCurrency(bid.bidAmount) }}</p>
+                  <p class="text-xs text-brand-brown font-medium mt-0.5">{{ formatCurrency(bid.bidAmount) }}</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="bg-[#7C4728] rounded-2xl p-6 text-white">
-            <p class="text-xs font-bold tracking-widest uppercase mb-2 text-white/70">{{ t.clientDashboard.curatedSelection }}</p>
+          <div class="bg-brand-brown rounded-2xl p-6 text-white">
+            <p class="text-xs font-bold tracking-widest uppercase mb-2 text-white/70">
+              {{ t.clientDashboard.curatedSelection }}
+            </p>
             <h3 class="text-lg font-bold mb-2">{{ t.clientDashboard.findArchitect }}</h3>
             <p class="text-sm text-white/80 mb-4">{{ t.clientDashboard.browseStudiosDesc }}</p>
             <button
-              class="bg-white text-[#7C4728] px-4 py-2 rounded-full text-xs font-bold tracking-wider hover:bg-[#F5E6D3] transition"
+              class="bg-white text-brand-brown px-4 py-2 rounded-full text-xs font-bold tracking-wider hover:bg-brand-tan transition"
             >
               {{ t.clientDashboard.browseStudios }}
             </button>

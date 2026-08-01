@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-full bg-[#F4F5F7]">
+  <div class="min-h-full bg-surface-alt">
     <div class="max-w-7xl mx-auto px-6 py-12">
       <button
         @click="$router.push({ name: 'ArchitectDashboard' })"
@@ -21,7 +21,7 @@
           </div>
           <button
             @click="handleAddPortfolio"
-            class="px-6 py-3 bg-[#7C4728] text-white rounded-full font-semibold hover:bg-[#6A3D22] transition-all hover:scale-105 flex items-center gap-2"
+            class="px-6 py-3 bg-brand-brown text-white rounded-full font-semibold hover:bg-brand-brown-dark transition-all hover:scale-105 flex items-center gap-2"
           >
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -64,7 +64,7 @@
           </div>
           <button
             @click="handleAddPortfolio"
-            class="px-8 py-3 bg-[#7C4728] text-white rounded-full font-semibold hover:bg-[#6A3D22] transition-all hover:scale-105"
+            class="px-8 py-3 bg-brand-brown text-white rounded-full font-semibold hover:bg-brand-brown-dark transition-all hover:scale-105"
           >
             {{ t.portfolio.emptyState.cta }}
           </button>

@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen bg-[#F4F5F7]">
+  <div class="min-h-screen bg-surface-alt">
     <div v-if="loading" class="flex items-center justify-center h-screen">
       <div class="text-center">
-        <div class="w-10 h-10 border-2 border-[#C5A17A] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <div class="w-10 h-10 border-2 border-brand-gold border-t-transparent rounded-full animate-spin mx-auto mb-4" />
         <p class="text-gray-500">Memuat workspace...</p>
       </div>
     </div>
@@ -10,7 +10,7 @@
     <div v-else-if="error" class="flex items-center justify-center h-screen">
       <div class="text-center">
         <p class="text-red-500 mb-4">{{ error }}</p>
-        <button @click="loadAll" class="text-[#7C4728] hover:underline">Coba lagi</button>
+        <button @click="loadAll" class="text-brand-brown hover:underline">Coba lagi</button>
       </div>
     </div>
 
@@ -49,9 +49,9 @@
             </span>
             <span
               v-else
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-[#F5E6D3] text-[#7C4728]"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-brand-tan text-brand-brown"
             >
-              <span class="w-1.5 h-1.5 rounded-full bg-[#7C4728]" />
+              <span class="w-1.5 h-1.5 rounded-full bg-brand-brown" />
               {{ t.projectWorkspace?.active }}
             </span>
             <button
@@ -81,7 +81,7 @@
           <!-- Project overview card (clickable) -->
           <button
             @click="showProjectModal = true"
-            class="w-full bg-white rounded-xl border border-gray-200 p-5 text-left hover:border-[#C5A17A] hover:shadow-sm transition group"
+            class="w-full bg-white rounded-xl border border-gray-200 p-5 text-left hover:border-brand-gold hover:shadow-sm transition group"
           >
             <div class="flex items-start gap-4">
               <div class="w-20 h-20 rounded-lg bg-gray-100 overflow-hidden shrink-0">
@@ -95,7 +95,7 @@
                   <div>
                     <div class="flex items-center gap-2">
                       <h2 class="font-bold text-gray-900">{{ project?.title }}</h2>
-                      <span class="text-xs text-[#7C4728] font-medium group-hover:underline">Lihat Detail ↗</span>
+                      <span class="text-xs text-brand-brown font-medium group-hover:underline">Lihat Detail ↗</span>
                     </div>
                     <div class="flex flex-wrap items-center gap-3 mt-1 text-sm text-gray-500">
                       <span v-if="project?.location" class="flex items-center gap-1">
@@ -119,7 +119,7 @@
                   </div>
                   <div class="w-full bg-gray-100 rounded-full h-1.5">
                     <div
-                      class="bg-[#7C4728] h-1.5 rounded-full transition-all duration-500"
+                      class="bg-brand-brown h-1.5 rounded-full transition-all duration-500"
                       :style="{ width: progressPercent + '%' }"
                     />
                   </div>
@@ -141,7 +141,7 @@
             <div v-for="(phase, index) in sortedPhases" :key="phase.id">
               <div
                 class="bg-white rounded-xl border overflow-hidden transition-all"
-                :class="expandedPhaseId === phase.id ? 'border-[#C5A17A] shadow-sm' : 'border-gray-200'"
+                :class="expandedPhaseId === phase.id ? 'border-brand-gold shadow-sm' : 'border-gray-200'"
               >
                 <!-- Phase header row -->
                 <button
@@ -272,7 +272,7 @@
 
                         <div class="flex items-center gap-3">
                           <label
-                            class="flex-1 flex items-center gap-2 px-4 py-2.5 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-[#C5A17A] hover:bg-[#F5E6D3]/20 transition"
+                            class="flex-1 flex items-center gap-2 px-4 py-2.5 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-brand-gold hover:bg-brand-tan/20 transition"
                           >
                             <Paperclip :size="16" class="text-gray-400 shrink-0" />
                             <span class="text-sm text-gray-500 truncate">
@@ -307,7 +307,7 @@
                           <button
                             @click="uploadFile(phase)"
                             :disabled="!selectedFile[phase.id] || uploadLoading === phase.id"
-                            class="px-4 py-2 bg-[#1C1C1C] text-white text-sm font-semibold rounded-lg hover:bg-[#333] disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
+                            class="px-4 py-2 bg-ink-700 text-white text-sm font-semibold rounded-lg hover:bg-ink-500 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
                           >
                             <span v-if="uploadLoading === phase.id" class="flex items-center gap-2">
                               <div
@@ -597,7 +597,7 @@
                             :key="d.id"
                             :href="d.filePath"
                             target="_blank"
-                            class="group border border-gray-200 rounded-lg overflow-hidden hover:border-[#C5A17A] transition block"
+                            class="group border border-gray-200 rounded-lg overflow-hidden hover:border-brand-gold transition block"
                           >
                             <template v-if="isImage(d.fileType)">
                               <div class="aspect-video bg-gray-100 overflow-hidden">
@@ -658,7 +658,7 @@
                       Log Aktivitas · Activity Log
                     </p>
                     <div v-if="logsLoading[phase.id]" class="flex items-center gap-2 py-4">
-                      <div class="w-4 h-4 border border-[#C5A17A] border-t-transparent rounded-full animate-spin" />
+                      <div class="w-4 h-4 border border-brand-gold border-t-transparent rounded-full animate-spin" />
                       <p class="text-xs text-gray-400">Memuat aktivitas...</p>
                     </div>
                     <div v-else-if="phaseLogs[phase.id] && phaseLogs[phase.id].length > 0" class="space-y-3">
@@ -698,7 +698,7 @@
               <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2.5">Chat Proyek · Project Chat</p>
               <div class="flex items-center gap-2.5">
                 <div
-                  class="w-8 h-8 rounded-full bg-[#F5E6D3] text-[#7C4728] flex items-center justify-center text-xs font-bold shrink-0"
+                  class="w-8 h-8 rounded-full bg-brand-tan text-brand-brown flex items-center justify-center text-xs font-bold shrink-0"
                 >
                   {{ clientInitials }}
                 </div>
@@ -731,9 +731,9 @@
       >
         <div class="bg-white rounded-2xl w-full max-w-3xl shadow-2xl overflow-hidden my-auto">
           <!-- Modal header -->
-          <div class="bg-[#1C1C1C] px-6 py-5 flex items-start justify-between">
+          <div class="bg-ink-700 px-6 py-5 flex items-start justify-between">
             <div>
-              <p class="text-xs text-[#C5A17A] uppercase font-bold tracking-widest mb-1">
+              <p class="text-xs text-brand-gold uppercase font-bold tracking-widest mb-1">
                 Detail Proyek · Project Details
               </p>
               <h2 class="text-xl font-bold text-white leading-tight">{{ project?.title }}</h2>
@@ -810,7 +810,7 @@
                   :key="i"
                   class="flex items-center gap-2 text-sm text-gray-700"
                 >
-                  <span class="w-1.5 h-1.5 rounded-full bg-[#C5A17A] shrink-0" />
+                  <span class="w-1.5 h-1.5 rounded-full bg-brand-gold shrink-0" />
                   {{ item }}
                 </li>
               </ul>
@@ -822,11 +822,11 @@
             <!-- Winning bid section -->
             <div v-if="myBid">
               <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Penawaran Menang · Winning Bid</p>
-              <div class="bg-[#F5E6D3]/40 border border-[#C5A17A]/30 rounded-xl p-4 space-y-3">
+              <div class="bg-brand-tan/40 border border-brand-gold/30 rounded-xl p-4 space-y-3">
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-3">
                     <div
-                      class="w-10 h-10 rounded-full bg-[#7C4728] text-white flex items-center justify-center text-sm font-bold shrink-0"
+                      class="w-10 h-10 rounded-full bg-brand-brown text-white flex items-center justify-center text-sm font-bold shrink-0"
                     >
                       {{
                         (myBid.architectName || 'A')
@@ -844,7 +844,7 @@
                   </div>
                   <div class="text-right">
                     <p class="text-xs text-gray-400">Nilai Penawaran · Bid Amount</p>
-                    <p class="font-bold text-[#7C4728]">{{ formatAmount(myBid.bidAmount) }}</p>
+                    <p class="font-bold text-brand-brown">{{ formatAmount(myBid.bidAmount) }}</p>
                   </div>
                 </div>
 
@@ -853,7 +853,7 @@
                   <span>{{ myBid.proposedTimelineDays }} hari pengerjaan · days of work</span>
                 </div>
 
-                <div v-if="myBid.proposal" class="pt-2 border-t border-[#C5A17A]/20">
+                <div v-if="myBid.proposal" class="pt-2 border-t border-brand-gold/20">
                   <p class="text-xs font-semibold text-gray-500 mb-1">Proposal</p>
                   <p class="text-sm text-gray-700 leading-relaxed line-clamp-4">{{ myBid.proposal }}</p>
                 </div>
@@ -861,18 +861,18 @@
                 <!-- Bid phases -->
                 <div
                   v-if="myBid.details?.phases && myBid.details.phases.length > 0"
-                  class="pt-2 border-t border-[#C5A17A]/20"
+                  class="pt-2 border-t border-brand-gold/20"
                 >
                   <p class="text-xs font-semibold text-gray-500 mb-2">Rencana Fase · Phase Plan</p>
                   <div class="space-y-2">
                     <div
                       v-for="(bp, i) in myBid.details.phases"
                       :key="i"
-                      class="flex items-start justify-between gap-3 py-2 border-b border-[#C5A17A]/10 last:border-0"
+                      class="flex items-start justify-between gap-3 py-2 border-b border-brand-gold/10 last:border-0"
                     >
                       <div class="flex items-start gap-2 flex-1">
                         <span
-                          class="w-5 h-5 rounded-full bg-[#7C4728] text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5"
+                          class="w-5 h-5 rounded-full bg-brand-brown text-white flex items-center justify-center text-xs font-bold shrink-0 mt-0.5"
                         >
                           {{ bp.phaseNumber }}
                         </span>
@@ -897,7 +897,7 @@
           <div class="px-6 py-4 border-t border-gray-100 flex justify-end">
             <button
               @click="showProjectModal = false"
-              class="px-5 py-2 bg-[#1C1C1C] text-white text-sm font-semibold rounded-lg hover:bg-[#333] transition"
+              class="px-5 py-2 bg-ink-700 text-white text-sm font-semibold rounded-lg hover:bg-ink-500 transition"
             >
               Tutup · Close
             </button>

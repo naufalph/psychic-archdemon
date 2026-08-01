@@ -25,7 +25,9 @@
           <p class="text-sm text-gray-500 mt-0.5">
             {{ project.location }} · Budget IDR {{ formatCurrency(project.budgetTotal) }}
           </p>
-          <p class="text-xs text-gray-400 mt-1">{{ t.projectValidationQueue.submittedOn }} {{ formatDate(project.createdAt) }}</p>
+          <p class="text-xs text-gray-400 mt-1">
+            {{ t.projectValidationQueue.submittedOn }} {{ formatDate(project.createdAt) }}
+          </p>
           <p v-if="project.validationNotes" class="text-xs text-gray-500 mt-1 italic">
             Note: {{ project.validationNotes }}
           </p>

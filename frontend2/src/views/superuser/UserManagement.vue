@@ -15,10 +15,18 @@
         <table class="w-full text-sm">
           <thead class="bg-gray-50 border-b border-gray-100">
             <tr>
-              <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ t.userManagement.colUser }}</th>
-              <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ t.userManagement.colRoles }}</th>
-              <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ t.userManagement.colStatus }}</th>
-              <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ t.userManagement.colJoined }}</th>
+              <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                {{ t.userManagement.colUser }}
+              </th>
+              <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                {{ t.userManagement.colRoles }}
+              </th>
+              <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                {{ t.userManagement.colStatus }}
+              </th>
+              <th class="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                {{ t.userManagement.colJoined }}
+              </th>
               <th class="px-4 py-3"></th>
             </tr>
           </thead>
@@ -73,7 +81,9 @@
 
       <!-- Pagination -->
       <div class="flex items-center justify-between">
-        <p class="text-xs text-gray-400">{{ t.userManagement.page }} {{ page + 1 }} {{ t.userManagement.of }} {{ totalPages }}</p>
+        <p class="text-xs text-gray-400">
+          {{ t.userManagement.page }} {{ page + 1 }} {{ t.userManagement.of }} {{ totalPages }}
+        </p>
         <div class="flex gap-2">
           <button
             @click="prev"

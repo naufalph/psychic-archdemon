@@ -45,7 +45,7 @@
                 <!-- Quantity Selection View -->
                 <div>
                   <!-- Current Quota Display -->
-                  <div class="mb-6 rounded-xl bg-gradient-to-br from-[#7C4728] to-[#5a3319] p-4 text-white">
+                  <div class="mb-6 rounded-xl bg-gradient-to-br from-brand-brown to-brand-brown-hover p-4 text-white">
                     <div class="text-sm opacity-90">
                       {{ getT('tokenPurchase.modal.currentQuota') }}
                     </div>
@@ -97,7 +97,7 @@
                           max="50"
                           :disabled="loading"
                           @input="handleQuantityInput"
-                          class="flex-1 rounded-lg border-2 border-gray-300 px-4 py-2 text-center text-lg font-semibold focus:border-[#7C4728] focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          class="flex-1 rounded-lg border-2 border-gray-300 px-4 py-2 text-center text-lg font-semibold focus:border-brand-brown focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
                         />
                         <button
                           @click="incrementQuantity"
@@ -165,7 +165,7 @@
 
                   <!-- Loading State -->
                   <div v-else-if="loading && !pricing" class="flex items-center justify-center py-12">
-                    <div class="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-[#7C4728]"></div>
+                    <div class="h-8 w-8 animate-spin rounded-full border-4 border-gray-200 border-t-brand-brown"></div>
                   </div>
 
                   <!-- Error State -->
@@ -189,7 +189,7 @@
                 <button
                   @click="handleConfirm"
                   :disabled="loading || !pricing"
-                  class="relative rounded-lg bg-[#7C4728] px-6 py-2.5 text-sm font-medium text-white hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="relative rounded-lg bg-brand-brown px-6 py-2.5 text-sm font-medium text-white hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   <span v-if="!loading">{{ getT('tokenPurchase.modal.confirm') }}</span>
                   <span v-else class="flex items-center gap-2">
@@ -205,7 +205,7 @@
                 class="absolute inset-0 flex items-center justify-center rounded-2xl bg-white/80 backdrop-blur-sm"
               >
                 <div class="flex flex-col items-center gap-3">
-                  <div class="h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-[#7C4728]"></div>
+                  <div class="h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-brand-brown"></div>
                   <p class="text-sm font-medium text-gray-600">Processing payment...</p>
                 </div>
               </div>

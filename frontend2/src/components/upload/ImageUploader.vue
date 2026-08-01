@@ -112,13 +112,13 @@ watch(
 
 const dropzoneClasses = ref([
   'border-2 border-dashed rounded-xl cursor-pointer transition-all',
-  isDragging.value ? 'border-[#7C4728] bg-[#F5E6D3]/20' : 'border-gray-300 hover:border-[#C5A17A]'
+  isDragging.value ? 'border-brand-brown bg-brand-tan/20' : 'border-gray-300 hover:border-brand-gold'
 ])
 
 watch(isDragging, newValue => {
   dropzoneClasses.value = [
     'border-2 border-dashed rounded-xl cursor-pointer transition-all',
-    newValue ? 'border-[#7C4728] bg-[#F5E6D3]/20' : 'border-gray-300 hover:border-[#C5A17A]'
+    newValue ? 'border-brand-brown bg-brand-tan/20' : 'border-gray-300 hover:border-brand-gold'
   ]
 })
 </script>

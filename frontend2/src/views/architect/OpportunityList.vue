@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-full bg-[#F4F5F7]">
+  <div class="min-h-full bg-surface-alt">
     <div
       class="absolute inset-0 opacity-[0.03] pointer-events-none"
       style="
@@ -23,15 +23,15 @@
 
       <div v-if="quota" class="bg-white rounded-2xl border border-gray-200 p-6 mb-8 flex items-center justify-between">
         <div class="flex items-center gap-6">
-          <div class="w-12 h-12 bg-[#F5E6D3] rounded-full flex items-center justify-center shrink-0">
-            <Coins :size="24" class="text-[#7C4728]" />
+          <div class="w-12 h-12 bg-brand-tan rounded-full flex items-center justify-center shrink-0">
+            <Coins :size="24" class="text-brand-brown" />
           </div>
           <div class="flex gap-8">
             <div>
               <p class="text-xs text-gray-500 uppercase font-bold tracking-wide">
                 {{ t.opportunityList.tokensAvailable }}
               </p>
-              <p class="text-2xl font-bold text-[#7C4728]">{{ quota.tokensRemaining }}</p>
+              <p class="text-2xl font-bold text-brand-brown">{{ quota.tokensRemaining }}</p>
             </div>
             <div class="border-l border-gray-200 pl-8">
               <p class="text-xs text-gray-500 uppercase font-bold tracking-wide">
@@ -43,7 +43,7 @@
         </div>
         <button
           @click="tokenPurchaseStore.openModal()"
-          class="bg-[#7C4728] hover:bg-black text-white px-6 py-2 rounded-full text-sm font-medium transition"
+          class="bg-brand-brown hover:bg-black text-white px-6 py-2 rounded-full text-sm font-medium transition"
         >
           {{ t.opportunityList.purchaseTokens }}
         </button>

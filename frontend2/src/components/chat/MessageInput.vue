@@ -8,14 +8,14 @@
         :disabled="disabled"
         @keydown.enter.exact.prevent="handleSend"
         rows="1"
-        class="flex-1 resize-none rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-[#C5A17A] transition overflow-hidden"
+        class="flex-1 resize-none rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-brand-gold transition overflow-hidden"
         style="min-height: 44px; max-height: 120px"
         @input="autoResize"
       />
       <button
         @click="handleSend"
         :disabled="!content.trim() || disabled"
-        class="flex-shrink-0 w-11 h-11 rounded-full bg-[#7C4728] text-white flex items-center justify-center hover:bg-black transition disabled:opacity-40 disabled:cursor-not-allowed"
+        class="flex-shrink-0 w-11 h-11 rounded-full bg-brand-brown text-white flex items-center justify-center hover:bg-black transition disabled:opacity-40 disabled:cursor-not-allowed"
       >
         <Send :size="16" />
       </button>

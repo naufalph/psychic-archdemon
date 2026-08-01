@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-full bg-[#F4F5F7]">
+  <div class="min-h-full bg-surface-alt">
     <div class="max-w-2xl mx-auto px-6 py-12">
       <button
         @click="$router.push({ name: 'ArchitectDashboard' })"
@@ -22,7 +22,7 @@
           <button
             v-if="!store.isEditMode && store.hasProfile"
             @click="store.enableEditMode"
-            class="px-6 py-3 bg-[#7C4728] text-white rounded-full font-semibold hover:bg-[#6A3D22] transition-all hover:scale-105"
+            class="px-6 py-3 bg-brand-brown text-white rounded-full font-semibold hover:bg-brand-brown-dark transition-all hover:scale-105"
           >
             {{ t.profile.editProfile }}
           </button>
@@ -181,12 +181,12 @@
                   v-model="otpPhone"
                   type="tel"
                   :placeholder="t.identityDocs?.phoneNumPlaceholder || 'e.g., 08123456789'"
-                  class="flex-1 px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all text-sm"
+                  class="flex-1 px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all text-sm"
                 />
                 <button
                   @click="handleSendOtp"
                   :disabled="!otpPhone || otpSending"
-                  class="px-5 py-3 bg-[#7C4728] text-white rounded-2xl text-sm font-semibold hover:bg-[#6A3D22] transition-all disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+                  class="px-5 py-3 bg-brand-brown text-white rounded-2xl text-sm font-semibold hover:bg-brand-brown-dark transition-all disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
                 >
                   {{ otpSending ? '...' : t.identityDocs?.sendOtp || 'Send OTP' }}
                 </button>
@@ -202,20 +202,20 @@
                     type="text"
                     maxlength="6"
                     :placeholder="t.identityDocs?.otpCodePlaceholder || '6-digit OTP'"
-                    class="flex-1 px-4 py-3 rounded-2xl border border-black/10 focus:border-[#7C4728] focus:ring-2 focus:ring-[#7C4728]/20 outline-none transition-all text-sm tracking-widest"
+                    class="flex-1 px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all text-sm tracking-widest"
                     @input="otpCode = otpCode.replace(/\D/g, '')"
                   />
                   <button
                     @click="handleVerifyOtp"
                     :disabled="otpCode.length !== 6 || otpVerifying"
-                    class="px-5 py-3 bg-[#7C4728] text-white rounded-2xl text-sm font-semibold hover:bg-[#6A3D22] transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                    class="px-5 py-3 bg-brand-brown text-white rounded-2xl text-sm font-semibold hover:bg-brand-brown-dark transition-all disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     {{
                       otpVerifying ? t.identityDocs?.verifying || 'Verifying...' : t.identityDocs?.verify || 'Verify'
                     }}
                   </button>
                 </div>
-                <button @click="handleSendOtp" class="text-xs text-[#7C4728] hover:underline">
+                <button @click="handleSendOtp" class="text-xs text-brand-brown hover:underline">
                   {{ t.identityDocs?.resendOtp || 'Resend OTP' }}
                 </button>
               </div>

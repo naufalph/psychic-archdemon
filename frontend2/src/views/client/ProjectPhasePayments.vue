@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen bg-[#F4F5F7]">
+  <div class="min-h-screen bg-surface-alt">
     <div v-if="loading" class="flex items-center justify-center h-screen">
       <div class="text-center">
-        <div class="w-10 h-10 border-2 border-[#C5A17A] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <div class="w-10 h-10 border-2 border-brand-gold border-t-transparent rounded-full animate-spin mx-auto mb-4" />
         <p class="text-gray-500">{{ t.phasePayments.loading }}</p>
       </div>
     </div>
@@ -10,7 +10,7 @@
     <div v-else-if="error" class="flex items-center justify-center h-screen">
       <div class="text-center">
         <p class="text-red-500 mb-4">{{ error }}</p>
-        <button @click="loadPhases" class="text-[#7C4728] hover:underline">{{ t.phasePayments.tryAgain }}</button>
+        <button @click="loadPhases" class="text-brand-brown hover:underline">{{ t.phasePayments.tryAgain }}</button>
       </div>
     </div>
 
@@ -78,7 +78,7 @@
                 v-if="phase.paymentStatus === 'PENDING' || phase.paymentStatus === 'EXPIRED'"
                 :disabled="payingPhaseId === phase.phaseId"
                 @click="payPhase(phase)"
-                class="px-4 py-2 bg-[#1C1C1C] text-white text-sm font-semibold rounded-lg hover:bg-[#333] disabled:opacity-50 disabled:cursor-not-allowed transition"
+                class="px-4 py-2 bg-ink-700 text-white text-sm font-semibold rounded-lg hover:bg-ink-500 disabled:opacity-50 disabled:cursor-not-allowed transition"
               >
                 <span v-if="payingPhaseId === phase.phaseId">{{ t.phasePayments.processing }}</span>
                 <span v-else>{{ t.phasePayments.payNow }}</span>

@@ -38,7 +38,8 @@ export default {
       filterKomersil: 'Commercial',
       filterIndustrial: 'Industrial',
       filterLainnya: 'Other',
-      emptyState: 'No projects available yet.'
+      emptyState: 'No projects available yet.',
+      addDesign: 'Add Design'
     },
     howItWorks: {
       eyebrow: 'How It Works',
@@ -73,6 +74,33 @@ export default {
       subline: 'Join thousands of clients building confidently with Rumantra.',
       primary: 'Start Free Project',
       secondary: 'Join as an Architect'
+    }
+  },
+  mulaiProyek: {
+    title: 'Find your dream design',
+    subline:
+      'Browse designs Rumantra can build, or fill a short form if you already know what you want.',
+    toggleToForm: 'Fill manual form',
+    toggleToBrowse: 'Back to browse designs',
+    form: {
+      heading: 'Tell us about your project',
+      projectType: 'Project Type',
+      designStyle: 'Design Style',
+      location: 'Location',
+      locationPlaceholder: 'e.g. South Jakarta',
+      budget: 'Budget',
+      budgetPlaceholder: 'e.g. Rp 100M – 300M',
+      contact: 'Contact (name & WhatsApp)',
+      contactPlaceholder: 'e.g. Dinda, 0812xxxxxxx',
+      submit: 'Send Brief',
+      submitted: 'Thanks! Our team will reach out to you shortly.',
+      styles: {
+        modern: 'Modern',
+        minimalis: 'Minimalist',
+        tropis: 'Tropical',
+        industrial: 'Industrial',
+        klasik: 'Classic'
+      }
     }
   },
   navbar: {

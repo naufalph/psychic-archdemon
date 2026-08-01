@@ -4,12 +4,15 @@
       <div
         :class="[
           'rounded-full transition-all duration-500',
-          index <= currentStepIndex ? 'w-2.5 h-2.5 bg-[#7C4728]' : 'w-2 h-2 bg-black/20'
+          index <= currentStepIndex ? 'w-2.5 h-2.5 bg-brand-brown' : 'w-2 h-2 bg-black/20'
         ]"
       />
       <div
         v-if="index < steps.length - 1"
-        :class="['h-[1px] w-8 transition-all duration-500', index < currentStepIndex ? 'bg-[#7C4728]' : 'bg-black/10']"
+        :class="[
+          'h-[1px] w-8 transition-all duration-500',
+          index < currentStepIndex ? 'bg-brand-brown' : 'bg-black/10'
+        ]"
       />
     </div>
   </div>

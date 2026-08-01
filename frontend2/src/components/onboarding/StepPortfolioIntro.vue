@@ -47,13 +47,13 @@
 
         <button
           @click="handleAddProject"
-          class="bg-white rounded-3xl border-2 border-dashed border-black/20 hover:border-[#7C4728] hover:bg-[#7C4728]/5 transition-all flex flex-col items-center justify-center min-h-[300px] group"
+          class="bg-white rounded-3xl border-2 border-dashed border-black/20 hover:border-brand-brown hover:bg-brand-brown/5 transition-all flex flex-col items-center justify-center min-h-[300px] group"
         >
           <div
-            class="w-16 h-16 rounded-full bg-black/5 group-hover:bg-[#7C4728]/10 flex items-center justify-center mb-4 transition-all"
+            class="w-16 h-16 rounded-full bg-black/5 group-hover:bg-brand-brown/10 flex items-center justify-center mb-4 transition-all"
           >
             <svg
-              class="w-8 h-8 text-black/40 group-hover:text-[#7C4728] transition-colors"
+              class="w-8 h-8 text-black/40 group-hover:text-brand-brown transition-colors"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -61,7 +61,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
             </svg>
           </div>
-          <p class="text-lg font-semibold text-black/60 group-hover:text-[#7C4728] transition-colors">
+          <p class="text-lg font-semibold text-black/60 group-hover:text-brand-brown transition-colors">
             {{ t.onboarding.portfolioIntro.addAnother }}
           </p>
         </button>
@@ -85,7 +85,7 @@
           </div>
           <button
             @click="handleAddProject"
-            class="px-8 py-3 bg-[#7C4728] text-white rounded-full font-semibold hover:bg-[#6A3D22] transition-all hover:scale-105"
+            class="px-8 py-3 bg-brand-brown text-white rounded-full font-semibold hover:bg-brand-brown-dark transition-all hover:scale-105"
           >
             {{ t.onboarding.portfolioIntro.addFirst }}
           </button>
@@ -112,7 +112,7 @@
           </button>
           <button
             @click="handleNext"
-            class="px-8 py-3 bg-[#7C4728] text-white rounded-full font-semibold hover:bg-[#6A3D22] transition-all hover:scale-105"
+            class="px-8 py-3 bg-brand-brown text-white rounded-full font-semibold hover:bg-brand-brown-dark transition-all hover:scale-105"
           >
             Continue
           </button>

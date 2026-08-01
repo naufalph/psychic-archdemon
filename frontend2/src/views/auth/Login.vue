@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-[#F4F5F7] flex items-center justify-center p-6">
+  <div class="min-h-screen bg-surface-alt flex items-center justify-center p-6">
     <div
       class="absolute inset-0 opacity-[0.03] pointer-events-none"
       style="
@@ -51,13 +51,13 @@
                 v-model="formData.rememberMe"
                 type="checkbox"
                 id="rememberMe"
-                class="w-4 h-4 rounded border-gray-300 text-[#C5A17A] focus:ring-[#C5A17A]"
+                class="w-4 h-4 rounded border-gray-300 text-brand-gold focus:ring-brand-gold"
               />
               <label for="rememberMe" class="text-sm text-gray-600 cursor-pointer">
                 {{ t.auth.login.rememberMe }}
               </label>
             </div>
-            <a href="#" class="text-sm text-[#C5A17A] hover:text-[#B39069] font-semibold">
+            <a href="#" class="text-sm text-brand-gold hover:text-brand-gold-light font-semibold">
               {{ t.auth.login.forgotPassword }}
             </a>
           </div>
@@ -68,7 +68,7 @@
             type="submit"
             :fullWidth="true"
             :isLoading="isLoading"
-            class="bg-[#C5A17A] hover:bg-[#B39069] text-white border-none"
+            class="bg-brand-gold hover:bg-brand-gold-light text-white border-none"
           >
             {{ t.auth.login.signIn }}
           </BaseButton>
@@ -126,7 +126,7 @@
 
           <p class="text-center text-gray-500 text-sm">
             {{ t.auth.login.noAccount }}
-            <router-link to="/signup" class="text-[#C5A17A] hover:text-[#B39069] font-semibold">
+            <router-link to="/signup" class="text-brand-gold hover:text-brand-gold-light font-semibold">
               {{ t.auth.login.signUpHere }}
             </router-link>
           </p>

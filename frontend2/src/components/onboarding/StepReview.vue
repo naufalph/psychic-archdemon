@@ -15,7 +15,9 @@
         <div class="bg-white rounded-3xl p-8 shadow-sm border border-black/5">
           <div class="flex justify-between items-start mb-6">
             <h3 class="text-2xl font-bold text-black">{{ t.onboarding.review.professionalProfile }}</h3>
-            <button @click="store.goToStep('IDENTITY')" class="text-sm text-[#7C4728] hover:underline">{{ t.onboarding.review.edit }}</button>
+            <button @click="store.goToStep('IDENTITY')" class="text-sm text-brand-brown hover:underline">
+              {{ t.onboarding.review.edit }}
+            </button>
           </div>
 
           <div class="space-y-4">
@@ -46,7 +48,7 @@
                 <span
                   v-for="expertise in store.profile.expertise"
                   :key="expertise"
-                  class="px-3 py-1 bg-[#7C4728]/10 text-[#7C4728] rounded-full text-sm font-medium"
+                  class="px-3 py-1 bg-brand-brown/10 text-brand-brown rounded-full text-sm font-medium"
                 >
                   {{ expertise }}
                 </span>
@@ -56,12 +58,19 @@
         </div>
 
         <div
-          v-if="store.identityDocs.fullnameKtp || store.identityDocs.ktpNum || store.identityDocs.npwp || store.identityDocs.phoneNum"
+          v-if="
+            store.identityDocs.fullnameKtp ||
+            store.identityDocs.ktpNum ||
+            store.identityDocs.npwp ||
+            store.identityDocs.phoneNum
+          "
           class="bg-white rounded-3xl p-8 shadow-sm border border-black/5"
         >
           <div class="flex justify-between items-start mb-6">
             <h3 class="text-2xl font-bold text-black">{{ t.onboarding.review.identityDocs }}</h3>
-            <button @click="store.goToStep('IDENTITY_DOCS')" class="text-sm text-[#7C4728] hover:underline">{{ t.onboarding.review.edit }}</button>
+            <button @click="store.goToStep('IDENTITY_DOCS')" class="text-sm text-brand-brown hover:underline">
+              {{ t.onboarding.review.edit }}
+            </button>
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div v-if="store.identityDocs.fullnameKtp" class="space-y-1">
@@ -85,8 +94,10 @@
 
         <div class="bg-white rounded-3xl p-8 shadow-sm border border-black/5">
           <div class="flex justify-between items-start mb-6">
-            <h3 class="text-2xl font-bold text-black">{{ t.onboarding.review.portfolioProjects }} ({{ store.portfolio.length }})</h3>
-            <button @click="store.goToStep('PORTFOLIO_INTRO')" class="text-sm text-[#7C4728] hover:underline">
+            <h3 class="text-2xl font-bold text-black">
+              {{ t.onboarding.review.portfolioProjects }} ({{ store.portfolio.length }})
+            </h3>
+            <button @click="store.goToStep('PORTFOLIO_INTRO')" class="text-sm text-brand-brown hover:underline">
               {{ t.onboarding.review.edit }}
             </button>
           </div>
@@ -111,9 +122,9 @@
         </div>
       </div>
 
-      <div class="bg-gradient-to-r from-[#7C4728]/10 to-[#9B5E3C]/10 rounded-3xl p-8 text-center space-y-4">
-        <div class="w-16 h-16 mx-auto rounded-full bg-[#7C4728]/20 flex items-center justify-center">
-          <svg class="w-8 h-8 text-[#7C4728]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div class="bg-gradient-to-r from-brand-brown/10 to-brand-brown-light/10 rounded-3xl p-8 text-center space-y-4">
+        <div class="w-16 h-16 mx-auto rounded-full bg-brand-brown/20 flex items-center justify-center">
+          <svg class="w-8 h-8 text-brand-brown" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg>
         </div>
@@ -122,10 +133,12 @@
       </div>
 
       <div class="flex justify-between items-center pt-4">
-        <button @click="emit('back')" class="px-6 py-3 text-black/60 hover:text-black transition-colors">{{ t.onboarding.review.back }}</button>
+        <button @click="emit('back')" class="px-6 py-3 text-black/60 hover:text-black transition-colors">
+          {{ t.onboarding.review.back }}
+        </button>
         <button
           @click="handleActivate"
-          class="px-12 py-4 bg-gradient-to-r from-[#7C4728] to-[#9B5E3C] text-white rounded-full text-lg font-bold hover:shadow-lg transition-all hover:scale-105"
+          class="px-12 py-4 bg-gradient-to-r from-brand-brown to-brand-brown-light text-white rounded-full text-lg font-bold hover:shadow-lg transition-all hover:scale-105"
         >
           {{ t.onboarding.review.activate }}
         </button>

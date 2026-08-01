@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-[#F4F5F7] flex items-center justify-center p-6">
+  <div class="min-h-screen bg-surface-alt flex items-center justify-center p-6">
     <div
       class="absolute inset-0 opacity-[0.03] pointer-events-none"
       style="
@@ -15,8 +15,8 @@
         </router-link>
 
         <div v-if="isProcessing">
-          <div class="w-16 h-16 bg-[#C5A17A]/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <Loader2 class="w-8 h-8 text-[#C5A17A] animate-spin" />
+          <div class="w-16 h-16 bg-brand-gold/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Loader2 class="w-8 h-8 text-brand-gold animate-spin" />
           </div>
           <h1 class="text-2xl font-bold mb-3 text-black">{{ t.auth.callback.processing }}</h1>
           <p class="text-gray-500">{{ t.auth.callback.pleaseWait }}</p>
@@ -28,8 +28,8 @@
           </div>
           <h1 class="text-2xl font-bold mb-3 text-black">{{ t.auth.callback.success }}</h1>
           <p class="text-gray-500 mb-6">{{ t.auth.callback.redirecting }}</p>
-          <div class="flex items-center justify-center gap-2 text-[#C5A17A]">
-            <div class="w-4 h-4 border-2 border-[#C5A17A] border-t-transparent rounded-full animate-spin"></div>
+          <div class="flex items-center justify-center gap-2 text-brand-gold">
+            <div class="w-4 h-4 border-2 border-brand-gold border-t-transparent rounded-full animate-spin"></div>
             <span class="text-sm">{{ t.auth.callback.takingYou }}</span>
           </div>
         </div>
@@ -43,7 +43,7 @@
           <BaseButton
             @click="goToLogin"
             :fullWidth="true"
-            class="bg-[#C5A17A] hover:bg-[#B39069] text-white border-none"
+            class="bg-brand-gold hover:bg-brand-gold-light text-white border-none"
           >
             {{ t.auth.callback.returnToLogin }}
           </BaseButton>

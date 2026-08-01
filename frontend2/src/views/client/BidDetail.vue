@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-[#F4F5F7] py-12">
+  <div class="min-h-screen bg-surface-alt py-12">
     <div class="max-w-7xl mx-auto px-6">
       <button @click="router.back()" class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition">
         <ArrowLeft :size="20" />
@@ -14,7 +14,7 @@
 
       <div v-else-if="error" class="bg-white rounded-3xl border border-gray-200 p-12 text-center">
         <p class="text-red-600 mb-4">{{ error }}</p>
-        <button @click="fetchBid" class="text-[#7C4728] hover:underline">Try again</button>
+        <button @click="fetchBid" class="text-brand-brown hover:underline">Try again</button>
       </div>
 
       <div v-else-if="currentBid" class="lg:grid lg:grid-cols-3 gap-6">
@@ -74,7 +74,7 @@
                         <span
                           v-for="d in group.items"
                           :key="d"
-                          class="bg-[#F5E6D3] text-[#7C4728] px-2 py-0.5 rounded-full text-xs font-medium"
+                          class="bg-brand-tan text-brand-brown px-2 py-0.5 rounded-full text-xs font-medium"
                         >
                           {{ t.proposalCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ') }}
                         </span>
@@ -108,7 +108,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="bg-gray-50 rounded-2xl p-6">
                 <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.bidDetail.proposedCost }}</p>
-                <p class="text-3xl font-bold text-[#7C4728]">{{ formatCurrency(currentBid.bidAmount) }}</p>
+                <p class="text-3xl font-bold text-brand-brown">{{ formatCurrency(currentBid.bidAmount) }}</p>
               </div>
               <div class="bg-gray-50 rounded-2xl p-6">
                 <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.bidDetail.timeline }}</p>
@@ -200,18 +200,18 @@
               <div
                 v-for="phase in currentBid.details.phases"
                 :key="phase.phaseNumber"
-                class="rounded-2xl border border-gray-100 p-4 bg-[#FDF6EE]"
+                class="rounded-2xl border border-gray-100 p-4 bg-brand-cream"
               >
                 <div class="flex items-center justify-between mb-2">
                   <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-[#7C4728] text-white">
+                    <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-brand-brown text-white">
                       {{ t.clientFinalization.phase }} {{ phase.phaseNumber }}
                     </span>
                     <span class="text-sm font-bold text-black">{{
                       phase.title || `${t.clientFinalization.phase} ${phase.phaseNumber}`
                     }}</span>
                   </div>
-                  <span class="text-sm font-bold text-[#7C4728]">{{ formatCurrency(phase.amount) }}</span>
+                  <span class="text-sm font-bold text-brand-brown">{{ formatCurrency(phase.amount) }}</span>
                 </div>
                 <div v-if="phase.deliverables?.length" class="flex flex-wrap gap-1 mb-2">
                   <span
@@ -264,7 +264,7 @@
 
             <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between text-sm">
               <span class="text-gray-500 font-bold">{{ t.clientFinalization.total }}</span>
-              <span class="font-bold text-[#7C4728]">{{ formatCurrency(currentBid.bidAmount) }}</span>
+              <span class="font-bold text-brand-brown">{{ formatCurrency(currentBid.bidAmount) }}</span>
             </div>
           </div>
 
@@ -277,7 +277,7 @@
               <div
                 v-for="portfolio in currentBid.portfolioReferences"
                 :key="portfolio.id"
-                class="bg-gray-50 rounded-2xl p-4 border border-gray-200 hover:border-[#C5A17A] transition"
+                class="bg-gray-50 rounded-2xl p-4 border border-gray-200 hover:border-brand-gold transition"
               >
                 <div v-if="portfolio.coverImage" class="aspect-video bg-gray-200 rounded-xl mb-3 overflow-hidden">
                   <img :src="portfolio.coverImage" :alt="portfolio.projectName" class="w-full h-full object-cover" />
@@ -292,7 +292,7 @@
               <button
                 v-if="currentBid.status === 'PENDING'"
                 @click="handleAcceptBid"
-                class="flex-1 px-6 py-4 bg-[#7C4728] text-white rounded-full font-bold hover:bg-black transition shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                class="flex-1 px-6 py-4 bg-brand-brown text-white rounded-full font-bold hover:bg-black transition shadow-md hover:shadow-lg flex items-center justify-center gap-2"
               >
                 <Check :size="20" />
                 {{ t.bidDetail.acceptProposal }}

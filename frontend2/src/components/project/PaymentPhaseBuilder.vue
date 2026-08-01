@@ -37,7 +37,7 @@
           <button
             type="button"
             @click="addPhase"
-            class="flex items-center gap-1 px-3 py-1.5 bg-[#7C4728] text-white rounded-full text-xs font-bold hover:bg-black transition"
+            class="flex items-center gap-1 px-3 py-1.5 bg-brand-brown text-white rounded-full text-xs font-bold hover:bg-black transition"
           >
             {{ t.paymentPhaseBuilder.addPhase }}
           </button>
@@ -67,7 +67,7 @@
             :class="[
               'rounded-2xl border-2 p-4 transition-all cursor-pointer',
               activePhaseIndex === index
-                ? 'border-[#7C4728] bg-[#FDF6EE]/50'
+                ? 'border-brand-brown bg-brand-cream/50'
                 : 'border-gray-200 bg-white hover:border-gray-300'
             ]"
             @click="activePhaseIndex = index"
@@ -76,7 +76,7 @@
           >
             <!-- Phase header -->
             <div class="flex items-center gap-2 mb-3">
-              <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-[#7C4728] text-white whitespace-nowrap">
+              <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-brand-brown text-white whitespace-nowrap">
                 {{ t.paymentPhaseBuilder.phase }} {{ phase.phaseNumber }}
               </span>
               <input
@@ -84,7 +84,7 @@
                 type="text"
                 @click.stop
                 :placeholder="`${t.paymentPhaseBuilder.phase} ${phase.phaseNumber} ${t.paymentPhaseBuilder.phaseTitlePlaceholder}`"
-                class="flex-1 text-sm font-bold bg-transparent border-b border-gray-200 focus:border-[#7C4728] outline-none pb-0.5"
+                class="flex-1 text-sm font-bold bg-transparent border-b border-gray-200 focus:border-brand-brown outline-none pb-0.5"
               />
               <button
                 v-if="phases.length > 1"
@@ -106,7 +106,7 @@
                   min="0"
                   @click.stop
                   placeholder="0"
-                  class="w-full mt-1 px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:border-[#7C4728] outline-none"
+                  class="w-full mt-1 px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:border-brand-brown outline-none"
                 />
               </div>
               <div>
@@ -118,7 +118,7 @@
                   max="10"
                   @click.stop
                   placeholder="0"
-                  class="w-full mt-1 px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:border-[#7C4728] outline-none"
+                  class="w-full mt-1 px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:border-brand-brown outline-none"
                 />
               </div>
               <div>
@@ -129,7 +129,7 @@
                   min="1"
                   @click.stop
                   placeholder="0"
-                  class="w-full mt-1 px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:border-[#7C4728] outline-none"
+                  class="w-full mt-1 px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:border-brand-brown outline-none"
                 />
               </div>
             </div>
@@ -137,7 +137,7 @@
             <!-- Drop zone + assigned deliverables -->
             <div
               class="min-h-[48px] border border-dashed border-gray-300 rounded-xl p-2 flex flex-wrap gap-1.5 transition-colors"
-              :class="dragOverPhaseIndex === index ? 'bg-[#F5E6D3]/50 border-[#C5A17A]' : ''"
+              :class="dragOverPhaseIndex === index ? 'bg-brand-tan/50 border-brand-gold' : ''"
             >
               <span v-if="phase.deliverables.length === 0" class="text-xs text-gray-400 self-center px-1">
                 {{ t.paymentPhaseBuilder.dropZoneHint }}
@@ -145,13 +145,13 @@
               <span
                 v-for="d in phase.deliverables"
                 :key="d"
-                class="inline-flex items-center gap-1 px-2 py-1 bg-[#F5E6D3] text-[#7C4728] rounded-full text-xs font-medium"
+                class="inline-flex items-center gap-1 px-2 py-1 bg-brand-tan text-brand-brown rounded-full text-xs font-medium"
               >
                 {{ getLabelForValue(d) }}
                 <button
                   type="button"
                   @click.stop="removeDeliverable(index, d)"
-                  class="text-[#C5A17A] hover:text-red-500 leading-none"
+                  class="text-brand-gold hover:text-red-500 leading-none"
                 >
                   ×
                 </button>
@@ -294,7 +294,7 @@ const formatCurrency = value => {
 const chipClasses = value => {
   const base = 'px-3 py-1 rounded-full text-xs font-medium border transition-all cursor-pointer'
   if (isAssigned(value)) return `${base} bg-gray-100 text-gray-400 border-gray-200 opacity-50 cursor-not-allowed`
-  return `${base} bg-[#F5E6D3] text-[#7C4728] border-[#C5A17A] hover:bg-[#7C4728] hover:text-white`
+  return `${base} bg-brand-tan text-brand-brown border-brand-gold hover:bg-brand-brown hover:text-white`
 }
 
 const onDragStart = (event, value) => {

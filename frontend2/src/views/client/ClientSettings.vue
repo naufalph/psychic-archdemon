@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-full bg-[#F4F5F7] px-6 py-8">
+  <div class="min-h-full bg-surface-alt px-6 py-8">
     <div class="max-w-lg mx-auto space-y-4">
       <div class="mb-6">
         <p class="text-xs text-gray-400 uppercase font-bold tracking-wide mb-1">Settings</p>
@@ -13,7 +13,7 @@
           <RouterLink to="/client/profile" class="flex items-center justify-between group">
             <div class="flex items-center gap-3">
               <div
-                class="w-9 h-9 rounded-full bg-[#1C1C1C] text-white flex items-center justify-center text-xs font-bold"
+                class="w-9 h-9 rounded-full bg-ink-700 text-white flex items-center justify-center text-xs font-bold"
               >
                 {{ userInitials }}
               </div>
@@ -42,14 +42,14 @@
           <button
             @click="setLocale('en')"
             class="flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
-            :class="locale === 'en' ? 'bg-[#1C1C1C] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+            :class="locale === 'en' ? 'bg-ink-700 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
           >
             English
           </button>
           <button
             @click="setLocale('id')"
             class="flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
-            :class="locale === 'id' ? 'bg-[#1C1C1C] text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+            :class="locale === 'id' ? 'bg-ink-700 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
           >
             Indonesia
           </button>
@@ -69,7 +69,7 @@
             <HardHat v-else :size="15" />
             <span>{{ isSwitching ? 'Switching…' : 'Architect' }}</span>
           </button>
-          <div class="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg bg-[#1C1C1C] text-white text-sm font-medium">
+          <div class="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg bg-ink-700 text-white text-sm font-medium">
             <UserCog :size="15" />
             <span>Client</span>
           </div>

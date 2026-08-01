@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-[#F4F5F7] flex items-center justify-center p-6">
+  <div class="min-h-screen bg-surface-alt flex items-center justify-center p-6">
     <div
       class="absolute inset-0 opacity-[0.03] pointer-events-none"
       style="
@@ -16,7 +16,7 @@
 
         <div v-if="isLoading" class="py-12">
           <div
-            class="w-16 h-16 border-4 border-[#C5A17A] border-t-transparent rounded-full animate-spin mx-auto mb-6"
+            class="w-16 h-16 border-4 border-brand-gold border-t-transparent rounded-full animate-spin mx-auto mb-6"
           ></div>
           <h2 class="text-2xl font-bold text-black mb-3">
             {{ t.auth?.verifyEmail?.verifying || 'Verifying your email...' }}
@@ -55,7 +55,7 @@
           </p>
 
           <router-link to="/login">
-            <BaseButton :fullWidth="true" class="bg-[#C5A17A] hover:bg-[#B39069] text-white border-none">
+            <BaseButton :fullWidth="true" class="bg-brand-gold hover:bg-brand-gold-light text-white border-none">
               {{ t.auth?.verifyEmail?.continueToLogin || 'Continue to Sign In' }}
             </BaseButton>
           </router-link>
@@ -87,7 +87,7 @@
                 @click="handleResendVerification"
                 :fullWidth="true"
                 :isLoading="resendLoading"
-                class="bg-[#7C4728] hover:bg-black text-white border-none"
+                class="bg-brand-brown hover:bg-black text-white border-none"
               >
                 {{ t.auth?.verifyEmail?.resend || 'Resend Verification Email' }}
               </BaseButton>
