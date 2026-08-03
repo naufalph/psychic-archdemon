@@ -24,13 +24,18 @@
                 : 'bg-black/5 text-black/60 hover:bg-black/10'
             ]"
           >
-            {{ tag }}
+            {{ t.expertiseTagLabels?.[tag] || tag }}
           </button>
         </div>
 
         <div v-if="selectedTags.length > 0" class="mt-6 pt-6 border-t border-black/10">
           <p class="text-sm text-black/60">
-            Selected {{ selectedTags.length }} {{ selectedTags.length === 1 ? 'expertise' : 'expertises' }}
+            {{
+              (selectedTags.length === 1
+                ? t.onboarding.expertise.selected
+                : t.onboarding.expertise.selectedPlural
+              ).replace('{n}', selectedTags.length)
+            }}
           </p>
         </div>
       </div>
@@ -49,7 +54,7 @@
               : 'bg-black/10 text-black/30 cursor-not-allowed'
           ]"
         >
-          Continue
+          {{ t.onboarding.expertise.continue }}
         </button>
       </div>
     </div>

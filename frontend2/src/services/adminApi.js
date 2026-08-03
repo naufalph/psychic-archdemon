@@ -15,6 +15,7 @@ api.interceptors.request.use(config => {
 // Projects
 export const adminProjectsAPI = {
   getAll: status => api.get('/rmtr/admin/projects', { params: status ? { status } : {} }),
+  getDetail: projectId => api.get(`/rmtr/admin/projects/${projectId}`),
   forceCancel: projectId => api.post(`/rmtr/admin/projects/${projectId}/force-cancel`),
   overrideNegotiation: projectId =>
     api.post(`/rmtr/admin/projects/${projectId}/override-negotiation`)

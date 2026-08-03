@@ -66,7 +66,7 @@
               : 'bg-black/10 text-black/30 cursor-not-allowed'
           ]"
         >
-          Continue
+          {{ t.onboarding.identity.continue }}
         </button>
       </div>
     </div>

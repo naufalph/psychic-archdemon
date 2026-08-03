@@ -67,6 +67,20 @@
                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
                 />
               </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >Number of Floors<span class="text-red-500">*</span></label
+                >
+                <input
+                  v-model.number="formData.numberOfFloors"
+                  required
+                  type="number"
+                  min="1"
+                  placeholder="e.g., 2"
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#7C4728] focus:border-[#7C4728] outline-none"
+                />
+              </div>
             </div>
 
             <div>
@@ -290,6 +304,7 @@ const formData = ref({
   title: '',
   location: '',
   lotSize: null,
+  numberOfFloors: 1,
   buildingType: 'RESIDENTIAL',
   description: '',
   constructionBudget: '',
@@ -362,6 +377,7 @@ const handleSubmit = async () => {
       designBudgetMax: formData.value.designBudget.max,
       buildingFunction: formData.value.buildingType,
       estimatedBuildArea: formData.value.lotSize,
+      numberOfFloors: formData.value.numberOfFloors,
       scopeOfWork: formData.value.description,
       deliverables: formData.value.deliverables,
       startDateType: formData.value.startDateType,

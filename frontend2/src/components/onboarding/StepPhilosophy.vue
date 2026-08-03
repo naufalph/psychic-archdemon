@@ -22,7 +22,9 @@
             :placeholder="t.onboarding.philosophy.placeholder"
             class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all resize-none"
           />
-          <p class="text-xs text-black/40">{{ philosophy.length }} characters</p>
+          <p class="text-xs text-black/40">
+            {{ t.onboarding.philosophy.charactersCount.replace('{n}', philosophy.length) }}
+          </p>
         </div>
 
         <div v-if="store.error" class="p-3 bg-red-50 border border-red-200 rounded-2xl text-sm text-red-600">
@@ -44,7 +46,7 @@
               : 'bg-black/10 text-black/30 cursor-not-allowed'
           ]"
         >
-          Continue
+          {{ t.onboarding.philosophy.continue }}
         </button>
       </div>
     </div>

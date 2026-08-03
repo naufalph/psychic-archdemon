@@ -233,6 +233,7 @@
             experienceRange: store.profileExperience,
             philosophy: store.profilePhilosophy,
             expertise: store.profileExpertise,
+            fullnameKtp: store.profileFullnameKtp,
             ktpNum: store.profileKtpNum,
             npwp: store.profileNpwp
           }"

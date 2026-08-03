@@ -329,7 +329,9 @@ export default {
       ktpNum: 'Nomor KTP',
       ktpNumPlaceholder: 'Masukkan nomor KTP 16 digit',
       npwp: 'NPWP',
-      npwpPlaceholder: 'Masukkan NPWP 15-16 digit'
+      npwpPlaceholder: 'Masukkan NPWP 15-16 digit',
+      fullnameKtp: 'Nama Lengkap (sesuai KTP)',
+      fullnameKtpPlaceholder: 'contoh: Budi Santoso'
     },
     validation: {
       nameRequired: 'Nama praktik wajib diisi',
@@ -340,6 +342,7 @@ export default {
       philosophyRequired: 'Filosofi desain wajib diisi',
       philosophyMinLength: 'Filosofi minimal 50 karakter',
       expertiseRequired: 'Minimal satu bidang keahlian wajib dipilih',
+      fullnameKtpRequired: 'Nama lengkap sesuai KTP wajib diisi',
       ktpNumRequired: 'Nomor KTP wajib diisi',
       ktpNumInvalid: 'Nomor KTP harus tepat 16 digit',
       npwpRequired: 'NPWP wajib diisi',
@@ -472,6 +475,9 @@ export default {
     identityIncompleteAction: 'Lengkapi Profil',
     identityIncompleteError:
       'Harap lengkapi informasi identitas (KTP, NPWP, nama lengkap sesuai KTP, dan verifikasi OTP nomor HP) di halaman Profil sebelum mengirim penawaran. Draft Anda tetap tersimpan.',
+    identityIncompleteMissingLabel: 'Yang belum lengkap:',
+    identityIncompleteDismiss: 'Nanti Saja',
+    savingDraft: 'Menyimpan draft...',
     completeProfileLink: 'Lengkapi Profil →',
     deliverableCategories: {
       siteAnalysis: 'Analisis Lokasi & Perencanaan',
@@ -824,6 +830,7 @@ export default {
     designBudgetRange: 'Rentang Anggaran Desain',
     buildArea: 'Luas Bangunan',
     floors: 'Lantai',
+    visualReferences: 'Referensi Visual',
     scopeOfWork: 'Lingkup Pekerjaan',
     deliverables: 'Deliverable',
     category: 'Kategori',
@@ -1109,6 +1116,24 @@ export default {
     noPending: 'Tidak ada proyek menunggu persetujuan',
     submittedOn: 'Dikirim',
     reject: 'Tolak',
+    approve: 'Setujui',
+    viewDetails: 'Lihat Detail'
+  },
+  superuserProjectDetail: {
+    title: 'Detail Proyek',
+    clientDetails: 'Detail Klien',
+    clientDetailsHint:
+      'Gunakan ini untuk menelepon klien dan memverifikasi proyek sebelum menyetujuinya.',
+    name: 'Nama',
+    email: 'Email',
+    phone: 'Nomor Telepon',
+    phoneVerified: 'Terverifikasi',
+    phoneUnverified: 'Belum Terverifikasi',
+    ktp: 'Nomor KTP',
+    ktpVerified: 'Terverifikasi',
+    ktpUnverified: 'Belum Terverifikasi',
+    notProvided: 'Belum diisi',
+    reject: 'Tolak',
     approve: 'Setujui'
   },
   userManagement: {
@@ -1188,6 +1213,7 @@ export default {
       subtitle: 'Bagikan prinsip desain dan pendekatan Anda terhadap arsitektur.',
       label: 'Filosofi Desain',
       placeholder: 'Jelaskan filosofi arsitektur dan pendekatan desain Anda...',
+      charactersCount: '{n} karakter',
       back: 'Kembali',
       continue: 'Lanjut'
     },
@@ -1280,5 +1306,39 @@ export default {
       dashboard: 'Ke Dashboard',
       redirecting: 'atau tunggu {n} detik untuk pengalihan otomatis'
     }
+  },
+  projectStatus: {
+    PENDING_APPROVAL: 'Menunggu Validasi',
+    OPEN: 'Terbuka',
+    BIDDING_CLOSED: 'Penawaran Ditutup',
+    NEGOTIATION: 'Finalisasi',
+    IN_PROGRESS: 'Sedang Berjalan',
+    COMPLETED: 'Selesai',
+    CANCELLED: 'Dibatalkan',
+    REJECTED: 'Ditolak',
+    CLOSED: 'Ditutup',
+    AWARDED: 'Dimenangkan',
+    PENDING: 'Menunggu Validasi'
+  },
+  bidStatus: {
+    DRAFT: 'Draft',
+    PENDING: 'Menunggu',
+    ACCEPTED: 'Diterima',
+    REJECTED: 'Ditolak',
+    WITHDRAWN: 'Ditarik'
+  },
+  expertiseTagLabels: {
+    Residential: 'Hunian',
+    Commercial: 'Komersial',
+    Renovation: 'Renovasi',
+    'Sustainable Design': 'Desain Berkelanjutan',
+    'Urban Planning': 'Perencanaan Kota',
+    'Interior Design': 'Desain Interior',
+    'Landscape Architecture': 'Arsitektur Lanskap',
+    'Historic Preservation': 'Pelestarian Bersejarah',
+    Institutional: 'Institusional',
+    Industrial: 'Industri',
+    'Mixed-Use': 'Fungsi Campuran',
+    Hospitality: 'Hospitalitas'
   }
 }

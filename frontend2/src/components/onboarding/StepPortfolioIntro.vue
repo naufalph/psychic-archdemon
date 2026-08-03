@@ -114,7 +114,7 @@
             @click="handleNext"
             class="px-8 py-3 bg-brand-brown text-white rounded-full font-semibold hover:bg-brand-brown-dark transition-all hover:scale-105"
           >
-            Continue
+            {{ t.onboarding.portfolioIntro.continue }}
           </button>
         </div>
       </div>

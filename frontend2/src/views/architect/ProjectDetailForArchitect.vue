@@ -49,6 +49,29 @@
             </div>
           </div>
 
+          <div v-if="imageFiles.length > 0" class="mb-8">
+            <h2 class="text-lg font-bold text-black mb-3">{{ t.projectDetailArchitect.visualReferences }}</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div
+                v-for="file in imageFiles"
+                :key="file.id"
+                class="relative aspect-square rounded-2xl overflow-hidden cursor-pointer group"
+                @click="window.open(file.filePath, '_blank')"
+              >
+                <img
+                  :src="file.filePath"
+                  :alt="file.fileName"
+                  class="w-full h-full object-cover transition group-hover:scale-105"
+                />
+                <div
+                  class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition flex items-center justify-center"
+                >
+                  <ExternalLink :size="24" class="text-white opacity-0 group-hover:opacity-100 transition" />
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="mb-8">
             <h2 class="text-lg font-bold text-black mb-3">{{ t.projectDetailArchitect.scopeOfWork }}</h2>
             <p class="text-gray-700 leading-relaxed">{{ project.scopeOfWork }}</p>
@@ -56,9 +79,13 @@
 
           <div v-if="project.deliverables && project.deliverables.length > 0" class="mb-8">
             <h2 class="text-lg font-bold text-black mb-3">{{ t.projectDetailArchitect.deliverables }}</h2>
-            <div class="space-y-4">
-              <div v-for="group in groupedDeliverables" :key="group.categoryKey" class="bg-gray-50 rounded-2xl p-5">
-                <h4 class="font-bold text-sm text-gray-700 uppercase mb-3">
+            <div class="flex flex-wrap gap-3">
+              <div
+                v-for="group in groupedDeliverables"
+                :key="group.categoryKey"
+                class="bg-gray-50 rounded-2xl px-4 py-3"
+              >
+                <h4 class="font-bold text-xs text-gray-700 uppercase mb-2">
                   {{ t.proposalCreate.deliverableCategories[group.categoryKey] }}
                 </h4>
                 <div class="flex flex-wrap gap-2">
@@ -201,29 +228,6 @@
             <Send :size="24" />
             {{ t.projectDetailArchitect.noBidYet }}
           </button>
-        </div>
-
-        <div v-if="imageFiles.length > 0" class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
-          <h2 class="text-2xl font-bold text-black mb-6">Visual References</h2>
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-            <div
-              v-for="file in imageFiles"
-              :key="file.id"
-              class="relative aspect-square rounded-2xl overflow-hidden cursor-pointer group"
-              @click="window.open(file.filePath, '_blank')"
-            >
-              <img
-                :src="file.filePath"
-                :alt="file.fileName"
-                class="w-full h-full object-cover transition group-hover:scale-105"
-              />
-              <div
-                class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition flex items-center justify-center"
-              >
-                <ExternalLink :size="24" class="text-white opacity-0 group-hover:opacity-100 transition" />
-              </div>
-            </div>
-          </div>
         </div>
 
         <div v-if="documentFiles.length > 0" class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">

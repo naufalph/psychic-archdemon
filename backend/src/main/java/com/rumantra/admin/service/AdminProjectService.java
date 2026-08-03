@@ -8,14 +8,17 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.rumantra.admin.dto.AdminProjectDetailResponse;
 import com.rumantra.bidding.domain.Bid;
 import com.rumantra.bidding.domain.BidPaymentPhase;
 import com.rumantra.bidding.domain.BidStatus;
 import com.rumantra.bidding.repository.BidPaymentPhaseRepository;
 import com.rumantra.bidding.repository.BidRepository;
+import com.rumantra.client.domain.Client;
 import com.rumantra.client.domain.Project;
 import com.rumantra.client.domain.ProjectStatus;
 import com.rumantra.client.dto.ProjectResponse;
+import com.rumantra.client.repository.ClientRepository;
 import com.rumantra.client.repository.ProjectRepository;
 import com.rumantra.client.service.ProjectService;
 import com.rumantra.project.domain.ProjectPhase;
@@ -32,6 +35,7 @@ public class AdminProjectService {
 
   private final ProjectService projectService;
   private final ProjectRepository projectRepository;
+  private final ClientRepository clientRepository;
   private final BidRepository bidRepository;
   private final BidPaymentPhaseRepository bidPaymentPhaseRepository;
   private final ProjectPhaseRepository projectPhaseRepository;
@@ -41,6 +45,36 @@ public class AdminProjectService {
     List<ProjectResponse> all = projectService.getAllProjects();
     if (status == null) return all;
     return all.stream().filter(p -> p.getStatus() == status).collect(Collectors.toList());
+  }
+
+  @Transactional(readOnly = true)
+  public AdminProjectDetailResponse getProjectDetail(Long projectId) {
+    ProjectResponse project =
+        projectService.getAllProjects().stream()
+            .filter(p -> p.getId().equals(projectId))
+            .findFirst()
+            .orElseThrow(() -> new ResourceNotFoundException("Project not found: " + projectId));
+
+    Client client =
+        clientRepository
+            .findById(project.getClientId())
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Client not found: " + project.getClientId()));
+
+    return AdminProjectDetailResponse.builder()
+        .project(project)
+        .clientName(
+            String.join(
+                    " ",
+                    client.getUser().getFirstName() != null ? client.getUser().getFirstName() : "",
+                    client.getUser().getLastName() != null ? client.getUser().getLastName() : "")
+                .trim())
+        .clientEmail(client.getUser().getEmail())
+        .clientPhone(client.getPhoneNumber())
+        .clientPhoneVerified(client.isPhoneNumVerified())
+        .clientKtpNum(client.getKtpNum())
+        .clientKtpVerified(client.isKtpVerified())
+        .build();
   }
 
   @Transactional

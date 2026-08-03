@@ -201,6 +201,11 @@ const routes = [
         component: () => import('@/views/superuser/AllProjectsAdmin.vue')
       },
       {
+        path: 'projects/:id',
+        name: 'SuperuserProjectDetail',
+        component: () => import('@/views/superuser/SuperuserProjectDetail.vue')
+      },
+      {
         path: 'disputes',
         name: 'DisputeManagement',
         component: () => import('@/views/superuser/DisputeManagement.vue')

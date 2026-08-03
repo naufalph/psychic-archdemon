@@ -10,18 +10,8 @@
         :alt="bid.projectTitle"
         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
       />
-      <span
-        :class="bidBadgeClass"
-        class="absolute top-3 right-3 px-2.5 py-1 rounded-full text-xs font-bold tracking-wider uppercase"
-      >
-        {{ bid.status }}
-      </span>
-      <span
-        :class="projectStatusBadgeClass"
-        class="absolute bottom-3 left-3 px-2.5 py-1 rounded-full text-xs font-bold tracking-wider"
-      >
-        {{ bid.projectStatus }}
-      </span>
+      <BidStatusBadge :status="bid.status" class="absolute top-3 right-3" />
+      <ProjectStatusBadge :status="bid.projectStatus" class="absolute bottom-3 left-3" />
     </div>
 
     <div class="p-5">
@@ -59,6 +49,8 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { MapPin } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
+import BidStatusBadge from '@/components/project/BidStatusBadge.vue'
+import ProjectStatusBadge from '@/components/project/ProjectStatusBadge.vue'
 
 const props = defineProps({
   bid: { type: Object, required: true }
@@ -68,38 +60,6 @@ const { t } = useI18n()
 const router = useRouter()
 
 const coverImage = computed(() => props.bid.projectCoverImagePath || props.bid.facadeImages?.[0]?.imageUrl || null)
-
-const bidBadgeClass = computed(() => {
-  switch (props.bid.status) {
-    case 'PENDING':
-      return 'bg-yellow-400 text-white'
-    case 'ACCEPTED':
-      return 'bg-green-500 text-white'
-    case 'REJECTED':
-      return 'bg-red-500 text-white'
-    case 'WITHDRAWN':
-      return 'bg-gray-400 text-white'
-    default:
-      return 'bg-gray-400 text-white'
-  }
-})
-
-const projectStatusBadgeClass = computed(() => {
-  switch (props.bid.projectStatus) {
-    case 'OPEN':
-      return 'bg-green-500 text-white'
-    case 'NEGOTIATION':
-      return 'bg-amber-400 text-white'
-    case 'IN_PROGRESS':
-      return 'bg-blue-500 text-white'
-    case 'AWARDED':
-      return 'bg-blue-600 text-white'
-    case 'CLOSED':
-      return 'bg-gray-500 text-white'
-    default:
-      return 'bg-gray-400 text-white'
-  }
-})
 
 const ctaLabel = computed(() => {
   if (props.bid.status === 'ACCEPTED' && props.bid.projectStatus === 'NEGOTIATION') return 'Finalize →'

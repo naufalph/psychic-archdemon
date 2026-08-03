@@ -33,7 +33,7 @@
           </div>
           <div class="flex items-center gap-3">
             <span
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 whitespace-nowrap"
             >
               <span class="w-1.5 h-1.5 rounded-full bg-blue-500" />
               {{ t.activeProjectDashboard.inProgress }}
@@ -165,7 +165,7 @@
               </div>
               <div class="text-right">
                 <span
-                  class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-green-50 text-green-700"
+                  class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-green-50 text-green-700 whitespace-nowrap"
                 >
                   <span class="w-1.5 h-1.5 rounded-full bg-green-500" /> {{ t.activeProjectDashboard.paid }}
                 </span>
@@ -190,7 +190,7 @@
                 </div>
                 <div class="flex items-center gap-3">
                   <span
-                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700"
+                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 whitespace-nowrap"
                   >
                     <span class="w-1.5 h-1.5 rounded-full bg-amber-500" />
                     {{

@@ -6,6 +6,9 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useI18n } from '@/composables/useI18n'
+
+const { t } = useI18n()
 
 const props = defineProps({
   status: {
@@ -53,10 +56,12 @@ const statusConfig = {
   PENDING: { text: 'Pending Validation', classes: 'bg-yellow-100 text-yellow-700 border-yellow-200' }
 }
 
-const statusText = computed(() => statusConfig[props.status]?.text || props.status)
+const statusText = computed(
+  () => t.value.projectStatus?.[props.status] || statusConfig[props.status]?.text || props.status
+)
 
 const badgeClasses = computed(() => {
-  const baseClasses = 'inline-flex items-center px-4 py-1.5 rounded-full text-xs font-bold border'
+  const baseClasses = 'inline-flex items-center whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-bold border'
   const statusClasses = statusConfig[props.status]?.classes || 'bg-gray-100 text-gray-700'
   return `${baseClasses} ${statusClasses}`
 })

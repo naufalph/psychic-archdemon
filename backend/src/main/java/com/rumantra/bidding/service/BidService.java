@@ -121,7 +121,7 @@ public class BidService {
     }
 
     validateArchitectIdentity(bid.getArchitect());
-    validateBidComplete(bidId);
+    bidDetailService.validateForSubmission(bid);
 
     bidQuotaService.consumeToken(bid.getArchitect().getId());
 
@@ -241,12 +241,6 @@ public class BidService {
     }
 
     return mapToResponse(bid);
-  }
-
-  private void validateBidComplete(Long bidId) {
-    if (!bidDetailService.hasRequiredDetails(bidId)) {
-      throw new RuntimeException("Concept statement is required before submission");
-    }
   }
 
   @Transactional(readOnly = true)

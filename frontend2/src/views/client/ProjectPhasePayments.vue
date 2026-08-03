@@ -68,7 +68,7 @@
             </div>
             <div class="flex items-center gap-3">
               <span
-                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold"
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap"
                 :class="statusBadgeClass(phase.paymentStatus)"
               >
                 <span class="w-1.5 h-1.5 rounded-full" :class="statusDotClass(phase.paymentStatus)" />

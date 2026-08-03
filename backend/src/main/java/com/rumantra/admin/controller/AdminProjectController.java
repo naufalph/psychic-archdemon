@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.rumantra.admin.dto.AdminProjectDetailResponse;
 import com.rumantra.admin.service.AdminProjectService;
 import com.rumantra.client.domain.ProjectStatus;
 import com.rumantra.client.dto.ProjectResponse;
@@ -25,6 +26,12 @@ public class AdminProjectController {
   public ResponseEntity<ApiResponse<List<ProjectResponse>>> getProjects(
       @RequestParam(required = false) ProjectStatus status) {
     return ResponseEntity.ok(ApiResponse.success(adminProjectService.getProjects(status)));
+  }
+
+  @GetMapping("/{projectId}")
+  public ResponseEntity<ApiResponse<AdminProjectDetailResponse>> getProjectDetail(
+      @PathVariable Long projectId) {
+    return ResponseEntity.ok(ApiResponse.success(adminProjectService.getProjectDetail(projectId)));
   }
 
   @PostMapping("/{projectId}/force-cancel")

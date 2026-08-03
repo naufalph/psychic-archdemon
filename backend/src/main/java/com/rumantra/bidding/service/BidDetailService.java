@@ -35,18 +35,57 @@ public class BidDetailService {
         bidDetailRepository.findByBidId(bid.getId()).orElse(BidDetail.builder().bid(bid).build());
 
     if (request.getConceptStatement() != null) {
-      validateConceptStatement(request.getConceptStatement());
       detail.setConceptStatement(request.getConceptStatement());
     }
 
     detail = bidDetailRepository.save(detail);
 
     if (request.getPhases() != null) {
-      validatePhases(bid, request.getPhases());
       savePhases(bid, request.getPhases());
     }
 
     return detail;
+  }
+
+  public void validateForSubmission(Bid bid) {
+    BidDetail detail =
+        bidDetailRepository
+            .findByBidId(bid.getId())
+            .orElseThrow(
+                () ->
+                    new IllegalArgumentException(
+                        "Concept statement is required before submission"));
+    validateConceptStatement(detail.getConceptStatement());
+    if (detail.getConceptStatement() == null || detail.getConceptStatement().trim().isEmpty()) {
+      throw new IllegalArgumentException("Concept statement is required before submission");
+    }
+
+    List<BidPaymentPhase> phases =
+        bidPaymentPhaseRepository.findByBidIdOrderByPhaseNumber(bid.getId());
+    if (phases.isEmpty()) {
+      throw new IllegalArgumentException(
+          "At least one payment phase is required before submission");
+    }
+
+    BigDecimal total =
+        phases.stream()
+            .map(p -> p.getAmount() != null ? p.getAmount() : BigDecimal.ZERO)
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+    if (total.compareTo(bid.getBidAmount()) != 0) {
+      throw new IllegalArgumentException(
+          "Sum of phase amounts ("
+              + total
+              + ") must equal bid amount ("
+              + bid.getBidAmount()
+              + ")");
+    }
+
+    boolean anyMissingDays =
+        phases.stream().anyMatch(p -> p.getEstimatedDays() == null || p.getEstimatedDays() <= 0);
+    if (anyMissingDays) {
+      throw new IllegalArgumentException("Each phase must have a positive estimated_days value");
+    }
   }
 
   public BidDetailResponse getDetailResponse(Long bidId) {
@@ -74,32 +113,6 @@ public class BidDetailService {
     }
   }
 
-  private void validatePhases(Bid bid, List<BidPaymentPhaseRequest> phases) {
-    if (phases.isEmpty()) {
-      throw new IllegalArgumentException("At least one payment phase is required");
-    }
-
-    BigDecimal total =
-        phases.stream()
-            .map(p -> p.getAmount() != null ? p.getAmount() : BigDecimal.ZERO)
-            .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-    if (total.compareTo(bid.getBidAmount()) != 0) {
-      throw new IllegalArgumentException(
-          "Sum of phase amounts ("
-              + total
-              + ") must equal bid amount ("
-              + bid.getBidAmount()
-              + ")");
-    }
-
-    boolean anyMissingDays =
-        phases.stream().anyMatch(p -> p.getEstimatedDays() == null || p.getEstimatedDays() <= 0);
-    if (anyMissingDays) {
-      throw new IllegalArgumentException("Each phase must have a positive estimated_days value");
-    }
-  }
-
   private void savePhases(Bid bid, List<BidPaymentPhaseRequest> phases) {
     bidPaymentPhaseRepository.deleteByBidId(bid.getId());
 
@@ -124,8 +137,10 @@ public class BidDetailService {
         phases.stream()
             .mapToInt(p -> p.getEstimatedDays() != null ? p.getEstimatedDays() : 0)
             .sum();
-    bid.setProposedTimelineDays(totalDays);
-    bidRepository.save(bid);
+    if (totalDays > 0) {
+      bid.setProposedTimelineDays(totalDays);
+      bidRepository.save(bid);
+    }
   }
 
   private List<BidPaymentPhaseResponse> getPhaseResponses(Long bidId) {
@@ -146,14 +161,5 @@ public class BidDetailService {
                     .displayOrder(p.getDisplayOrder())
                     .build())
         .collect(Collectors.toList());
-  }
-
-  public boolean hasRequiredDetails(Long bidId) {
-    return bidDetailRepository
-        .findByBidId(bidId)
-        .map(
-            detail ->
-                detail.getConceptStatement() != null && !detail.getConceptStatement().isEmpty())
-        .orElse(false);
   }
 }

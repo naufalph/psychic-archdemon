@@ -82,13 +82,27 @@
                 : 'bg-black/5 text-black/60 hover:bg-black/10'
             ]"
           >
-            {{ tag }}
+            {{ t.expertiseTagLabels?.[tag] || tag }}
           </button>
         </div>
         <p v-if="formData.expertise.length > 0" class="text-xs text-black/60">
           Selected {{ formData.expertise.length }} {{ formData.expertise.length === 1 ? 'expertise' : 'expertises' }}
         </p>
         <p v-if="errors.expertise" class="text-xs text-red-600">{{ errors.expertise }}</p>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-sm font-semibold text-black/70 tracking-tight">
+          {{ t.profile.form.fullnameKtp }}
+        </label>
+        <input
+          v-model="formData.fullnameKtp"
+          type="text"
+          :placeholder="t.profile.form.fullnameKtpPlaceholder"
+          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
+          :class="{ 'border-red-300': errors.fullnameKtp }"
+        />
+        <p v-if="errors.fullnameKtp" class="text-xs text-red-600">{{ errors.fullnameKtp }}</p>
       </div>
 
       <div class="space-y-2">
@@ -131,7 +145,7 @@
     <BaseAlert v-if="error" variant="error">{{ error }}</BaseAlert>
 
     <BaseAlert v-if="hasIncompleteIdentity" variant="warning">
-      Lengkapi KTP dan NPWP untuk dapat mengajukan penawaran pada proyek.
+      Lengkapi Nama Lengkap sesuai KTP, KTP, dan NPWP untuk dapat mengajukan penawaran pada proyek.
     </BaseAlert>
 
     <div class="flex justify-end items-center gap-4">
@@ -181,6 +195,7 @@ const props = defineProps({
       experienceRange: '',
       philosophy: '',
       expertise: [],
+      fullnameKtp: '',
       ktpNum: '',
       npwp: ''
     })
@@ -205,6 +220,7 @@ const formData = ref({
   experienceRange: props.initialData.experienceRange || '',
   philosophy: props.initialData.philosophy || '',
   expertise: [...(props.initialData.expertise || [])],
+  fullnameKtp: props.initialData.fullnameKtp || '',
   ktpNum: props.initialData.ktpNum || '',
   npwp: props.initialData.npwp || ''
 })
@@ -215,6 +231,7 @@ const errors = ref({
   experienceRange: '',
   philosophy: '',
   expertise: '',
+  fullnameKtp: '',
   ktpNum: '',
   npwp: ''
 })
@@ -229,6 +246,7 @@ watch(
         experienceRange: newData.experienceRange || '',
         philosophy: newData.philosophy || '',
         expertise: [...(newData.expertise || [])],
+        fullnameKtp: newData.fullnameKtp || '',
         ktpNum: newData.ktpNum || '',
         npwp: newData.npwp || ''
       }
@@ -243,6 +261,7 @@ const validateForm = () => {
     experienceRange: '',
     philosophy: '',
     expertise: '',
+    fullnameKtp: '',
     ktpNum: '',
     npwp: ''
   }
@@ -250,52 +269,54 @@ const validateForm = () => {
   let isValid = true
 
   if (!formData.value.name.trim()) {
-    errors.value.name = t.profile.validation.nameRequired
+    errors.value.name = t.value.profile.validation.nameRequired
     isValid = false
   } else if (formData.value.name.trim().length < 2) {
-    errors.value.name = t.profile.validation.nameMinLength
+    errors.value.name = t.value.profile.validation.nameMinLength
     isValid = false
   }
 
   if (!formData.value.city.trim()) {
-    errors.value.city = t.profile.validation.cityRequired
+    errors.value.city = t.value.profile.validation.cityRequired
     isValid = false
   } else if (formData.value.city.trim().length < 2) {
-    errors.value.city = t.profile.validation.cityMinLength
+    errors.value.city = t.value.profile.validation.cityMinLength
     isValid = false
   }
 
   if (!formData.value.experienceRange) {
-    errors.value.experienceRange = t.profile.validation.experienceRequired
+    errors.value.experienceRange = t.value.profile.validation.experienceRequired
     isValid = false
   }
 
   if (!formData.value.philosophy.trim()) {
-    errors.value.philosophy = t.profile.validation.philosophyRequired
-    isValid = false
-  } else if (formData.value.philosophy.trim().length < 50) {
-    errors.value.philosophy = t.profile.validation.philosophyMinLength
+    errors.value.philosophy = t.value.profile.validation.philosophyRequired
     isValid = false
   }
 
   if (formData.value.expertise.length === 0) {
-    errors.value.expertise = t.profile.validation.expertiseRequired
+    errors.value.expertise = t.value.profile.validation.expertiseRequired
+    isValid = false
+  }
+
+  if (!formData.value.fullnameKtp.trim()) {
+    errors.value.fullnameKtp = t.value.profile.validation.fullnameKtpRequired
     isValid = false
   }
 
   if (!formData.value.ktpNum.trim()) {
-    errors.value.ktpNum = t.profile.validation.ktpNumRequired
+    errors.value.ktpNum = t.value.profile.validation.ktpNumRequired
     isValid = false
   } else if (!/^[0-9]{16}$/.test(formData.value.ktpNum.trim())) {
-    errors.value.ktpNum = t.profile.validation.ktpNumInvalid
+    errors.value.ktpNum = t.value.profile.validation.ktpNumInvalid
     isValid = false
   }
 
   if (!formData.value.npwp.trim()) {
-    errors.value.npwp = t.profile.validation.npwpRequired
+    errors.value.npwp = t.value.profile.validation.npwpRequired
     isValid = false
   } else if (!/^[0-9]{15,16}$/.test(formData.value.npwp.trim())) {
-    errors.value.npwp = t.profile.validation.npwpInvalid
+    errors.value.npwp = t.value.profile.validation.npwpInvalid
     isValid = false
   }
 
@@ -310,6 +331,7 @@ const hasDataChanged = computed(() => {
   if (initial.city !== current.city) return true
   if (initial.experienceRange !== current.experienceRange) return true
   if (initial.philosophy !== current.philosophy) return true
+  if (initial.fullnameKtp !== current.fullnameKtp) return true
   if (initial.ktpNum !== current.ktpNum) return true
   if (initial.npwp !== current.npwp) return true
 
@@ -333,7 +355,7 @@ const meetsValidationRequirements = computed(() => {
 })
 
 const hasIncompleteIdentity = computed(() => {
-  return !formData.value.ktpNum.trim() || !formData.value.npwp.trim()
+  return !formData.value.fullnameKtp.trim() || !formData.value.ktpNum.trim() || !formData.value.npwp.trim()
 })
 
 const isFormValid = computed(() => {

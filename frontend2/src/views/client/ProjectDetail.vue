@@ -46,6 +46,29 @@
             </div>
           </div>
 
+          <div v-if="imageFiles.length > 0" class="mb-8">
+            <h2 class="text-lg font-bold text-black mb-3">{{ t.projectDetailArchitect.visualReferences }}</h2>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+              <div
+                v-for="file in imageFiles"
+                :key="file.id"
+                class="relative aspect-square rounded-2xl overflow-hidden cursor-pointer group"
+                @click="window.open(file.filePath, '_blank')"
+              >
+                <img
+                  :src="file.filePath"
+                  :alt="file.fileName"
+                  class="w-full h-full object-cover transition group-hover:scale-105"
+                />
+                <div
+                  class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition flex items-center justify-center"
+                >
+                  <ExternalLink :size="24" class="text-white opacity-0 group-hover:opacity-100 transition" />
+                </div>
+              </div>
+            </div>
+          </div>
+
           <div class="mb-8">
             <h2 class="text-lg font-bold text-black mb-3">{{ t.clientDashboard.description }}</h2>
             <p class="text-gray-700 leading-relaxed">{{ currentProject.description }}</p>
@@ -198,7 +221,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/composables/useI18n'
-import { ArrowLeft, FileText, Plus, X } from 'lucide-vue-next'
+import { ArrowLeft, FileText, Plus, X, ExternalLink } from 'lucide-vue-next'
 import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
 import ProjectStatusBadge from '@/components/project/ProjectStatusBadge.vue'
@@ -216,6 +239,8 @@ const { currentProject, loading, error } = storeToRefs(projectsStore)
 const { projectBids } = storeToRefs(bidsStore)
 
 const compareIds = ref([])
+
+const imageFiles = computed(() => (currentProject.value?.files ?? []).filter(f => f.fileType?.startsWith('image/')))
 
 const DELIVERABLE_CATEGORIES = [
   { categoryKey: 'siteAnalysis', items: ['SITE_ANALYSIS', 'ZONING_STUDY'] },

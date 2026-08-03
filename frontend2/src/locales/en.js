@@ -325,7 +325,9 @@ export default {
       ktpNum: 'KTP Number',
       ktpNumPlaceholder: 'Enter 16-digit KTP number',
       npwp: 'NPWP',
-      npwpPlaceholder: 'Enter 15-16 digit NPWP'
+      npwpPlaceholder: 'Enter 15-16 digit NPWP',
+      fullnameKtp: 'Full Name (as in KTP)',
+      fullnameKtpPlaceholder: 'e.g., Budi Santoso'
     },
     validation: {
       nameRequired: 'Practice name is required',
@@ -336,6 +338,7 @@ export default {
       philosophyRequired: 'Design philosophy is required',
       philosophyMinLength: 'Philosophy must be at least 50 characters',
       expertiseRequired: 'At least one expertise area is required',
+      fullnameKtpRequired: 'Full name as in KTP is required',
       ktpNumRequired: 'KTP number is required',
       ktpNumInvalid: 'KTP number must be exactly 16 digits',
       npwpRequired: 'NPWP is required',
@@ -467,6 +470,9 @@ export default {
     identityIncompleteAction: 'Complete Profile',
     identityIncompleteError:
       'Please complete your identity information (KTP, NPWP, full legal name, and phone OTP verification) in your Profile before submitting a bid. Your draft has been saved.',
+    identityIncompleteMissingLabel: 'Missing:',
+    identityIncompleteDismiss: 'Later',
+    savingDraft: 'Saving draft...',
     completeProfileLink: 'Complete your profile →',
     deliverableCategories: {
       siteAnalysis: 'Site Analysis & Planning',
@@ -818,6 +824,7 @@ export default {
     designBudgetRange: 'Design Budget Range',
     buildArea: 'Build Area',
     floors: 'Floors',
+    visualReferences: 'Visual References',
     scopeOfWork: 'Scope of Work',
     deliverables: 'Deliverables',
     category: 'Category',
@@ -1100,6 +1107,23 @@ export default {
     noPending: 'No projects pending approval',
     submittedOn: 'Submitted',
     reject: 'Reject',
+    approve: 'Approve',
+    viewDetails: 'View Details'
+  },
+  superuserProjectDetail: {
+    title: 'Project Detail',
+    clientDetails: 'Client Details',
+    clientDetailsHint: 'Use this to call the client and verify the project before approving it.',
+    name: 'Name',
+    email: 'Email',
+    phone: 'Phone Number',
+    phoneVerified: 'Verified',
+    phoneUnverified: 'Not Verified',
+    ktp: 'KTP Number',
+    ktpVerified: 'Verified',
+    ktpUnverified: 'Not Verified',
+    notProvided: 'Not provided',
+    reject: 'Reject',
     approve: 'Approve'
   },
   userManagement: {
@@ -1179,6 +1203,7 @@ export default {
       subtitle: 'Share your design principles and approach to architecture.',
       label: 'Design Philosophy',
       placeholder: 'Describe your architectural philosophy and design approach...',
+      charactersCount: '{n} characters',
       back: 'Back',
       continue: 'Continue'
     },
@@ -1270,5 +1295,39 @@ export default {
       dashboard: 'Go to Dashboard',
       redirecting: 'or wait {n} seconds for automatic redirect'
     }
+  },
+  projectStatus: {
+    PENDING_APPROVAL: 'Pending Validation',
+    OPEN: 'Open',
+    BIDDING_CLOSED: 'Bidding Closed',
+    NEGOTIATION: 'Finalization',
+    IN_PROGRESS: 'In Progress',
+    COMPLETED: 'Completed',
+    CANCELLED: 'Cancelled',
+    REJECTED: 'Rejected',
+    CLOSED: 'Closed',
+    AWARDED: 'Awarded',
+    PENDING: 'Pending Validation'
+  },
+  bidStatus: {
+    DRAFT: 'Draft',
+    PENDING: 'Pending',
+    ACCEPTED: 'Accepted',
+    REJECTED: 'Rejected',
+    WITHDRAWN: 'Withdrawn'
+  },
+  expertiseTagLabels: {
+    Residential: 'Residential',
+    Commercial: 'Commercial',
+    Renovation: 'Renovation',
+    'Sustainable Design': 'Sustainable Design',
+    'Urban Planning': 'Urban Planning',
+    'Interior Design': 'Interior Design',
+    'Landscape Architecture': 'Landscape Architecture',
+    'Historic Preservation': 'Historic Preservation',
+    Institutional: 'Institutional',
+    Industrial: 'Industrial',
+    'Mixed-Use': 'Mixed-Use',
+    Hospitality: 'Hospitality'
   }
 }

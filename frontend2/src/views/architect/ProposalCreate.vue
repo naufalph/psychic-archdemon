@@ -139,12 +139,18 @@
                     'Complete your KTP, NPWP, full name, and WhatsApp OTP verification before submitting a bid. You can still save a draft.'
                   }}
                 </p>
-                <router-link
-                  to="/architect/profile"
-                  class="inline-block mt-2 text-sm font-semibold text-amber-900 underline hover:text-brand-brown"
+                <button
+                  type="button"
+                  @click="goToProfile"
+                  :disabled="isSavingDraft"
+                  class="inline-block mt-2 text-sm font-semibold text-amber-900 underline hover:text-brand-brown disabled:opacity-60"
                 >
-                  {{ t.proposalCreate?.identityIncompleteAction || 'Complete Profile' }} →
-                </router-link>
+                  {{
+                    isSavingDraft
+                      ? t.proposalCreate?.savingDraft || 'Saving draft...'
+                      : (t.proposalCreate?.identityIncompleteAction || 'Complete Profile') + ' →'
+                  }}
+                </button>
               </div>
             </div>
 
@@ -268,13 +274,19 @@
                 <ul v-if="identityMissing.length" class="text-xs text-red-600 list-disc list-inside space-y-0.5">
                   <li v-for="item in identityMissing" :key="item">{{ item }}</li>
                 </ul>
-                <router-link
+                <button
                   v-if="!isIdentityComplete"
-                  to="/architect/profile"
-                  class="inline-block text-sm font-semibold text-brand-brown underline"
+                  type="button"
+                  @click="goToProfile"
+                  :disabled="isSavingDraft"
+                  class="inline-block text-sm font-semibold text-brand-brown underline disabled:opacity-60"
                 >
-                  {{ t.value.proposalCreate?.completeProfileLink || 'Complete your profile →' }}
-                </router-link>
+                  {{
+                    isSavingDraft
+                      ? t.proposalCreate?.savingDraft || 'Saving draft...'
+                      : t.proposalCreate?.completeProfileLink || 'Complete your profile →'
+                  }}
+                </button>
               </div>
 
               <div class="flex gap-4 pt-6 border-t border-gray-100">
@@ -304,6 +316,104 @@
         </div>
       </div>
     </div>
+
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition ease-out duration-200"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition ease-in duration-150"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="showIdentityModal"
+          class="fixed inset-0 z-50 overflow-y-auto"
+          @click.self="showIdentityModal = false"
+        >
+          <div class="flex min-h-screen items-center justify-center p-4">
+            <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" @click="showIdentityModal = false"></div>
+
+            <Transition
+              enter-active-class="transition ease-out duration-200"
+              enter-from-class="opacity-0 scale-95"
+              enter-to-class="opacity-100 scale-100"
+              leave-active-class="transition ease-in duration-150"
+              leave-from-class="opacity-100 scale-100"
+              leave-to-class="opacity-0 scale-95"
+            >
+              <div
+                v-if="showIdentityModal"
+                class="relative z-10 w-full max-w-md transform rounded-2xl bg-white shadow-2xl transition-all"
+              >
+                <div class="flex items-start justify-between gap-4 px-6 pt-6">
+                  <div class="w-12 h-12 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
+                    <AlertTriangle :size="24" class="text-amber-600" />
+                  </div>
+                  <button
+                    @click="showIdentityModal = false"
+                    class="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+                  >
+                    <X :size="20" />
+                  </button>
+                </div>
+
+                <div class="px-6 pb-6 pt-4">
+                  <h2 class="text-lg font-bold text-gray-900">
+                    {{ t.proposalCreate?.identityIncompleteTitle || 'Identity verification required to submit' }}
+                  </h2>
+                  <p class="text-sm text-gray-600 mt-2 leading-relaxed">
+                    {{
+                      t.proposalCreate?.identityIncompleteDesc ||
+                      'Complete your KTP, NPWP, full name, and WhatsApp OTP verification before submitting a bid. You can still save a draft.'
+                    }}
+                  </p>
+
+                  <div class="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4">
+                    <p class="text-xs font-bold text-amber-800 uppercase tracking-wide mb-2">
+                      {{ t.proposalCreate?.identityIncompleteMissingLabel || 'Missing:' }}
+                    </p>
+                    <ul class="space-y-1">
+                      <li
+                        v-for="item in identityMissing"
+                        :key="item"
+                        class="text-sm text-amber-900 flex items-center gap-2"
+                      >
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500 flex-shrink-0"></span>
+                        {{ item }}
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div
+                  class="flex items-center justify-end gap-3 border-t border-gray-200 px-6 py-4 rounded-b-2xl bg-gray-50"
+                >
+                  <button
+                    @click="showIdentityModal = false"
+                    class="px-5 py-2.5 text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors"
+                  >
+                    {{ t.proposalCreate?.identityIncompleteDismiss || 'Later' }}
+                  </button>
+                  <button
+                    @click="goToProfile"
+                    :disabled="isSavingDraft"
+                    class="px-6 py-2.5 bg-brand-brown text-white rounded-full font-semibold hover:bg-brand-brown-dark transition-all disabled:opacity-60 flex items-center gap-2"
+                  >
+                    <Loader v-if="isSavingDraft" :size="16" class="animate-spin" />
+                    {{
+                      isSavingDraft
+                        ? t.proposalCreate?.savingDraft || 'Saving draft...'
+                        : t.proposalCreate?.identityIncompleteAction || 'Complete Profile'
+                    }}
+                  </button>
+                </div>
+              </div>
+            </Transition>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
@@ -311,7 +421,7 @@
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { ArrowLeft, FileText, Loader, Send } from 'lucide-vue-next'
+import { ArrowLeft, FileText, Loader, Send, AlertTriangle, X } from 'lucide-vue-next'
 import { useBidsStore } from '@/stores/bids'
 import { useProjectsStore } from '@/stores/projects'
 import { useArchitectProfileStore } from '@/stores/architectProfile'
@@ -341,6 +451,8 @@ const identityMissing = computed(() => {
 })
 
 const isIdentityComplete = computed(() => identityMissing.value.length === 0)
+
+const showIdentityModal = ref(false)
 
 const DELIVERABLE_CATEGORIES = [
   { categoryKey: 'siteAnalysis', items: ['SITE_ANALYSIS', 'ZONING_STUDY'] },
@@ -432,58 +544,74 @@ const deleteExistingImage = async (imageId, type) => {
 
 const isSavingDraft = ref(false)
 
+const persistDraft = async () => {
+  if (!formData.value.bidAmount) return
+
+  let bid
+  const bidData = {
+    projectId: route.params.projectId,
+    bidAmount: formData.value.bidAmount,
+    proposal: formData.value.proposal
+  }
+  if (existingBidId.value) {
+    await bidsStore.updateDraftBid(existingBidId.value, bidData)
+    bid = { id: existingBidId.value }
+  } else {
+    bid = await bidsStore.createDraftBid(bidData)
+    existingBidId.value = bid.id
+  }
+  await bidsStore.updateBidDetails(bid.id, {
+    conceptStatement: formData.value.conceptStatement,
+    phases: formData.value.phases
+  })
+
+  if (formData.value.portfolioIds.length > 0) {
+    await bidsStore.linkPortfolios(bid.id, formData.value.portfolioIds)
+  }
+
+  const uploadIfAny = async (type, newFiles, existingRef, fileRef) => {
+    const fresh = newFiles.filter(f => f instanceof File)
+    if (!fresh.length) return
+    try {
+      const uploaded = await bidsStore.uploadBidImages(bid.id, type, fresh)
+      existingRef.value = [
+        ...existingRef.value,
+        ...uploaded.map(img => ({ id: img.id, url: img.imageUrl, name: img.fileName }))
+      ]
+      fileRef.value = []
+    } catch {
+      // per-type failure doesn't abort the others
+    }
+  }
+
+  await uploadIfAny('FACADE', facadeImages.value, existingFacade, facadeImages)
+  await uploadIfAny('INTERIOR', interiorImages.value, existingInterior, interiorImages)
+  await uploadIfAny('MASSING', massingImages.value, existingMassing, massingImages)
+  await uploadIfAny('ZONING', zoningImages.value, existingZoning, zoningImages)
+}
+
 const saveDraftAndLeave = async () => {
   isSavingDraft.value = true
   try {
-    if (formData.value.bidAmount) {
-      let bid
-      const bidData = {
-        projectId: route.params.projectId,
-        bidAmount: formData.value.bidAmount,
-        proposal: formData.value.proposal
-      }
-      if (existingBidId.value) {
-        await bidsStore.updateDraftBid(existingBidId.value, bidData)
-        bid = { id: existingBidId.value }
-      } else {
-        bid = await bidsStore.createDraftBid(bidData)
-        existingBidId.value = bid.id
-      }
-      await bidsStore.updateBidDetails(bid.id, {
-        conceptStatement: formData.value.conceptStatement,
-        phases: formData.value.phases
-      })
-
-      if (formData.value.portfolioIds.length > 0) {
-        await bidsStore.linkPortfolios(bid.id, formData.value.portfolioIds)
-      }
-
-      const uploadIfAny = async (type, newFiles, existingRef, fileRef) => {
-        const fresh = newFiles.filter(f => f instanceof File)
-        if (!fresh.length) return
-        try {
-          const uploaded = await bidsStore.uploadBidImages(bid.id, type, fresh)
-          existingRef.value = [
-            ...existingRef.value,
-            ...uploaded.map(img => ({ id: img.id, url: img.imageUrl, name: img.fileName }))
-          ]
-          fileRef.value = []
-        } catch {
-          // per-type failure doesn't abort the others
-        }
-      }
-
-      await uploadIfAny('FACADE', facadeImages.value, existingFacade, facadeImages)
-      await uploadIfAny('INTERIOR', interiorImages.value, existingInterior, interiorImages)
-      await uploadIfAny('MASSING', massingImages.value, existingMassing, massingImages)
-      await uploadIfAny('ZONING', zoningImages.value, existingZoning, zoningImages)
-    }
+    await persistDraft()
   } catch {
     // Silent — draft save is best-effort, always navigate away
   } finally {
     isSavingDraft.value = false
   }
   router.push({ name: 'OpportunityList' })
+}
+
+const goToProfile = async () => {
+  isSavingDraft.value = true
+  try {
+    await persistDraft()
+  } catch {
+    // Silent — draft save is best-effort, still send the architect to fix their profile
+  } finally {
+    isSavingDraft.value = false
+  }
+  router.push({ name: 'ArchitectProfile' })
 }
 
 const errorRef = ref(null)
@@ -503,6 +631,7 @@ const handleSubmit = async () => {
     error.value =
       t.value.proposalCreate?.identityIncompleteError ||
       'Harap lengkapi data identitas berikut di halaman Profil sebelum mengirim penawaran:'
+    showIdentityModal.value = true
     await scrollToError()
     return
   }

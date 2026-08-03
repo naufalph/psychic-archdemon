@@ -33,7 +33,7 @@
               {{ disbursedCount }} / {{ phases.length }} selesai
             </span>
             <span
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 whitespace-nowrap"
             >
               <span class="w-1.5 h-1.5 rounded-full bg-blue-500" />
               Dalam Proses
@@ -147,7 +147,7 @@
                   </div>
                   <div class="flex items-center gap-3">
                     <span
-                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold"
+                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap"
                       :class="[phaseStatusConfig(phase, index)?.bg, phaseStatusConfig(phase, index)?.text]"
                     >
                       <span class="w-1.5 h-1.5 rounded-full" :class="phaseStatusConfig(phase, index)?.dot" />

@@ -34,7 +34,7 @@
             </span>
             <span
               v-if="activePhase?.dueDate"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap"
               :class="daysLeft(activePhase.dueDate) < 3 ? 'bg-red-100 text-red-700' : 'bg-amber-50 text-amber-700'"
             >
               <Clock :size="12" />
@@ -42,14 +42,14 @@
             </span>
             <span
               v-if="isCompleted"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-green-100 text-green-700"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-green-100 text-green-700 whitespace-nowrap"
             >
               <span class="w-1.5 h-1.5 rounded-full bg-green-600" />
               {{ t.projectWorkspace?.completed }}
             </span>
             <span
               v-else
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-brand-tan text-brand-brown"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-brand-tan text-brand-brown whitespace-nowrap"
             >
               <span class="w-1.5 h-1.5 rounded-full bg-brand-brown" />
               {{ t.projectWorkspace?.active }}
@@ -176,7 +176,7 @@
                   </div>
                   <div class="flex items-center gap-3">
                     <span
-                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold"
+                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold whitespace-nowrap"
                       :class="[phaseStatusConfig(phase, index)?.bg, phaseStatusConfig(phase, index)?.text]"
                     >
                       <span class="w-1.5 h-1.5 rounded-full" :class="phaseStatusConfig(phase, index)?.dot" />

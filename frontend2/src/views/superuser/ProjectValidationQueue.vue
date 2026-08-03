@@ -33,6 +33,12 @@
           </p>
         </div>
         <div class="flex gap-2 shrink-0">
+          <router-link
+            :to="{ name: 'SuperuserProjectDetail', params: { id: project.id } }"
+            class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-gray-200 text-gray-600 hover:border-gray-400 transition"
+          >
+            {{ t.projectValidationQueue.viewDetails }}
+          </router-link>
           <button
             @click="validate(project.id, false)"
             :disabled="processing === project.id"
