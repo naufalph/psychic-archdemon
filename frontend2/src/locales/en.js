@@ -564,6 +564,11 @@ export default {
     bidAcceptedTitle: 'Bid Accepted — Finalizing Terms',
     bidAcceptedDesc: 'Review the winning bid terms and confirm before work begins.',
     continueToFinalization: 'Continue to Finalization',
+    projectRejectedTitle: 'Project Rejected',
+    projectRejectedFallback: 'This project was rejected. Please contact support for more information.',
+    draftBannerTitle: 'This project is still a draft',
+    draftBannerDesc: 'Finish filling it in and submit it for review before architects can bid.',
+    continueEditing: 'Continue Editing',
     comparativeAnalysis: 'Comparative Analysis',
     subjectA: 'Subject A',
     subjectB: 'Subject B',
@@ -579,7 +584,7 @@ export default {
     activeVentures: 'ACTIVE VENTURES',
     viewAll: 'VIEW ALL →',
     recentActivity: 'Recent Activity',
-    submittedProposal: 'submitted a proposal',
+    noActivityYet: 'No recent activity yet',
     curatedSelection: 'Curated Selection',
     findArchitect: 'Find Your Architect',
     browseStudiosDesc: 'Browse our vetted network of architecture studios ready for your project.',
@@ -637,7 +642,6 @@ export default {
       lastNameRequired: 'Last name is required',
       phoneRequired: 'Phone number is required',
       phoneInvalid: 'Please enter a valid phone number',
-      ktpRequired: 'KTP number is required',
       ktpInvalid: 'KTP number must be exactly 16 digits',
       cityRequired: 'City is required'
     },
@@ -651,7 +655,8 @@ export default {
     saving: 'Saving...',
     notSet: 'Not set',
     backToDashboard: 'Back to Dashboard',
-    back: 'Back'
+    back: 'Back',
+    optional: 'optional'
   },
   errors: {
     'firstName.required': 'First name is required',
@@ -939,7 +944,8 @@ export default {
     viewDetails: 'View Full Details'
   },
   projectCard: {
-    manage: 'Manage →'
+    manage: 'Manage →',
+    continueDraft: 'Continue Draft →'
   },
   clientFinalization: {
     itSupportInvited: 'IT Support invited',
@@ -1108,7 +1114,13 @@ export default {
     submittedOn: 'Submitted',
     reject: 'Reject',
     approve: 'Approve',
-    viewDetails: 'View Details'
+    viewDetails: 'View Details',
+    rejectModalTitle: 'Reject Project',
+    rejectModalHint: 'Tell the client why this project is being rejected so they know what to fix.',
+    rejectReasonLabel: 'Rejection reason',
+    rejectReasonPlaceholder: 'e.g., Missing legal documents, budget seems unrealistic for the scope...',
+    rejectModalCancel: 'Cancel',
+    rejectModalConfirm: 'Confirm Rejection'
   },
   superuserProjectDetail: {
     title: 'Project Detail',
@@ -1124,7 +1136,13 @@ export default {
     ktpUnverified: 'Not Verified',
     notProvided: 'Not provided',
     reject: 'Reject',
-    approve: 'Approve'
+    approve: 'Approve',
+    rejectModalTitle: 'Reject Project',
+    rejectModalHint: 'Tell the client why this project is being rejected so they know what to fix.',
+    rejectReasonLabel: 'Rejection reason',
+    rejectReasonPlaceholder: 'e.g., Missing legal documents, budget seems unrealistic for the scope...',
+    rejectModalCancel: 'Cancel',
+    rejectModalConfirm: 'Confirm Rejection'
   },
   userManagement: {
     title: 'User Management',

@@ -54,7 +54,10 @@
     </aside>
 
     <!-- Main content -->
-    <main class="flex-1 overflow-y-auto">
+    <main class="flex-1 overflow-y-auto relative">
+      <div class="fixed top-6 right-6 z-40 bg-white rounded-full shadow-soft border border-gray-200">
+        <NotificationDropdown variant="architect" />
+      </div>
       <RouterView />
     </main>
   </div>
@@ -66,6 +69,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { LayoutDashboard, Search, ClipboardList, Layout, Settings, LogOut } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 import { useArchitectProfileStore } from '@/stores/architectProfile'
+import NotificationDropdown from '@/components/notifications/NotificationDropdown.vue'
 
 const route = useRoute()
 const router = useRouter()

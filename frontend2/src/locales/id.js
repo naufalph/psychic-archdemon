@@ -569,6 +569,11 @@ export default {
     bidAcceptedTitle: 'Penawaran Diterima — Menyelesaikan Syarat',
     bidAcceptedDesc: 'Tinjau syarat penawaran terpilih dan konfirmasi sebelum pekerjaan dimulai.',
     continueToFinalization: 'Lanjutkan ke Finalisasi',
+    projectRejectedTitle: 'Proyek Ditolak',
+    projectRejectedFallback: 'Proyek ini ditolak. Silakan hubungi support untuk informasi lebih lanjut.',
+    draftBannerTitle: 'Proyek ini masih berupa draf',
+    draftBannerDesc: 'Lengkapi pengisian dan kirimkan untuk ditinjau sebelum arsitek dapat mengajukan penawaran.',
+    continueEditing: 'Lanjutkan Mengedit',
     comparativeAnalysis: 'Analisis Perbandingan',
     subjectA: 'Subjek A',
     subjectB: 'Subjek B',
@@ -584,7 +589,7 @@ export default {
     activeVentures: 'PROYEK AKTIF',
     viewAll: 'LIHAT SEMUA →',
     recentActivity: 'Aktivitas Terkini',
-    submittedProposal: 'mengajukan proposal',
+    noActivityYet: 'Belum ada aktivitas terkini',
     curatedSelection: 'Pilihan Terkurasi',
     findArchitect: 'Temukan Arsitek Anda',
     browseStudiosDesc: 'Jelajahi jaringan studio arsitektur kami yang siap untuk proyek Anda.',
@@ -642,7 +647,6 @@ export default {
       lastNameRequired: 'Nama belakang wajib diisi',
       phoneRequired: 'Nomor telepon wajib diisi',
       phoneInvalid: 'Masukkan nomor telepon yang valid',
-      ktpRequired: 'Nomor KTP wajib diisi',
       ktpInvalid: 'Nomor KTP harus 16 digit angka',
       cityRequired: 'Kota wajib diisi'
     },
@@ -656,7 +660,8 @@ export default {
     saving: 'Menyimpan...',
     notSet: 'Belum diatur',
     backToDashboard: 'Kembali ke Dashboard',
-    back: 'Kembali'
+    back: 'Kembali',
+    optional: 'opsional'
   },
   errors: {
     'firstName.required': 'Nama depan wajib diisi',
@@ -945,7 +950,8 @@ export default {
     viewDetails: 'Lihat Detail Lengkap'
   },
   projectCard: {
-    manage: 'Kelola →'
+    manage: 'Kelola →',
+    continueDraft: 'Lanjutkan Draf →'
   },
   clientFinalization: {
     itSupportInvited: 'Dukungan IT diundang',
@@ -1117,7 +1123,13 @@ export default {
     submittedOn: 'Dikirim',
     reject: 'Tolak',
     approve: 'Setujui',
-    viewDetails: 'Lihat Detail'
+    viewDetails: 'Lihat Detail',
+    rejectModalTitle: 'Tolak Proyek',
+    rejectModalHint: 'Beri tahu klien alasan penolakan proyek ini agar mereka tahu apa yang harus diperbaiki.',
+    rejectReasonLabel: 'Alasan penolakan',
+    rejectReasonPlaceholder: 'contoh: Dokumen legal belum lengkap, anggaran tidak realistis untuk lingkup ini...',
+    rejectModalCancel: 'Batal',
+    rejectModalConfirm: 'Konfirmasi Penolakan'
   },
   superuserProjectDetail: {
     title: 'Detail Proyek',
@@ -1134,7 +1146,13 @@ export default {
     ktpUnverified: 'Belum Terverifikasi',
     notProvided: 'Belum diisi',
     reject: 'Tolak',
-    approve: 'Setujui'
+    approve: 'Setujui',
+    rejectModalTitle: 'Tolak Proyek',
+    rejectModalHint: 'Beri tahu klien alasan penolakan proyek ini agar mereka tahu apa yang harus diperbaiki.',
+    rejectReasonLabel: 'Alasan penolakan',
+    rejectReasonPlaceholder: 'contoh: Dokumen legal belum lengkap, anggaran tidak realistis untuk lingkup ini...',
+    rejectModalCancel: 'Batal',
+    rejectModalConfirm: 'Konfirmasi Penolakan'
   },
   userManagement: {
     title: 'Manajemen Pengguna',

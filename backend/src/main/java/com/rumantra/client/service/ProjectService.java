@@ -108,7 +108,7 @@ public class ProjectService {
   }
 
   @Transactional
-  public ProjectResponse createProject(CreateProjectRequest request, List<MultipartFile> files) {
+  public ProjectResponse createDraftProject(CreateProjectRequest request) {
 
     Long clientId = getCurrentUserClientId();
 
@@ -118,50 +118,70 @@ public class ProjectService {
             .orElseThrow(
                 () -> new ResourceNotFoundException("Client not found with id: " + clientId));
 
-    if (request.getDesignBudgetMin() != null && request.getDesignBudgetMax() != null) {
-      if (request.getDesignBudgetMax() < request.getDesignBudgetMin()) {
+    Project project = Project.builder().client(client).status(ProjectStatus.DRAFT).build();
+
+    applyDraftFields(project, request);
+
+    project = projectRepository.save(project);
+
+    return mapToProjectResponse(project);
+  }
+
+  @Transactional
+  public ProjectResponse updateDraftProject(Long projectId, CreateProjectRequest request) {
+    verifyProjectOwnership(projectId);
+
+    Project project =
+        projectRepository
+            .findById(projectId)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Project not found with id: " + projectId));
+
+    if (project.getStatus() != ProjectStatus.DRAFT) {
+      throw new IllegalStateException(
+          "PROJECT_NOT_DRAFT: This project has already been submitted and can no longer be"
+              + " edited as a draft.");
+    }
+
+    applyDraftFields(project, request);
+
+    project = projectRepository.save(project);
+
+    return mapToProjectResponse(project);
+  }
+
+  @Transactional
+  public ProjectResponse submitProject(Long projectId, List<MultipartFile> files) {
+    verifyProjectOwnership(projectId);
+
+    Project project =
+        projectRepository
+            .findById(projectId)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Project not found with id: " + projectId));
+
+    if (project.getStatus() != ProjectStatus.DRAFT) {
+      throw new IllegalStateException(
+          "PROJECT_NOT_DRAFT: This project has already been submitted.");
+    }
+
+    validateClientProfile(project.getClient());
+    validateRequiredFieldsForSubmission(project);
+
+    if (project.getDesignBudgetMin() != null && project.getDesignBudgetMax() != null) {
+      if (project.getDesignBudgetMax() < project.getDesignBudgetMin()) {
         throw new IllegalArgumentException(
             "Maximum design budget must be greater than minimum design budget");
       }
     }
 
-    Project project =
-        Project.builder()
-            .client(client)
-            .title(request.getTitle())
-            .location(request.getLocation())
-            .budgetTotal(request.getBudgetTotal())
-            .designBudgetMin(request.getDesignBudgetMin())
-            .designBudgetMax(request.getDesignBudgetMax())
-            .projectCategory(request.getProjectCategory())
-            .buildingFunction(request.getBuildingFunction())
-            .estimatedBuildArea(request.getEstimatedBuildArea())
-            .numberOfFloors(request.getNumberOfFloors())
-            .ownsLand(request.getOwnsLand())
-            .hasLegalDocuments(request.getHasLegalDocuments())
-            .scopeOfWork(request.getScopeOfWork())
-            .deliverables(request.getDeliverables())
-            .designPreferences(request.getDesignPreferences())
-            .contactPerson(request.getContactPerson())
-            .expectedStartDate(request.getExpectedStartDate())
-            .startDateType(
-                request.getStartDateType() != null
-                    ? request.getStartDateType()
-                    : com.rumantra.client.domain.StartDateType.IMMEDIATELY)
-            .biddingDeadline(
-                request.getBiddingDeadline() != null
-                    ? request.getBiddingDeadline().atTime(23, 59, 59)
-                    : null)
-            .build(); // status defaults to PENDING_APPROVAL
-
+    project.setStatus(ProjectStatus.PENDING_APPROVAL);
     project = projectRepository.save(project);
 
-    // Handle file uploads if present
     if (files != null && !files.isEmpty()) {
       addFilesToProject(project, files);
     }
 
-    // Reload with files
     Project finalProject = project;
     project =
         projectRepository
@@ -172,6 +192,72 @@ public class ProjectService {
                         "Project not found with id: " + finalProject.getId()));
 
     return mapToProjectResponse(project);
+  }
+
+  private void applyDraftFields(Project project, CreateProjectRequest request) {
+    project.setTitle(request.getTitle());
+    project.setLocation(request.getLocation());
+    project.setBudgetTotal(request.getBudgetTotal());
+    project.setDesignBudgetMin(request.getDesignBudgetMin());
+    project.setDesignBudgetMax(request.getDesignBudgetMax());
+    project.setProjectCategory(request.getProjectCategory());
+    project.setBuildingFunction(request.getBuildingFunction());
+    project.setEstimatedBuildArea(request.getEstimatedBuildArea());
+    project.setNumberOfFloors(request.getNumberOfFloors());
+    project.setOwnsLand(request.getOwnsLand());
+    project.setHasLegalDocuments(request.getHasLegalDocuments());
+    project.setScopeOfWork(request.getScopeOfWork());
+    project.setDeliverables(request.getDeliverables());
+    project.setDesignPreferences(request.getDesignPreferences());
+    project.setContactPerson(request.getContactPerson());
+    project.setExpectedStartDate(request.getExpectedStartDate());
+    project.setStartDateType(
+        request.getStartDateType() != null
+            ? request.getStartDateType()
+            : com.rumantra.client.domain.StartDateType.IMMEDIATELY);
+    project.setBiddingDeadline(
+        request.getBiddingDeadline() != null
+            ? request.getBiddingDeadline().atTime(23, 59, 59)
+            : null);
+  }
+
+  private void validateClientProfile(Client client) {
+    boolean missingPhone = client.getPhoneNumber() == null || client.getPhoneNumber().isBlank();
+    if (missingPhone) {
+      throw new IllegalStateException(
+          "PROFILE_INCOMPLETE: Please add your phone number to your profile so architects and"
+              + " our team can reach you, before posting a project.");
+    }
+  }
+
+  private void validateRequiredFieldsForSubmission(Project project) {
+    List<String> missing = new ArrayList<>();
+    if (project.getTitle() == null || project.getTitle().isBlank()) {
+      missing.add("Title");
+    }
+    if (project.getLocation() == null || project.getLocation().isBlank()) {
+      missing.add("Location");
+    }
+    if (project.getEstimatedBuildArea() == null) {
+      missing.add("Lot Size");
+    }
+    if (project.getNumberOfFloors() == null) {
+      missing.add("Number of Floors");
+    }
+    if (project.getBuildingFunction() == null || project.getBuildingFunction().isBlank()) {
+      missing.add("Building Type");
+    }
+    if (project.getScopeOfWork() == null || project.getScopeOfWork().isBlank()) {
+      missing.add("Detailed Requirements");
+    }
+    if (project.getDesignBudgetMin() == null || project.getDesignBudgetMax() == null) {
+      missing.add("Design Budget");
+    }
+
+    if (!missing.isEmpty()) {
+      throw new IllegalArgumentException(
+          "Please complete the following before posting: " + String.join(", ", missing));
+    }
   }
 
   @Transactional(readOnly = true)
@@ -251,7 +337,7 @@ public class ProjectService {
         new ProjectValidatedEvent(
             this,
             project.getId(),
-            project.getClient().getId(),
+            project.getClient().getUser().getId(),
             projectTitle,
             isValid,
             superuserId,
@@ -491,7 +577,8 @@ public class ProjectService {
     return mapToProjectResponse(project);
   }
 
-  private void addFilesToProject(Project project, List<MultipartFile> files) {
+  private List<ProjectFile> addFilesToProject(Project project, List<MultipartFile> files) {
+    List<ProjectFile> added = new ArrayList<>();
     for (MultipartFile file : files) {
       if (file.isEmpty()) {
         continue;
@@ -524,7 +611,57 @@ public class ProjectService {
 
       project.getFiles().add(projectFile);
       projectFileRepository.save(projectFile);
+      added.add(projectFile);
     }
+    return added;
+  }
+
+  @Transactional
+  public List<ProjectFileDto> uploadDraftFiles(Long projectId, List<MultipartFile> files) {
+    verifyProjectOwnership(projectId);
+
+    Project project =
+        projectRepository
+            .findById(projectId)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Project not found with id: " + projectId));
+
+    if (project.getStatus() != ProjectStatus.DRAFT) {
+      throw new IllegalStateException(
+          "PROJECT_NOT_DRAFT: Images can only be uploaded while the project is still a draft.");
+    }
+
+    List<ProjectFile> added = addFilesToProject(project, files);
+
+    return added.stream().map(this::mapToProjectFileDto).collect(Collectors.toList());
+  }
+
+  @Transactional
+  public void deleteProjectFile(Long projectId, Long fileId) {
+    verifyProjectOwnership(projectId);
+
+    Project project =
+        projectRepository
+            .findById(projectId)
+            .orElseThrow(
+                () -> new ResourceNotFoundException("Project not found with id: " + projectId));
+
+    if (project.getStatus() != ProjectStatus.DRAFT) {
+      throw new IllegalStateException(
+          "PROJECT_NOT_DRAFT: Images can only be removed while the project is still a draft.");
+    }
+
+    ProjectFile file =
+        projectFileRepository
+            .findById(fileId)
+            .orElseThrow(() -> new ResourceNotFoundException("File not found with id: " + fileId));
+
+    if (!file.getProject().getId().equals(projectId)) {
+      throw new IllegalArgumentException("File does not belong to this project");
+    }
+
+    fileStorageService.deleteImages(List.of(file.getFilePath()));
+    projectFileRepository.delete(file);
   }
 
   private ProjectResponse mapToProjectResponse(Project project) {

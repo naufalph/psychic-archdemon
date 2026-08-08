@@ -107,7 +107,7 @@
     <div>
       <label for="ktpNumber" class="block text-sm font-medium text-gray-700 mb-2">
         {{ t.clientProfile.form.ktpNumber }}
-        <span v-if="!ktpVerified" class="text-red-500">*</span>
+        <span v-if="!ktpVerified" class="text-gray-400 font-normal">({{ t.common.optional }})</span>
         <span v-if="ktpVerified" class="inline-flex items-center gap-1 text-green-600 text-xs ml-2">
           <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
             <path
@@ -263,14 +263,9 @@ const validateForm = () => {
     isValid = false
   }
 
-  if (!props.ktpVerified) {
-    if (!formData.ktpNum.trim()) {
-      errors.ktpNum = t.clientProfile.validation.ktpRequired
-      isValid = false
-    } else if (!/^\d{16}$/.test(formData.ktpNum)) {
-      errors.ktpNum = t.clientProfile.validation.ktpInvalid
-      isValid = false
-    }
+  if (!props.ktpVerified && formData.ktpNum.trim() && !/^\d{16}$/.test(formData.ktpNum)) {
+    errors.ktpNum = t.clientProfile.validation.ktpInvalid
+    isValid = false
   }
 
   return isValid

@@ -37,9 +37,9 @@ public class EmailEventListener {
     try {
       User client =
           userRepository
-              .findById(event.getClientId())
+              .findById(event.getClientUserId())
               .orElseThrow(
-                  () -> new RuntimeException("Client user not found: " + event.getClientId()));
+                  () -> new RuntimeException("Client user not found: " + event.getClientUserId()));
 
       String firstName = client.getFirstName() != null ? client.getFirstName() : "there";
 

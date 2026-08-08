@@ -1,6 +1,7 @@
 package com.rumantra.client.domain;
 
 public enum ProjectStatus {
+  DRAFT, // Being filled out by the client, not yet submitted
   PENDING_APPROVAL, // Just created, awaiting superuser validation
   REJECTED, // Superuser rejected/invalidated the project
   OPEN, // Validated by superuser, accepting bids

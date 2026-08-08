@@ -56,24 +56,26 @@
             <h2 class="text-sm font-bold text-black tracking-widest uppercase mb-4">
               {{ t.clientDashboard.recentActivity }}
             </h2>
-            <div v-if="recentBids.length === 0" class="text-center py-6">
-              <p class="text-gray-400 text-sm">{{ t.clientDashboard.noProposalsYet }}</p>
+            <div v-if="recentActivity.length === 0" class="text-center py-6">
+              <p class="text-gray-400 text-sm">{{ t.clientDashboard.noActivityYet }}</p>
             </div>
             <div v-else class="space-y-3">
               <div
-                v-for="bid in recentBids"
-                :key="bid.id"
+                v-for="notification in recentActivity"
+                :key="notification.id"
                 class="flex items-start gap-3 pb-3 border-b border-gray-100 last:border-0 last:pb-0"
               >
                 <div class="w-8 h-8 rounded-full bg-brand-tan flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <FileText :size="14" class="text-brand-brown" />
+                  <component :is="getNotificationIcon(notification.type)" class="w-3.5 h-3.5 text-brand-brown" />
                 </div>
                 <div class="min-w-0">
                   <p class="text-sm font-medium text-gray-900 truncate">
-                    {{ bid.architectName || 'An architect' }}
+                    {{ composeNotificationMessage(notification, t).title }}
                   </p>
-                  <p class="text-xs text-gray-500">{{ t.clientDashboard.submittedProposal }}</p>
-                  <p class="text-xs text-brand-brown font-medium mt-0.5">{{ formatCurrency(bid.bidAmount) }}</p>
+                  <p class="text-xs text-gray-500 line-clamp-2">
+                    {{ composeNotificationMessage(notification, t).message }}
+                  </p>
+                  <p class="text-xs text-gray-400 mt-0.5">{{ getRelativeTime(notification.createdAt, t) }}</p>
                 </div>
               </div>
             </div>
@@ -100,20 +102,31 @@
 <script setup>
 import { computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
-import { Plus, FileText } from 'lucide-vue-next'
+import { Plus } from 'lucide-vue-next'
+import {
+  CheckCircleIcon,
+  PencilSquareIcon,
+  DocumentTextIcon,
+  CurrencyDollarIcon,
+  BellIcon
+} from '@heroicons/vue/24/outline'
 import { useAuthStore } from '@/stores/auth'
 import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
+import { useNotificationsStore } from '@/stores/notifications'
 import { useI18n } from '@/composables/useI18n'
+import { composeNotificationMessage, getRelativeTime } from '@/utils/notificationUtils'
 import ProjectList from './ProjectList.vue'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
 const projectsStore = useProjectsStore()
 const bidsStore = useBidsStore()
+const notificationsStore = useNotificationsStore()
 
 const { projects } = storeToRefs(projectsStore)
 const { projectBids } = storeToRefs(bidsStore)
+const { notifications } = storeToRefs(notificationsStore)
 
 const clientName = computed(() => {
   const user = authStore.user
@@ -133,9 +146,17 @@ const budgetUsed = computed(() => {
     .reduce((sum, p) => sum + (p.designBudgetMax || 0), 0)
 })
 
-const recentBids = computed(() => {
-  return (projectBids.value || []).slice(0, 5)
-})
+const recentActivity = computed(() => notifications.value.slice(0, 5))
+
+const notificationIconMap = {
+  PROJECT_VALIDATED: CheckCircleIcon,
+  PROJECT_UPDATED: PencilSquareIcon,
+  BID_RECEIVED: DocumentTextIcon,
+  BID_ACCEPTED: CheckCircleIcon,
+  PAYMENT_RECEIVED: CurrencyDollarIcon
+}
+
+const getNotificationIcon = type => notificationIconMap[type] || BellIcon
 
 const formatCurrency = value => {
   if (!value) return 'Rp 0'
@@ -150,5 +171,10 @@ const formatCurrency = value => {
 onMounted(async () => {
   authStore.updateLastLoginRole('CLIENT')
   await projectsStore.fetchMyProjects()
+  try {
+    await notificationsStore.fetchNotifications()
+  } catch (err) {
+    console.error('Failed to fetch recent activity:', err)
+  }
 })
 </script>

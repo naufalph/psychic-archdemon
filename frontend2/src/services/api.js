@@ -247,11 +247,12 @@ export const projectAPI = {
   getAll: params => api.get('/rmtr/projects', { params }),
   getById: id => api.get(`/rmtr/projects/${id}`),
   getProjectForArchitect: id => api.get(`/rmtr/projects/${id}/for-architect`),
-  create: formData =>
-    api.post('/rmtr/projects', formData, {
+  createDraft: projectData => api.post('/rmtr/projects', projectData),
+  update: (id, projectData) => api.put(`/rmtr/projects/${id}`, projectData),
+  submit: (id, formData) =>
+    api.post(`/rmtr/projects/${id}/submit`, formData, {
       headers: { 'Content-Type': 'multipart/form-data' }
     }),
-  update: (id, projectData) => api.put(`/rmtr/projects/${id}`, projectData),
   delete: id => api.delete(`/rmtr/projects/${id}`),
   getOpenProjects: (params = {}) =>
     api.get('/rmtr/projects/open', { params: { ...params, excludeOwnProjects: true } }),
@@ -268,6 +269,7 @@ export const projectAPI = {
       }
     })
   },
+  deleteFile: (id, fileId) => api.delete(`/rmtr/projects/${id}/files/${fileId}`),
   confirmNegotiation: projectId => api.post(`/rmtr/projects/${projectId}/confirm-negotiation`),
   rejectNegotiation: projectId => api.post(`/rmtr/projects/${projectId}/reject-negotiation`),
   architectConfirmNegotiation: projectId =>
@@ -293,9 +295,7 @@ export const architectAPI = {
   updatePortfolio: portfolioData => api.put('/architects/portfolio', portfolioData),
   updateOnboardingProfile: profileData =>
     api.put('/rmtr/architects/onboarding-profile', profileData),
-  updateFullProfile: profileData => api.put('/rmtr/architects/profile', profileData),
-  sendPhoneOtp: data => api.post('/rmtr/architects/phone/send-otp', data),
-  verifyPhoneOtp: data => api.post('/rmtr/architects/phone/verify-otp', data)
+  updateFullProfile: profileData => api.put('/rmtr/architects/profile', profileData)
 }
 
 export const portfolioAPI = {

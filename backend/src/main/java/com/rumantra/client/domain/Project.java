@@ -30,10 +30,10 @@ public class Project {
   @ToString.Exclude
   private Client client;
 
-  @Column(name = "title", nullable = false)
+  @Column(name = "title")
   private String title;
 
-  @Column(name = "location", nullable = false)
+  @Column(name = "location")
   private String location;
 
   @Column(name = "budget_total")

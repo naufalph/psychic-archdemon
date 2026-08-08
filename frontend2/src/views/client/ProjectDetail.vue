@@ -113,6 +113,23 @@
             <BiddingCountdown :deadline="currentProject.biddingDeadline" size="md" />
           </div>
 
+          <div v-if="currentProject.status === 'DRAFT'" class="mt-8 pt-6 border-t border-gray-100">
+            <div class="bg-amber-50 rounded-2xl p-5 flex items-center justify-between">
+              <div>
+                <p class="font-bold text-amber-800">{{ t.clientDashboard.draftBannerTitle }}</p>
+                <p class="text-sm text-amber-600 mt-0.5">
+                  {{ t.clientDashboard.draftBannerDesc }}
+                </p>
+              </div>
+              <button
+                @click="router.push({ name: 'ProjectCreate' })"
+                class="flex-shrink-0 px-5 py-2.5 bg-brand-brown text-white rounded-full font-bold text-sm hover:bg-black transition ml-4"
+              >
+                {{ t.clientDashboard.continueEditing }}
+              </button>
+            </div>
+          </div>
+
           <div v-if="currentProject.status === 'NEGOTIATION'" class="mt-8 pt-6 border-t border-gray-100">
             <div class="bg-amber-50 rounded-2xl p-5 flex items-center justify-between">
               <div>
@@ -127,6 +144,15 @@
               >
                 {{ t.clientDashboard.continueToFinalization }}
               </button>
+            </div>
+          </div>
+
+          <div v-if="currentProject.status === 'REJECTED'" class="mt-8 pt-6 border-t border-gray-100">
+            <div class="bg-red-50 rounded-2xl p-5">
+              <p class="font-bold text-red-800">{{ t.clientDashboard.projectRejectedTitle }}</p>
+              <p class="text-sm text-red-700 mt-1 leading-relaxed">
+                {{ currentProject.validationNotes || t.clientDashboard.projectRejectedFallback }}
+              </p>
             </div>
           </div>
         </div>

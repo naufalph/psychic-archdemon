@@ -50,7 +50,7 @@
         <button
           class="bg-black text-white text-xs font-bold px-4 py-2 rounded-full tracking-wider hover:bg-brand-brown transition"
         >
-          {{ t.projectCard.manage }}
+          {{ project.status === 'DRAFT' ? t.projectCard.continueDraft : t.projectCard.manage }}
         </button>
       </div>
     </div>
@@ -188,6 +188,8 @@ const statusBadgeClass = computed(() => {
       return 'bg-gray-500 text-white'
     case 'REJECTED':
       return 'bg-red-500 text-white'
+    case 'DRAFT':
+      return 'bg-amber-500 text-white'
     default:
       return 'bg-gray-400 text-white'
   }
@@ -216,7 +218,9 @@ const timeAgo = dateString => {
 
 const handleClick = () => {
   if (props.variant === 'client') {
-    if (props.project.status === 'IN_PROGRESS') {
+    if (props.project.status === 'DRAFT') {
+      router.push({ name: 'ProjectCreate' })
+    } else if (props.project.status === 'IN_PROGRESS') {
       router.push({ name: 'ClientProjectWorkspace', params: { id: props.project.id } })
     } else {
       router.push({ name: 'ProjectDetail', params: { id: props.project.id } })

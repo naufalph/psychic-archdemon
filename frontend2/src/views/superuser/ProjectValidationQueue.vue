@@ -40,14 +40,14 @@
             {{ t.projectValidationQueue.viewDetails }}
           </router-link>
           <button
-            @click="validate(project.id, false)"
+            @click="openRejectModal(project.id)"
             :disabled="processing === project.id"
             class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition disabled:opacity-50"
           >
             {{ t.projectValidationQueue.reject }}
           </button>
           <button
-            @click="validate(project.id, true)"
+            @click="validate(project.id, true, null)"
             :disabled="processing === project.id"
             class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition disabled:opacity-50"
           >
@@ -59,6 +59,42 @@
     </div>
 
     <div v-if="error" class="mt-4 bg-red-50 border border-red-200 text-red-700 rounded-lg p-4 text-sm">{{ error }}</div>
+
+    <div v-if="rejectModalProjectId !== null" class="fixed inset-0 z-50 overflow-y-auto">
+      <div class="fixed inset-0 bg-black/50 backdrop-blur-sm" @click="closeRejectModal"></div>
+      <div class="relative min-h-screen flex items-center justify-center p-4">
+        <div class="relative bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+          <h3 class="text-lg font-bold text-gray-900 mb-1">{{ t.projectValidationQueue.rejectModalTitle }}</h3>
+          <p class="text-sm text-gray-500 mb-4">{{ t.projectValidationQueue.rejectModalHint }}</p>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            {{ t.projectValidationQueue.rejectReasonLabel }}
+          </label>
+          <textarea
+            v-model="rejectReason"
+            rows="4"
+            :placeholder="t.projectValidationQueue.rejectReasonPlaceholder"
+            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-red-400 focus:border-red-400 outline-none text-sm"
+          />
+          <div class="flex gap-3 mt-5 justify-end">
+            <button
+              type="button"
+              @click="closeRejectModal"
+              class="px-4 py-2 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-100 transition"
+            >
+              {{ t.projectValidationQueue.rejectModalCancel }}
+            </button>
+            <button
+              type="button"
+              @click="confirmReject"
+              :disabled="!rejectReason.trim() || processing === rejectModalProjectId"
+              class="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition disabled:opacity-50"
+            >
+              {{ t.projectValidationQueue.rejectModalConfirm }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -73,6 +109,8 @@ const loading = ref(true)
 const error = ref(null)
 const processing = ref(null)
 const projects = ref([])
+const rejectModalProjectId = ref(null)
+const rejectReason = ref('')
 
 const load = async () => {
   loading.value = true
@@ -86,11 +124,27 @@ const load = async () => {
   }
 }
 
-const validate = async (projectId, isValid) => {
+const openRejectModal = projectId => {
+  rejectModalProjectId.value = projectId
+  rejectReason.value = ''
+}
+
+const closeRejectModal = () => {
+  rejectModalProjectId.value = null
+  rejectReason.value = ''
+}
+
+const confirmReject = async () => {
+  if (!rejectReason.value.trim()) return
+  await validate(rejectModalProjectId.value, false, rejectReason.value.trim())
+  closeRejectModal()
+}
+
+const validate = async (projectId, isValid, validationNotes) => {
   processing.value = projectId
   error.value = null
   try {
-    await superuserProjectsAPI.validate(projectId, isValid, null)
+    await superuserProjectsAPI.validate(projectId, isValid, validationNotes)
     await load()
   } catch (e) {
     error.value = e.response?.data?.message || 'Validation failed'

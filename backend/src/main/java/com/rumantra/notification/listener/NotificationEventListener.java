@@ -33,7 +33,7 @@ public class NotificationEventListener {
       String message = buildNotificationMessage(event);
 
       dashboardNotificationService.createNotification(
-          event.getClientId(),
+          event.getClientUserId(),
           NotificationType.PROJECT_VALIDATED,
           title,
           message,
@@ -43,10 +43,10 @@ public class NotificationEventListener {
           event.getProjectId());
 
       log.info(
-          "Dashboard notification created for project validation: projectId={}, isValid={}, clientId={}",
+          "Dashboard notification created for project validation: projectId={}, isValid={}, clientUserId={}",
           event.getProjectId(),
           event.getIsValid(),
-          event.getClientId());
+          event.getClientUserId());
 
     } catch (Exception e) {
       log.error(

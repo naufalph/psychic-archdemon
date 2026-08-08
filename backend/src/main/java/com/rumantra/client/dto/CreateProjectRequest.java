@@ -15,11 +15,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CreateProjectRequest {
 
-  @NotNull(message = "Title is required")
   @Size(max = 255, message = "Title must not exceed 255 characters")
   private String title;
 
-  @NotNull(message = "Location is required")
   @Size(max = 255, message = "Location must not exceed 255 characters")
   private String location;
 

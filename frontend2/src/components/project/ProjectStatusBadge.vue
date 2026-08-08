@@ -18,6 +18,10 @@ const props = defineProps({
 })
 
 const statusConfig = {
+  DRAFT: {
+    text: 'Draft',
+    classes: 'bg-amber-100 text-amber-700 border-amber-200'
+  },
   PENDING_APPROVAL: {
     text: 'Pending Validation',
     classes: 'bg-yellow-100 text-yellow-700 border-yellow-200'

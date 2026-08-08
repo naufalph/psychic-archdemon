@@ -179,6 +179,9 @@ const toggleDropdown = async () => {
     if (notificationsStore.notifications.length === 0 || isStale()) {
       await notificationsStore.fetchNotifications()
     }
+    if (notificationsStore.hasUnread) {
+      await notificationsStore.markAllAsRead()
+    }
   }
 }
 

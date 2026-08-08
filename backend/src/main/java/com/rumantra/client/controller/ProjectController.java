@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.rumantra.bidding.dto.BidResponse;
 import com.rumantra.client.dto.CreateProjectRequest;
+import com.rumantra.client.dto.ProjectFileDto;
 import com.rumantra.client.dto.ProjectPublicPreviewResponse;
 import com.rumantra.client.dto.ProjectResponse;
 import com.rumantra.client.dto.UpdateValidationRequest;
@@ -30,36 +31,25 @@ public class ProjectController {
 
   private final ProjectService projectService;
 
-  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<ApiResponse<ProjectResponse>> createProject(
-      @Valid @RequestPart("project") CreateProjectRequest request,
-      @RequestParam(value = "files", required = false) List<MultipartFile> files) {
+  @PostMapping
+  public ResponseEntity<ApiResponse<ProjectResponse>> createDraftProject(
+      @Valid @RequestBody CreateProjectRequest request) {
 
     try {
 
-      ProjectResponse response = projectService.createProject(request, files);
+      ProjectResponse response = projectService.createDraftProject(request);
 
       return ResponseEntity.status(HttpStatus.CREATED)
           .body(
               ApiResponse.<ProjectResponse>builder()
                   .success(true)
-                  .message("Project created successfully!")
+                  .message("Draft project saved")
                   .data(response)
                   .timestamp(LocalDateTime.now().toString())
                   .build());
 
-    } catch (IllegalArgumentException e) {
-      log.error("Validation error creating project", e);
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(
-              ApiResponse.<ProjectResponse>builder()
-                  .success(false)
-                  .message(e.getMessage())
-                  .timestamp(LocalDateTime.now().toString())
-                  .build());
-
     } catch (ResourceNotFoundException e) {
-      log.error("Validation error creating project", e);
+      log.error("Error creating draft project", e);
       return ResponseEntity.status(HttpStatus.NOT_FOUND)
           .body(
               ApiResponse.<ProjectResponse>builder()
@@ -69,12 +59,214 @@ public class ProjectController {
                   .build());
 
     } catch (Exception e) {
-      log.error("Unexpected error creating project", e);
+      log.error("Unexpected error creating draft project", e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(
               ApiResponse.<ProjectResponse>builder()
                   .success(false)
                   .message("An error occurred while creating project")
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
+  }
+
+  @PutMapping("/{projectId}")
+  public ResponseEntity<ApiResponse<ProjectResponse>> updateDraftProject(
+      @PathVariable Long projectId, @Valid @RequestBody CreateProjectRequest request) {
+
+    try {
+
+      ProjectResponse response = projectService.updateDraftProject(projectId, request);
+
+      return ResponseEntity.ok(
+          ApiResponse.<ProjectResponse>builder()
+              .success(true)
+              .message("Draft project updated")
+              .data(response)
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+
+    } catch (ResourceNotFoundException e) {
+      log.error("Project not found: {}", projectId, e);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .body(
+              ApiResponse.<ProjectResponse>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+
+    } catch (IllegalStateException e) {
+      log.warn("Cannot update project {}: {}", projectId, e.getMessage());
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              ApiResponse.<ProjectResponse>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+
+    } catch (Exception e) {
+      log.error("Unexpected error updating draft project {}", projectId, e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(
+              ApiResponse.<ProjectResponse>builder()
+                  .success(false)
+                  .message("An error occurred while updating project")
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
+  }
+
+  @PostMapping(value = "/{projectId}/submit", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<ApiResponse<ProjectResponse>> submitProject(
+      @PathVariable Long projectId,
+      @RequestParam(value = "files", required = false) List<MultipartFile> files) {
+
+    try {
+
+      ProjectResponse response = projectService.submitProject(projectId, files);
+
+      return ResponseEntity.ok(
+          ApiResponse.<ProjectResponse>builder()
+              .success(true)
+              .message("Project submitted for approval!")
+              .data(response)
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+
+    } catch (IllegalArgumentException e) {
+      log.warn("Validation error submitting project {}: {}", projectId, e.getMessage());
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              ApiResponse.<ProjectResponse>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+
+    } catch (IllegalStateException e) {
+      log.warn("Cannot submit project {}: {}", projectId, e.getMessage());
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              ApiResponse.<ProjectResponse>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+
+    } catch (ResourceNotFoundException e) {
+      log.error("Project not found: {}", projectId, e);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .body(
+              ApiResponse.<ProjectResponse>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+
+    } catch (Exception e) {
+      log.error("Unexpected error submitting project {}", projectId, e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(
+              ApiResponse.<ProjectResponse>builder()
+                  .success(false)
+                  .message("An error occurred while submitting project")
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
+  }
+
+  @PostMapping(value = "/{projectId}/files", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<ApiResponse<List<ProjectFileDto>>> uploadDraftFiles(
+      @PathVariable Long projectId, @RequestParam("files") List<MultipartFile> files) {
+
+    try {
+
+      List<ProjectFileDto> response = projectService.uploadDraftFiles(projectId, files);
+
+      return ResponseEntity.ok(
+          ApiResponse.<List<ProjectFileDto>>builder()
+              .success(true)
+              .message("Images uploaded")
+              .data(response)
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+
+    } catch (ResourceNotFoundException e) {
+      log.error("Project not found: {}", projectId, e);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .body(
+              ApiResponse.<List<ProjectFileDto>>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+
+    } catch (IllegalStateException e) {
+      log.warn("Cannot upload files to project {}: {}", projectId, e.getMessage());
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              ApiResponse.<List<ProjectFileDto>>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+
+    } catch (Exception e) {
+      log.error("Unexpected error uploading files to project {}", projectId, e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(
+              ApiResponse.<List<ProjectFileDto>>builder()
+                  .success(false)
+                  .message("An error occurred while uploading images")
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
+  }
+
+  @DeleteMapping("/{projectId}/files/{fileId}")
+  public ResponseEntity<ApiResponse<Void>> deleteProjectFile(
+      @PathVariable Long projectId, @PathVariable Long fileId) {
+
+    try {
+
+      projectService.deleteProjectFile(projectId, fileId);
+
+      return ResponseEntity.ok(
+          ApiResponse.<Void>builder()
+              .success(true)
+              .message("Image removed")
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+
+    } catch (ResourceNotFoundException e) {
+      log.error("Project or file not found: {} / {}", projectId, fileId, e);
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+          .body(
+              ApiResponse.<Void>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+
+    } catch (IllegalStateException | IllegalArgumentException e) {
+      log.warn("Cannot delete file {} from project {}: {}", fileId, projectId, e.getMessage());
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              ApiResponse.<Void>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+
+    } catch (Exception e) {
+      log.error("Unexpected error deleting file {} from project {}", fileId, projectId, e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(
+              ApiResponse.<Void>builder()
+                  .success(false)
+                  .message("An error occurred while removing the image")
                   .timestamp(LocalDateTime.now().toString())
                   .build());
     }

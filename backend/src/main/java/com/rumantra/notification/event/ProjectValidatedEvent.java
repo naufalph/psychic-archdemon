@@ -8,7 +8,7 @@ import lombok.Getter;
 public class ProjectValidatedEvent extends ApplicationEvent {
 
   private final Long projectId;
-  private final Long clientId;
+  private final Long clientUserId;
   private final String projectTitle;
   private final Boolean isValid;
   private final Long validatedBySuperuserId;
@@ -17,14 +17,14 @@ public class ProjectValidatedEvent extends ApplicationEvent {
   public ProjectValidatedEvent(
       Object source,
       Long projectId,
-      Long clientId,
+      Long clientUserId,
       String projectTitle,
       Boolean isValid,
       Long validatedBySuperuserId,
       String validationNotes) {
     super(source);
     this.projectId = projectId;
-    this.clientId = clientId;
+    this.clientUserId = clientUserId;
     this.projectTitle = projectTitle;
     this.isValid = isValid;
     this.validatedBySuperuserId = validatedBySuperuserId;
