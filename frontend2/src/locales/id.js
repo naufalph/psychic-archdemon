@@ -331,7 +331,9 @@ export default {
       npwp: 'NPWP',
       npwpPlaceholder: 'Masukkan NPWP 15-16 digit',
       fullnameKtp: 'Nama Lengkap (sesuai KTP)',
-      fullnameKtpPlaceholder: 'contoh: Budi Santoso'
+      fullnameKtpPlaceholder: 'contoh: Budi Santoso',
+      phoneNum: 'Nomor HP',
+      phoneNumPlaceholder: 'contoh: 08123456789'
     },
     validation: {
       nameRequired: 'Nama praktik wajib diisi',
@@ -346,7 +348,9 @@ export default {
       ktpNumRequired: 'Nomor KTP wajib diisi',
       ktpNumInvalid: 'Nomor KTP harus tepat 16 digit',
       npwpRequired: 'NPWP wajib diisi',
-      npwpInvalid: 'NPWP harus 15 atau 16 digit'
+      npwpInvalid: 'NPWP harus 15 atau 16 digit',
+      phoneNumRequired: 'Nomor HP wajib diisi',
+      phoneNumInvalid: 'Nomor HP harus 8 hingga 16 digit'
     },
     toast: {
       updateSuccess: 'Profil berhasil diperbarui',
@@ -471,10 +475,10 @@ export default {
     backToOpportunities: 'Kembali ke Peluang',
     identityIncompleteTitle: 'Verifikasi identitas diperlukan untuk mengirim',
     identityIncompleteDesc:
-      'Lengkapi KTP, NPWP, nama lengkap sesuai KTP, dan verifikasi OTP WhatsApp sebelum mengajukan penawaran. Anda masih dapat menyimpan draft.',
+      'Lengkapi KTP, NPWP, nama lengkap sesuai KTP, dan nomor HP sebelum mengajukan penawaran. Anda masih dapat menyimpan draft.',
     identityIncompleteAction: 'Lengkapi Profil',
     identityIncompleteError:
-      'Harap lengkapi informasi identitas (KTP, NPWP, nama lengkap sesuai KTP, dan verifikasi OTP nomor HP) di halaman Profil sebelum mengirim penawaran. Draft Anda tetap tersimpan.',
+      'Harap lengkapi informasi identitas (KTP, NPWP, nama lengkap sesuai KTP, dan nomor HP) di halaman Profil sebelum mengirim penawaran. Draft Anda tetap tersimpan.',
     identityIncompleteMissingLabel: 'Yang belum lengkap:',
     identityIncompleteDismiss: 'Nanti Saja',
     savingDraft: 'Menyimpan draft...',

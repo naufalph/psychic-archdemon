@@ -107,6 +107,24 @@
 
       <div class="space-y-2">
         <label class="block text-sm font-semibold text-black/70 tracking-tight">
+          {{ t.profile.form.phoneNum }}
+        </label>
+        <input
+          v-model="formData.phoneNum"
+          type="tel"
+          maxlength="16"
+          inputmode="numeric"
+          :placeholder="t.profile.form.phoneNumPlaceholder"
+          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
+          :class="{ 'border-red-300': errors.phoneNum }"
+          @input="formData.phoneNum = formData.phoneNum.replace(/\D/g, '')"
+        />
+        <p class="text-xs text-black/40">8-16 digits required</p>
+        <p v-if="errors.phoneNum" class="text-xs text-red-600">{{ errors.phoneNum }}</p>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-sm font-semibold text-black/70 tracking-tight">
           {{ t.profile.form.ktpNum }}
         </label>
         <input
@@ -197,7 +215,8 @@ const props = defineProps({
       expertise: [],
       fullnameKtp: '',
       ktpNum: '',
-      npwp: ''
+      npwp: '',
+      phoneNum: ''
     })
   },
   isLoading: {
@@ -222,7 +241,8 @@ const formData = ref({
   expertise: [...(props.initialData.expertise || [])],
   fullnameKtp: props.initialData.fullnameKtp || '',
   ktpNum: props.initialData.ktpNum || '',
-  npwp: props.initialData.npwp || ''
+  npwp: props.initialData.npwp || '',
+  phoneNum: props.initialData.phoneNum || ''
 })
 
 const errors = ref({
@@ -233,7 +253,8 @@ const errors = ref({
   expertise: '',
   fullnameKtp: '',
   ktpNum: '',
-  npwp: ''
+  npwp: '',
+  phoneNum: ''
 })
 
 watch(
@@ -248,7 +269,8 @@ watch(
         expertise: [...(newData.expertise || [])],
         fullnameKtp: newData.fullnameKtp || '',
         ktpNum: newData.ktpNum || '',
-        npwp: newData.npwp || ''
+        npwp: newData.npwp || '',
+        phoneNum: newData.phoneNum || ''
       }
     }
   }
@@ -263,7 +285,8 @@ const validateForm = () => {
     expertise: '',
     fullnameKtp: '',
     ktpNum: '',
-    npwp: ''
+    npwp: '',
+    phoneNum: ''
   }
 
   let isValid = true
@@ -320,6 +343,14 @@ const validateForm = () => {
     isValid = false
   }
 
+  if (!formData.value.phoneNum.trim()) {
+    errors.value.phoneNum = t.value.profile.validation.phoneNumRequired
+    isValid = false
+  } else if (!/^[0-9]{8,16}$/.test(formData.value.phoneNum.trim())) {
+    errors.value.phoneNum = t.value.profile.validation.phoneNumInvalid
+    isValid = false
+  }
+
   return isValid
 }
 
@@ -334,6 +365,7 @@ const hasDataChanged = computed(() => {
   if (initial.fullnameKtp !== current.fullnameKtp) return true
   if (initial.ktpNum !== current.ktpNum) return true
   if (initial.npwp !== current.npwp) return true
+  if (initial.phoneNum !== current.phoneNum) return true
 
   if (initial.expertise.length !== current.expertise.length) return true
   const sortedInitial = [...initial.expertise].sort()
@@ -350,12 +382,18 @@ const meetsValidationRequirements = computed(() => {
     formData.value.name.trim().length >= 2 &&
     formData.value.city.trim().length >= 2 &&
     formData.value.experienceRange &&
-    formData.value.expertise.length > 0
+    formData.value.expertise.length > 0 &&
+    formData.value.phoneNum.trim().length > 0
   )
 })
 
 const hasIncompleteIdentity = computed(() => {
-  return !formData.value.fullnameKtp.trim() || !formData.value.ktpNum.trim() || !formData.value.npwp.trim()
+  return (
+    !formData.value.fullnameKtp.trim() ||
+    !formData.value.ktpNum.trim() ||
+    !formData.value.npwp.trim() ||
+    !formData.value.phoneNum.trim()
+  )
 })
 
 const isFormValid = computed(() => {

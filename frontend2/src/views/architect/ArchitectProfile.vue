@@ -106,18 +106,6 @@
                   {{ t.profile.viewMode.ktpNum }}
                 </label>
                 <p class="text-lg font-semibold text-black">{{ store.profileKtpNum || '-' }}</p>
-                <div class="flex items-center gap-2 mt-1">
-                  <span
-                    :class="[
-                      'px-3 py-1 rounded-full text-xs font-medium',
-                      store.profileKtpVerified
-                        ? 'bg-green-100 text-green-800 border border-green-200'
-                        : 'bg-gray-100 text-gray-600 border border-gray-200'
-                    ]"
-                  >
-                    {{ store.profileKtpVerified ? t.profile.viewMode.verified : t.profile.viewMode.notVerified }}
-                  </span>
-                </div>
               </div>
 
               <div>
@@ -125,18 +113,6 @@
                   {{ t.profile.viewMode.npwp }}
                 </label>
                 <p class="text-lg font-semibold text-black">{{ store.profileNpwp || '-' }}</p>
-                <div class="flex items-center gap-2 mt-1">
-                  <span
-                    :class="[
-                      'px-3 py-1 rounded-full text-xs font-medium',
-                      store.profileNpwpVerified
-                        ? 'bg-green-100 text-green-800 border border-green-200'
-                        : 'bg-gray-100 text-gray-600 border border-gray-200'
-                    ]"
-                  >
-                    {{ store.profileNpwpVerified ? t.profile.viewMode.verified : t.profile.viewMode.notVerified }}
-                  </span>
-                </div>
               </div>
             </div>
 
@@ -146,81 +122,12 @@
               </label>
               <p class="text-lg font-semibold text-black">{{ store.profileFullnameKtp }}</p>
             </div>
-          </div>
 
-          <!-- Phone Verification Card -->
-          <div class="bg-white rounded-3xl p-8 shadow-sm border border-black/5 space-y-5">
-            <div class="flex items-center justify-between">
-              <div>
-                <h3 class="text-lg font-bold text-black">
-                  {{ t.identityDocs?.phoneNum || 'Mobile Phone Number' }}
-                </h3>
-                <p v-if="store.profilePhoneNumber" class="text-base text-black/70 mt-1">
-                  {{ store.profilePhoneNumber }}
-                </p>
-              </div>
-              <span
-                :class="[
-                  'px-3 py-1 rounded-full text-xs font-medium',
-                  store.profilePhoneVerified
-                    ? 'bg-green-100 text-green-800 border border-green-200'
-                    : 'bg-amber-100 text-amber-800 border border-amber-200'
-                ]"
-              >
-                {{
-                  store.profilePhoneVerified
-                    ? t.identityDocs?.verified || 'Verified'
-                    : t.identityDocs?.notVerified || 'Not verified'
-                }}
-              </span>
-            </div>
-
-            <div v-if="!store.profilePhoneVerified" class="space-y-4">
-              <div class="flex gap-3">
-                <input
-                  v-model="otpPhone"
-                  type="tel"
-                  :placeholder="t.identityDocs?.phoneNumPlaceholder || 'e.g., 08123456789'"
-                  class="flex-1 px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all text-sm"
-                />
-                <button
-                  @click="handleSendOtp"
-                  :disabled="!otpPhone || otpSending"
-                  class="px-5 py-3 bg-brand-brown text-white rounded-2xl text-sm font-semibold hover:bg-brand-brown-dark transition-all disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
-                >
-                  {{ otpSending ? '...' : t.identityDocs?.sendOtp || 'Send OTP' }}
-                </button>
-              </div>
-
-              <div v-if="otpSent" class="space-y-3">
-                <p class="text-sm text-green-700 font-medium">
-                  {{ t.identityDocs?.otpSent || 'OTP sent to your WhatsApp' }}
-                </p>
-                <div class="flex gap-3">
-                  <input
-                    v-model="otpCode"
-                    type="text"
-                    maxlength="6"
-                    :placeholder="t.identityDocs?.otpCodePlaceholder || '6-digit OTP'"
-                    class="flex-1 px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all text-sm tracking-widest"
-                    @input="otpCode = otpCode.replace(/\D/g, '')"
-                  />
-                  <button
-                    @click="handleVerifyOtp"
-                    :disabled="otpCode.length !== 6 || otpVerifying"
-                    class="px-5 py-3 bg-brand-brown text-white rounded-2xl text-sm font-semibold hover:bg-brand-brown-dark transition-all disabled:opacity-40 disabled:cursor-not-allowed"
-                  >
-                    {{
-                      otpVerifying ? t.identityDocs?.verifying || 'Verifying...' : t.identityDocs?.verify || 'Verify'
-                    }}
-                  </button>
-                </div>
-                <button @click="handleSendOtp" class="text-xs text-brand-brown hover:underline">
-                  {{ t.identityDocs?.resendOtp || 'Resend OTP' }}
-                </button>
-              </div>
-
-              <p v-if="otpError" class="text-sm text-red-600">{{ otpError }}</p>
+            <div v-if="store.profilePhoneNumber">
+              <label class="block text-sm font-semibold text-black/50 mb-2">
+                {{ t.identityDocs?.phoneNum || 'Mobile Phone Number' }}
+              </label>
+              <p class="text-lg font-semibold text-black">{{ store.profilePhoneNumber }}</p>
             </div>
           </div>
         </div>
@@ -235,7 +142,8 @@
             expertise: store.profileExpertise,
             fullnameKtp: store.profileFullnameKtp,
             ktpNum: store.profileKtpNum,
-            npwp: store.profileNpwp
+            npwp: store.profileNpwp,
+            phoneNum: store.profilePhoneNumber
           }"
           :is-loading="store.isLoading"
           :error="store.error"
@@ -277,13 +185,6 @@ const showToast = ref(false)
 const toastMessage = ref('')
 const toastType = ref('success')
 
-const otpPhone = ref('')
-const otpCode = ref('')
-const otpSent = ref(false)
-const otpSending = ref(false)
-const otpVerifying = ref(false)
-const otpError = ref('')
-
 const displayToast = (message, type = 'success') => {
   toastMessage.value = message
   toastType.value = type
@@ -307,40 +208,9 @@ const handleCancel = () => {
   store.clearError()
 }
 
-const handleSendOtp = async () => {
-  otpError.value = ''
-  otpSending.value = true
-  try {
-    await store.sendPhoneOtp(otpPhone.value)
-    otpSent.value = true
-    otpCode.value = ''
-  } catch {
-    otpError.value = store.error || t.value.identityDocs?.otpError || 'Gagal mengirim OTP.'
-  } finally {
-    otpSending.value = false
-  }
-}
-
-const handleVerifyOtp = async () => {
-  otpError.value = ''
-  otpVerifying.value = true
-  try {
-    await store.verifyPhoneOtp(otpPhone.value, otpCode.value)
-    otpSent.value = false
-    displayToast(t.value.identityDocs?.phoneVerifiedSuccess || 'Phone number successfully verified.', 'success')
-  } catch {
-    otpError.value = store.error || t.value.identityDocs?.otpError || 'OTP tidak valid.'
-  } finally {
-    otpVerifying.value = false
-  }
-}
-
 onMounted(async () => {
   try {
     await store.fetchProfile()
-    if (store.profilePhoneNumber) {
-      otpPhone.value = store.profilePhoneNumber
-    }
   } catch (error) {
     displayToast(t.value.profile?.toast?.loadError || 'Failed to load profile', 'error')
   }

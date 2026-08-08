@@ -136,7 +136,7 @@
                 <p class="text-sm text-amber-800 mt-1">
                   {{
                     t.proposalCreate?.identityIncompleteDesc ||
-                    'Complete your KTP, NPWP, full name, and WhatsApp OTP verification before submitting a bid. You can still save a draft.'
+                    'Complete your KTP, NPWP, full name, and phone number before submitting a bid. You can still save a draft.'
                   }}
                 </p>
                 <button
@@ -365,7 +365,7 @@
                   <p class="text-sm text-gray-600 mt-2 leading-relaxed">
                     {{
                       t.proposalCreate?.identityIncompleteDesc ||
-                      'Complete your KTP, NPWP, full name, and WhatsApp OTP verification before submitting a bid. You can still save a draft.'
+                      'Complete your KTP, NPWP, full name, and phone number before submitting a bid. You can still save a draft.'
                     }}
                   </p>
 
@@ -446,7 +446,7 @@ const identityMissing = computed(() => {
   if (!p.ktpNum || !p.ktpNum.trim()) missing.push('KTP')
   if (!p.npwp || !p.npwp.trim()) missing.push('NPWP')
   if (!p.fullnameKtp || !p.fullnameKtp.trim()) missing.push('Nama Lengkap sesuai KTP')
-  if (!p.phoneVerified) missing.push('Verifikasi nomor HP')
+  if (!p.phoneNumber || !p.phoneNumber.trim()) missing.push('Nomor HP')
   return missing
 })
 

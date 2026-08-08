@@ -327,7 +327,9 @@ export default {
       npwp: 'NPWP',
       npwpPlaceholder: 'Enter 15-16 digit NPWP',
       fullnameKtp: 'Full Name (as in KTP)',
-      fullnameKtpPlaceholder: 'e.g., Budi Santoso'
+      fullnameKtpPlaceholder: 'e.g., Budi Santoso',
+      phoneNum: 'Phone Number',
+      phoneNumPlaceholder: 'e.g., 08123456789'
     },
     validation: {
       nameRequired: 'Practice name is required',
@@ -342,7 +344,9 @@ export default {
       ktpNumRequired: 'KTP number is required',
       ktpNumInvalid: 'KTP number must be exactly 16 digits',
       npwpRequired: 'NPWP is required',
-      npwpInvalid: 'NPWP must be 15 or 16 digits'
+      npwpInvalid: 'NPWP must be 15 or 16 digits',
+      phoneNumRequired: 'Phone number is required',
+      phoneNumInvalid: 'Phone number must be 8 to 16 digits'
     },
     toast: {
       updateSuccess: 'Profile updated successfully',
@@ -466,10 +470,10 @@ export default {
     backToOpportunities: 'Back to Opportunities',
     identityIncompleteTitle: 'Identity verification required to submit',
     identityIncompleteDesc:
-      'Complete your KTP, NPWP, full name (as in KTP), and WhatsApp OTP phone verification before submitting a bid. You can still save a draft.',
+      'Complete your KTP, NPWP, full name (as in KTP), and phone number before submitting a bid. You can still save a draft.',
     identityIncompleteAction: 'Complete Profile',
     identityIncompleteError:
-      'Please complete your identity information (KTP, NPWP, full legal name, and phone OTP verification) in your Profile before submitting a bid. Your draft has been saved.',
+      'Please complete your identity information (KTP, NPWP, full legal name, and phone number) in your Profile before submitting a bid. Your draft has been saved.',
     identityIncompleteMissingLabel: 'Missing:',
     identityIncompleteDismiss: 'Later',
     savingDraft: 'Saving draft...',

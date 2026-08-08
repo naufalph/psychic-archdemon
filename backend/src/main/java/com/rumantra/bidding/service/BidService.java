@@ -449,11 +449,12 @@ public class BidService {
     boolean missingNpwp = architect.getNpwp() == null || architect.getNpwp().isBlank();
     boolean missingFullname =
         architect.getFullnameKtp() == null || architect.getFullnameKtp().isBlank();
-    boolean phoneNotVerified = !architect.isPhoneVerified();
+    boolean missingPhone =
+        architect.getPhoneNumber() == null || architect.getPhoneNumber().isBlank();
 
-    if (missingKtp || missingNpwp || missingFullname || phoneNotVerified) {
+    if (missingKtp || missingNpwp || missingFullname || missingPhone) {
       throw new IllegalStateException(
-          "IDENTITY_INCOMPLETE: Lengkapi informasi identitas (KTP, NPWP, nama lengkap sesuai KTP, dan verifikasi nomor HP) sebelum mengajukan penawaran.");
+          "IDENTITY_INCOMPLETE: Lengkapi informasi identitas (KTP, NPWP, nama lengkap sesuai KTP, dan nomor HP) sebelum mengajukan penawaran.");
     }
   }
 }

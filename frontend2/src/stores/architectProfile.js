@@ -89,33 +89,6 @@ export const useArchitectProfileStore = defineStore('architectProfile', {
 
     clearError() {
       this.error = null
-    },
-
-    async sendPhoneOtp(phoneNumber) {
-      try {
-        this.isLoading = true
-        this.error = null
-        await architectAPI.sendPhoneOtp({ phoneNumber })
-      } catch (error) {
-        this.error = error.response?.data?.message || 'Gagal mengirim OTP.'
-        throw error
-      } finally {
-        this.isLoading = false
-      }
-    },
-
-    async verifyPhoneOtp(phoneNumber, code) {
-      try {
-        this.isLoading = true
-        this.error = null
-        const response = await architectAPI.verifyPhoneOtp({ phoneNumber, code })
-        this.profile = response.data.data
-      } catch (error) {
-        this.error = error.response?.data?.message || 'OTP tidak valid atau sudah kadaluarsa.'
-        throw error
-      } finally {
-        this.isLoading = false
-      }
     }
   }
 })
