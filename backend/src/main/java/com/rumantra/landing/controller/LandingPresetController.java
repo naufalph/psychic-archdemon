@@ -2,6 +2,7 @@ package com.rumantra.landing.controller;
 
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +27,9 @@ public class LandingPresetController {
 
   private final LandingPresetService presetService;
   private final LandingBriefService briefService;
+
+  @Value("${app.rate-limit.trust-forwarded-header:false}")
+  private boolean trustForwardedHeader;
 
   @GetMapping("/presets")
   public ResponseEntity<ApiResponse<List<PresetResponse>>> getPresets() {
@@ -52,10 +56,17 @@ public class LandingPresetController {
     return ResponseEntity.ok(ApiResponse.success(briefService.consumeMine(userId)));
   }
 
+  /**
+   * X-Forwarded-For is attacker-controlled unless a proxy in front of us overwrites it, so a
+   * spoofed header would hand out a fresh rate-limit bucket per request. Only honour it where the
+   * deployment guarantees a proxy; default to the socket address everywhere else.
+   */
   private String resolveClientIp(HttpServletRequest request) {
-    String forwarded = request.getHeader("X-Forwarded-For");
-    if (forwarded != null && !forwarded.isBlank()) {
-      return forwarded.split(",")[0].trim();
+    if (trustForwardedHeader) {
+      String forwarded = request.getHeader("X-Forwarded-For");
+      if (forwarded != null && !forwarded.isBlank()) {
+        return forwarded.split(",")[0].trim();
+      }
     }
     return request.getRemoteAddr();
   }

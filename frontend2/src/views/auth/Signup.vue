@@ -247,6 +247,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useProjectBrief } from '@/composables/useProjectBrief'
 import { useLegalStore } from '@/stores/legal'
 import { useI18n } from '@/composables/useI18n'
 import BaseButton from '@/components/ui/BaseButton.vue'
@@ -261,14 +262,20 @@ import BaseAlert from '@/components/ui/BaseAlert.vue'
 const router = useRouter()
 const route = useRoute()
 
-// The brief token arrives nested inside ?redirect=/client/projects/create?brief=…
+// The brief token arrives nested inside ?redirect=/client/projects/create?brief=… — which
+// anyone can craft, so only bind a brief this browser actually created. Otherwise an attacker
+// could attach their own brief, and its phone number (which the create form writes to a fresh
+// profile), to someone else's new account.
 const briefTokenFromRedirect = () => {
   const redirect = route.query.redirect
   if (typeof redirect !== 'string') return null
   const match = redirect.match(/[?&]brief=([^&]+)/)
-  return match ? decodeURIComponent(match[1]) : null
+  if (!match) return null
+  const token = decodeURIComponent(match[1])
+  return token === storedToken() ? token : null
 }
 const authStore = useAuthStore()
+const { storedToken } = useProjectBrief()
 const legalStore = useLegalStore()
 const { t, locale } = useI18n()
 const legalAcceptance = ref(null)
