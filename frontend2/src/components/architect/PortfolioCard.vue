@@ -36,16 +36,16 @@
 
       <div class="absolute top-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
         <button
-          @click.stop="$emit('view')"
           class="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-blue-50 transition-colors"
           title="View"
+          @click.stop="$emit('view')"
         >
           <Eye class="w-4 h-4 text-blue-600" />
         </button>
         <button
-          @click.stop="$emit('edit')"
           class="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-amber-50 transition-colors"
           :title="t.portfolio.card.edit"
+          @click.stop="$emit('edit')"
         >
           <svg class="w-4 h-4 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
@@ -57,9 +57,9 @@
           </svg>
         </button>
         <button
-          @click.stop="$emit('delete')"
           class="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-red-50 transition-colors"
           :title="t.portfolio.card.delete"
+          @click.stop="$emit('delete')"
         >
           <svg class="w-4 h-4 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path

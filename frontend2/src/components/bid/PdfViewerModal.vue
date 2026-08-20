@@ -1,6 +1,6 @@
 <template>
   <TransitionRoot :show="isOpen" as="template">
-    <Dialog @close="$emit('close')" class="relative z-50">
+    <Dialog class="relative z-50" @close="$emit('close')">
       <TransitionChild
         as="template"
         enter="ease-out duration-300"
@@ -33,8 +33,8 @@
                   </p>
                 </div>
                 <button
-                  @click="$emit('close')"
                   class="w-10 h-10 bg-white/20 hover:bg-white/30 rounded-full flex items-center justify-center transition"
+                  @click="$emit('close')"
                 >
                   <X :size="24" />
                 </button>

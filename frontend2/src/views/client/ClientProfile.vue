@@ -4,8 +4,8 @@
       <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-200">
         <div class="bg-ink-700 px-8 py-6">
           <button
-            @click="goToDashboard"
             class="flex items-center gap-2 text-white hover:text-white/70 transition-colors mb-4 group"
+            @click="goToDashboard"
           >
             <ArrowLeftIcon class="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
             <span class="font-medium">{{ t.common.backToDashboard }}</span>
@@ -30,8 +30,8 @@
             <div class="flex justify-between items-center mb-6">
               <h2 class="text-xl font-semibold text-gray-900">{{ t.clientProfile.viewMode.title }}</h2>
               <button
-                @click="enableEdit"
                 class="px-4 py-2 bg-ink-700 text-white font-semibold rounded-lg hover:bg-brand-brown focus:outline-none focus:ring-2 focus:ring-brand-brown focus:ring-offset-2 transition-colors"
+                @click="enableEdit"
               >
                 {{ t.clientProfile.editProfile }}
               </button>

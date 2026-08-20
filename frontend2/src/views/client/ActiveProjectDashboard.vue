@@ -10,7 +10,7 @@
     <div v-else-if="error" class="flex items-center justify-center h-screen">
       <div class="text-center">
         <p class="text-red-500 mb-4">{{ error }}</p>
-        <button @click="loadAll" class="text-brand-brown hover:underline">
+        <button class="text-brand-brown hover:underline" @click="loadAll">
           {{ t.activeProjectDashboard.tryAgain }}
         </button>
       </div>
@@ -21,7 +21,7 @@
       <div class="bg-white border-b border-gray-200 px-6 py-4">
         <div class="max-w-6xl mx-auto flex items-center justify-between">
           <div class="flex items-center gap-4">
-            <button @click="router.push('/client/dashboard')" class="text-gray-500 hover:text-black transition">
+            <button class="text-gray-500 hover:text-black transition" @click="router.push('/client/dashboard')">
               <ArrowLeft :size="20" />
             </button>
             <div>
@@ -43,8 +43,8 @@
               {{ phases.length }}</span
             >
             <button
-              @click="router.push(`/client/projects/${projectId}/workspace`)"
               class="flex items-center gap-1.5 px-4 py-1.5 bg-ink-700 text-white text-xs font-semibold rounded-full hover:bg-ink-500 transition"
+              @click="router.push(`/client/projects/${projectId}/workspace`)"
             >
               <Layers :size="13" />
               {{ t.activeProjectDashboard.openWorkspace }}
@@ -202,15 +202,15 @@
                   <div class="flex items-center gap-2">
                     <button
                       v-if="pendingPaymentLink"
-                      @click="checkPaymentStatus"
                       class="px-3 py-2 text-xs font-semibold text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition"
+                      @click="checkPaymentStatus"
                     >
                       {{ t.activeProjectDashboard?.paidRefresh }}
                     </button>
                     <button
                       :disabled="payingPhaseId === phase.phaseId"
-                      @click="payPhase(phase)"
                       class="px-4 py-2 bg-ink-700 text-white text-sm font-semibold rounded-lg hover:bg-ink-500 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                      @click="payPhase(phase)"
                     >
                       <span v-if="payingPhaseId === phase.phaseId">{{ t.activeProjectDashboard?.processing }}</span>
                       <span v-else>{{

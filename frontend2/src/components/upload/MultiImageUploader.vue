@@ -11,16 +11,19 @@
     <!-- Empty state drop zone -->
     <div
       v-if="totalCount === 0"
+      :class="dropzoneClasses"
       @dragover="handleDragOver"
       @dragleave="handleDragLeave"
       @drop="handleDrop"
       @click="openPicker"
-      :class="dropzoneClasses"
     >
       <div class="text-center py-8">
         <Upload :size="32" class="text-gray-400 mx-auto mb-3" />
-        <p class="text-sm text-gray-600 font-medium mb-1">Drop images here or click to upload</p>
-        <p class="text-xs text-gray-400">PNG, JPG, GIF up to 5MB each (max {{ maxFiles }} files)</p>
+        <p class="text-sm text-gray-600 font-medium mb-1">{{ t.projectCreate.dropImages }}</p>
+        <p class="text-xs text-gray-400">
+          {{ t.projectCreate.imageFormats }} ({{ t.projectCreate.maxLabel }} {{ maxFiles }}
+          {{ t.projectCreate.maxFilesLabel }})
+        </p>
       </div>
     </div>
 
@@ -41,8 +44,8 @@
         <img :src="img.url" :alt="img.name" class="w-full h-full object-cover" />
         <button
           type="button"
-          @click="$emit('delete-existing', img.id)"
           class="absolute top-1 right-1 p-1 bg-white/90 rounded-full opacity-0 group-hover:opacity-100 transition"
+          @click="$emit('delete-existing', img.id)"
         >
           <X :size="16" class="text-gray-700" />
         </button>
@@ -57,8 +60,8 @@
         <img :src="preview" class="w-full h-full object-cover" />
         <button
           type="button"
-          @click="removeFile(index)"
           class="absolute top-1 right-1 p-1 bg-white/90 rounded-full opacity-0 group-hover:opacity-100 transition"
+          @click="removeFile(index)"
         >
           <X :size="16" class="text-gray-700" />
         </button>
@@ -67,8 +70,8 @@
       <!-- Add more button (shown while below max) -->
       <div
         v-if="totalCount < maxFiles"
-        @click="openPicker"
         class="aspect-square border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer hover:border-brand-gold transition"
+        @click="openPicker"
       >
         <Plus :size="32" class="text-gray-400" />
       </div>
@@ -80,11 +83,12 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { useI18n } from '@/composables/useI18n'
 import { Upload, Plus, X } from 'lucide-vue-next'
 import { useFileUpload } from '@/composables/useFileUpload'
 
 const props = defineProps({
-  label: String,
+  label: { type: String, default: '' },
   required: Boolean,
   maxFiles: {
     type: Number,
@@ -99,6 +103,8 @@ const props = defineProps({
     default: () => []
   }
 })
+
+const { t } = useI18n()
 
 const emit = defineEmits(['update:modelValue', 'delete-existing'])
 

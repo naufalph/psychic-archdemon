@@ -219,6 +219,16 @@ const routes = [
         path: 'users',
         name: 'UserManagement',
         component: () => import('@/views/superuser/UserManagement.vue')
+      },
+      {
+        path: 'landing',
+        name: 'LandingEditor',
+        component: () => import('@/views/superuser/LandingEditor.vue')
+      },
+      {
+        path: 'landing/presets',
+        name: 'PresetEditor',
+        component: () => import('@/views/superuser/PresetEditor.vue')
       }
     ]
   },

@@ -1,10 +1,10 @@
 <template>
   <div class="relative">
     <button
-      @click.stop="toggleDropdown"
       class="relative p-2 rounded-full transition-colors"
       :class="themeClasses.button"
       aria-label="Notifications"
+      @click.stop="toggleDropdown"
     >
       <BellIcon class="h-6 w-6" />
       <span
@@ -34,9 +34,9 @@
             <h3 class="text-lg font-semibold text-gray-900">{{ t.notifications.title }}</h3>
             <button
               v-if="notificationsStore.hasUnread"
-              @click="handleMarkAllAsRead"
               class="text-sm font-medium transition-colors"
               :class="themeClasses.markAllButton"
+              @click="handleMarkAllAsRead"
             >
               {{ t.notifications.markAllRead }}
             </button>
@@ -53,8 +53,8 @@
             <ExclamationCircleIcon class="h-12 w-12 mx-auto mb-3 text-red-400" />
             <p class="text-sm font-medium text-gray-900">Failed to load notifications</p>
             <button
-              @click="notificationsStore.fetchNotifications()"
               class="mt-2 text-sm text-blue-600 hover:text-blue-700"
+              @click="notificationsStore.fetchNotifications()"
             >
               Try again
             </button>
@@ -70,9 +70,9 @@
             <button
               v-for="notification in notificationsStore.recentNotifications"
               :key="notification.id"
-              @click="handleNotificationClick(notification)"
               class="w-full px-4 py-3 hover:bg-gray-50 transition-colors text-left flex gap-3"
               :class="{ 'bg-blue-50/50': !notification.isRead }"
+              @click="handleNotificationClick(notification)"
             >
               <div class="flex-shrink-0 mt-1">
                 <component :is="getNotificationIcon(notification.type)" class="h-6 w-6" :class="themeClasses.icon" />

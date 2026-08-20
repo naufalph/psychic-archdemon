@@ -6,16 +6,16 @@
         v-model="content"
         :placeholder="placeholder"
         :disabled="disabled"
-        @keydown.enter.exact.prevent="handleSend"
         rows="1"
         class="flex-1 resize-none rounded-2xl border border-gray-200 px-4 py-3 text-sm text-gray-800 placeholder-gray-400 focus:outline-none focus:border-brand-gold transition overflow-hidden"
         style="min-height: 44px; max-height: 120px"
+        @keydown.enter.exact.prevent="handleSend"
         @input="autoResize"
       />
       <button
-        @click="handleSend"
         :disabled="!content.trim() || disabled"
         class="flex-shrink-0 w-11 h-11 rounded-full bg-brand-brown text-white flex items-center justify-center hover:bg-black transition disabled:opacity-40 disabled:cursor-not-allowed"
+        @click="handleSend"
       >
         <Send :size="16" />
       </button>
@@ -48,7 +48,7 @@ const autoResize = () => {
   const el = textareaRef.value
   if (!el) return
   el.style.height = 'auto'
-  el.style.height = Math.min(el.scrollHeight, 120) + 'px'
+  el.style.height = `${Math.min(el.scrollHeight, 120)}px`
 }
 
 const handleSend = () => {

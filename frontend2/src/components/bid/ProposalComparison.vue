@@ -13,8 +13,8 @@
         <p v-if="bid.architectCompany" class="text-sm text-gray-500 mb-4">{{ bid.architectCompany }}</p>
         <button
           v-if="bid.status === 'PENDING'"
-          @click="handleAppoint(bid.id)"
           class="bg-brand-brown text-white px-5 py-2 rounded-full text-sm font-bold hover:bg-black transition"
+          @click="handleAppoint(bid.id)"
         >
           {{ t.proposalComparison.appointLead }}
         </button>
@@ -36,11 +36,11 @@
           <button
             v-for="type in IMAGE_TYPES"
             :key="type"
-            @click="switchType(type)"
             :class="[
               'px-4 py-1.5 rounded-full text-xs font-bold transition',
               activeImageType === type ? 'bg-brand-brown text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             ]"
+            @click="switchType(type)"
           >
             {{ imageTypeLabel[type] }}
           </button>
@@ -101,10 +101,10 @@
       <div class="flex justify-between items-center mt-3 min-h-[28px]">
         <div v-if="imageAImages.length > 1" class="flex items-center gap-2">
           <button
-            @click="imageIndexA = Math.max(0, imageIndexA - 1)"
             :disabled="imageIndexA === 0"
             :title="t.proposalComparison.prevImage"
             class="w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-30 transition"
+            @click="imageIndexA = Math.max(0, imageIndexA - 1)"
           >
             <ChevronLeft :size="12" />
           </button>
@@ -114,10 +114,10 @@
             }}
           </span>
           <button
-            @click="imageIndexA = Math.min(imageAImages.length - 1, imageIndexA + 1)"
             :disabled="imageIndexA === imageAImages.length - 1"
             :title="t.proposalComparison.nextImage"
             class="w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-30 transition"
+            @click="imageIndexA = Math.min(imageAImages.length - 1, imageIndexA + 1)"
           >
             <ChevronRight :size="12" />
           </button>
@@ -130,10 +130,10 @@
 
         <div v-if="imageBImages.length > 1" class="flex items-center gap-2">
           <button
-            @click="imageIndexB = Math.max(0, imageIndexB - 1)"
             :disabled="imageIndexB === 0"
             :title="t.proposalComparison.prevImage"
             class="w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-30 transition"
+            @click="imageIndexB = Math.max(0, imageIndexB - 1)"
           >
             <ChevronLeft :size="12" />
           </button>
@@ -143,10 +143,10 @@
             }}
           </span>
           <button
-            @click="imageIndexB = Math.min(imageBImages.length - 1, imageIndexB + 1)"
             :disabled="imageIndexB === imageBImages.length - 1"
             :title="t.proposalComparison.nextImage"
             class="w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-30 transition"
+            @click="imageIndexB = Math.min(imageBImages.length - 1, imageIndexB + 1)"
           >
             <ChevronRight :size="12" />
           </button>

@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-[#F4F5F7] py-12">
     <div class="max-w-5xl mx-auto px-6">
-      <button @click="router.back()" class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition">
+      <button class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition" @click="router.back()">
         <ArrowLeft :size="20" />
         Back
       </button>
@@ -141,16 +141,16 @@
 
         <div v-if="detail.project.status === 'PENDING_APPROVAL'" class="flex gap-3 justify-end">
           <button
-            @click="openRejectModal"
             :disabled="processing"
             class="px-5 py-2.5 text-sm font-semibold rounded-full border border-red-200 text-red-600 hover:bg-red-50 transition disabled:opacity-50"
+            @click="openRejectModal"
           >
             {{ t.superuserProjectDetail.reject }}
           </button>
           <button
-            @click="validate(true, null)"
             :disabled="processing"
             class="px-5 py-2.5 text-sm font-semibold rounded-full bg-gray-900 text-white hover:bg-gray-700 transition disabled:opacity-50"
+            @click="validate(true, null)"
           >
             {{ t.superuserProjectDetail.approve }}
           </button>
@@ -176,16 +176,16 @@
           <div class="flex gap-3 mt-5 justify-end">
             <button
               type="button"
-              @click="closeRejectModal"
               class="px-4 py-2 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-100 transition"
+              @click="closeRejectModal"
             >
               {{ t.superuserProjectDetail.rejectModalCancel }}
             </button>
             <button
               type="button"
-              @click="confirmReject"
               :disabled="!rejectReason.trim() || processing"
               class="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition disabled:opacity-50"
+              @click="confirmReject"
             >
               {{ t.superuserProjectDetail.rejectModalConfirm }}
             </button>

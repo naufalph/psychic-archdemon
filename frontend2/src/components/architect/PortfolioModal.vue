@@ -27,8 +27,8 @@
                     {{ isEditMode ? t.portfolio.modal.editTitle : t.portfolio.modal.createTitle }}
                   </h2>
                   <button
-                    @click="handleClose"
                     class="w-10 h-10 rounded-full hover:bg-gray-100 transition-colors flex items-center justify-center"
+                    @click="handleClose"
                   >
                     <svg class="w-5 h-5 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -38,8 +38,8 @@
               </div>
 
               <form
-                @submit.prevent="handleSubmit"
                 class="p-6 space-y-6 max-h-[calc(100vh-200px)] md:max-h-[calc(100vh-160px)] overflow-y-auto"
+                @submit.prevent="handleSubmit"
               >
                 <div class="space-y-2">
                   <label class="block text-sm font-semibold text-black/70 tracking-tight">
@@ -150,13 +150,12 @@
                 <div class="flex justify-end items-center gap-4">
                   <button
                     type="button"
-                    @click="handleClose"
                     class="px-6 py-3 text-black/60 hover:text-black transition-colors font-semibold"
+                    @click="handleClose"
                   >
                     {{ t.portfolio.modal.cancel }}
                   </button>
                   <button
-                    @click="handleSubmit"
                     :disabled="!isFormValid || isLoading"
                     :class="[
                       'px-8 py-3 rounded-full font-semibold transition-all flex items-center gap-2',
@@ -164,6 +163,7 @@
                         ? 'bg-brand-brown text-white hover:bg-brand-brown-dark hover:scale-105'
                         : 'bg-black/10 text-black/30 cursor-not-allowed'
                     ]"
+                    @click="handleSubmit"
                   >
                     <svg v-if="isLoading" class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />

@@ -13,10 +13,12 @@ import com.rumantra.shared.dto.ApiResponse;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/rmtr/architects")
 @RequiredArgsConstructor
+@Slf4j
 public class ArchitectController {
 
   private final ArchitectService architectService;
@@ -40,6 +42,7 @@ public class ArchitectController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(ApiResponse.<ArchitectDto>builder().success(false).message(e.getMessage()).build());
     } catch (Exception e) {
+      log.error("Failed to update architect profile", e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(
               ApiResponse.<ArchitectDto>builder()
@@ -63,6 +66,7 @@ public class ArchitectController {
               .data(architect)
               .build());
     } catch (Exception e) {
+      log.error("Failed to retrieve architect profile", e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(
               ApiResponse.<ArchitectDto>builder()
@@ -89,6 +93,7 @@ public class ArchitectController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(ApiResponse.<ArchitectDto>builder().success(false).message(e.getMessage()).build());
     } catch (Exception e) {
+      log.error("Failed to update architect onboarding profile", e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(
               ApiResponse.<ArchitectDto>builder()
@@ -113,6 +118,7 @@ public class ArchitectController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(ApiResponse.<Void>builder().success(false).message(e.getMessage()).build());
     } catch (Exception e) {
+      log.error("Failed to send architect OTP", e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(
               ApiResponse.<Void>builder()
@@ -139,6 +145,7 @@ public class ArchitectController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(ApiResponse.<ArchitectDto>builder().success(false).message(e.getMessage()).build());
     } catch (Exception e) {
+      log.error("Architect OTP verification failed", e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(
               ApiResponse.<ArchitectDto>builder()

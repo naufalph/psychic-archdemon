@@ -98,18 +98,17 @@
       <p v-if="store.error" class="text-sm text-red-600 px-1">{{ store.error }}</p>
 
       <div class="flex justify-between items-center pt-4">
-        <button @click="emit('back')" class="px-6 py-3 text-black/60 hover:text-black transition-colors">
+        <button class="px-6 py-3 text-black/60 hover:text-black transition-colors" @click="emit('back')">
           {{ t.identityDocs?.back || 'Back' }}
         </button>
         <div class="flex gap-3">
           <button
-            @click="handleSkip"
             class="px-6 py-3 border border-black/10 rounded-full text-black/60 hover:bg-black/5 transition-all text-sm font-medium"
+            @click="handleSkip"
           >
             {{ t.identityDocs?.skip || 'Skip for now' }}
           </button>
           <button
-            @click="handleSave"
             :disabled="!hasAnyField || !isFormValid || store.isLoading"
             :class="[
               'px-8 py-3 rounded-full font-semibold transition-all text-sm',
@@ -117,6 +116,7 @@
                 ? 'bg-brand-brown text-white hover:bg-brand-brown-dark hover:scale-105'
                 : 'bg-black/10 text-black/30 cursor-not-allowed'
             ]"
+            @click="handleSave"
           >
             {{ store.isLoading ? t.identityDocs?.saving || 'Saving...' : t.identityDocs?.save || 'Save & Continue' }}
           </button>
@@ -147,7 +147,7 @@ const hasAnyField = computed(
 )
 
 const isFormValid = computed(() => {
-  const { fullnameKtp, ktpNum, npwp } = formData.value
+  const { ktpNum, npwp } = formData.value
   if (ktpNum && !/^[0-9]{16}$/.test(ktpNum)) return false
   if (npwp && !/^[0-9]{15,16}$/.test(npwp)) return false
   return true

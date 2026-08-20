@@ -6,9 +6,9 @@
         role="checkbox"
         :aria-checked="modelValue"
         :disabled="!isReady"
-        @click="toggle"
         class="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-all disabled:cursor-not-allowed disabled:opacity-40"
         :class="modelValue ? 'border-black bg-black' : 'border-gray-300 bg-white hover:border-gray-400'"
+        @click="toggle"
       >
         <Check v-if="modelValue" :size="14" class="text-white" stroke-width="3" />
       </button>
@@ -66,8 +66,8 @@
                     {{ activeDocType === 'ACCOUNT_TC' ? legalText.termsLabel : legalText.privacyLabel }}
                   </h2>
                   <button
-                    @click="closeModal"
                     class="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                    @click="closeModal"
                   >
                     <X :size="20" />
                   </button>

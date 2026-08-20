@@ -29,6 +29,7 @@ import com.rumantra.client.domain.Client;
 import com.rumantra.client.dto.ClientSignupRequestDto;
 import com.rumantra.client.repository.ClientRepository;
 import com.rumantra.client.service.ClientService;
+import com.rumantra.landing.service.LandingBriefService;
 import com.rumantra.legal.dto.AcceptanceRequest;
 import com.rumantra.legal.service.AgreementService;
 import com.rumantra.security.JwtUtils;
@@ -64,6 +65,7 @@ public class UserService {
   private final BidQuotaService bidQuotaService;
   private final SubscriptionService subscriptionService;
   private final AgreementService agreementService;
+  private final LandingBriefService landingBriefService;
 
   @Value("${spring.security.oauth2.client.registration.google.client-id}")
   private String googleClientId;
@@ -229,6 +231,12 @@ public class UserService {
       ClientSignupRequestDto clientSignupRequestDto =
           ClientSignupRequestDto.builder().userId(user.getId()).build();
       clientService.register(clientSignupRequestDto);
+    }
+
+    // Best-effort: a failed link must never fail the registration itself
+    if (signupRequest.getLandingBriefToken() != null
+        && !signupRequest.getLandingBriefToken().isBlank()) {
+      landingBriefService.linkToUser(signupRequest.getLandingBriefToken(), user.getId());
     }
 
     return mapToDto(user);

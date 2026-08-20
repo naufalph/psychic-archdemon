@@ -26,6 +26,8 @@ public class ProjectResponse {
   private Long designBudgetMax;
   private String projectCategory;
   private String buildingFunction;
+  private String projectScope;
+  private String subCategory;
   private Integer estimatedBuildArea;
   private Integer numberOfFloors;
   private Boolean ownsLand;

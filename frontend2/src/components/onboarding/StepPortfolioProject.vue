@@ -92,8 +92,8 @@
             >
               <img :src="previewImage(image)" alt="Project image" class="w-full h-full object-cover" />
               <button
-                @click="removeImage(index)"
                 class="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                @click="removeImage(index)"
               >
                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -132,11 +132,10 @@
       </div>
 
       <div class="flex justify-between items-center pt-4">
-        <button @click="handleBack" class="px-6 py-3 text-black/60 hover:text-black transition-colors">
+        <button class="px-6 py-3 text-black/60 hover:text-black transition-colors" @click="handleBack">
           {{ t.onboarding.portfolioProject.back }}
         </button>
         <button
-          @click="handleSave"
           :disabled="!isFormValid || store.isLoading"
           :class="[
             'px-8 py-3 rounded-full font-semibold transition-all flex items-center gap-2',
@@ -144,6 +143,7 @@
               ? 'bg-brand-brown text-white hover:bg-brand-brown-dark hover:scale-105'
               : 'bg-black/10 text-black/30 cursor-not-allowed'
           ]"
+          @click="handleSave"
         >
           <svg v-if="store.isLoading" class="w-5 h-5 animate-spin" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />

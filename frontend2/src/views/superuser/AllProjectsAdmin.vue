@@ -8,16 +8,13 @@
       <button
         v-for="s in statusFilters"
         :key="s.value"
-        @click="
-          selectedStatus = s.value;
-          load()
-        "
         class="px-3 py-1.5 text-xs font-semibold rounded-lg transition"
         :class="
           selectedStatus === s.value
             ? 'bg-gray-900 text-white'
             : 'bg-white border border-gray-200 text-gray-600 hover:border-gray-400'
         "
+        @click="selectStatus(s.value)"
       >
         {{ s.label }}
       </button>
@@ -55,17 +52,17 @@
           <div class="flex gap-2 shrink-0">
             <button
               v-if="project.status === 'NEGOTIATION'"
-              @click="overrideNegotiation(project.id)"
               :disabled="processing === project.id"
               class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition disabled:opacity-50"
+              @click="overrideNegotiation(project.id)"
             >
               {{ t.allProjectsAdmin.forceInProgress }}
             </button>
             <button
               v-if="!['CANCELLED', 'COMPLETED'].includes(project.status)"
-              @click="forceCancel(project.id)"
               :disabled="processing === project.id"
               class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition disabled:opacity-50"
+              @click="forceCancel(project.id)"
             >
               {{ t.allProjectsAdmin.forceCancel }}
             </button>
@@ -115,6 +112,11 @@ const load = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const selectStatus = status => {
+  selectedStatus.value = status
+  load()
 }
 
 const forceCancel = async id => {

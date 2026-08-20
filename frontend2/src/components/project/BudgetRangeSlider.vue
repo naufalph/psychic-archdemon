@@ -9,20 +9,20 @@
       <div class="relative">
         <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">IDR</span>
         <input
-          type="text"
           v-model="totalDisplay"
+          type="text"
+          :required="required"
+          :placeholder="t.projectCreate.budgetPlaceholder"
+          class="w-full pl-16 pr-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-right font-medium"
           @input="handleTotalInput"
           @blur="formatTotalDisplay"
-          :required="required"
-          placeholder="e.g., 2.000.000.000"
-          class="w-full pl-16 pr-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-right font-medium"
         />
       </div>
     </div>
 
     <div v-if="localTotal > 0" class="space-y-4 bg-gray-50 rounded-2xl p-6">
       <div class="flex items-center justify-between">
-        <span class="text-sm font-medium text-gray-700">Flexible Range</span>
+        <span class="text-sm font-medium text-gray-700">{{ t.projectCreate.flexibleRange }}</span>
         <div class="text-sm text-gray-600 font-medium">
           {{ formatCurrency(localMin) }} - {{ formatCurrency(localMax) }}
         </div>
@@ -46,25 +46,25 @@
         </div>
 
         <input
+          v-model.number="localMin"
           type="range"
           :min="sliderMin"
           :max="sliderMax"
           :step="step"
-          v-model.number="localMin"
-          @input="handleMinChange"
           class="absolute w-full h-2 bg-transparent appearance-none top-6"
           style="z-index: 3; pointer-events: auto"
+          @input="handleMinChange"
         />
 
         <input
+          v-model.number="localMax"
           type="range"
           :min="sliderMin"
           :max="sliderMax"
           :step="step"
-          v-model.number="localMax"
-          @input="handleMaxChange"
           class="absolute w-full h-2 bg-transparent appearance-none top-6"
           style="z-index: 4; pointer-events: auto"
+          @input="handleMaxChange"
         />
       </div>
 
@@ -84,6 +84,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import { useI18n } from '@/composables/useI18n'
 import { Info } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -116,6 +117,8 @@ const props = defineProps({
     default: 30
   }
 })
+
+const { t } = useI18n()
 
 const emit = defineEmits(['update:modelValue'])
 
@@ -167,15 +170,6 @@ function formatNumberWithCommas(num) {
   return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
 }
 
-function formatCurrencyWithCommas(value) {
-  if (!value && value !== 0) return 'IDR 0'
-  return 'IDR ' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
-}
-
-function parseNumberFromDisplay(str) {
-  return parseInt(str.replace(/\./g, ''), 10) || 0
-}
-
 function handleTotalInput(event) {
   const value = event.target.value.replace(/[^0-9]/g, '')
   const numValue = parseInt(value, 10) || 0
@@ -222,7 +216,7 @@ function emitValue() {
 
 const formatCurrency = value => {
   if (!value && value !== 0) return 'IDR 0'
-  return 'IDR ' + value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+  return `IDR ${value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')}`
 }
 </script>
 

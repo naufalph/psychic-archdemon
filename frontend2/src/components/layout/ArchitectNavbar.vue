@@ -13,10 +13,10 @@
 
           <NotificationDropdown variant="architect" />
 
-          <div class="relative" ref="dropdownRef">
+          <div ref="dropdownRef" class="relative">
             <button
-              @click="toggleDropdown"
               class="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-amber-50 transition-colors border border-transparent hover:border-amber-200"
+              @click="toggleDropdown"
             >
               <div
                 class="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-white font-semibold text-sm shadow-sm"
@@ -49,16 +49,16 @@
                 <div class="border-b border-gray-100 py-2">
                   <router-link
                     to="/architect/profile"
-                    @click="closeDropdown"
                     class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-amber-50 transition-colors flex items-center gap-2"
+                    @click="closeDropdown"
                   >
                     <UserCircleIcon class="w-4 h-4" />
                     {{ t.navbar.profile }}
                   </router-link>
                   <router-link
                     to="/architect/portfolios"
-                    @click="closeDropdown"
                     class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-amber-50 transition-colors flex items-center gap-2"
+                    @click="closeDropdown"
                   >
                     <PhotoIcon class="w-4 h-4" />
                     {{ t.navbar.portfolios }}
@@ -80,16 +80,16 @@
 
                       <button
                         v-if="hasClientRole"
-                        @click="switchToClient"
                         class="w-full text-left px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
+                        @click="switchToClient"
                       >
                         <UserIcon class="w-4 h-4" />
                         {{ t.navbar.clientMode }}
                       </button>
                       <button
                         v-else
-                        @click="activateClientRole"
                         class="w-full text-left px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-50 transition-colors flex items-center gap-2"
+                        @click="activateClientRole"
                       >
                         <PlusCircleIcon class="w-4 h-4" />
                         {{ t.navbar.activateClient }}
@@ -103,20 +103,20 @@
                     </p>
                     <div class="flex gap-2">
                       <button
-                        @click="setLanguage('en')"
                         :class="[
                           'flex-1 px-3 py-2 rounded-lg text-sm transition-colors',
                           locale === 'en' ? 'bg-amber-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         ]"
+                        @click="setLanguage('en')"
                       >
                         English
                       </button>
                       <button
-                        @click="setLanguage('id')"
                         :class="[
                           'flex-1 px-3 py-2 rounded-lg text-sm transition-colors',
                           locale === 'id' ? 'bg-amber-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         ]"
+                        @click="setLanguage('id')"
                       >
                         Indonesia
                       </button>
@@ -125,8 +125,8 @@
 
                   <div class="border-t border-gray-100 mt-2 pt-2">
                     <button
-                      @click="handleLogout"
                       class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
+                      @click="handleLogout"
                     >
                       <ArrowRightOnRectangleIcon class="w-4 h-4" />
                       {{ t.navbar.logout }}

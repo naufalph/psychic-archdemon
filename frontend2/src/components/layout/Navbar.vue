@@ -9,28 +9,6 @@
         <Logo />
       </div>
 
-      <!-- Center nav links -->
-      <div class="hidden md:flex items-center gap-8 flex-none">
-        <router-link to="/" class="text-caption font-medium text-ink-400 hover:text-ink-900 transition-colors">
-          {{ t.nav.caraKerja }}
-        </router-link>
-        <router-link to="/" class="text-caption font-medium text-ink-400 hover:text-ink-900 transition-colors">
-          {{ t.nav.inspirasi }}
-        </router-link>
-        <router-link to="/" class="text-caption font-medium text-ink-400 hover:text-ink-900 transition-colors">
-          {{ t.nav.temukanArsitek }}
-        </router-link>
-        <span class="flex items-center gap-1.5">
-          <router-link to="/" class="text-caption font-medium text-ink-400 hover:text-ink-900 transition-colors">
-            {{ t.nav.riset }}
-          </router-link>
-          <span
-            class="text-white text-micro-cap font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider bg-ink-900"
-            >NEW</span
-          >
-        </span>
-      </div>
-
       <!-- Right actions -->
       <div class="hidden md:flex items-center gap-4 flex-1 justify-end">
         <LanguageSwitcher />
@@ -128,27 +106,24 @@
       v-if="isMobileMenuOpen"
       class="absolute top-full left-0 w-full bg-white shadow-xl p-8 flex flex-col gap-6 md:hidden border-b border-gray-100"
     >
-      <router-link to="/" class="text-lg font-bold">{{ t.nav.caraKerja }}</router-link>
-      <router-link to="/" class="text-lg font-bold">{{ t.nav.inspirasi }}</router-link>
-      <router-link to="/" class="text-lg font-bold">{{ t.nav.temukanArsitek }}</router-link>
       <router-link to="/signup?role=ARCHITECT" class="text-lg font-bold">{{ t.nav.untukArsitek }}</router-link>
       <hr class="border-gray-100" />
       <div class="flex flex-col gap-4">
         <LanguageSwitcher />
         <template v-if="isAuthenticated">
           <router-link :to="dashboardPath">
-            <BaseButton variant="ghost" :fullWidth="true" class="font-bold">{{ t.nav.dasbor }}</BaseButton>
+            <BaseButton variant="ghost" :full-width="true" class="font-bold">{{ t.nav.dasbor }}</BaseButton>
           </router-link>
-          <BaseButton variant="primary" :fullWidth="true" class="font-bold" @click="handleLogout">
+          <BaseButton variant="primary" :full-width="true" class="font-bold" @click="handleLogout">
             {{ t.nav.keluar }}
           </BaseButton>
         </template>
         <template v-else>
           <router-link to="/login">
-            <BaseButton variant="ghost" :fullWidth="true" class="font-bold">{{ t.nav.masuk }}</BaseButton>
+            <BaseButton variant="ghost" :full-width="true" class="font-bold">{{ t.nav.masuk }}</BaseButton>
           </router-link>
           <router-link to="/signup">
-            <BaseButton variant="primary" :fullWidth="true" class="font-bold">{{ t.nav.mulaiProyek }}</BaseButton>
+            <BaseButton variant="primary" :full-width="true" class="font-bold">{{ t.nav.mulaiProyek }}</BaseButton>
           </router-link>
         </template>
       </div>

@@ -10,7 +10,7 @@
     <div v-else-if="error" class="flex items-center justify-center h-screen">
       <div class="text-center">
         <p class="text-red-500 mb-4">{{ error }}</p>
-        <button @click="loadData" class="text-brand-brown hover:underline">{{ t.finalization.tryAgain }}</button>
+        <button class="text-brand-brown hover:underline" @click="loadData">{{ t.finalization.tryAgain }}</button>
       </div>
     </div>
 
@@ -19,7 +19,7 @@
       <div class="bg-white border-b border-gray-200 px-6 py-4">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
           <div class="flex items-center gap-4">
-            <button @click="router.back()" class="text-gray-500 hover:text-black transition">
+            <button class="text-gray-500 hover:text-black transition" @click="router.back()">
               <ArrowLeft :size="20" />
             </button>
             <div>
@@ -187,7 +187,7 @@
                 <p class="text-xs text-gray-500 mt-0.5">{{ t.clientFinalization.discussionSubtitle }}</p>
               </div>
 
-              <div class="flex-1 min-h-0" v-if="bid.conversationId">
+              <div v-if="bid.conversationId" class="flex-1 min-h-0">
                 <ChatPanel :conversation-id="bid.conversationId" class="h-full" />
               </div>
               <div v-else class="flex-1 flex items-center justify-center text-gray-400 text-sm">
@@ -197,9 +197,9 @@
 
             <div class="text-center">
               <button
-                @click="openSupportChat"
                 :disabled="supportLoading || itSupportRequested"
                 class="text-xs text-gray-400 hover:text-gray-600 underline disabled:cursor-not-allowed"
+                @click="openSupportChat"
               >
                 {{
                   supportLoading
@@ -232,9 +232,9 @@
                 </p>
                 <div class="space-y-3">
                   <button
-                    @click="handleConfirm"
                     :disabled="actionLoading"
                     class="w-full px-5 py-3.5 bg-brand-brown text-white rounded-full font-bold hover:bg-black transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    @click="handleConfirm"
                   >
                     <CheckCircle :size="18" />
                     {{
@@ -244,9 +244,9 @@
                     }}
                   </button>
                   <button
-                    @click="showRejectDialog = true"
                     :disabled="actionLoading"
                     class="w-full px-5 py-3.5 bg-white text-red-600 border border-red-200 rounded-full font-bold hover:bg-red-50 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    @click="showRejectDialog = true"
                   >
                     <XCircle :size="18" />
                     {{ t.clientFinalization.clientPanel.rejectButton }}
@@ -275,9 +275,9 @@
                   {{ t.clientFinalization.architectPanel.confirmPrompt }}
                 </p>
                 <button
-                  @click="handleArchitectConfirm"
                   :disabled="actionLoading"
                   class="w-full px-5 py-3.5 bg-brand-brown text-white rounded-full font-bold hover:bg-black transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  @click="handleArchitectConfirm"
                 >
                   <CheckCircle :size="18" />
                   {{
@@ -302,15 +302,15 @@
         </p>
         <div class="flex gap-3">
           <button
-            @click="showRejectDialog = false"
             class="flex-1 px-5 py-3 border border-gray-200 rounded-full font-bold text-gray-700 hover:bg-gray-50 transition"
+            @click="showRejectDialog = false"
           >
             {{ t.clientFinalization.rejectDialog.cancel }}
           </button>
           <button
-            @click="handleReject"
             :disabled="actionLoading === 'reject'"
             class="flex-1 px-5 py-3 bg-red-600 text-white rounded-full font-bold hover:bg-red-700 transition disabled:opacity-50"
+            @click="handleReject"
           >
             {{
               actionLoading === 'reject'

@@ -3,7 +3,7 @@
     <!-- Header -->
     <div class="bg-white border-b border-gray-200 px-6 py-4">
       <div class="max-w-7xl mx-auto flex items-center gap-4">
-        <button @click="router.back()" class="text-gray-500 hover:text-black transition">
+        <button class="text-gray-500 hover:text-black transition" @click="router.back()">
           <ArrowLeft :size="20" />
         </button>
         <div>
@@ -26,9 +26,9 @@
           <div
             v-for="conv in conversations"
             :key="conv.id"
-            @click="selectConversation(conv)"
             class="bg-white rounded-2xl border p-4 cursor-pointer transition hover:shadow-md"
             :class="selectedConversation?.id === conv.id ? 'border-brand-gold shadow-md' : 'border-gray-200'"
+            @click="selectConversation(conv)"
           >
             <div class="flex items-start justify-between gap-2">
               <div class="min-w-0">

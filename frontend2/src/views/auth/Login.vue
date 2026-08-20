@@ -26,7 +26,7 @@
           <p class="text-gray-500">{{ t.auth.login.subtitle }}</p>
         </div>
 
-        <form @submit.prevent="handleLogin" class="space-y-6">
+        <form class="space-y-6" @submit.prevent="handleLogin">
           <BaseInput
             v-model="formData.email"
             :label="t.auth.login.email"
@@ -48,9 +48,9 @@
           <div class="flex items-center justify-between">
             <div class="flex items-center gap-2">
               <input
+                id="rememberMe"
                 v-model="formData.rememberMe"
                 type="checkbox"
-                id="rememberMe"
                 class="w-4 h-4 rounded border-gray-300 text-brand-gold focus:ring-brand-gold"
               />
               <label for="rememberMe" class="text-sm text-gray-600 cursor-pointer">
@@ -66,8 +66,8 @@
 
           <BaseButton
             type="submit"
-            :fullWidth="true"
-            :isLoading="isLoading"
+            :full-width="true"
+            :is-loading="isLoading"
             class="bg-brand-gold hover:bg-brand-gold-light text-white border-none"
           >
             {{ t.auth.login.signIn }}
@@ -87,8 +87,8 @@
           <div class="grid grid-cols-2 gap-4">
             <button
               type="button"
-              @click="handleGoogleLogin"
               class="flex items-center justify-center gap-3 px-6 py-3.5 border-2 border-gray-200 rounded-full hover:bg-gray-50 hover:border-gray-300 transition-all font-medium"
+              @click="handleGoogleLogin"
             >
               <svg class="w-5 h-5" viewBox="0 0 24 24">
                 <path
@@ -112,8 +112,8 @@
             </button>
             <button
               type="button"
-              @click="handleLinkedInLogin"
               class="flex items-center justify-center gap-3 px-6 py-3.5 border-2 border-gray-200 rounded-full hover:bg-gray-50 hover:border-gray-300 transition-all font-medium"
+              @click="handleLinkedInLogin"
             >
               <svg class="w-5 h-5" fill="#0A66C2" viewBox="0 0 24 24">
                 <path
@@ -126,7 +126,10 @@
 
           <p class="text-center text-gray-500 text-sm">
             {{ t.auth.login.noAccount }}
-            <router-link to="/signup" class="text-brand-gold hover:text-brand-gold-light font-semibold">
+            <router-link
+              :to="{ path: '/signup', query: route.query.redirect ? { redirect: route.query.redirect } : {} }"
+              class="text-brand-gold hover:text-brand-gold-light font-semibold"
+            >
               {{ t.auth.login.signUpHere }}
             </router-link>
           </p>
@@ -145,6 +148,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ArrowLeft } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
+import { useProjectBrief } from '@/composables/useProjectBrief'
 import { useI18n } from '@/composables/useI18n'
 import BaseButton from '@/components/ui/BaseButton.vue'
 import BaseInput from '@/components/ui/BaseInput.vue'
@@ -157,6 +161,7 @@ const route = useRoute()
 const authStore = useAuthStore()
 const { t } = useI18n()
 const legalConsentNotice = ref(null)
+const { pendingBriefPath } = useProjectBrief()
 
 const isLoading = ref(false)
 const errorMessage = ref('')
@@ -252,7 +257,7 @@ const handleOAuthCallback = () => {
     }
     authStore.token = token
 
-    const redirectPath = getRedirectPath(authStore.user)
+    const redirectPath = pendingBriefPath(authStore.user) || getRedirectPath(authStore.user)
     router.push(redirectPath)
   }
 }
@@ -293,7 +298,7 @@ const handleLogin = async () => {
     })
 
     if (result.success) {
-      const redirectPath = route.query.redirect || getRedirectPath(result.user)
+      const redirectPath = route.query.redirect || pendingBriefPath(result.user) || getRedirectPath(result.user)
       router.push(redirectPath)
     }
   } catch (error) {

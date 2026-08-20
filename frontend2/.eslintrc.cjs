@@ -7,8 +7,9 @@ module.exports = {
   },
   extends: [
     'eslint:recommended',
-    '@vue/eslint-config-prettier',
-    'plugin:vue/vue3-recommended'
+    'plugin:vue/vue3-recommended',
+    // must stay last so it can switch off the stylistic rules Prettier owns
+    'prettier'
   ],
   parserOptions: {
     ecmaVersion: 2022,
@@ -21,7 +22,7 @@ module.exports = {
     'vue/no-unused-vars': 'error',
     'vue/no-multiple-template-root': 'off',
     'vue/component-definition-name-casing': ['error', 'PascalCase'],
-    'vue/component-name-in-template-casing': ['error', 'kebab-case'],
+    'vue/component-name-in-template-casing': ['error', 'PascalCase'],
     'vue/prop-name-casing': ['error', 'camelCase'],
     'vue/attribute-hyphenation': ['error', 'always'],
     'vue/v-on-event-hyphenation': ['error', 'always'],
@@ -69,28 +70,13 @@ module.exports = {
     // JavaScript rules
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
-    'no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    // ignoreRestSiblings keeps the `const { omitMe, ...rest } = obj` idiom legal
+    'no-unused-vars': ['error', { argsIgnorePattern: '^_', ignoreRestSiblings: true }],
     'no-undef': 'error',
     'prefer-const': 'error',
     'no-var': 'error',
     'object-shorthand': 'error',
-    'prefer-template': 'error',
-    'template-curly-spacing': 'off',
-    'array-bracket-spacing': ['error', 'never'],
-    'object-curly-spacing': ['error', 'always'],
-    'comma-dangle': ['error', 'never'],
-    'quotes': ['error', 'single', { avoidEscape: true }],
-    'semi': ['error', 'never'],
-    'indent': ['error', 2, { SwitchCase: 1 }],
-    'max-len': ['warn', { code: 120, ignoreUrls: true }],
-    'no-trailing-spaces': 'error',
-    'eol-last': 'error',
-
-    // Import rules
-    'sort-imports': ['error', {
-      ignoreCase: true,
-      ignoreDeclarationSort: true
-    }]
+    'prefer-template': 'error'
   },
   globals: {
     defineProps: 'readonly',
@@ -101,10 +87,7 @@ module.exports = {
   overrides: [
     {
       files: ['*.vue'],
-      parser: 'vue-eslint-parser',
-      rules: {
-        'indent': 'off'
-      }
+      parser: 'vue-eslint-parser'
     }
   ]
 }

@@ -51,14 +51,14 @@
 
           <div class="flex gap-3">
             <button
-              @click="startFresh"
               class="flex-1 px-6 py-3 border border-black/10 rounded-2xl text-black/60 hover:bg-black/5 transition-all"
+              @click="startFresh"
             >
               Start Fresh
             </button>
             <button
-              @click="continueOnboarding"
               class="flex-1 px-6 py-3 bg-brand-brown text-white rounded-2xl font-semibold hover:bg-brand-brown-dark transition-all"
+              @click="continueOnboarding"
             >
               Continue
             </button>
@@ -85,7 +85,7 @@
             <p class="text-sm font-semibold text-red-800">Error</p>
             <p class="text-sm text-red-700">{{ store.error }}</p>
           </div>
-          <button @click="store.error = null" class="text-red-500 hover:text-red-700">
+          <button class="text-red-500 hover:text-red-700" @click="store.error = null">
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -98,9 +98,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
 import { useOnboardingStore } from '@/stores/onboarding'
-import { useAuthStore } from '@/stores/auth'
 import ProgressBar from '@/components/onboarding/ProgressBar.vue'
 import StepWelcome from '@/components/onboarding/StepWelcome.vue'
 import StepIdentity from '@/components/onboarding/StepIdentity.vue'
@@ -113,9 +111,7 @@ import StepIdentityDocs from '@/components/onboarding/StepIdentityDocs.vue'
 import StepReview from '@/components/onboarding/StepReview.vue'
 import StepActivated from '@/components/onboarding/StepActivated.vue'
 
-const router = useRouter()
 const store = useOnboardingStore()
-const authStore = useAuthStore()
 
 const showRecoveryModal = ref(false)
 const currentStep = computed(() => store.currentStep)

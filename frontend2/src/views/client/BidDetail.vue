@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-surface-alt py-12">
     <div class="max-w-7xl mx-auto px-6">
-      <button @click="router.back()" class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition">
+      <button class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition" @click="router.back()">
         <ArrowLeft :size="20" />
         {{ t.bidDetail.backToProject }}
       </button>
@@ -14,7 +14,7 @@
 
       <div v-else-if="error" class="bg-white rounded-3xl border border-gray-200 p-12 text-center">
         <p class="text-red-600 mb-4">{{ error }}</p>
-        <button @click="fetchBid" class="text-brand-brown hover:underline">Try again</button>
+        <button class="text-brand-brown hover:underline" @click="fetchBid">Try again</button>
       </div>
 
       <div v-else-if="currentBid" class="lg:grid lg:grid-cols-3 gap-6">
@@ -58,7 +58,7 @@
                   <p class="text-xs text-gray-500 uppercase font-bold mb-1">
                     {{ t.proposalCreate?.buildingType || 'Building Type' }}
                   </p>
-                  <p class="text-gray-900">{{ currentProject.buildingType }}</p>
+                  <p class="text-gray-900">{{ projectTypeLabel(currentProject, locale) }}</p>
                 </div>
 
                 <div v-if="groupedProjectDeliverables.length > 0">
@@ -291,8 +291,8 @@
             <div class="flex gap-4">
               <button
                 v-if="currentBid.status === 'PENDING'"
-                @click="handleAcceptBid"
                 class="flex-1 px-6 py-4 bg-brand-brown text-white rounded-full font-bold hover:bg-black transition shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                @click="handleAcceptBid"
               >
                 <Check :size="20" />
                 {{ t.bidDetail.acceptProposal }}
@@ -314,7 +314,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
+import { projectTypeLabel } from '@/constants/projectTaxonomy'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { ArrowLeft, Check, Trophy } from 'lucide-vue-next'
@@ -324,7 +325,7 @@ import { useProjectsStore } from '@/stores/projects'
 import BidImageGallery from '@/components/bid/BidImageGallery.vue'
 import BidStatusBadge from '@/components/project/BidStatusBadge.vue'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const bidsStore = useBidsStore()

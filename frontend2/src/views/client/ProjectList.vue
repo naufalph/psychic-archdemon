@@ -29,7 +29,7 @@
 
     <div v-else-if="error" class="text-center py-12">
       <p class="text-red-600 mb-4">{{ error }}</p>
-      <button @click="fetchProjects" class="text-brand-brown hover:underline">Try again</button>
+      <button class="text-brand-brown hover:underline" @click="fetchProjects">Try again</button>
     </div>
 
     <div v-else-if="projects.length === 0" class="text-center py-20">

@@ -13,9 +13,9 @@
       <div
         v-for="portfolio in portfolios"
         :key="portfolio.id"
-        @click="toggleSelection(portfolio.id)"
         class="cursor-pointer border-2 rounded-2xl p-4 transition-all hover:shadow-md"
         :class="isSelected(portfolio.id) ? 'border-brand-brown bg-brand-tan' : 'border-gray-200 bg-white'"
+        @click="toggleSelection(portfolio.id)"
       >
         <div class="flex gap-4">
           <div v-if="portfolio.images && portfolio.images.length > 0" class="flex-shrink-0">

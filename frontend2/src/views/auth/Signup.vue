@@ -38,9 +38,9 @@
           :initial="{ opacity: 0, x: -30 }"
           :enter="{ opacity: 1, x: 0 }"
           :delay="100"
-          @click="selectRole('CLIENT')"
           class="bg-white rounded-3xl p-12 border-2 border-gray-100 hover:border-brand-gold hover:shadow-xl transition-all cursor-pointer group"
           :class="{ 'border-brand-gold shadow-xl': selectedRole === 'CLIENT' }"
+          @click="selectRole('CLIENT')"
         >
           <div
             class="w-16 h-16 bg-surface-alt rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-gold/10 transition-colors"
@@ -56,9 +56,9 @@
           :initial="{ opacity: 0, x: 30 }"
           :enter="{ opacity: 1, x: 0 }"
           :delay="200"
-          @click="selectRole('ARCHITECT')"
           class="bg-white rounded-3xl p-12 border-2 border-gray-100 hover:border-brand-brown hover:shadow-xl transition-all cursor-pointer group"
           :class="{ 'border-brand-brown shadow-xl': selectedRole === 'ARCHITECT' }"
+          @click="selectRole('ARCHITECT')"
         >
           <div
             class="w-16 h-16 bg-surface-alt rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-brown/10 transition-colors"
@@ -85,7 +85,7 @@
           <p class="text-gray-500">{{ t.auth.signup.subtitle }}</p>
         </div>
 
-        <form @submit.prevent="handleSignup" class="space-y-6">
+        <form class="space-y-6" @submit.prevent="handleSignup">
           <div class="grid md:grid-cols-2 gap-6">
             <BaseInput
               v-model="formData.firstName"
@@ -132,15 +132,15 @@
             required
           />
 
-          <LegalAcceptance v-model="formData.agreeTerms" ref="legalAcceptance" />
+          <LegalAcceptance ref="legalAcceptance" v-model="formData.agreeTerms" />
           <p v-if="errors.agreeTerms" class="text-sm text-red-500 -mt-3">{{ errors.agreeTerms }}</p>
 
           <BaseAlert v-if="errorMessage" variant="error">{{ errorMessage }}</BaseAlert>
 
           <BaseButton
             type="submit"
-            :fullWidth="true"
-            :isLoading="isLoading"
+            :full-width="true"
+            :is-loading="isLoading"
             class="bg-brand-gold hover:bg-brand-gold-light text-white border-none"
           >
             {{ t.auth.signup.createAccount }}
@@ -160,8 +160,8 @@
           <div class="grid grid-cols-2 gap-4">
             <button
               type="button"
-              @click="handleGoogleLogin"
               class="flex items-center justify-center gap-3 px-6 py-3.5 border-2 border-gray-200 rounded-full hover:bg-gray-50 hover:border-gray-300 transition-all font-medium"
+              @click="handleGoogleLogin"
             >
               <svg class="w-5 h-5" viewBox="0 0 24 24">
                 <path
@@ -185,8 +185,8 @@
             </button>
             <button
               type="button"
-              @click="handleLinkedInLogin"
               class="flex items-center justify-center gap-3 px-6 py-3.5 border-2 border-gray-200 rounded-full hover:bg-gray-50 hover:border-gray-300 transition-all font-medium"
+              @click="handleLinkedInLogin"
             >
               <svg class="w-5 h-5" fill="#0A66C2" viewBox="0 0 24 24">
                 <path
@@ -199,7 +199,10 @@
 
           <p class="text-center text-gray-500 text-sm">
             {{ t.auth.signup.alreadyHave }}
-            <router-link to="/login" class="text-brand-gold hover:text-brand-gold-light font-semibold">
+            <router-link
+              :to="{ path: '/login', query: route.query.redirect ? { redirect: route.query.redirect } : {} }"
+              class="text-brand-gold hover:text-brand-gold-light font-semibold"
+            >
               {{ t.auth.signup.signInHere }}
             </router-link>
           </p>
@@ -215,7 +218,7 @@
       >
         <ConfettiExplosion
           v-if="showConfetti"
-          :particleCount="100"
+          :particle-count="100"
           :force="0.3"
           :duration="3000"
           :colors="['#C5A17A', '#7C4728', '#10B981', '#FBBF24']"
@@ -257,6 +260,14 @@ import BaseAlert from '@/components/ui/BaseAlert.vue'
 
 const router = useRouter()
 const route = useRoute()
+
+// The brief token arrives nested inside ?redirect=/client/projects/create?brief=…
+const briefTokenFromRedirect = () => {
+  const redirect = route.query.redirect
+  if (typeof redirect !== 'string') return null
+  const match = redirect.match(/[?&]brief=([^&]+)/)
+  return match ? decodeURIComponent(match[1]) : null
+}
 const authStore = useAuthStore()
 const legalStore = useLegalStore()
 const { t, locale } = useI18n()
@@ -377,13 +388,16 @@ const handleSignup = async () => {
   try {
     const acceptances = legalAcceptance.value?.acceptances || []
 
-    const result = await authStore.register({
+    await authStore.register({
       firstName: formData.value.firstName,
       lastName: formData.value.lastName,
       email: formData.value.email,
       password: formData.value.password,
       role: selectedRole.value,
-      acceptances
+      acceptances,
+      // Binds a landing brief to this account now, because the verification email
+      // cannot carry the token and may be opened on another device.
+      landingBriefToken: briefTokenFromRedirect()
     })
 
     isLoading.value = false
@@ -396,7 +410,7 @@ const handleSignup = async () => {
       // - ARCHITECT with needsArchitectOnboarding=true → /architect/onboarding
       // - ARCHITECT with needsArchitectOnboarding=false → /architect/dashboard
       // - CLIENT → /client/dashboard
-      router.push('/login')
+      router.push({ path: '/login', query: route.query.redirect ? { redirect: route.query.redirect } : {} })
     }, 5000)
   } catch (error) {
     console.error('Signup failed:', error)

@@ -41,9 +41,9 @@
           <h1 class="text-2xl font-bold mb-3 text-black">{{ t.auth.callback.error }}</h1>
           <p class="text-gray-500 mb-6">{{ errorMessage || t.auth.callback.genericError }}</p>
           <BaseButton
-            @click="goToLogin"
-            :fullWidth="true"
+            :full-width="true"
             class="bg-brand-gold hover:bg-brand-gold-light text-white border-none"
+            @click="goToLogin"
           >
             {{ t.auth.callback.returnToLogin }}
           </BaseButton>
@@ -57,6 +57,7 @@
 import { ref, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useProjectBrief } from '@/composables/useProjectBrief'
 import { useI18n } from '@/composables/useI18n'
 import BaseButton from '@/components/ui/BaseButton.vue'
 import Logo from '@/components/ui/Logo.vue'
@@ -65,6 +66,7 @@ import { Loader2, CheckCircle2, XCircle } from 'lucide-vue-next'
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
+const { pendingBriefPath } = useProjectBrief()
 const { t } = useI18n()
 
 const isProcessing = ref(true)
@@ -131,7 +133,9 @@ const processCallback = () => {
     isSuccess.value = true
     isProcessing.value = false
 
-    const redirectPath = getRedirectPath(authStore.user)
+    // OAuth cannot carry ?redirect= through the provider round-trip, so a brief left in
+    // this browser is the only signal that the user came from the landing mini-form.
+    const redirectPath = pendingBriefPath(authStore.user) || getRedirectPath(authStore.user)
     setTimeout(() => {
       router.push(redirectPath)
     }, 1500)

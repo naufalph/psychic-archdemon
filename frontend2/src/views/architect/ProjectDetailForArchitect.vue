@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-surface-alt py-12">
     <div class="max-w-7xl mx-auto px-6">
-      <button @click="router.back()" class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition">
+      <button class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition" @click="router.back()">
         <ArrowLeft :size="20" />
         Back
       </button>
@@ -16,7 +16,7 @@
         <div class="flex flex-col items-center gap-4">
           <AlertCircle :size="64" class="text-red-400" />
           <p class="text-red-600 mb-2 text-lg font-medium">{{ error }}</p>
-          <button @click="router.back()" class="text-brand-brown hover:underline font-medium">Back</button>
+          <button class="text-brand-brown hover:underline font-medium" @click="router.back()">Back</button>
         </div>
       </div>
 
@@ -25,7 +25,7 @@
           <div class="flex justify-between items-start mb-6">
             <div>
               <h1 class="text-3xl font-bold text-black mb-2">{{ project.title }}</h1>
-              <p class="text-gray-500">{{ project.location }} • {{ project.buildingType }}</p>
+              <p class="text-gray-500">{{ project.location }} • {{ projectTypeLabel(project, locale) }}</p>
             </div>
             <ProjectStatusBadge :status="project.status" />
           </div>
@@ -167,16 +167,16 @@
 
             <button
               v-if="existingBid.status === 'ACCEPTED' && project.status === 'NEGOTIATION'"
-              @click="router.push({ name: 'ArchitectFinalizationView', params: { projectId: route.params.projectId } })"
               class="w-full bg-brand-brown text-white py-4 px-6 rounded-2xl hover:bg-black transition flex items-center justify-center gap-3 text-lg font-bold"
+              @click="router.push({ name: 'ArchitectFinalizationView', params: { projectId: route.params.projectId } })"
             >
               <CheckCircle :size="24" />
               {{ t.projectDetailArchitect.finalizeAgreement }}
             </button>
 
             <div
-              class="bg-blue-50 border border-blue-200 rounded-2xl p-6 flex items-start gap-4"
               v-if="existingBid.status === 'PENDING'"
+              class="bg-blue-50 border border-blue-200 rounded-2xl p-6 flex items-start gap-4"
             >
               <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <Send :size="24" class="text-blue-600" />
@@ -188,8 +188,8 @@
             </div>
 
             <div
-              class="bg-yellow-50 border border-yellow-200 rounded-2xl p-6 flex items-start gap-4"
               v-if="existingBid.status === 'DRAFT'"
+              class="bg-yellow-50 border border-yellow-200 rounded-2xl p-6 flex items-start gap-4"
             >
               <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
                 <FileText :size="24" class="text-yellow-600" />
@@ -202,8 +202,8 @@
 
             <button
               v-if="existingBid.status === 'DRAFT'"
-              @click="goToProposal"
               class="w-full bg-brand-brown text-white py-4 px-6 rounded-2xl hover:bg-brand-brown-hover transition flex items-center justify-center gap-3 text-lg font-bold"
+              @click="goToProposal"
             >
               <Send :size="24" />
               {{ t.projectDetailArchitect.draftSaved }}
@@ -221,9 +221,9 @@
 
           <button
             v-else
-            @click="goToProposal"
             :disabled="project.status !== 'OPEN'"
             class="w-full bg-brand-brown text-white py-4 px-6 rounded-2xl hover:bg-brand-brown-hover transition flex items-center justify-center gap-3 text-lg font-bold disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-500"
+            @click="goToProposal"
           >
             <Send :size="24" />
             {{ t.projectDetailArchitect.noBidYet }}
@@ -255,6 +255,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import { projectTypeLabel } from '@/constants/projectTaxonomy'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Send, FileText, AlertCircle, Check, CheckCircle, ExternalLink, CalendarDays } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
@@ -263,7 +264,7 @@ import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
 import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const projectsStore = useProjectsStore()

@@ -47,11 +47,11 @@
 
       <div class="space-y-2 pt-2">
         <button
-          @click="$emit('toggle-compare')"
           :class="[
             'w-full px-4 py-2 rounded-full text-sm font-medium flex items-center justify-center gap-2 transition',
             isSelectedForCompare ? 'bg-brand-brown text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
           ]"
+          @click="$emit('toggle-compare')"
         >
           <Plus v-if="!isSelectedForCompare" :size="16" />
           <Check v-else :size="16" />
@@ -59,8 +59,8 @@
         </button>
 
         <button
-          @click="$emit('view-details', proposal.id)"
           class="w-full px-4 py-2 bg-white border-2 border-brand-gold text-brand-brown rounded-full text-sm font-medium hover:bg-brand-gold hover:text-white transition flex items-center justify-center gap-2"
+          @click="$emit('view-details', proposal.id)"
         >
           <Eye :size="16" />
           {{ t.proposalCard.viewDetails }}
@@ -68,8 +68,8 @@
 
         <button
           v-if="showAcceptButton"
-          @click="$emit('accept', proposal.id)"
           class="w-full px-4 py-3 bg-brand-brown text-white rounded-full font-bold hover:bg-black transition shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+          @click="$emit('accept', proposal.id)"
         >
           <Check :size="18" />
           {{ t.clientDashboard.acceptProposal }}
@@ -82,7 +82,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useI18n } from '@/composables/useI18n'
-import { Building, Trophy, Sparkles, Check, Eye, Plus } from 'lucide-vue-next'
+import { Building, Trophy, Check, Eye, Plus } from 'lucide-vue-next'
 
 const props = defineProps({
   proposal: {

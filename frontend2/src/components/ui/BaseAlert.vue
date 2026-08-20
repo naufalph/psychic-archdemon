@@ -8,7 +8,7 @@
           <slot />
         </div>
       </div>
-      <button v-if="dismissible" @click="visible = false" :class="dismissClasses" aria-label="Dismiss">
+      <button v-if="dismissible" :class="dismissClasses" :aria-label="t.common.dismiss" @click="visible = false">
         <X :size="16" />
       </button>
     </div>
@@ -17,6 +17,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
+import { useI18n } from '@/composables/useI18n'
 import { AlertCircle, CheckCircle2, AlertTriangle, Info, X } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -34,6 +35,8 @@ const props = defineProps({
     default: false
   }
 })
+
+const { t } = useI18n()
 
 const visible = ref(true)
 

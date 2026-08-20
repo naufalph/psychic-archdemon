@@ -2,8 +2,8 @@
   <div class="min-h-full bg-surface-alt">
     <div class="max-w-7xl mx-auto px-6 py-12">
       <button
-        @click="$router.push({ name: 'ArchitectDashboard' })"
         class="flex items-center gap-2 text-black/60 hover:text-black transition-colors mb-6"
+        @click="$router.push({ name: 'ArchitectDashboard' })"
       >
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -20,8 +20,8 @@
             <p class="text-lg text-black/60 tracking-tight mt-2">Showcase your architectural projects</p>
           </div>
           <button
-            @click="handleAddPortfolio"
             class="px-6 py-3 bg-brand-brown text-white rounded-full font-semibold hover:bg-brand-brown-dark transition-all hover:scale-105 flex items-center gap-2"
+            @click="handleAddPortfolio"
           >
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -63,8 +63,8 @@
             <p class="text-black/60">{{ t.portfolio.emptyState.description }}</p>
           </div>
           <button
-            @click="handleAddPortfolio"
             class="px-8 py-3 bg-brand-brown text-white rounded-full font-semibold hover:bg-brand-brown-dark transition-all hover:scale-105"
+            @click="handleAddPortfolio"
           >
             {{ t.portfolio.emptyState.cta }}
           </button>
@@ -109,15 +109,15 @@
           <p class="text-black/60">{{ t.portfolio.deleteConfirm.message }}</p>
           <div class="flex justify-end gap-3">
             <button
-              @click="cancelDelete"
               class="px-6 py-2 text-black/60 hover:text-black transition-colors font-semibold"
+              @click="cancelDelete"
             >
               {{ t.portfolio.deleteConfirm.cancel }}
             </button>
             <button
-              @click="confirmDelete"
               :disabled="store.isLoading"
               class="px-6 py-2 bg-red-600 text-white rounded-full font-semibold hover:bg-red-700 transition-all disabled:opacity-50"
+              @click="confirmDelete"
             >
               {{ t.portfolio.deleteConfirm.confirm }}
             </button>

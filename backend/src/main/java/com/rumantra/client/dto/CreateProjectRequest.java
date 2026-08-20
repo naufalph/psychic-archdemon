@@ -36,6 +36,12 @@ public class CreateProjectRequest {
   @Size(max = 255, message = "Building function must not exceed 255 characters")
   private String buildingFunction;
 
+  @Size(max = 20, message = "Project scope must not exceed 20 characters")
+  private String projectScope;
+
+  @Size(max = 60, message = "Sub-category must not exceed 60 characters")
+  private String subCategory;
+
   @Min(value = 1, message = "Estimated build area must be at least 1 square meter")
   private Integer estimatedBuildArea;
 

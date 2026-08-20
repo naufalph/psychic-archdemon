@@ -12,9 +12,9 @@
       </div>
       <input
         :value="modelValue"
-        @input="$emit('update:modelValue', $event.target.value)"
         :class="inputClasses"
         v-bind="$attrs"
+        @input="$emit('update:modelValue', $event.target.value)"
       />
     </div>
     <p v-if="error" class="mt-1 text-sm text-red-500 ml-1">{{ error }}</p>

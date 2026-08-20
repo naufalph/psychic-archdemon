@@ -35,6 +35,7 @@ import com.rumantra.notification.event.ProjectValidatedEvent;
 import com.rumantra.project.domain.ProjectPhase;
 import com.rumantra.project.repository.ProjectPhaseRepository;
 import com.rumantra.security.SecurityUtils;
+import com.rumantra.shared.constants.ProjectTaxonomy;
 import com.rumantra.shared.exception.ResourceNotFoundException;
 import com.rumantra.shared.storage.FileStorageService;
 
@@ -202,6 +203,8 @@ public class ProjectService {
     project.setDesignBudgetMax(request.getDesignBudgetMax());
     project.setProjectCategory(request.getProjectCategory());
     project.setBuildingFunction(request.getBuildingFunction());
+    project.setProjectScope(request.getProjectScope());
+    project.setSubCategory(request.getSubCategory());
     project.setEstimatedBuildArea(request.getEstimatedBuildArea());
     project.setNumberOfFloors(request.getNumberOfFloors());
     project.setOwnsLand(request.getOwnsLand());
@@ -244,8 +247,15 @@ public class ProjectService {
     if (project.getNumberOfFloors() == null) {
       missing.add("Number of Floors");
     }
-    if (project.getBuildingFunction() == null || project.getBuildingFunction().isBlank()) {
-      missing.add("Building Type");
+    if (!ProjectTaxonomy.isValidScope(project.getProjectScope())) {
+      missing.add("Project Scope");
+    }
+    String category = project.getBuildingFunction();
+    if (!ProjectTaxonomy.isValidCategory(category)) {
+      missing.add("Category");
+    } else if (ProjectTaxonomy.requiresSubCategory(category)
+        && !ProjectTaxonomy.isValidSubCategory(category, project.getSubCategory())) {
+      missing.add("Sub-Category");
     }
     if (project.getScopeOfWork() == null || project.getScopeOfWork().isBlank()) {
       missing.add("Detailed Requirements");
@@ -682,6 +692,8 @@ public class ProjectService {
         .designBudgetMax(project.getDesignBudgetMax())
         .projectCategory(project.getProjectCategory())
         .buildingFunction(project.getBuildingFunction())
+        .projectScope(project.getProjectScope())
+        .subCategory(project.getSubCategory())
         .estimatedBuildArea(project.getEstimatedBuildArea())
         .numberOfFloors(project.getNumberOfFloors())
         .ownsLand(project.getOwnsLand())
@@ -741,6 +753,8 @@ public class ProjectService {
         .budgetDisplay(budgetDisplay)
         .projectCategory(project.getProjectCategory())
         .buildingFunction(project.getBuildingFunction())
+        .projectScope(project.getProjectScope())
+        .subCategory(project.getSubCategory())
         .status(project.getStatus())
         .firstImageUrl(firstImageUrl)
         .build();
@@ -795,12 +809,30 @@ public class ProjectService {
   private String buildProjectTitle(Project project) {
     if (project.getTitle() != null && !project.getTitle().isBlank()) {
       return project.getTitle();
+    } else if (project.getSubCategory() != null && !project.getSubCategory().isBlank()) {
+      return humanizeToken(project.getSubCategory()) + " (Project #" + project.getId() + ")";
     } else if (project.getBuildingFunction() != null && !project.getBuildingFunction().isBlank()) {
-      return project.getBuildingFunction() + " (Project #" + project.getId() + ")";
+      return humanizeToken(project.getBuildingFunction()) + " (Project #" + project.getId() + ")";
     } else if (project.getProjectCategory() != null && !project.getProjectCategory().isBlank()) {
       return project.getProjectCategory() + " (Project #" + project.getId() + ")";
     } else {
       return "Project #" + project.getId();
     }
+  }
+
+  /** Taxonomy tokens are SCREAMING_SNAKE; never show one to a user verbatim. */
+  private String humanizeToken(String token) {
+    String[] words = token.toLowerCase().split("_");
+    StringBuilder sb = new StringBuilder();
+    for (String word : words) {
+      if (word.isEmpty()) {
+        continue;
+      }
+      if (sb.length() > 0) {
+        sb.append(' ');
+      }
+      sb.append(Character.toUpperCase(word.charAt(0))).append(word.substring(1));
+    }
+    return sb.toString();
   }
 }

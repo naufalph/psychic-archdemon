@@ -168,7 +168,7 @@ export const useAuthStore = defineStore('auth', {
       try {
         const response = await authAPI.verifyEmail(token)
 
-        const { success, message, data } = response.data
+        const { success, message } = response.data
 
         if (!success) {
           throw new Error(message || 'Email verification failed')
@@ -322,7 +322,7 @@ export const useAuthStore = defineStore('auth', {
     },
 
     // Handle login failure attempts
-    handleLoginFailure(error) {
+    handleLoginFailure() {
       this.loginAttempts++
 
       // Lock account after 5 failed attempts for 15 minutes

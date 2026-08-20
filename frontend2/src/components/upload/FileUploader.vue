@@ -7,13 +7,13 @@
 
     <div
       v-if="!file"
+      :class="dropzoneClasses"
       @dragover.prevent="isDragging = true"
       @dragleave.prevent="isDragging = false"
       @drop.prevent="handleDrop"
-      :class="dropzoneClasses"
     >
-      <input ref="fileInput" type="file" accept="application/pdf" @change="handleFileSelect" class="hidden" />
-      <div @click="$refs.fileInput.click()" class="text-center py-8 cursor-pointer">
+      <input ref="fileInput" type="file" accept="application/pdf" class="hidden" @change="handleFileSelect" />
+      <div class="text-center py-8 cursor-pointer" @click="$refs.fileInput.click()">
         <FileText :size="32" class="text-gray-400 mx-auto mb-3" />
         <p class="text-sm text-gray-600 font-medium mb-1">Drop PDF here or click to upload</p>
         <p class="text-xs text-gray-400">PDF up to 10MB</p>
@@ -26,7 +26,7 @@
         <p class="text-sm font-medium text-gray-900 truncate">{{ file.name }}</p>
         <p class="text-xs text-gray-500">{{ formatFileSize(file.size) }}</p>
       </div>
-      <button @click="removeFile" class="p-1 rounded-full hover:bg-gray-100 transition" type="button">
+      <button class="p-1 rounded-full hover:bg-gray-100 transition" type="button" @click="removeFile">
         <X :size="20" class="text-gray-600" />
       </button>
     </div>
@@ -40,7 +40,7 @@ import { ref, computed } from 'vue'
 import { FileText, X } from 'lucide-vue-next'
 
 const props = defineProps({
-  label: String,
+  label: { type: String, default: '' },
   required: Boolean,
   maxSize: {
     type: Number,
@@ -65,9 +65,9 @@ const dropzoneClasses = computed(() => [
 ])
 
 const formatFileSize = bytes => {
-  if (bytes < 1024) return bytes + ' B'
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
-  return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
+  if (bytes < 1024) return `${bytes} B`
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
 const validateFile = selectedFile => {

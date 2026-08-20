@@ -42,4 +42,9 @@ public class UserSignupRequestDto {
   @NotEmpty(message = "Acceptance of Terms & Conditions and Privacy Policy is required")
   @Valid
   private List<AcceptanceRequest> acceptances;
+
+  /**
+   * Optional: links a landing mini-form brief to this account so it survives email verification.
+   */
+  private String landingBriefToken;
 }

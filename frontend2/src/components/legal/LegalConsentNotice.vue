@@ -52,8 +52,8 @@
                     {{ activeDocType === 'ACCOUNT_TC' ? legalText.termsLabel : legalText.privacyLabel }}
                   </h2>
                   <button
-                    @click="closeModal"
                     class="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+                    @click="closeModal"
                   >
                     <X :size="20" />
                   </button>

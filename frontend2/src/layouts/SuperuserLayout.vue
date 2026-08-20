@@ -30,8 +30,8 @@
 
       <div class="px-3 py-4 border-t border-white/10 space-y-1">
         <button
-          @click="handleLogout"
           class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-white/60 hover:text-white hover:bg-white/5"
+          @click="handleLogout"
         >
           <LogOut :size="18" />
           <span>Sign Out</span>
@@ -66,6 +66,8 @@ import {
   AlertTriangle,
   MessageSquare,
   Users,
+  Image,
+  LayoutGrid,
   LogOut
 } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
@@ -91,13 +93,16 @@ const navItems = [
   { name: 'projects', label: 'All Projects', to: '/superuser/projects', icon: FolderOpen },
   { name: 'disputes', label: 'Disputes', to: '/superuser/disputes', icon: AlertTriangle },
   { name: 'support', label: 'Support', to: '/superuser/support', icon: MessageSquare },
-  { name: 'users', label: 'Users', to: '/superuser/users', icon: Users }
+  { name: 'users', label: 'Users', to: '/superuser/users', icon: Users },
+  { name: 'landing', label: 'Landing Page', to: '/superuser/landing', icon: Image },
+  { name: 'presets', label: 'Form Presets', to: '/superuser/landing/presets', icon: LayoutGrid }
 ]
 
 const isActive = item => {
   if (item.name === 'dashboard') return route.path === '/superuser/dashboard'
   if (item.name === 'projects') return route.path === '/superuser/projects'
   if (item.name === 'queue') return route.path === '/superuser/projects/queue'
+  if (item.name === 'landing') return route.path === '/superuser/landing'
   return route.path.startsWith(item.to)
 }
 

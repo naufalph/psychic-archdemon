@@ -48,25 +48,22 @@
           </div>
           <div class="flex gap-2">
             <button
-              @click="resolve(phase.id, 'APPROVE')"
               :disabled="processing === phase.id"
               class="flex-1 py-2 text-sm font-semibold rounded-lg bg-green-600 text-white hover:bg-green-700 transition disabled:opacity-50"
+              @click="resolve(phase.id, 'APPROVE')"
             >
               {{ t.disputeManagement.approveDeliverable }}
             </button>
             <button
-              @click="resolve(phase.id, 'REJECT')"
               :disabled="processing === phase.id"
               class="flex-1 py-2 text-sm font-semibold rounded-lg bg-orange-500 text-white hover:bg-orange-600 transition disabled:opacity-50"
+              @click="resolve(phase.id, 'REJECT')"
             >
               {{ t.disputeManagement.rejectToProgress }}
             </button>
             <button
-              @click="
-                resolving = null;
-                resolutionNote = ''
-              "
               class="px-4 py-2 text-sm font-semibold rounded-lg border border-gray-200 text-gray-600 hover:bg-gray-50 transition"
+              @click="cancelResolve()"
             >
               {{ t.disputeManagement.cancel }}
             </button>
@@ -74,11 +71,8 @@
         </div>
         <div v-else class="mt-3">
           <button
-            @click="
-              resolving = phase.id;
-              resolutionNote = ''
-            "
             class="px-4 py-1.5 text-xs font-semibold rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition"
+            @click="startResolve(phase.id)"
           >
             {{ t.disputeManagement.resolve }}
           </button>
@@ -114,6 +108,16 @@ const load = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const startResolve = phaseId => {
+  resolving.value = phaseId
+  resolutionNote.value = ''
+}
+
+const cancelResolve = () => {
+  resolving.value = null
+  resolutionNote.value = ''
 }
 
 const resolve = async (phaseId, decision) => {

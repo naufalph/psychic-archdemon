@@ -10,7 +10,7 @@
     <div v-else-if="error" class="flex items-center justify-center h-screen">
       <div class="text-center">
         <p class="text-red-500 mb-4">{{ error }}</p>
-        <button @click="loadData" class="text-brand-brown hover:underline">{{ t.finalization?.tryAgain }}</button>
+        <button class="text-brand-brown hover:underline" @click="loadData">{{ t.finalization?.tryAgain }}</button>
       </div>
     </div>
 
@@ -19,7 +19,7 @@
       <div class="bg-white border-b border-gray-200 px-6 py-4">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
           <div class="flex items-center gap-4">
-            <button @click="router.push('/architect/bids')" class="text-gray-500 hover:text-black transition">
+            <button class="text-gray-500 hover:text-black transition" @click="router.push('/architect/bids')">
               <ArrowLeft :size="20" />
             </button>
             <div>
@@ -182,7 +182,7 @@
                 <p class="text-xs text-gray-500 mt-0.5">{{ t.finalization?.discussionSubtitle }}</p>
               </div>
 
-              <div class="flex-1 min-h-0" v-if="bid.conversationId">
+              <div v-if="bid.conversationId" class="flex-1 min-h-0">
                 <ChatPanel :conversation-id="bid.conversationId" class="h-full" />
               </div>
               <div v-else class="flex-1 flex items-center justify-center text-gray-400 text-sm">
@@ -192,9 +192,9 @@
 
             <div class="text-center">
               <button
-                @click="openSupportChat"
                 :disabled="supportLoading || itSupportRequested"
                 class="text-xs text-gray-400 hover:text-gray-600 underline disabled:cursor-not-allowed"
+                @click="openSupportChat"
               >
                 {{ supportLoading ? 'Opening...' : itSupportRequested ? 'IT Support invited' : 'Request IT Support' }}
               </button>
@@ -220,9 +220,9 @@
                 </p>
                 <p v-else class="text-xs text-gray-400 mb-3">{{ t.finalization?.awaitingClientStatus }}</p>
                 <button
-                  @click="handleConfirm"
                   :disabled="actionLoading"
                   class="w-full px-5 py-3.5 bg-brand-brown text-white rounded-full font-bold hover:bg-black transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  @click="handleConfirm"
                 >
                   <CheckCircle :size="18" />
                   {{ actionLoading ? t.finalization?.confirming : t.finalization?.confirmButton }}
@@ -237,7 +237,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Clock, CheckCircle } from 'lucide-vue-next'
 import { useBidsStore } from '@/stores/bids'

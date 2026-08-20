@@ -104,6 +104,21 @@ public class GlobalExceptionHandler {
     return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
   }
 
+  @ExceptionHandler(RateLimitExceededException.class)
+  public ResponseEntity<?> handleRateLimitExceededException(
+      RateLimitExceededException ex, WebRequest request) {
+    ErrorResponse errorResponse =
+        ErrorResponse.builder()
+            .timestamp(ZonedDateTime.now())
+            .status(HttpStatus.TOO_MANY_REQUESTS.value())
+            .error("Too Many Requests")
+            .message(ex.getMessage())
+            .path(request.getDescription(false))
+            .build();
+
+    return new ResponseEntity<>(errorResponse, HttpStatus.TOO_MANY_REQUESTS);
+  }
+
   @ExceptionHandler(Exception.class)
   public ResponseEntity<?> handleGlobalException(Exception ex, WebRequest request) {
     log.error("Unexpected error occurred", ex);

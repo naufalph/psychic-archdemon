@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="handleSubmit" class="space-y-6">
+  <form class="space-y-6" @submit.prevent="handleSubmit">
     <div class="bg-white rounded-3xl p-8 shadow-sm border border-black/5 space-y-6">
       <div class="space-y-2">
         <label class="block text-sm font-semibold text-black/70 tracking-tight">
@@ -74,13 +74,13 @@
             v-for="tag in EXPERTISE_TAGS"
             :key="tag"
             type="button"
-            @click="toggleExpertise(tag)"
             :class="[
               'px-4 py-3 rounded-2xl font-medium text-sm transition-all',
               formData.expertise.includes(tag)
                 ? 'bg-brand-brown text-white shadow-md scale-105'
                 : 'bg-black/5 text-black/60 hover:bg-black/10'
             ]"
+            @click="toggleExpertise(tag)"
           >
             {{ t.expertiseTagLabels?.[tag] || tag }}
           </button>
@@ -169,8 +169,8 @@
     <div class="flex justify-end items-center gap-4">
       <button
         type="button"
-        @click="$emit.cancel"
         class="px-6 py-3 text-black/60 hover:text-black transition-colors font-semibold"
+        @click="$emit.cancel"
       >
         {{ t.profile.cancel }}
       </button>

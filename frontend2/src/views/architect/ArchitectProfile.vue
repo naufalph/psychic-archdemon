@@ -2,8 +2,8 @@
   <div class="min-h-full bg-surface-alt">
     <div class="max-w-2xl mx-auto px-6 py-12">
       <button
-        @click="$router.push({ name: 'ArchitectDashboard' })"
         class="flex items-center gap-2 text-black/60 hover:text-black transition-colors mb-6"
+        @click="$router.push({ name: 'ArchitectDashboard' })"
       >
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -21,8 +21,8 @@
           </div>
           <button
             v-if="!store.isEditMode && store.hasProfile"
-            @click="store.enableEditMode"
             class="px-6 py-3 bg-brand-brown text-white rounded-full font-semibold hover:bg-brand-brown-dark transition-all hover:scale-105"
+            @click="store.enableEditMode"
           >
             {{ t.profile.editProfile }}
           </button>

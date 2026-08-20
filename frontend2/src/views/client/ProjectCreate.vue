@@ -5,12 +5,12 @@
         <div class="bg-brand-brown p-8 text-white">
           <h1 class="text-3xl font-bold flex items-center gap-3">
             <Home :size="32" />
-            {{ existingProjectId ? 'Continue Draft Project' : 'Post New Project' }}
+            {{ existingProjectId ? t.projectCreate.titleDraft : t.projectCreate.titleNew }}
           </h1>
-          <p class="text-white/80 mt-2">Define your requirements to find the perfect architect</p>
+          <p class="text-white/80 mt-2">{{ t.projectCreate.subtitle }}</p>
         </div>
 
-        <form @submit.prevent="handleSubmit" class="p-8 space-y-10">
+        <form class="p-8 space-y-10" @submit.prevent="handleSubmit">
           <section v-if="showPhoneField" class="space-y-4 p-5 bg-amber-50 border border-amber-200 rounded-2xl">
             <div class="flex gap-3 items-start">
               <svg
@@ -27,21 +27,20 @@
                 />
               </svg>
               <div>
-                <p class="text-sm font-semibold text-amber-900">Phone number required</p>
+                <p class="text-sm font-semibold text-amber-900">{{ t.projectCreate.phoneRequiredTitle }}</p>
                 <p class="text-sm text-amber-800 mt-1">
-                  Add your phone number so architects and our team can reach you. This will be saved to your
-                  profile too.
+                  {{ t.projectCreate.phoneRequiredBody }}
                 </p>
               </div>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2"
-                >Phone Number<span class="text-red-500">*</span></label
+                >{{ t.projectCreate.phoneLabel }}<span class="text-red-500">*</span></label
               >
               <input
                 v-model="formData.phoneNumber"
                 type="tel"
-                placeholder="+62 812 3456 7890"
+                :placeholder="t.mulaiProyek.form.phonePlaceholder"
                 class="w-full px-4 py-3 border-2 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none transition"
                 :class="phoneError ? 'border-red-300' : 'border-gray-200'"
               />
@@ -51,11 +50,13 @@
 
           <section class="space-y-6">
             <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
-              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm">Part 0</span>
-              <h2 class="text-xl font-bold text-black">Project Images</h2>
+              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
+                >{{ t.projectCreate.part }} 0</span
+              >
+              <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partImages }}</h2>
             </div>
             <p class="text-xs text-gray-500">
-              Upload photos, mood boards, or inspiration images for your project (max 10 images)
+              {{ t.projectCreate.imagesHint }}
             </p>
             <MultiImageUploader
               v-model="coverImages"
@@ -68,19 +69,21 @@
 
           <section class="space-y-6">
             <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
-              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm">Part 1</span>
-              <h2 class="text-xl font-bold text-black">General Information</h2>
+              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
+                >{{ t.projectCreate.part }} 1</span
+              >
+              <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partGeneral }}</h2>
             </div>
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2"
-                >Project Title<span class="text-red-500">*</span></label
+                >{{ t.projectCreate.projectTitle }}<span class="text-red-500">*</span></label
               >
               <input
                 v-model="formData.title"
                 required
                 type="text"
-                placeholder="e.g., Modern Student Housing in Depok"
+                :placeholder="t.projectCreate.projectTitlePlaceholder"
                 class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none transition"
               />
             </div>
@@ -88,70 +91,108 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >Location<span class="text-red-500">*</span></label
+                  >{{ t.projectCreate.location }}<span class="text-red-500">*</span></label
                 >
                 <input
                   v-model="formData.location"
                   required
                   type="text"
-                  placeholder="City, Area"
+                  :placeholder="t.projectCreate.locationPlaceholder"
                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
                 />
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >Lot Size (m²)<span class="text-red-500">*</span></label
+                  >{{ t.projectCreate.lotSize }}<span class="text-red-500">*</span></label
                 >
                 <input
                   v-model.number="formData.lotSize"
                   required
                   type="number"
-                  placeholder="e.g., 200"
+                  :placeholder="t.projectCreate.lotSizePlaceholder"
                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
                 />
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >Number of Floors<span class="text-red-500">*</span></label
+                  >{{ t.projectCreate.numberOfFloors }}<span class="text-red-500">*</span></label
                 >
                 <input
                   v-model.number="formData.numberOfFloors"
                   required
                   type="number"
                   min="1"
-                  placeholder="e.g., 2"
+                  :placeholder="t.projectCreate.numberOfFloorsPlaceholder"
                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#7C4728] focus:border-[#7C4728] outline-none"
                 />
               </div>
             </div>
 
-            <div>
+            <div class="grid md:grid-cols-2 gap-6">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >{{ t.projectCreate.projectScope }}<span class="text-red-500">*</span></label
+                >
+                <select
+                  v-model="formData.projectScope"
+                  required
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
+                >
+                  <option :value="null" disabled>{{ t.projectCreate.selectScope }}</option>
+                  <option v-for="scope in PROJECT_SCOPES" :key="scope.value" :value="scope.value">
+                    {{ localeLabel(scope) }}
+                  </option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                  >{{ t.projectCreate.category }}<span class="text-red-500">*</span></label
+                >
+                <select
+                  v-model="formData.category"
+                  required
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
+                  @change="onCategoryChange"
+                >
+                  <option :value="null" disabled>{{ t.projectCreate.selectCategory }}</option>
+                  <option v-for="cat in PROJECT_CATEGORIES" :key="cat.value" :value="cat.value">
+                    {{ localeLabel(cat) }}
+                  </option>
+                </select>
+                <p v-if="categoryDescription" class="mt-1 text-sm text-gray-500">
+                  {{ categoryDescription }}
+                </p>
+              </div>
+            </div>
+
+            <div v-if="availableSubCategories.length > 0">
               <label class="block text-sm font-medium text-gray-700 mb-2"
-                >Building Type<span class="text-red-500">*</span></label
+                >{{ t.projectCreate.subCategory }}<span class="text-red-500">*</span></label
               >
               <select
-                v-model="formData.buildingType"
+                v-model="formData.subCategory"
+                required
                 class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
               >
-                <option value="RESIDENTIAL">Residential Home</option>
-                <option value="STUDENT_HOUSING">Student Housing (Kost)</option>
-                <option value="VILLA">Villa / Resort</option>
-                <option value="COMMERCIAL">Commercial / Office</option>
-                <option value="RENOVATION">Renovation</option>
+                <option :value="null" disabled>{{ t.projectCreate.selectSubCategory }}</option>
+                <option v-for="sub in availableSubCategories" :key="sub.value" :value="sub.value">
+                  {{ localeLabel(sub) }}
+                </option>
               </select>
             </div>
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2"
-                >Detailed Requirements<span class="text-red-500">*</span></label
+                >{{ t.projectCreate.detailedRequirements }}<span class="text-red-500">*</span></label
               >
               <textarea
                 v-model="formData.description"
                 required
                 rows="4"
-                placeholder="Describe number of rooms, style preference (e.g., Industrial, Tropical), timeline constraints..."
+                :placeholder="t.projectCreate.detailedRequirementsPlaceholder"
                 class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
               />
             </div>
@@ -159,8 +200,10 @@
 
           <section class="space-y-6">
             <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
-              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm">Part 2</span>
-              <h2 class="text-xl font-bold text-black">Required Deliverables</h2>
+              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
+                >{{ t.projectCreate.part }} 2</span
+              >
+              <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partDeliverables }}</h2>
             </div>
 
             <DeliverablesSelector v-model="formData.deliverables" />
@@ -168,46 +211,52 @@
 
           <section class="space-y-6">
             <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
-              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm">Part 3</span>
-              <h2 class="text-xl font-bold text-black">Budgeting</h2>
+              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
+                >{{ t.projectCreate.part }} 3</span
+              >
+              <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partBudget }}</h2>
             </div>
 
             <div class="space-y-8">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Total Construction Budget</label>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{
+                  t.projectCreate.constructionBudget
+                }}</label>
                 <p class="text-xs text-gray-500 mb-2">
-                  Estimate for construction, material, and labor (Fisik Bangunan)
+                  {{ t.projectCreate.constructionBudgetHint }}
                 </p>
                 <div class="relative">
                   <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">IDR</span>
                   <input
                     v-model="formData.constructionBudget"
                     type="text"
-                    placeholder="e.g., 2.000.000.000 (optional)"
-                    @input="formatConstructionBudget"
+                    :placeholder="t.projectCreate.constructionBudgetPlaceholder"
                     class="w-full pl-16 pr-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-right font-medium"
+                    @input="formatConstructionBudget"
                   />
                 </div>
               </div>
 
               <BudgetRangeSlider
                 v-model="formData.designBudget"
-                label="Design Budget (Architect Fee)"
-                description="This is the main reference for architects to bid"
+                :label="t.projectCreate.designBudgetLabel"
+                :description="t.projectCreate.designBudgetDescription"
                 :step="1000000"
                 :required="true"
                 :range-percent="25"
-                hint="<strong>IAI Guideline:</strong> According to the Indonesian Institute of Architects (IAI), the design fee is typically around <strong>5% - 7%</strong> of the total construction budget."
+                :hint="t.projectCreate.designBudgetHint"
               />
             </div>
           </section>
 
           <section class="space-y-6">
             <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
-              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm">Part 4</span>
-              <h2 class="text-xl font-bold text-black">Expected Start Date</h2>
+              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
+                >{{ t.projectCreate.part }} 4</span
+              >
+              <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partStartDate }}</h2>
             </div>
-            <p class="text-xs text-gray-500">Let architects know when you expect construction to begin.</p>
+            <p class="text-xs text-gray-500">{{ t.projectCreate.startDateHint }}</p>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <label
@@ -218,7 +267,7 @@
                     : 'border-gray-200 hover:border-gray-300'
                 ]"
               >
-                <input type="radio" v-model="formData.startDateType" value="IMMEDIATELY" class="hidden" />
+                <input v-model="formData.startDateType" type="radio" value="IMMEDIATELY" class="hidden" />
                 <div
                   :class="[
                     'w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0',
@@ -231,8 +280,8 @@
                   />
                 </div>
                 <div>
-                  <p class="font-semibold text-gray-900">Immediately</p>
-                  <p class="text-xs text-gray-500 mt-0.5">Project can start as soon as an architect is hired</p>
+                  <p class="font-semibold text-gray-900">{{ t.projectCreate.immediately }}</p>
+                  <p class="text-xs text-gray-500 mt-0.5">{{ t.projectCreate.immediatelyDesc }}</p>
                 </div>
               </label>
 
@@ -244,7 +293,7 @@
                     : 'border-gray-200 hover:border-gray-300'
                 ]"
               >
-                <input type="radio" v-model="formData.startDateType" value="SPECIFIC_DATE" class="hidden" />
+                <input v-model="formData.startDateType" type="radio" value="SPECIFIC_DATE" class="hidden" />
                 <div
                   :class="[
                     'w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0',
@@ -257,15 +306,15 @@
                   />
                 </div>
                 <div>
-                  <p class="font-semibold text-gray-900">On a Specific Date</p>
-                  <p class="text-xs text-gray-500 mt-0.5">You have a target date in mind</p>
+                  <p class="font-semibold text-gray-900">{{ t.projectCreate.specificDate }}</p>
+                  <p class="text-xs text-gray-500 mt-0.5">{{ t.projectCreate.specificDateDesc }}</p>
                 </div>
               </label>
             </div>
 
             <div v-if="formData.startDateType === 'SPECIFIC_DATE'">
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                Target Start Date <span class="text-red-500">*</span>
+                {{ t.projectCreate.targetStartDate }} <span class="text-red-500">*</span>
               </label>
               <input
                 v-model="formData.expectedStartDate"
@@ -279,17 +328,16 @@
 
           <section class="space-y-6">
             <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
-              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm">Part 5</span>
-              <h2 class="text-xl font-bold text-black">Bid Deadline</h2>
+              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
+                >{{ t.projectCreate.part }} 5</span
+              >
+              <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partDeadline }}</h2>
             </div>
-            <p class="text-xs text-gray-500">
-              Set the closing date for architect bids. After this date the project closes automatically and any
-              unselected bids are refunded.
-            </p>
+            <p class="text-xs text-gray-500">{{ t.projectCreate.biddingDeadlineHint }}</p>
 
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">
-                Bidding Closes On <span class="text-red-500">*</span>
+                {{ t.projectCreate.biddingClosesOn }} <span class="text-red-500">*</span>
               </label>
               <input
                 v-model="formData.biddingDeadline"
@@ -300,7 +348,8 @@
                 class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none transition"
               />
               <p v-if="biddingDaysLeft !== null" class="mt-2 text-sm font-medium text-brand-brown">
-                {{ biddingDaysLeft }} day{{ biddingDaysLeft === 1 ? '' : 's' }} of bidding time
+                {{ biddingDaysLeft }}
+                {{ biddingDaysLeft === 1 ? t.projectCreate.biddingDayLeft : t.projectCreate.biddingDaysLeft }}
               </p>
             </div>
           </section>
@@ -312,11 +361,11 @@
           <div class="flex gap-4 pt-6 border-t border-gray-100">
             <button
               type="button"
-              @click="saveDraftAndLeave"
               :disabled="isSavingDraft"
               class="px-6 py-3 text-gray-700 bg-white border-2 border-gray-300 rounded-full hover:bg-gray-50 transition font-medium disabled:opacity-50"
+              @click="saveDraftAndLeave"
             >
-              {{ isSavingDraft ? 'Saving...' : 'Cancel' }}
+              {{ isSavingDraft ? t.projectCreate.saving : t.projectCreate.cancel }}
             </button>
             <button
               type="submit"
@@ -325,7 +374,7 @@
             >
               <Loader v-if="loading" :size="20" class="animate-spin" />
               <CheckSquare v-else :size="20" />
-              {{ loading ? 'Posting...' : 'Post Project' }}
+              {{ loading ? t.projectCreate.posting : t.projectCreate.postProject }}
             </button>
           </div>
         </form>
@@ -336,18 +385,25 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { useI18n } from '@/composables/useI18n'
+import { PROJECT_SCOPES, PROJECT_CATEGORIES, subCategoriesFor, isValidSubCategory } from '@/constants/projectTaxonomy'
 import { Home, CheckSquare, Loader } from 'lucide-vue-next'
 import { useProjectsStore } from '@/stores/projects'
 import { useClientProfileStore } from '@/stores/clientProfile'
+import { useProjectBrief } from '@/composables/useProjectBrief'
+import { landingAPI } from '@/services/api'
 import DeliverablesSelector from '@/components/project/DeliverablesSelector.vue'
 import BudgetRangeSlider from '@/components/project/BudgetRangeSlider.vue'
 import MultiImageUploader from '@/components/upload/MultiImageUploader.vue'
 import BaseAlert from '@/components/ui/BaseAlert.vue'
 
+const route = useRoute()
+const { t, locale } = useI18n()
 const router = useRouter()
 const projectsStore = useProjectsStore()
 const clientProfileStore = useClientProfileStore()
+const { tokenFromRoute, clearToken } = useProjectBrief()
 
 const existingProjectId = ref(null)
 const isSavingDraft = ref(false)
@@ -364,7 +420,9 @@ const formData = ref({
   phoneNumber: '',
   lotSize: null,
   numberOfFloors: 1,
-  buildingType: 'RESIDENTIAL',
+  projectScope: null,
+  category: null,
+  subCategory: null,
   description: '',
   constructionBudget: '',
   designBudget: {
@@ -381,6 +439,24 @@ const formData = ref({
     return d.toISOString().split('T')[0]
   })()
 })
+
+const availableSubCategories = computed(() => subCategoriesFor(formData.value.category))
+
+const localeLabel = entry => (locale.value === 'id' ? entry.labelId : entry.labelEn)
+
+const categoryDescription = computed(() => {
+  const cat = PROJECT_CATEGORIES.find(c => c.value === formData.value.category)
+  if (!cat) return ''
+  return (locale.value === 'id' ? cat.descriptionId : cat.descriptionEn) || ''
+})
+
+// A sub-category only means something under its own category, so drop it when the
+// category moves rather than submitting a value that no longer belongs.
+const onCategoryChange = () => {
+  if (!isValidSubCategory(formData.value.category, formData.value.subCategory)) {
+    formData.value.subCategory = null
+  }
+}
 
 const minStartDate = computed(() => new Date().toISOString().split('T')[0])
 
@@ -430,7 +506,9 @@ const buildProjectData = () => ({
   budgetTotal: parseConstructionBudget(),
   designBudgetMin: formData.value.designBudget.min,
   designBudgetMax: formData.value.designBudget.max,
-  buildingFunction: formData.value.buildingType,
+  buildingFunction: formData.value.category,
+  projectScope: formData.value.projectScope,
+  subCategory: formData.value.subCategory,
   estimatedBuildArea: formData.value.lotSize,
   numberOfFloors: formData.value.numberOfFloors,
   scopeOfWork: formData.value.description,
@@ -449,11 +527,11 @@ const validatePhoneField = () => {
 
   const value = formData.value.phoneNumber?.trim() || ''
   if (!value) {
-    phoneError.value = 'Phone number is required so architects and our team can reach you.'
+    phoneError.value = t.value.projectCreate.phoneRequiredError
     return false
   }
   if (!/^\+?[0-9\s-]{10,16}$/.test(value)) {
-    phoneError.value = 'Please enter a valid phone number.'
+    phoneError.value = t.value.projectCreate.phoneInvalidError
     return false
   }
   return true
@@ -543,6 +621,50 @@ const handleSubmit = async () => {
   }
 }
 
+const applyLandingBrief = async () => {
+  const claimToken = tokenFromRoute(route)
+
+  let brief
+  try {
+    // Without a token the user likely verified their email elsewhere; fall back to the
+    // brief that was bound to their account at signup.
+    const res = claimToken ? await landingAPI.claimBrief(claimToken) : await landingAPI.consumeMyBrief()
+    brief = res.data?.data
+  } catch (err) {
+    // An already-claimed or unknown token must never block the form
+    console.error('Failed to load landing brief:', err)
+    clearToken()
+    return
+  }
+  if (!brief) {
+    clearToken()
+    return
+  }
+
+  // A server-side draft always wins — the brief only fills gaps it left behind
+  if (!formData.value.title) formData.value.title = brief.title || ''
+  if (!formData.value.location) formData.value.location = brief.location || ''
+  if (!formData.value.description) formData.value.description = brief.description || ''
+  if (!formData.value.lotSize) formData.value.lotSize = brief.lotSize ?? null
+  if (!formData.value.phoneNumber) formData.value.phoneNumber = brief.phoneNumber || ''
+  if (!formData.value.projectScope) formData.value.projectScope = brief.projectScope || null
+  if (!formData.value.category) formData.value.category = brief.buildingFunction || null
+  if (!formData.value.subCategory) formData.value.subCategory = brief.subCategory || null
+  if (brief.designBudgetTotal && !formData.value.designBudget.total) {
+    formData.value.designBudget = {
+      total: brief.designBudgetTotal,
+      min: brief.designBudgetMin ?? brief.designBudgetTotal,
+      max: brief.designBudgetMax ?? brief.designBudgetTotal
+    }
+  }
+  if (brief.startDateType && formData.value.startDateType === 'IMMEDIATELY') {
+    formData.value.startDateType = brief.startDateType
+    if (brief.expectedStartDate) formData.value.expectedStartDate = brief.expectedStartDate
+  }
+
+  clearToken()
+}
+
 onMounted(async () => {
   try {
     await clientProfileStore.fetchProfile()
@@ -559,7 +681,9 @@ onMounted(async () => {
       formData.value.location = existingDraft.location || ''
       formData.value.lotSize = existingDraft.estimatedBuildArea ?? null
       formData.value.numberOfFloors = existingDraft.numberOfFloors ?? 1
-      formData.value.buildingType = existingDraft.buildingFunction || 'RESIDENTIAL'
+      formData.value.projectScope = existingDraft.projectScope || null
+      formData.value.category = existingDraft.buildingFunction || null
+      formData.value.subCategory = existingDraft.subCategory || null
       formData.value.description = existingDraft.scopeOfWork || ''
       formData.value.constructionBudget = existingDraft.budgetTotal
         ? Number(existingDraft.budgetTotal).toLocaleString('id-ID')
@@ -582,5 +706,7 @@ onMounted(async () => {
   } catch (err) {
     console.error('Failed to check for draft project:', err)
   }
+
+  await applyLandingBrief()
 })
 </script>

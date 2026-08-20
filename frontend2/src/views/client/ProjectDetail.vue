@@ -2,8 +2,8 @@
   <div class="min-h-screen bg-surface-alt py-12">
     <div class="max-w-7xl mx-auto px-6">
       <button
-        @click="router.push({ name: 'ClientDashboard' })"
         class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition"
+        @click="router.push({ name: 'ClientDashboard' })"
       >
         <ArrowLeft :size="20" />
         {{ t.clientDashboard.backToProjects }}
@@ -17,7 +17,7 @@
 
       <div v-else-if="error" class="bg-white rounded-3xl border border-gray-200 p-12 text-center">
         <p class="text-red-600 mb-4">{{ error }}</p>
-        <button @click="fetchProject" class="text-brand-brown hover:underline">Try again</button>
+        <button class="text-brand-brown hover:underline" @click="fetchProject">Try again</button>
       </div>
 
       <div v-else-if="currentProject" class="space-y-6">
@@ -26,7 +26,9 @@
           <div class="flex justify-between items-start mb-6">
             <div>
               <h1 class="text-3xl font-bold text-black mb-2">{{ currentProject.title }}</h1>
-              <p class="text-gray-500">{{ currentProject.location }} • {{ currentProject.buildingType }}</p>
+              <p class="text-gray-500">
+                {{ currentProject.location }} • {{ projectTypeLabel(currentProject, locale) }}
+              </p>
             </div>
             <ProjectStatusBadge :status="currentProject.status" />
           </div>
@@ -122,8 +124,8 @@
                 </p>
               </div>
               <button
-                @click="router.push({ name: 'ProjectCreate' })"
                 class="flex-shrink-0 px-5 py-2.5 bg-brand-brown text-white rounded-full font-bold text-sm hover:bg-black transition ml-4"
+                @click="router.push({ name: 'ProjectCreate' })"
               >
                 {{ t.clientDashboard.continueEditing }}
               </button>
@@ -139,8 +141,8 @@
                 </p>
               </div>
               <button
-                @click="router.push(`/client/projects/${currentProject.id}/finalization`)"
                 class="flex-shrink-0 px-5 py-2.5 bg-brand-brown text-white rounded-full font-bold text-sm hover:bg-black transition ml-4"
+                @click="router.push(`/client/projects/${currentProject.id}/finalization`)"
               >
                 {{ t.clientDashboard.continueToFinalization }}
               </button>
@@ -184,9 +186,9 @@
                   <p class="text-xs text-gray-500 mt-0.5">{{ slot.bid.proposedTimelineDays || '—' }} days</p>
                 </div>
                 <button
-                  @click="toggleCompare(slot.bid.id)"
                   class="text-gray-400 hover:text-red-500 transition p-1"
                   title="Remove"
+                  @click="toggleCompare(slot.bid.id)"
                 >
                   <X :size="18" />
                 </button>
@@ -244,6 +246,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+import { projectTypeLabel } from '@/constants/projectTaxonomy'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/composables/useI18n'
@@ -255,7 +258,7 @@ import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
 import ProposalCard from '@/components/bid/ProposalCard.vue'
 import ProposalComparison from '@/components/bid/ProposalComparison.vue'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const projectsStore = useProjectsStore()

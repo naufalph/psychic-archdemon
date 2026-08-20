@@ -19,6 +19,8 @@ public class ProjectPublicPreviewResponse {
   private Long budgetDisplay;
   private String projectCategory;
   private String buildingFunction;
+  private String projectScope;
+  private String subCategory;
   private ProjectStatus status;
   private String firstImageUrl;
 }

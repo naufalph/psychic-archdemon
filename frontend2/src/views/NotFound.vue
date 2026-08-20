@@ -48,8 +48,8 @@
             </BaseButton>
           </router-link>
           <button
-            @click="$router.go(-1)"
             class="px-10 py-3.5 text-base font-bold tracking-tight rounded-full border-2 border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all"
+            @click="$router.go(-1)"
           >
             {{ t.notFound?.goBack || 'Go Back' }}
           </button>

@@ -498,10 +498,24 @@ Shared helpers in `frontend2/e2e/helpers/`:
 - `auth.js` — `loginAsClient(page)`, `loginAsArchitect(page)`, `loginAsSuperuser(page)` — fast API-based login for test setup
 - `oauth.js` — `simulateOAuthCallback()`, `waitForOAuthRedirect()` — OAuth simulation
 
-Test accounts (must exist in the dev DB):
-- CLIENT: `test.client1@rumantra.com` / `password123`
-- ARCHITECT: `test.architect1@rumantra.com` / `password123`
-- SUPERUSER: set via `E2E_SUPERUSER_EMAIL` env var
+Test accounts (must exist in the dev DB). `fixtures.js` reads all of these from
+environment variables — nothing is hardcoded, so set them before running specs:
+
+| Env var | Purpose |
+|---|---|
+| `E2E_CLIENT_EMAIL` | CLIENT account email (e.g. `test.client1@rumantra.com`) |
+| `E2E_ARCHITECT_EMAIL` | ARCHITECT account email (e.g. `test.architect1@rumantra.com`) |
+| `E2E_SUPERUSER_EMAIL` | SUPERUSER account email |
+| `E2E_TEST_PASSWORD` | Shared password for all three |
+
+The registration policy requires **at least one digit, one lowercase, one
+uppercase, and one special character**, so `password123` is rejected — use
+something like `Password123!`. Accounts also need `is_email_verified = true`
+before login works:
+
+```sql
+UPDATE rmtr_user SET is_email_verified = true WHERE email = 'test.client1@rumantra.com';
+```
 
 #### 2. Claude + Playwright MCP — Interactive testing by Claude
 Claude Code has built-in Playwright MCP tools that give it direct real-time browser control. No spec files needed — just ask Claude to test something while the app is running.

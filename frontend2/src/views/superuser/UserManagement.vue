@@ -59,17 +59,17 @@
               <td class="px-4 py-3 text-right">
                 <button
                   v-if="user.active && !user.superuser"
-                  @click="deactivate(user.id)"
                   :disabled="processing === user.id"
                   class="text-xs px-3 py-1 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition disabled:opacity-50"
+                  @click="deactivate(user.id)"
                 >
                   {{ t.userManagement.deactivate }}
                 </button>
                 <button
                   v-else-if="!user.active"
-                  @click="reactivate(user.id)"
                   :disabled="processing === user.id"
                   class="text-xs px-3 py-1 rounded-lg border border-green-200 text-green-600 hover:bg-green-50 transition disabled:opacity-50"
+                  @click="reactivate(user.id)"
                 >
                   {{ t.userManagement.reactivate }}
                 </button>
@@ -86,16 +86,16 @@
         </p>
         <div class="flex gap-2">
           <button
-            @click="prev"
             :disabled="page === 0"
             class="px-3 py-1.5 text-xs rounded-lg border border-gray-200 disabled:opacity-40 hover:bg-gray-50"
+            @click="prev"
           >
             {{ t.userManagement.prev }}
           </button>
           <button
-            @click="next"
             :disabled="page >= totalPages - 1"
             class="px-3 py-1.5 text-xs rounded-lg border border-gray-200 disabled:opacity-40 hover:bg-gray-50"
+            @click="next"
           >
             {{ t.userManagement.next }}
           </button>

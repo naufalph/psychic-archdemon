@@ -53,11 +53,10 @@
       </div>
 
       <div class="flex justify-between items-center pt-4">
-        <button @click="emit('back')" class="px-6 py-3 text-black/60 hover:text-black transition-colors">
+        <button class="px-6 py-3 text-black/60 hover:text-black transition-colors" @click="emit('back')">
           {{ t.onboarding.identity.back }}
         </button>
         <button
-          @click="handleNext"
           :disabled="!isFormValid"
           :class="[
             'px-8 py-3 rounded-full font-semibold transition-all',
@@ -65,6 +64,7 @@
               ? 'bg-brand-brown text-white hover:bg-brand-brown-dark hover:scale-105'
               : 'bg-black/10 text-black/30 cursor-not-allowed'
           ]"
+          @click="handleNext"
         >
           {{ t.onboarding.identity.continue }}
         </button>

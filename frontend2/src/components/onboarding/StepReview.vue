@@ -15,7 +15,7 @@
         <div class="bg-white rounded-3xl p-8 shadow-sm border border-black/5">
           <div class="flex justify-between items-start mb-6">
             <h3 class="text-2xl font-bold text-black">{{ t.onboarding.review.professionalProfile }}</h3>
-            <button @click="store.goToStep('IDENTITY')" class="text-sm text-brand-brown hover:underline">
+            <button class="text-sm text-brand-brown hover:underline" @click="store.goToStep('IDENTITY')">
               {{ t.onboarding.review.edit }}
             </button>
           </div>
@@ -68,7 +68,7 @@
         >
           <div class="flex justify-between items-start mb-6">
             <h3 class="text-2xl font-bold text-black">{{ t.onboarding.review.identityDocs }}</h3>
-            <button @click="store.goToStep('IDENTITY_DOCS')" class="text-sm text-brand-brown hover:underline">
+            <button class="text-sm text-brand-brown hover:underline" @click="store.goToStep('IDENTITY_DOCS')">
               {{ t.onboarding.review.edit }}
             </button>
           </div>
@@ -97,7 +97,7 @@
             <h3 class="text-2xl font-bold text-black">
               {{ t.onboarding.review.portfolioProjects }} ({{ store.portfolio.length }})
             </h3>
-            <button @click="store.goToStep('PORTFOLIO_INTRO')" class="text-sm text-brand-brown hover:underline">
+            <button class="text-sm text-brand-brown hover:underline" @click="store.goToStep('PORTFOLIO_INTRO')">
               {{ t.onboarding.review.edit }}
             </button>
           </div>
@@ -133,12 +133,12 @@
       </div>
 
       <div class="flex justify-between items-center pt-4">
-        <button @click="emit('back')" class="px-6 py-3 text-black/60 hover:text-black transition-colors">
+        <button class="px-6 py-3 text-black/60 hover:text-black transition-colors" @click="emit('back')">
           {{ t.onboarding.review.back }}
         </button>
         <button
-          @click="handleActivate"
           class="px-12 py-4 bg-gradient-to-r from-brand-brown to-brand-brown-light text-white rounded-full text-lg font-bold hover:shadow-lg transition-all hover:scale-105"
+          @click="handleActivate"
         >
           {{ t.onboarding.review.activate }}
         </button>

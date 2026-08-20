@@ -1,6 +1,5 @@
 const MAX_FILE_SIZE = 5 * 1024 * 1024
 const VALID_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
-const VALID_PDF_TYPES = ['application/pdf']
 
 export const validateFile = (file, options = {}) => {
   const { maxSize = MAX_FILE_SIZE, allowedTypes = VALID_IMAGE_TYPES } = options

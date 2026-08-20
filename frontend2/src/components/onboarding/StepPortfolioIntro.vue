@@ -39,15 +39,15 @@
               <span>•</span>
               <span>{{ project.year }}</span>
             </div>
-            <button @click="deleteProject(index)" class="text-sm text-red-500 hover:text-red-600 transition-colors">
+            <button class="text-sm text-red-500 hover:text-red-600 transition-colors" @click="deleteProject(index)">
               {{ t.onboarding.portfolioIntro.remove }}
             </button>
           </div>
         </div>
 
         <button
-          @click="handleAddProject"
           class="bg-white rounded-3xl border-2 border-dashed border-black/20 hover:border-brand-brown hover:bg-brand-brown/5 transition-all flex flex-col items-center justify-center min-h-[300px] group"
+          @click="handleAddProject"
         >
           <div
             class="w-16 h-16 rounded-full bg-black/5 group-hover:bg-brand-brown/10 flex items-center justify-center mb-4 transition-all"
@@ -84,8 +84,8 @@
             <p class="text-black/60">{{ t.onboarding.portfolioIntro.startDesc }}</p>
           </div>
           <button
-            @click="handleAddProject"
             class="px-8 py-3 bg-brand-brown text-white rounded-full font-semibold hover:bg-brand-brown-dark transition-all hover:scale-105"
+            @click="handleAddProject"
           >
             {{ t.onboarding.portfolioIntro.addFirst }}
           </button>
@@ -99,20 +99,20 @@
       </div>
 
       <div class="flex justify-between items-center pt-4">
-        <button @click="emit('back')" class="px-6 py-3 text-black/60 hover:text-black transition-colors">
+        <button class="px-6 py-3 text-black/60 hover:text-black transition-colors" @click="emit('back')">
           {{ t.onboarding.portfolioIntro.back }}
         </button>
         <div class="flex items-center gap-3">
           <button
             v-if="store.portfolio.length === 0"
-            @click="emit('skip')"
             class="px-6 py-3 text-black/40 hover:text-black/70 transition-colors text-sm font-medium"
+            @click="emit('skip')"
           >
             Lewati
           </button>
           <button
-            @click="handleNext"
             class="px-8 py-3 bg-brand-brown text-white rounded-full font-semibold hover:bg-brand-brown-dark transition-all hover:scale-105"
+            @click="handleNext"
           >
             {{ t.onboarding.portfolioIntro.continue }}
           </button>

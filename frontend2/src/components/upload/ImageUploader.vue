@@ -7,13 +7,13 @@
 
     <div
       v-if="!preview"
+      :class="dropzoneClasses"
       @dragover="handleDragOver"
       @dragleave="handleDragLeave"
       @drop="handleDrop"
-      :class="dropzoneClasses"
     >
-      <input ref="fileInput" type="file" accept="image/*" @change="handleFileSelect" class="hidden" />
-      <div @click="$refs.fileInput.click()" class="text-center py-8">
+      <input ref="fileInput" type="file" accept="image/*" class="hidden" @change="handleFileSelect" />
+      <div class="text-center py-8" @click="$refs.fileInput.click()">
         <Upload :size="32" class="text-gray-400 mx-auto mb-3" />
         <p class="text-sm text-gray-600 font-medium mb-1">Drop image here or click to upload</p>
         <p class="text-xs text-gray-400">PNG, JPG, GIF up to 5MB</p>
@@ -23,8 +23,8 @@
     <div v-else class="relative group">
       <img :src="preview" :alt="label" class="w-full h-48 object-cover rounded-xl border border-gray-200" />
       <button
-        @click="clear"
         class="absolute top-2 right-2 p-2 bg-white/90 rounded-full opacity-0 group-hover:opacity-100 transition"
+        @click="clear"
       >
         <X :size="20" class="text-gray-700" />
       </button>
@@ -40,7 +40,7 @@ import { Upload, X } from 'lucide-vue-next'
 import { useFileUpload } from '@/composables/useFileUpload'
 
 const props = defineProps({
-  label: String,
+  label: { type: String, default: '' },
   required: Boolean,
   modelValue: {
     type: File,

@@ -10,7 +10,7 @@
     <div v-else-if="error" class="flex items-center justify-center h-screen">
       <div class="text-center">
         <p class="text-red-500 mb-4">{{ error }}</p>
-        <button @click="loadPhases" class="text-brand-brown hover:underline">{{ t.phasePayments.tryAgain }}</button>
+        <button class="text-brand-brown hover:underline" @click="loadPhases">{{ t.phasePayments.tryAgain }}</button>
       </div>
     </div>
 
@@ -19,8 +19,8 @@
       <div class="bg-white border-b border-gray-200 px-6 py-4">
         <div class="max-w-4xl mx-auto flex items-center gap-4">
           <button
-            @click="router.push(`/client/projects/${projectId}`)"
             class="text-gray-500 hover:text-black transition"
+            @click="router.push(`/client/projects/${projectId}`)"
           >
             <ArrowLeft :size="20" />
           </button>
@@ -77,8 +77,8 @@
               <button
                 v-if="phase.paymentStatus === 'PENDING' || phase.paymentStatus === 'EXPIRED'"
                 :disabled="payingPhaseId === phase.phaseId"
-                @click="payPhase(phase)"
                 class="px-4 py-2 bg-ink-700 text-white text-sm font-semibold rounded-lg hover:bg-ink-500 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                @click="payPhase(phase)"
               >
                 <span v-if="payingPhaseId === phase.phaseId">{{ t.phasePayments.processing }}</span>
                 <span v-else>{{ t.phasePayments.payNow }}</span>

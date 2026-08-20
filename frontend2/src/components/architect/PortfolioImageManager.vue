@@ -12,9 +12,9 @@
       >
         <img :src="getImageUrl(image)" :alt="`Image ${index + 1}`" class="w-full h-full object-cover" />
         <button
-          @click="handleDeleteImage(image, index)"
           :disabled="isDeleting"
           class="absolute top-2 right-2 w-8 h-8 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center hover:bg-red-600 disabled:opacity-50"
+          @click="handleDeleteImage(image, index)"
         >
           <svg v-if="!isDeleting" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -33,10 +33,10 @@
       <label
         v-if="displayImages.length < 8"
         class="aspect-square rounded-2xl border-2 border-dashed border-black/20 hover:border-brand-brown hover:bg-brand-brown/5 transition-all flex flex-col items-center justify-center cursor-pointer group"
+        :class="{ 'border-brand-brown bg-brand-brown/5': isDragging }"
         @drop.prevent="handleDrop"
         @dragover.prevent="isDragging = true"
         @dragleave.prevent="isDragging = false"
-        :class="{ 'border-brand-brown bg-brand-brown/5': isDragging }"
       >
         <input
           ref="fileInput"
@@ -44,8 +44,8 @@
           accept="image/*"
           multiple
           class="hidden"
-          @change="handleFileSelect"
           :disabled="isUploading"
+          @change="handleFileSelect"
         />
         <svg
           v-if="!isUploading"

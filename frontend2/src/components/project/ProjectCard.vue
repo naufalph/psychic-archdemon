@@ -80,7 +80,7 @@
         </div>
       </div>
 
-      <p class="text-gray-500 text-sm mb-4">{{ project.location }} • {{ project.buildingType }}</p>
+      <p class="text-gray-500 text-sm mb-4">{{ project.location }} • {{ projectTypeText }}</p>
 
       <p v-if="project.description" class="text-gray-600 text-sm mb-6 line-clamp-3">
         {{ project.description }}
@@ -126,6 +126,7 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { MapPin, DollarSign, Clock } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
+import { projectTypeLabel } from '@/constants/projectTaxonomy'
 import ProjectStatusBadge from './ProjectStatusBadge.vue'
 import BidStatusBadge from './BidStatusBadge.vue'
 import BiddingCountdown from '../bidding/BiddingCountdown.vue'
@@ -150,8 +151,8 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['submit-proposal'])
-const { t } = useI18n()
+defineEmits(['submit-proposal'])
+const { t, locale } = useI18n()
 const router = useRouter()
 
 const proposalCount = computed(() => props.project.bids?.length || props.project.proposalCount || 0)
@@ -163,16 +164,9 @@ const coverImage = computed(() => {
   return img?.filePath || null
 })
 
-const buildingLabel = computed(() => {
-  const map = {
-    RESIDENTIAL: 'NEW BUILD',
-    VILLA: 'VILLA',
-    COMMERCIAL: 'COMMERCIAL',
-    STUDENT_HOUSING: 'STUDENT HOUSING',
-    RENOVATION: 'RENOVATION'
-  }
-  return map[props.project.buildingFunction || props.project.buildingType] || 'PROJECT'
-})
+const buildingLabel = computed(() => projectTypeLabel(props.project, locale.value).toUpperCase() || 'PROJECT')
+
+const projectTypeText = computed(() => projectTypeLabel(props.project, locale.value))
 
 const statusBadgeClass = computed(() => {
   switch (props.project.status) {

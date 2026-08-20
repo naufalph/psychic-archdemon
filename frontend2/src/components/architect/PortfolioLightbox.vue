@@ -11,8 +11,8 @@
       <div
         v-if="portfolio"
         class="fixed inset-0 z-50 flex flex-col bg-black"
-        @keydown.esc="$emit('close')"
         tabindex="-1"
+        @keydown.esc="$emit('close')"
       >
         <!-- Top bar -->
         <div class="flex items-center justify-between px-6 py-4 bg-black/80 backdrop-blur-sm shrink-0">
@@ -30,8 +30,8 @@
             </div>
           </div>
           <button
-            @click="$emit('close')"
             class="ml-4 shrink-0 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 transition flex items-center justify-center text-white"
+            @click="$emit('close')"
           >
             <X :size="18" />
           </button>
@@ -59,15 +59,15 @@
           <!-- Prev/Next -->
           <button
             v-if="images.length > 1"
-            @click.stop="prev"
             class="absolute left-4 z-20 w-11 h-11 rounded-full bg-black/50 hover:bg-black/80 transition flex items-center justify-center text-white"
+            @click.stop="prev"
           >
             <ChevronLeft :size="22" />
           </button>
           <button
             v-if="images.length > 1"
-            @click.stop="next"
             class="absolute right-4 z-20 w-11 h-11 rounded-full bg-black/50 hover:bg-black/80 transition flex items-center justify-center text-white"
+            @click.stop="next"
           >
             <ChevronRight :size="22" />
           </button>
@@ -86,9 +86,9 @@
           <button
             v-for="(img, i) in images"
             :key="i"
-            @click="goTo(i)"
             class="shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition"
             :class="i === currentIndex ? 'border-white' : 'border-transparent opacity-50 hover:opacity-80'"
+            @click="goTo(i)"
           >
             <img :src="img.mediumUrl || img.originalUrl" :alt="`thumb ${i + 1}`" class="w-full h-full object-cover" />
           </button>

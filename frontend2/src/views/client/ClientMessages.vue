@@ -111,7 +111,7 @@
 
         <!-- Input -->
         <div class="bg-white border-t border-gray-200 px-5 py-4 shrink-0">
-          <form @submit.prevent="sendMsg" class="flex items-center gap-3">
+          <form class="flex items-center gap-3" @submit.prevent="sendMsg">
             <input
               v-model="newMessage"
               type="text"

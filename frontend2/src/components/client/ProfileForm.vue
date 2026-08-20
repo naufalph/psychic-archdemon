@@ -1,5 +1,5 @@
 <template>
-  <form @submit.prevent="handleSubmit" class="space-y-6">
+  <form class="space-y-6" @submit.prevent="handleSubmit">
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div>
         <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">
@@ -165,9 +165,9 @@
 
       <button
         type="button"
-        @click="handleCancel"
         :disabled="isLoading"
         class="px-6 py-3 bg-white text-gray-700 font-semibold rounded-lg border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        @click="handleCancel"
       >
         {{ t.clientProfile.cancel }}
       </button>

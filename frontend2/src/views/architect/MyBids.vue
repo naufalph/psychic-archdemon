@@ -10,8 +10,8 @@
 
     <div class="relative z-10 max-w-7xl mx-auto px-6 py-12">
       <button
-        @click="router.push({ name: 'ArchitectDashboard' })"
         class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition"
+        @click="router.push({ name: 'ArchitectDashboard' })"
       >
         <ArrowLeft :size="20" />
         {{ t.common.backToDashboard }}

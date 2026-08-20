@@ -92,6 +92,20 @@ public class SecurityConfig {
                     .requestMatchers("/api/legal/**")
                     .permitAll()
 
+                    // Landing page content (public read; edits live under /rmtr/admin/**)
+                    .requestMatchers(HttpMethod.GET, "/rmtr/landing/hero-slides")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.GET, "/rmtr/landing/presets")
+                    .permitAll()
+                    // Anonymous visitors submit the landing mini-form before signing up;
+                    // claiming a brief stays authenticated so it binds to a real user.
+                    .requestMatchers(HttpMethod.POST, "/rmtr/landing/briefs")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.POST, "/rmtr/landing/briefs/mine/consume")
+                    .authenticated()
+                    .requestMatchers(HttpMethod.POST, "/rmtr/landing/briefs/*/claim")
+                    .authenticated()
+
                     // User profile endpoints (authenticated)
                     .requestMatchers("/rmtr/users/me/**")
                     .authenticated()

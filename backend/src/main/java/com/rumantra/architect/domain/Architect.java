@@ -44,7 +44,7 @@ public class Architect {
   @Column(name = "category", length = 10)
   private String category; // freelance & company
 
-  @Column(name = "phone_num", length = 16)
+  @Column(name = "phone_num", length = 24)
   private String phoneNumber;
 
   @Column(name = "company_site")

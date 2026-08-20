@@ -35,6 +35,25 @@ export const adminUsersAPI = {
   reactivate: userId => api.post(`/rmtr/admin/users/${userId}/reactivate`)
 }
 
+// Landing page content
+const multipart = { headers: { 'Content-Type': 'multipart/form-data' } }
+
+export const adminLandingAPI = {
+  getHeroSlides: () => api.get('/rmtr/admin/landing/hero-slides'),
+  createHeroSlide: formData => api.post('/rmtr/admin/landing/hero-slides', formData, multipart),
+  updateHeroSlide: (slideId, formData) =>
+    api.put(`/rmtr/admin/landing/hero-slides/${slideId}`, formData, multipart),
+  deleteHeroSlide: slideId => api.delete(`/rmtr/admin/landing/hero-slides/${slideId}`),
+  reorderHeroSlides: orderedIds =>
+    api.put('/rmtr/admin/landing/hero-slides/reorder', { orderedIds }),
+
+  getPresets: () => api.get('/rmtr/admin/landing/presets'),
+  createPreset: payload => api.post('/rmtr/admin/landing/presets', payload),
+  updatePreset: (presetId, payload) => api.put(`/rmtr/admin/landing/presets/${presetId}`, payload),
+  deletePreset: presetId => api.delete(`/rmtr/admin/landing/presets/${presetId}`),
+  reorderPresets: orderedIds => api.put('/rmtr/admin/landing/presets/reorder', { orderedIds })
+}
+
 // Existing superuser project endpoints (from ProjectController)
 export const superuserProjectsAPI = {
   getPendingApproval: () =>

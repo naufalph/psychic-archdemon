@@ -101,7 +101,7 @@ api.interceptors.response.use(
 
       // Redirect to login if not already there
       if (window.location.pathname !== '/login' && window.location.pathname !== '/') {
-        window.location.href = '/login?redirect=' + encodeURIComponent(window.location.pathname)
+        window.location.href = `/login?redirect=${encodeURIComponent(window.location.pathname)}`
       }
 
       return Promise.reject(error)
@@ -389,6 +389,14 @@ export const phaseAPI = {
 export const legalAPI = {
   getCurrent: (docType, lang) => api.get('/api/legal/current', { params: { type: docType, lang } }),
   getVersion: (docType, lang, version) => api.get(`/api/legal/${docType}/${lang}/${version}`)
+}
+
+export const landingAPI = {
+  getHeroSlides: () => api.get('/rmtr/landing/hero-slides'),
+  getPresets: () => api.get('/rmtr/landing/presets'),
+  createBrief: payload => api.post('/rmtr/landing/briefs', payload),
+  claimBrief: claimToken => api.post(`/rmtr/landing/briefs/${claimToken}/claim`),
+  consumeMyBrief: () => api.post('/rmtr/landing/briefs/mine/consume')
 }
 
 // Default export

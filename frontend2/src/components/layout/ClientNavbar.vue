@@ -13,10 +13,10 @@
 
           <NotificationDropdown variant="client" />
 
-          <div class="relative" ref="dropdownRef">
+          <div ref="dropdownRef" class="relative">
             <button
-              @click="toggleDropdown"
               class="flex items-center gap-2 px-4 py-2 rounded-lg hover:bg-blue-50 transition-colors border border-transparent hover:border-blue-200"
+              @click="toggleDropdown"
             >
               <div
                 class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center text-white font-semibold text-sm shadow-sm"
@@ -49,8 +49,8 @@
                 <div class="border-b border-gray-100 py-2">
                   <router-link
                     to="/client/profile"
-                    @click="closeDropdown"
                     class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors flex items-center gap-2"
+                    @click="closeDropdown"
                   >
                     <UserCircleIcon class="w-4 h-4" />
                     {{ t.navbar.profile }}
@@ -65,16 +65,16 @@
                     <div class="space-y-1">
                       <button
                         v-if="hasArchitectRole"
-                        @click="switchToArchitect"
                         class="w-full text-left px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors flex items-center gap-2"
+                        @click="switchToArchitect"
                       >
                         <BriefcaseIcon class="w-4 h-4" />
                         {{ t.navbar.architectMode }}
                       </button>
                       <button
                         v-else
-                        @click="activateArchitectRole"
                         class="w-full text-left px-3 py-2 rounded-lg text-sm text-gray-500 hover:bg-gray-50 transition-colors flex items-center gap-2"
+                        @click="activateArchitectRole"
                       >
                         <PlusCircleIcon class="w-4 h-4" />
                         {{ t.navbar.activateArchitect }}
@@ -95,20 +95,20 @@
                     </p>
                     <div class="flex gap-2">
                       <button
-                        @click="setLanguage('en')"
                         :class="[
                           'flex-1 px-3 py-2 rounded-lg text-sm transition-colors',
                           locale === 'en' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         ]"
+                        @click="setLanguage('en')"
                       >
                         English
                       </button>
                       <button
-                        @click="setLanguage('id')"
                         :class="[
                           'flex-1 px-3 py-2 rounded-lg text-sm transition-colors',
                           locale === 'id' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                         ]"
+                        @click="setLanguage('id')"
                       >
                         Indonesia
                       </button>
@@ -117,8 +117,8 @@
 
                   <div class="border-t border-gray-100 mt-2 pt-2">
                     <button
-                      @click="handleLogout"
                       class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors flex items-center gap-2"
+                      @click="handleLogout"
                     >
                       <ArrowRightOnRectangleIcon class="w-4 h-4" />
                       {{ t.navbar.logout }}

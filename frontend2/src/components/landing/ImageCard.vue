@@ -2,7 +2,7 @@
   <div
     class="group rounded-card overflow-hidden border border-hairline bg-white cursor-pointer transition-all duration-300 hover:-translate-y-1.5 hover:shadow-[0_20px_30px_-10px_rgba(0,0,0,0.12)] hover:border-hairline-alt"
   >
-    <div class="relative overflow-hidden bg-surface-muted" style="aspect-ratio: 4/3">
+    <div class="relative overflow-hidden bg-surface-muted" style="aspect-ratio: 1/1">
       <img
         v-if="project.firstImageUrl"
         :src="project.firstImageUrl"
@@ -19,38 +19,25 @@
           />
         </svg>
       </div>
-      <span
-        v-if="project.buildingFunction || project.projectCategory"
-        class="absolute top-3 left-3 text-nano font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide text-ink-900"
-        style="background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(4px)"
-      >
-        {{ project.buildingFunction || project.projectCategory }}
-      </span>
-      <span
-        v-if="statusLabel"
-        class="absolute top-3 right-3 text-nano font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide"
-        :class="statusClass"
-      >
-        {{ statusLabel }}
-      </span>
     </div>
-    <div class="p-4">
-      <h3 class="text-body-sm font-semibold text-ink-900 mb-1 line-clamp-1 tracking-[-0.01em]">
+    <div class="p-3">
+      <span class="text-nano font-extrabold uppercase tracking-wide text-ink-400 block mb-1">
+        {{ projectTypeLabel(project, locale) || project.projectCategory }}
+      </span>
+      <h3 class="text-caption font-bold text-ink-900 line-clamp-1 leading-snug">
         {{ project.title }}
       </h3>
-      <p v-if="project.location" class="text-micro text-ink-300 leading-snug line-clamp-1">📍 {{ project.location }}</p>
-      <p v-if="budgetLabel" class="text-micro font-semibold text-ink-900 mt-2">
-        {{ budgetLabel }}
-      </p>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { formatBudget, formatStatus, statusBadgeClass } from '@/utils/catalogFormat'
+import { useI18n } from '@/composables/useI18n'
+import { projectTypeLabel } from '@/constants/projectTaxonomy'
 
-const props = defineProps({
+const { locale } = useI18n()
+
+defineProps({
   project: {
     type: Object,
     required: true
@@ -58,8 +45,4 @@ const props = defineProps({
 })
 
 defineEmits(['click'])
-
-const budgetLabel = computed(() => (props.project.budgetDisplay ? formatBudget(props.project.budgetDisplay) : null))
-const statusLabel = computed(() => (props.project.status ? formatStatus(props.project.status) : null))
-const statusClass = computed(() => statusBadgeClass(props.project.status))
 </script>

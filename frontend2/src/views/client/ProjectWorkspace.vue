@@ -10,7 +10,7 @@
     <div v-else-if="error" class="flex items-center justify-center h-screen">
       <div class="text-center">
         <p class="text-red-500 mb-4">{{ error }}</p>
-        <button @click="loadAll" class="text-brand-brown hover:underline">Coba lagi</button>
+        <button class="text-brand-brown hover:underline" @click="loadAll">Coba lagi</button>
       </div>
     </div>
 
@@ -19,7 +19,7 @@
       <div class="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-10">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
           <div class="flex items-center gap-4">
-            <button @click="router.back()" class="text-gray-500 hover:text-black transition">
+            <button class="text-gray-500 hover:text-black transition" @click="router.back()">
               <ArrowLeft :size="20" />
             </button>
             <div>
@@ -48,8 +48,8 @@
         <div class="lg:col-span-2 space-y-4">
           <!-- Project overview card (clickable) -->
           <button
-            @click="showProjectModal = true"
             class="w-full bg-white rounded-xl border border-gray-200 p-5 text-left hover:border-brand-gold hover:shadow-sm transition group"
+            @click="showProjectModal = true"
           >
             <div class="flex items-start gap-4">
               <div class="w-20 h-20 rounded-lg bg-gray-100 overflow-hidden shrink-0">
@@ -108,9 +108,9 @@
               <p class="text-gray-500 font-medium">Belum ada fase</p>
               <p class="text-sm text-gray-400 mt-1 mb-4">Detail fase akan muncul setelah arsitek menyiapkannya.</p>
               <button
-                @click="initPhases"
                 :disabled="initializingPhases"
                 class="px-4 py-2 bg-brand-brown text-white text-sm font-semibold rounded-lg hover:bg-black disabled:opacity-50 transition"
+                @click="initPhases"
               >
                 {{ initializingPhases ? 'Menginisialisasi...' : 'Inisialisasi Fase dari Penawaran' }}
               </button>
@@ -123,8 +123,8 @@
               >
                 <!-- Phase header row -->
                 <button
-                  @click="togglePhase(phase)"
                   class="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-50 transition"
+                  @click="togglePhase(phase)"
                 >
                   <div class="flex items-center gap-3">
                     <div
@@ -228,9 +228,9 @@
                         </p>
                       </div>
                       <button
-                        @click="billPhase(phase)"
                         :disabled="actionLoading === phase.id"
                         class="px-4 py-2.5 bg-ink-700 text-white text-sm font-semibold rounded-lg hover:bg-ink-500 disabled:opacity-50 disabled:cursor-not-allowed transition whitespace-nowrap shrink-0"
+                        @click="billPhase(phase)"
                       >
                         <span v-if="actionLoading === phase.id">Membuat...</span>
                         <span v-else>Buat Invoice</span>
@@ -258,9 +258,9 @@
                       </a>
                       <button
                         v-else
-                        @click="billPhase(phase)"
                         :disabled="actionLoading === phase.id"
                         class="px-3 py-1.5 bg-blue-700 text-white text-xs font-semibold rounded-lg hover:bg-blue-800 disabled:opacity-50 transition whitespace-nowrap"
+                        @click="billPhase(phase)"
                       >
                         {{ t.projectWorkspace?.getLink }}
                       </button>
@@ -291,9 +291,9 @@
                         <div class="flex flex-wrap gap-2">
                           <!-- Approve button -->
                           <button
-                            @click="showApproveConfirm = phase.id"
                             :disabled="actionLoading === phase.id"
                             class="flex-1 min-w-[140px] px-4 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 transition flex items-center justify-center gap-2"
+                            @click="showApproveConfirm = phase.id"
                           >
                             <ThumbsUp :size="15" />
                             Setujui · Approve
@@ -302,9 +302,9 @@
                           <!-- Request revision button (if revisions remain) -->
                           <button
                             v-if="revisionsLeft(phase) > 0"
-                            @click="doRequestRevision(phase)"
                             :disabled="actionLoading === phase.id"
                             class="flex-1 min-w-[140px] px-4 py-2.5 border-2 border-amber-300 text-amber-700 text-sm font-semibold rounded-lg hover:bg-amber-50 disabled:opacity-50 transition flex items-center justify-center gap-2"
+                            @click="doRequestRevision(phase)"
                           >
                             <RotateCcw :size="15" />
                             Minta Revisi
@@ -313,8 +313,8 @@
 
                         <!-- Dispute trigger — de-emphasized secondary action -->
                         <button
-                          @click="showDisputeForm[phase.id] = true"
                           class="w-full mt-2 px-3 py-1.5 text-xs border border-red-200 text-red-500 rounded-lg hover:bg-red-50 transition flex items-center justify-center gap-1.5"
+                          @click="showDisputeForm[phase.id] = true"
                         >
                           <AlertTriangle :size="12" />
                           Ajukan Sengketa · Dispute
@@ -334,16 +334,16 @@
                         />
                         <div class="flex gap-2">
                           <button
-                            @click="submitDispute(phase)"
                             :disabled="!disputeReason[phase.id] || actionLoading === phase.id"
                             class="px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                            @click="submitDispute(phase)"
                           >
                             <span v-if="actionLoading === phase.id">Mengirimkan...</span>
                             <span v-else>Kirim Sengketa</span>
                           </button>
                           <button
-                            @click="showDisputeForm[phase.id] = false"
                             class="px-4 py-2 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-100 transition"
+                            @click="showDisputeForm[phase.id] = false"
                           >
                             Batal
                           </button>
@@ -399,10 +399,10 @@
                         </p>
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                           <button
-                            v-for="(d, di) in group.files"
+                            v-for="d in group.files"
                             :key="d.id"
-                            @click="openPreview(phase, phase.deliverables.indexOf(d))"
                             class="group border border-gray-200 rounded-lg overflow-hidden hover:border-brand-gold transition text-left"
+                            @click="openPreview(phase, phase.deliverables.indexOf(d))"
                           >
                             <template v-if="isImage(d.fileType)">
                               <div class="aspect-video bg-gray-100 overflow-hidden relative">
@@ -548,8 +548,8 @@
               <h2 class="text-xl font-bold text-white leading-tight">{{ project?.title }}</h2>
             </div>
             <button
-              @click="showProjectModal = false"
               class="text-gray-400 hover:text-white transition ml-4 shrink-0 mt-1"
+              @click="showProjectModal = false"
             >
               <X :size="22" />
             </button>
@@ -575,7 +575,7 @@
                 </div>
                 <div v-if="project?.buildingFunction" class="bg-gray-50 rounded-lg px-4 py-3">
                   <p class="text-xs text-gray-400 mb-0.5">Fungsi Bangunan · Building Function</p>
-                  <p class="text-sm font-semibold text-gray-800">{{ project.buildingFunction }}</p>
+                  <p class="text-sm font-semibold text-gray-800">{{ projectTypeLabel(project, locale) }}</p>
                 </div>
                 <div v-if="project?.estimatedBuildArea" class="bg-gray-50 rounded-lg px-4 py-3">
                   <p class="text-xs text-gray-400 mb-0.5">Luas Bangunan · Build Area</p>
@@ -681,10 +681,10 @@
                         </span>
                         <div>
                           <p class="text-xs font-semibold text-gray-800">{{ bp.title }}</p>
-                          <p class="text-xs text-gray-500 mt-0.5" v-if="bp.estimatedDays">
+                          <p v-if="bp.estimatedDays" class="text-xs text-gray-500 mt-0.5">
                             {{ bp.estimatedDays }} hari · days
                           </p>
-                          <p class="text-xs text-gray-400 mt-0.5" v-if="bp.revisionRounds">
+                          <p v-if="bp.revisionRounds" class="text-xs text-gray-400 mt-0.5">
                             {{ bp.revisionRounds }}x revisi
                           </p>
                         </div>
@@ -699,8 +699,8 @@
 
           <div class="px-6 py-4 border-t border-gray-100 flex justify-end">
             <button
-              @click="showProjectModal = false"
               class="px-5 py-2 bg-ink-700 text-white text-sm font-semibold rounded-lg hover:bg-ink-500 transition"
+              @click="showProjectModal = false"
             >
               Tutup · Close
             </button>
@@ -755,15 +755,15 @@
 
             <div class="flex gap-3 pt-2">
               <button
-                @click="showApproveConfirm = null"
                 class="flex-1 px-4 py-2.5 border border-gray-200 text-gray-600 text-sm font-semibold rounded-lg hover:bg-gray-50 transition"
+                @click="showApproveConfirm = null"
               >
                 Batal · Cancel
               </button>
               <button
-                @click="approvePhase(showApproveConfirm)"
                 :disabled="actionLoading === showApproveConfirm"
                 class="flex-1 px-4 py-2.5 bg-green-600 text-white text-sm font-bold rounded-lg hover:bg-green-700 disabled:opacity-50 transition flex items-center justify-center gap-2"
+                @click="approvePhase(showApproveConfirm)"
               >
                 <span v-if="actionLoading === showApproveConfirm">Menyetujui...</span>
                 <template v-else>
@@ -781,10 +781,10 @@
     <Teleport to="body">
       <div
         v-if="previewState.open"
-        class="fixed inset-0 z-[60] bg-black/95 flex flex-col"
-        @keydown.esc="closePreview"
-        tabindex="0"
         ref="previewOverlay"
+        class="fixed inset-0 z-[60] bg-black/95 flex flex-col"
+        tabindex="0"
+        @keydown.esc="closePreview"
       >
         <!-- Preview toolbar -->
         <div class="flex items-center justify-between px-6 py-4 bg-black/80 border-b border-white/10 shrink-0">
@@ -810,8 +810,8 @@
               Unduh · Download
             </a>
             <button
-              @click="closePreview"
               class="p-2 text-gray-400 hover:text-white transition rounded-lg hover:bg-white/10"
+              @click="closePreview"
             >
               <X :size="20" />
             </button>
@@ -823,8 +823,8 @@
           <!-- Left nav -->
           <button
             v-if="previewState.items.length > 1"
-            @click="prevPreview"
             class="absolute left-4 z-10 p-3 bg-black/50 hover:bg-black/80 text-white rounded-full transition"
+            @click="prevPreview"
           >
             <ChevronLeft :size="22" />
           </button>
@@ -872,8 +872,8 @@
           <!-- Right nav -->
           <button
             v-if="previewState.items.length > 1"
-            @click="nextPreview"
             class="absolute right-4 z-10 p-3 bg-black/50 hover:bg-black/80 text-white rounded-full transition"
+            @click="nextPreview"
           >
             <ChevronRight :size="22" />
           </button>
@@ -885,9 +885,9 @@
             <button
               v-for="(d, di) in previewState.items"
               :key="di"
-              @click="previewState.index = di"
               class="shrink-0 w-14 h-14 rounded-lg overflow-hidden border-2 transition"
               :class="di === previewState.index ? 'border-brand-gold' : 'border-white/20 hover:border-white/40'"
+              @click="previewState.index = di"
             >
               <img v-if="isImage(d.fileType)" :src="d.filePath" class="w-full h-full object-cover" />
               <div v-else class="w-full h-full bg-white/10 flex items-center justify-center">
@@ -924,16 +924,16 @@
           </p>
           <div class="flex gap-2 mt-4">
             <button
-              @click="submitRevision(sortedPhases.find(p => p.id === showRevisionModal))"
               :disabled="!revisionNotes[showRevisionModal]?.trim() || actionLoading === showRevisionModal"
               class="flex-1 px-4 py-2.5 bg-amber-500 text-white text-sm font-semibold rounded-lg hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              @click="submitRevision(sortedPhases.find(p => p.id === showRevisionModal))"
             >
               <span v-if="actionLoading === showRevisionModal">...</span>
               <span v-else>{{ t.projectWorkspace?.revisionModalSubmit }}</span>
             </button>
             <button
-              @click="showRevisionModal = null"
               class="px-4 py-2.5 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-100 transition"
+              @click="showRevisionModal = null"
             >
               {{ t.projectWorkspace?.revisionModalCancel }}
             </button>
@@ -946,6 +946,7 @@
 
 <script setup>
 import { ref, computed, onMounted, reactive, nextTick } from 'vue'
+import { projectTypeLabel } from '@/constants/projectTaxonomy'
 import { useRoute, useRouter } from 'vue-router'
 import {
   ArrowLeft,
@@ -980,7 +981,7 @@ const route = useRoute()
 const router = useRouter()
 const projectsStore = useProjectsStore()
 const bidsStore = useBidsStore()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const projectId = route.params.id
 

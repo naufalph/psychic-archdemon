@@ -33,8 +33,8 @@
           <span>Settings</span>
         </RouterLink>
         <button
-          @click="handleLogout"
           class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-white/60 hover:text-white hover:bg-white/5"
+          @click="handleLogout"
         >
           <LogOut :size="18" />
           <span>Sign Out</span>

@@ -10,7 +10,7 @@
     <div v-else-if="error" class="flex-1 flex items-center justify-center">
       <div class="text-center text-red-500">
         <p class="text-sm mb-2">{{ error }}</p>
-        <button @click="loadMessages" class="text-xs text-brand-brown hover:underline">Retry</button>
+        <button class="text-xs text-brand-brown hover:underline" @click="loadMessages">Retry</button>
       </div>
     </div>
 

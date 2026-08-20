@@ -11,8 +11,8 @@
     <div class="relative z-10 max-w-7xl mx-auto px-6 py-12">
       <div class="mb-8">
         <button
-          @click="router.push({ name: 'ArchitectDashboard' })"
           class="mb-4 flex items-center gap-2 text-gray-600 hover:text-black transition"
+          @click="router.push({ name: 'ArchitectDashboard' })"
         >
           <ArrowLeft :size="20" />
           {{ t.common.backToDashboard }}
@@ -42,8 +42,8 @@
           </div>
         </div>
         <button
-          @click="tokenPurchaseStore.openModal()"
           class="bg-brand-brown hover:bg-black text-white px-6 py-2 rounded-full text-sm font-medium transition"
+          @click="tokenPurchaseStore.openModal()"
         >
           {{ t.opportunityList.purchaseTokens }}
         </button>

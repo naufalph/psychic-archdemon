@@ -18,7 +18,6 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import { Check } from 'lucide-vue-next'
 
 const props = defineProps({

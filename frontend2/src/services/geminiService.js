@@ -26,7 +26,9 @@ export const analyzeProposals = async (project, proposals) => {
     Project Details:
     Title: ${project.title}
     Location: ${project.location}
-    Type: ${project.buildingType}
+    Scope: ${project.projectScope || 'N/A'}
+    Category: ${project.buildingFunction || project.buildingType}
+    Sub-Category: ${project.subCategory || 'N/A'}
     Lot Size: ${project.lotSize} m2
     Description: ${project.description}
     Total Construction Budget: ${project.totalBudget || 'N/A'}

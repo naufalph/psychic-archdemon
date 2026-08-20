@@ -27,8 +27,8 @@
         </div>
 
         <button
-          @click="handleLogout"
           class="w-full flex items-center gap-3 px-5 py-4 text-left hover:bg-gray-50 transition"
+          @click="handleLogout"
         >
           <LogOut :size="16" class="text-red-500" />
           <span class="text-sm font-medium text-red-500">Sign Out</span>
@@ -40,16 +40,16 @@
         <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Language</p>
         <div class="flex gap-2">
           <button
-            @click="setLocale('en')"
             class="flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
             :class="locale === 'en' ? 'bg-ink-700 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+            @click="setLocale('en')"
           >
             English
           </button>
           <button
-            @click="setLocale('id')"
             class="flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
             :class="locale === 'id' ? 'bg-ink-700 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'"
+            @click="setLocale('id')"
           >
             Indonesia
           </button>
@@ -61,9 +61,9 @@
         <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Mode</p>
         <div class="flex gap-2">
           <button
-            @click="switchToArchitect"
             :disabled="isSwitching"
             class="flex-1 flex items-center gap-2 px-3 py-2 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition text-sm font-medium disabled:opacity-60"
+            @click="switchToArchitect"
           >
             <Loader v-if="isSwitching" :size="15" class="animate-spin" />
             <HardHat v-else :size="15" />

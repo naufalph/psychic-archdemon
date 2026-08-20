@@ -34,7 +34,7 @@
         >
           <ConfettiExplosion
             v-if="showConfetti"
-            :particleCount="80"
+            :particle-count="80"
             :force="0.3"
             :duration="2500"
             :colors="['#C5A17A', '#7C4728', '#10B981', '#FBBF24']"
@@ -55,7 +55,7 @@
           </p>
 
           <router-link to="/login">
-            <BaseButton :fullWidth="true" class="bg-brand-gold hover:bg-brand-gold-light text-white border-none">
+            <BaseButton :full-width="true" class="bg-brand-gold hover:bg-brand-gold-light text-white border-none">
               {{ t.auth?.verifyEmail?.continueToLogin || 'Continue to Sign In' }}
             </BaseButton>
           </router-link>
@@ -84,10 +84,10 @@
                 placeholder="your@email.com"
               />
               <BaseButton
-                @click="handleResendVerification"
-                :fullWidth="true"
-                :isLoading="resendLoading"
+                :full-width="true"
+                :is-loading="resendLoading"
                 class="bg-brand-brown hover:bg-black text-white border-none"
+                @click="handleResendVerification"
               >
                 {{ t.auth?.verifyEmail?.resend || 'Resend Verification Email' }}
               </BaseButton>
@@ -161,7 +161,9 @@ onMounted(async () => {
         name: 'Login',
         query: {
           verified: 'true',
-          email: pendingEmail || ''
+          email: pendingEmail || '',
+          // Carried through from signup so a landing brief still lands on the create form
+          ...(route.query.redirect ? { redirect: route.query.redirect } : {})
         }
       })
     }, 3000)

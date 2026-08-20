@@ -5,8 +5,8 @@
       <div
         v-for="(image, index) in images"
         :key="index"
-        @click="openLightbox(index)"
         class="relative aspect-square bg-gray-100 rounded-2xl overflow-hidden cursor-pointer hover:shadow-lg transition group"
+        @click="openLightbox(index)"
       >
         <img
           :src="image.imageUrl"
@@ -20,7 +20,7 @@
     </div>
 
     <TransitionRoot :show="isLightboxOpen" as="template">
-      <Dialog @close="closeLightbox" class="relative z-50">
+      <Dialog class="relative z-50" @close="closeLightbox">
         <TransitionChild
           enter="ease-out duration-300"
           enter-from="opacity-0"
@@ -45,8 +45,8 @@
               <DialogPanel class="w-full max-w-5xl">
                 <div class="relative">
                   <button
-                    @click="closeLightbox"
                     class="absolute top-4 right-4 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition"
+                    @click="closeLightbox"
                   >
                     <X :size="24" />
                   </button>
@@ -59,17 +59,17 @@
 
                   <div v-if="images.length > 1" class="flex justify-between mt-4">
                     <button
-                      @click="previousImage"
                       :disabled="currentImageIndex === 0"
                       class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full disabled:opacity-30"
+                      @click="previousImage"
                     >
                       ← Previous
                     </button>
                     <p class="text-white text-sm self-center">{{ currentImageIndex + 1 }} / {{ images.length }}</p>
                     <button
-                      @click="nextImage"
                       :disabled="currentImageIndex === images.length - 1"
                       class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full disabled:opacity-30"
+                      @click="nextImage"
                     >
                       Next →
                     </button>
@@ -93,7 +93,7 @@ import { ref } from 'vue'
 import { Dialog, DialogPanel, TransitionRoot, TransitionChild } from '@headlessui/vue'
 import { X } from 'lucide-vue-next'
 
-defineProps({
+const props = defineProps({
   images: { type: Array, default: () => [] },
   title: { type: String, required: true },
   emptyMessage: { type: String, default: 'No images available' }
@@ -112,7 +112,7 @@ const closeLightbox = () => {
 }
 
 const nextImage = () => {
-  if (currentImageIndex.value < images.length - 1) {
+  if (currentImageIndex.value < props.images.length - 1) {
     currentImageIndex.value++
   }
 }

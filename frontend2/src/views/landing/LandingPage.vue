@@ -43,7 +43,30 @@
 
       <!-- Right: proposal carousel -->
       <div>
-        <ProposalCarousel />
+        <ProposalCarousel :slides="heroSlides" :loading="isLoading" />
+      </div>
+    </section>
+
+    <!-- Mulai Di Sini / Preset cards -->
+    <section v-if="presets.length > 0" class="py-16 bg-surface-muted border-t border-hairline">
+      <div class="max-w-[1440px] mx-auto px-10">
+        <p class="text-micro font-semibold uppercase tracking-[0.05em] text-ink-400 mb-3">
+          {{ t.landing.starters.eyebrow }}
+        </p>
+        <h2 class="text-h2 text-ink-900 mb-3">{{ t.landing.starters.title }}</h2>
+        <p class="text-body-lg text-ink-400 font-light mb-10 max-w-lg">
+          {{ t.landing.starters.subline }}
+        </p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-4">
+          <StarterCard
+            v-for="preset in presets"
+            :key="preset.slug"
+            :label="presetLabel(preset)"
+            :eyebrow="presetEyebrow(preset)"
+            :icon="resolvePresetIcon(preset.iconName)"
+            @click="goToPreset(preset.slug)"
+          />
+        </div>
       </div>
     </section>
 
@@ -151,8 +174,8 @@
             :key="i"
             class="p-10 border border-hairline-alt rounded-card hover:-translate-y-1 transition-transform duration-200 flex flex-col gap-4"
           >
-            <div class="w-12 h-12 bg-surface-muted rounded-xl flex items-center justify-center mb-6">
-              <component :is="card.icon" class="w-6 h-6 text-ink-900" />
+            <div class="w-12 h-12 bg-ink-900 rounded-xl flex items-center justify-center mb-6">
+              <component :is="card.icon" class="w-6 h-6 text-white" />
             </div>
             <h3 class="text-body-lg font-semibold text-ink-900 mb-3 tracking-[-0.02em]">
               {{ t.landing.why[card.titleKey] }}
@@ -205,16 +228,20 @@ import SearchInput from '@/components/landing/SearchInput.vue'
 import CategoryChip from '@/components/landing/CategoryChip.vue'
 import ImageCard from '@/components/landing/ImageCard.vue'
 import AddDesignTile from '@/components/landing/AddDesignTile.vue'
+import StarterCard from '@/components/landing/StarterCard.vue'
+import { resolvePresetIcon } from '@/components/landing/presetIcons'
 import { useI18n } from '@/composables/useI18n'
-import { projectAPI } from '@/services/api'
+import { projectAPI, landingAPI } from '@/services/api'
 import { useCatalogStore } from '@/stores/catalog'
 import { CATEGORIES, filterProjects } from '@/utils/catalogFormat'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const router = useRouter()
 const catalog = useCatalogStore()
 
 const projects = ref([])
+const heroSlides = ref([])
+const presets = ref([])
 const isLoading = ref(true)
 
 const HOW_IT_WORKS_KEYS = [
@@ -238,14 +265,24 @@ const filteredProjects = computed(() =>
 
 const goToStartProject = () => router.push('/mulai-proyek')
 
+const goToPreset = slug => router.push({ name: 'StartProject', query: { preset: slug } })
+
+const presetLabel = preset => (locale.value === 'en' ? preset.labelEn : preset.labelId) || preset.labelEn
+const presetEyebrow = preset =>
+  (locale.value === 'en' ? preset.eyebrowEn : preset.eyebrowId) || t.value.landing.starters.eyebrow
+
 onMounted(async () => {
-  try {
-    const res = await projectAPI.getPublicPreviews()
-    projects.value = res.data?.data || []
-  } catch {
-    // silently fail — landing page works without projects
-  } finally {
-    isLoading.value = false
-  }
+  // silently fail on any request — the landing page works without projects, slides, or presets
+  const [previews, slides, presetList] = await Promise.allSettled([
+    projectAPI.getPublicPreviews(),
+    landingAPI.getHeroSlides(),
+    landingAPI.getPresets()
+  ])
+
+  if (previews.status === 'fulfilled') projects.value = previews.value.data?.data || []
+  if (slides.status === 'fulfilled') heroSlides.value = slides.value.data?.data || []
+  if (presetList.status === 'fulfilled') presets.value = presetList.value.data?.data || []
+
+  isLoading.value = false
 })
 </script>

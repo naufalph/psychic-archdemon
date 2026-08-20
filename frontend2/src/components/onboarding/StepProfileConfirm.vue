@@ -50,8 +50,8 @@
 
         <div class="pt-6 border-t border-black/10 flex gap-3">
           <button
-            @click="handleEdit"
             class="flex-1 px-4 py-3 border border-black/10 rounded-2xl text-black/60 hover:bg-black/5 transition-all"
+            @click="handleEdit"
           >
             {{ t.onboarding.profileConfirm.editProfile }}
           </button>
@@ -59,13 +59,13 @@
       </div>
 
       <div class="flex justify-between items-center pt-4">
-        <button @click="emit('back')" class="px-6 py-3 text-black/60 hover:text-black transition-colors">
+        <button class="px-6 py-3 text-black/60 hover:text-black transition-colors" @click="emit('back')">
           {{ t.onboarding.profileConfirm.back }}
         </button>
         <button
-          @click="handleNext"
           :disabled="store.isLoading"
           class="px-8 py-3 bg-brand-brown text-white rounded-full font-semibold hover:bg-brand-brown-dark transition-all hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+          @click="handleNext"
         >
           {{ store.isLoading ? t.onboarding.profileConfirm.saving : t.onboarding.profileConfirm.proceed }}
         </button>

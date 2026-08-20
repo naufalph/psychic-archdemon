@@ -51,6 +51,12 @@ public class Project {
   @Column(name = "building_function", length = 255)
   private String buildingFunction;
 
+  @Column(name = "project_scope", length = 20)
+  private String projectScope;
+
+  @Column(name = "sub_category", length = 60)
+  private String subCategory;
+
   @Column(name = "estimated_build_area")
   private Integer estimatedBuildArea; // in square meters
 

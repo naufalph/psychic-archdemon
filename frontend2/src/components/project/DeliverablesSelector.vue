@@ -1,41 +1,41 @@
 <template>
   <div class="space-y-6">
-    <div v-for="group in deliverableGroups" :key="group.category" class="bg-gray-50 rounded-2xl p-6">
+    <div v-for="group in deliverableGroups" :key="group.categoryKey" class="bg-gray-50 rounded-2xl p-6">
       <div class="flex items-center justify-between mb-4">
-        <h4 class="font-bold text-lg text-gray-900">{{ group.category }}</h4>
+        <h4 class="font-bold text-lg text-gray-900">{{ categoryLabel(group.categoryKey) }}</h4>
         <label
-          :class="selectAllLabelClasses(group.category)"
+          :class="selectAllLabelClasses(group.categoryKey)"
           class="flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer transition-all text-sm"
         >
           <input
             type="checkbox"
-            :checked="isAllSelected(group.category)"
-            @change="toggleAllInGroup(group.category)"
+            :checked="isAllSelected(group.categoryKey)"
             class="hidden"
+            @change="toggleAllInGroup(group.categoryKey)"
           />
-          <div :class="selectAllCheckboxClasses(group.category)">
-            <Check v-if="isAllSelected(group.category)" :size="14" class="text-white" />
+          <div :class="selectAllCheckboxClasses(group.categoryKey)">
+            <Check v-if="isAllSelected(group.categoryKey)" :size="14" class="text-white" />
           </div>
-          <span class="font-medium">Select All</span>
+          <span class="font-medium">{{ t.proposalCreate.selectAll }}</span>
         </label>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <label v-for="item in group.items" :key="item.value" :class="labelClasses(item.value)">
+        <label v-for="item in group.items" :key="item" :class="labelClasses(item)">
           <input
             type="checkbox"
-            :value="item.value"
-            :checked="isSelected(item.value)"
-            @change="toggleDeliverable(item.value)"
+            :value="item"
+            :checked="isSelected(item)"
             class="hidden"
+            @change="toggleDeliverable(item)"
           />
           <div class="flex items-center gap-3">
-            <div :class="checkboxClasses(item.value)">
-              <Check v-if="isSelected(item.value)" :size="16" class="text-white" />
+            <div :class="checkboxClasses(item)">
+              <Check v-if="isSelected(item)" :size="16" class="text-white" />
             </div>
             <div>
-              <div class="font-medium text-gray-900">{{ item.label }}</div>
-              <div v-if="item.description" class="text-xs text-gray-500 mt-1">
-                {{ item.description }}
+              <div class="font-medium text-gray-900">{{ itemLabel(item) }}</div>
+              <div v-if="itemDescription(item)" class="text-xs text-gray-500 mt-1">
+                {{ itemDescription(item) }}
               </div>
             </div>
           </div>
@@ -46,8 +46,8 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import { Check } from 'lucide-vue-next'
+import { useI18n } from '@/composables/useI18n'
 
 const props = defineProps({
   modelValue: {
@@ -58,52 +58,27 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
+const { t } = useI18n()
+
 const deliverableGroups = [
+  { categoryKey: 'siteAnalysis', items: ['SITE_ANALYSIS', 'ZONING_STUDY'] },
   {
-    category: 'Site Analysis & Planning',
-    items: [
-      { value: 'SITE_ANALYSIS', label: 'Site Analysis', description: 'Land survey and environmental assessment' },
-      { value: 'ZONING_STUDY', label: 'Zoning Study', description: 'Local regulations and building codes' }
-    ]
+    categoryKey: 'designPhases',
+    items: ['CONCEPT_DESIGN', 'SCHEMATIC_DESIGN', 'DESIGN_DEVELOPMENT', 'CONSTRUCTION_DOCS']
   },
+  { categoryKey: 'permits', items: ['IMB_PERMIT', 'SLF_CERT', 'ENVIRONMENTAL_PERMIT'] },
   {
-    category: 'Design Phases',
-    items: [
-      { value: 'CONCEPT_DESIGN', label: 'Concept Design', description: 'Initial design concepts and sketches' },
-      { value: 'SCHEMATIC_DESIGN', label: 'Schematic Design', description: 'Preliminary floor plans and elevations' },
-      { value: 'DESIGN_DEVELOPMENT', label: 'Design Development', description: 'Detailed design drawings' },
-      { value: 'CONSTRUCTION_DOCS', label: 'Construction Documents', description: 'Complete technical drawings' }
-    ]
+    categoryKey: 'specialized',
+    items: ['INTERIOR_DESIGN', 'LANDSCAPE_DESIGN', 'MEP_DESIGN', 'STRUCTURAL_DESIGN']
   },
-  {
-    category: 'Permits & Documentation',
-    items: [
-      { value: 'IMB_PERMIT', label: 'IMB (Building Permit)', description: 'Building construction permit' },
-      { value: 'SLF_CERT', label: 'SLF Certificate', description: 'Building feasibility certificate' },
-      { value: 'ENVIRONMENTAL_PERMIT', label: 'Environmental Permit', description: 'Environmental impact assessment' }
-    ]
-  },
-  {
-    category: 'Specialized Services',
-    items: [
-      { value: 'INTERIOR_DESIGN', label: 'Interior Design', description: 'Interior layout and finishes' },
-      { value: 'LANDSCAPE_DESIGN', label: 'Landscape Design', description: 'Garden and outdoor spaces' },
-      { value: 'MEP_DESIGN', label: 'MEP Design', description: 'Mechanical, electrical, and plumbing' },
-      { value: 'STRUCTURAL_DESIGN', label: 'Structural Design', description: 'Structural engineering drawings' }
-    ]
-  },
-  {
-    category: 'Construction Support',
-    items: [
-      {
-        value: 'SUPERVISION',
-        label: 'Construction Supervision',
-        description: 'On-site supervision during construction'
-      },
-      { value: 'AS_BUILT', label: 'As-Built Drawings', description: 'Final drawings reflecting construction changes' }
-    ]
-  }
+  { categoryKey: 'construction', items: ['SUPERVISION', 'AS_BUILT'] }
 ]
+
+const categoryLabel = key => t.value.proposalCreate?.deliverableCategories?.[key] || key
+
+const itemLabel = value => t.value.proposalCreate?.deliverableItems?.[value] || value.replace(/_/g, ' ')
+
+const itemDescription = value => t.value.proposalCreate?.deliverableDescriptions?.[value] || ''
 
 const isSelected = value => {
   return props.modelValue.includes(value)
@@ -132,17 +107,17 @@ const checkboxClasses = value => {
 }
 
 const isAllSelected = category => {
-  const group = deliverableGroups.find(g => g.category === category)
+  const group = deliverableGroups.find(g => g.categoryKey === category)
   if (!group) return false
-  return group.items.every(item => isSelected(item.value))
+  return group.items.every(item => isSelected(item))
 }
 
 const toggleAllInGroup = category => {
-  const group = deliverableGroups.find(g => g.category === category)
+  const group = deliverableGroups.find(g => g.categoryKey === category)
   if (!group) return
 
   const allSelected = isAllSelected(category)
-  const groupValues = group.items.map(item => item.value)
+  const groupValues = group.items
 
   let updated
   if (allSelected) {

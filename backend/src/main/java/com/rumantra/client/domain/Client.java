@@ -25,7 +25,7 @@ public class Client {
   @EqualsAndHashCode.Exclude
   private User user;
 
-  @Column(name = "phone_num", nullable = false, length = 16)
+  @Column(name = "phone_num", nullable = false, length = 24)
   private String phoneNumber;
 
   @Column(name = "is_phonenum_verified")

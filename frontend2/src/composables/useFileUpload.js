@@ -1,10 +1,5 @@
 import { ref } from 'vue'
-import {
-  validateFile,
-  validateFiles,
-  getFilePreviewUrl,
-  revokeFilePreviewUrl
-} from '@/services/uploadService'
+import { validateFiles, getFilePreviewUrl, revokeFilePreviewUrl } from '@/services/uploadService'
 
 export function useFileUpload(options = {}) {
   const { maxFiles = 10, multiple = false } = options

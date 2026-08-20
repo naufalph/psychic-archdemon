@@ -104,8 +104,8 @@
               <span class="font-semibold text-gray-700">{{ bidsStore.quota.tier }}</span>
             </p>
             <button
-              @click="tokenPurchaseStore.openModal()"
               class="w-full bg-black text-white px-4 py-2 rounded-full text-xs font-bold tracking-wider hover:bg-brand-brown transition"
+              @click="tokenPurchaseStore.openModal()"
             >
               {{ t.architectDashboard.buyTokens }}
             </button>

@@ -57,8 +57,8 @@
 
       <div class="flex flex-col items-center gap-3 pt-4">
         <button
-          @click="goToDashboard"
           class="px-8 py-4 bg-brand-brown text-white rounded-full font-semibold hover:bg-brand-brown-dark transition-all hover:scale-105 text-lg"
+          @click="goToDashboard"
         >
           {{ t.onboarding.activated.dashboard }}
         </button>

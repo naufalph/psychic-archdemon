@@ -13,10 +13,12 @@ import com.rumantra.shared.dto.ApiResponse;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/rmtr/clients")
 @RequiredArgsConstructor
+@Slf4j
 public class ClientController {
 
   private final ClientService clientService;
@@ -37,6 +39,7 @@ public class ClientController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(ApiResponse.<ClientDto>builder().success(false).message(e.getMessage()).build());
     } catch (Exception e) {
+      log.error("Client registration failed", e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(
               ApiResponse.<ClientDto>builder()
@@ -58,6 +61,7 @@ public class ClientController {
               .data(client)
               .build());
     } catch (Exception e) {
+      log.error("Failed to retrieve client profile", e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(
               ApiResponse.<ClientDto>builder()
@@ -83,6 +87,7 @@ public class ClientController {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(ApiResponse.<ClientDto>builder().success(false).message(e.getMessage()).build());
     } catch (Exception e) {
+      log.error("Failed to update client profile", e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(
               ApiResponse.<ClientDto>builder()

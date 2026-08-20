@@ -10,7 +10,7 @@
     <div v-else-if="error" class="flex items-center justify-center h-screen">
       <div class="text-center">
         <p class="text-red-500 mb-4">{{ error }}</p>
-        <button @click="loadAll" class="text-brand-brown hover:underline">Coba lagi</button>
+        <button class="text-brand-brown hover:underline" @click="loadAll">Coba lagi</button>
       </div>
     </div>
 
@@ -19,7 +19,7 @@
       <div class="bg-white border-b border-gray-200 px-6 py-4 sticky top-0 z-10">
         <div class="max-w-7xl mx-auto flex items-center justify-between">
           <div class="flex items-center gap-4">
-            <button @click="router.back()" class="text-gray-500 hover:text-black transition">
+            <button class="text-gray-500 hover:text-black transition" @click="router.back()">
               <ArrowLeft :size="20" />
             </button>
             <div>
@@ -56,16 +56,16 @@
             </span>
             <button
               v-if="isCompleted && !project?.archivedPortoId"
-              @click="archiveToPortfolio"
               :disabled="archiving"
               class="px-4 py-1.5 rounded-full text-xs font-bold bg-black text-white hover:bg-black/80 transition disabled:opacity-50"
+              @click="archiveToPortfolio"
             >
               {{ archiving ? t.projectWorkspace?.archiving : t.projectWorkspace?.archiveToPortfolio }}
             </button>
             <button
               v-else-if="isCompleted"
-              @click="router.push({ name: 'ArchitectPortfolios' })"
               class="px-4 py-1.5 rounded-full text-xs font-bold bg-white border border-gray-300 text-black hover:border-black transition"
+              @click="router.push({ name: 'ArchitectPortfolios' })"
             >
               {{ t.projectWorkspace?.viewInPortfolio }}
             </button>
@@ -80,8 +80,8 @@
         <div class="lg:col-span-2 space-y-4">
           <!-- Project overview card (clickable) -->
           <button
-            @click="showProjectModal = true"
             class="w-full bg-white rounded-xl border border-gray-200 p-5 text-left hover:border-brand-gold hover:shadow-sm transition group"
+            @click="showProjectModal = true"
           >
             <div class="flex items-start gap-4">
               <div class="w-20 h-20 rounded-lg bg-gray-100 overflow-hidden shrink-0">
@@ -145,8 +145,8 @@
               >
                 <!-- Phase header row -->
                 <button
-                  @click="togglePhase(phase)"
                   class="w-full flex items-center justify-between px-5 py-4 text-left hover:bg-gray-50 transition"
+                  @click="togglePhase(phase)"
                 >
                   <div class="flex items-center gap-3">
                     <div
@@ -281,14 +281,14 @@
                             <input
                               type="file"
                               class="hidden"
-                              @change="e => onFileSelect(phase.id, e)"
                               accept="image/*,application/pdf,.dwg,.dxf,.zip,.rar,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+                              @change="e => onFileSelect(phase.id, e)"
                             />
                           </label>
                           <button
                             v-if="selectedFile[phase.id]"
-                            @click="clearFile(phase.id)"
                             class="text-gray-400 hover:text-gray-600 transition"
+                            @click="clearFile(phase.id)"
                           >
                             <X :size="16" />
                           </button>
@@ -305,9 +305,9 @@
 
                         <div class="flex gap-2 pt-1">
                           <button
-                            @click="uploadFile(phase)"
                             :disabled="!selectedFile[phase.id] || uploadLoading === phase.id"
                             class="px-4 py-2 bg-ink-700 text-white text-sm font-semibold rounded-lg hover:bg-ink-500 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
+                            @click="uploadFile(phase)"
                           >
                             <span v-if="uploadLoading === phase.id" class="flex items-center gap-2">
                               <div
@@ -339,9 +339,9 @@
                           >
                         </p>
                         <button
-                          @click="submitForReview(phase)"
                           :disabled="actionLoading === phase.id"
                           class="flex items-center gap-2 px-4 py-2.5 bg-amber-600 text-white text-sm font-semibold rounded-lg hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
+                          @click="submitForReview(phase)"
                         >
                           <span v-if="actionLoading === phase.id">Mengirimkan...</span>
                           <template v-else>
@@ -394,8 +394,8 @@
                         </div>
                         <div v-if="!showDisbursementForm[phase.id]">
                           <button
-                            @click="showDisbursementForm[phase.id] = true"
                             class="flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition"
+                            @click="showDisbursementForm[phase.id] = true"
                           >
                             <Banknote :size="15" />
                             {{ t.projectWorkspace?.retryPayout }}
@@ -453,16 +453,16 @@
                           </div>
                           <div class="flex gap-2">
                             <button
-                              @click="requestPayout(phase)"
                               :disabled="!isDisbursementFormValid(phase.id) || actionLoading === phase.id"
                               class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
+                              @click="requestPayout(phase)"
                             >
                               <span v-if="actionLoading === phase.id">Memproses...</span>
                               <template v-else><Banknote :size="14" />Konfirmasi Pencairan</template>
                             </button>
                             <button
-                              @click="showDisbursementForm[phase.id] = false"
                               class="px-4 py-2 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-200 transition"
+                              @click="showDisbursementForm[phase.id] = false"
                             >
                               Batal
                             </button>
@@ -474,8 +474,8 @@
                       <template v-else>
                         <div v-if="!showDisbursementForm[phase.id]">
                           <button
-                            @click="showDisbursementForm[phase.id] = true"
                             class="flex items-center gap-2 px-4 py-2.5 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition"
+                            @click="showDisbursementForm[phase.id] = true"
                           >
                             <Banknote :size="15" />
                             {{ t.projectWorkspace?.requestPayout }}
@@ -533,9 +533,9 @@
                           </div>
                           <div class="flex gap-2">
                             <button
-                              @click="requestPayout(phase)"
                               :disabled="!isDisbursementFormValid(phase.id) || actionLoading === phase.id"
                               class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
+                              @click="requestPayout(phase)"
                             >
                               <span v-if="actionLoading === phase.id">Memproses...</span>
                               <template v-else>
@@ -544,8 +544,8 @@
                               </template>
                             </button>
                             <button
-                              @click="showDisbursementForm[phase.id] = false"
                               class="px-4 py-2 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-200 transition"
+                              @click="showDisbursementForm[phase.id] = false"
                             >
                               Batal
                             </button>
@@ -739,8 +739,8 @@
               <h2 class="text-xl font-bold text-white leading-tight">{{ project?.title }}</h2>
             </div>
             <button
-              @click="showProjectModal = false"
               class="text-gray-400 hover:text-white transition ml-4 shrink-0 mt-1"
+              @click="showProjectModal = false"
             >
               <X :size="22" />
             </button>
@@ -769,7 +769,7 @@
                 </div>
                 <div v-if="project?.buildingFunction" class="bg-gray-50 rounded-lg px-4 py-3">
                   <p class="text-xs text-gray-400 mb-0.5">Fungsi Bangunan · Building Function</p>
-                  <p class="text-sm font-semibold text-gray-800">{{ project.buildingFunction }}</p>
+                  <p class="text-sm font-semibold text-gray-800">{{ projectTypeLabel(project, locale) }}</p>
                 </div>
                 <div v-if="project?.estimatedBuildArea" class="bg-gray-50 rounded-lg px-4 py-3">
                   <p class="text-xs text-gray-400 mb-0.5">Luas Bangunan · Build Area</p>
@@ -878,10 +878,10 @@
                         </span>
                         <div>
                           <p class="text-xs font-semibold text-gray-800">{{ bp.title }}</p>
-                          <p class="text-xs text-gray-500 mt-0.5" v-if="bp.estimatedDays">
+                          <p v-if="bp.estimatedDays" class="text-xs text-gray-500 mt-0.5">
                             {{ bp.estimatedDays }} hari · days
                           </p>
-                          <p class="text-xs text-gray-400 mt-0.5" v-if="bp.revisionRounds">
+                          <p v-if="bp.revisionRounds" class="text-xs text-gray-400 mt-0.5">
                             {{ bp.revisionRounds }}x revisi
                           </p>
                         </div>
@@ -896,8 +896,8 @@
 
           <div class="px-6 py-4 border-t border-gray-100 flex justify-end">
             <button
-              @click="showProjectModal = false"
               class="px-5 py-2 bg-ink-700 text-white text-sm font-semibold rounded-lg hover:bg-ink-500 transition"
+              @click="showProjectModal = false"
             >
               Tutup · Close
             </button>
@@ -910,6 +910,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, reactive } from 'vue'
+import { projectTypeLabel } from '@/constants/projectTaxonomy'
 import { useRoute, useRouter } from 'vue-router'
 import {
   ArrowLeft,
@@ -941,7 +942,7 @@ const route = useRoute()
 const router = useRouter()
 const projectsStore = useProjectsStore()
 const portfoliosStore = usePortfoliosStore()
-const { t, getT } = useI18n()
+const { t, getT, locale } = useI18n()
 
 const projectId = route.params.id
 

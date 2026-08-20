@@ -19,9 +19,9 @@
                 type="button"
                 :disabled="isAssigned(value)"
                 :draggable="!isAssigned(value)"
+                :class="chipClasses(value)"
                 @dragstart="onDragStart($event, value)"
                 @click="assignToActivePhase(value)"
-                :class="chipClasses(value)"
               >
                 {{ getLabelForValue(value) }}
               </button>
@@ -36,8 +36,8 @@
           <h4 class="font-bold text-gray-900">{{ t.paymentPhaseBuilder.paymentPhases }}</h4>
           <button
             type="button"
-            @click="addPhase"
             class="flex items-center gap-1 px-3 py-1.5 bg-brand-brown text-white rounded-full text-xs font-bold hover:bg-black transition"
+            @click="addPhase"
           >
             {{ t.paymentPhaseBuilder.addPhase }}
           </button>
@@ -82,15 +82,15 @@
               <input
                 v-model="phase.title"
                 type="text"
-                @click.stop
                 :placeholder="`${t.paymentPhaseBuilder.phase} ${phase.phaseNumber} ${t.paymentPhaseBuilder.phaseTitlePlaceholder}`"
                 class="flex-1 text-sm font-bold bg-transparent border-b border-gray-200 focus:border-brand-brown outline-none pb-0.5"
+                @click.stop
               />
               <button
                 v-if="phases.length > 1"
                 type="button"
-                @click.stop="removePhase(index)"
                 class="text-gray-400 hover:text-red-500 transition text-xs"
+                @click.stop="removePhase(index)"
               >
                 ✕
               </button>
@@ -104,9 +104,9 @@
                   v-model.number="phase.amount"
                   type="number"
                   min="0"
-                  @click.stop
                   placeholder="0"
                   class="w-full mt-1 px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:border-brand-brown outline-none"
+                  @click.stop
                 />
               </div>
               <div>
@@ -116,9 +116,9 @@
                   type="number"
                   min="0"
                   max="10"
-                  @click.stop
                   placeholder="0"
                   class="w-full mt-1 px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:border-brand-brown outline-none"
+                  @click.stop
                 />
               </div>
               <div>
@@ -127,9 +127,9 @@
                   v-model.number="phase.estimatedDays"
                   type="number"
                   min="1"
-                  @click.stop
                   placeholder="0"
                   class="w-full mt-1 px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:border-brand-brown outline-none"
+                  @click.stop
                 />
               </div>
             </div>
@@ -150,8 +150,8 @@
                 {{ getLabelForValue(d) }}
                 <button
                   type="button"
-                  @click.stop="removeDeliverable(index, d)"
                   class="text-brand-gold hover:text-red-500 leading-none"
+                  @click.stop="removeDeliverable(index, d)"
                 >
                   ×
                 </button>

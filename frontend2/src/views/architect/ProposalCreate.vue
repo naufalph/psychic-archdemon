@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-surface-alt py-12">
     <div class="max-w-7xl mx-auto px-6">
-      <button @click="saveDraftAndLeave" class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition">
+      <button class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition" @click="saveDraftAndLeave">
         <ArrowLeft :size="20" />
         {{ t.proposalCreate?.backToOpportunities || 'Back to Opportunities' }}
       </button>
@@ -13,7 +13,7 @@
 
       <div v-else-if="projectError" class="bg-white rounded-3xl border border-gray-200 p-12 text-center">
         <p class="text-red-600 mb-4">{{ projectError }}</p>
-        <button @click="router.push({ name: 'OpportunityList' })" class="text-brand-brown hover:underline">
+        <button class="text-brand-brown hover:underline" @click="router.push({ name: 'OpportunityList' })">
           {{ t.proposalCreate?.backToOpportunities || 'Back to Opportunities' }}
         </button>
       </div>
@@ -60,7 +60,7 @@
                 <p class="text-xs text-gray-500 uppercase font-bold mb-1">
                   {{ t.proposalCreate?.buildingType || 'Building Type' }}
                 </p>
-                <p class="text-gray-900">{{ project.buildingType }}</p>
+                <p class="text-gray-900">{{ projectTypeLabel(project, locale) }}</p>
               </div>
 
               <div v-if="project.deliverables && project.deliverables.length > 0">
@@ -141,9 +141,9 @@
                 </p>
                 <button
                   type="button"
-                  @click="goToProfile"
                   :disabled="isSavingDraft"
                   class="inline-block mt-2 text-sm font-semibold text-amber-900 underline hover:text-brand-brown disabled:opacity-60"
+                  @click="goToProfile"
                 >
                   {{
                     isSavingDraft
@@ -154,7 +154,7 @@
               </div>
             </div>
 
-            <form @submit.prevent="handleSubmit" class="p-8 space-y-8">
+            <form class="p-8 space-y-8" @submit.prevent="handleSubmit">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-2"
@@ -269,7 +269,7 @@
                 <UploadProgress :progress="uploadProgress" label="Uploading files..." />
               </div>
 
-              <div ref="errorRef" v-if="error" class="p-4 bg-red-50 border border-red-200 rounded-xl space-y-2">
+              <div v-if="error" ref="errorRef" class="p-4 bg-red-50 border border-red-200 rounded-xl space-y-2">
                 <p class="text-sm font-semibold text-red-700">{{ error }}</p>
                 <ul v-if="identityMissing.length" class="text-xs text-red-600 list-disc list-inside space-y-0.5">
                   <li v-for="item in identityMissing" :key="item">{{ item }}</li>
@@ -277,9 +277,9 @@
                 <button
                   v-if="!isIdentityComplete"
                   type="button"
-                  @click="goToProfile"
                   :disabled="isSavingDraft"
                   class="inline-block text-sm font-semibold text-brand-brown underline disabled:opacity-60"
+                  @click="goToProfile"
                 >
                   {{
                     isSavingDraft
@@ -292,8 +292,8 @@
               <div class="flex gap-4 pt-6 border-t border-gray-100">
                 <button
                   type="button"
-                  @click="saveDraftAndLeave"
                   class="px-6 py-3 text-gray-700 bg-white border-2 border-gray-300 rounded-full hover:bg-gray-50 transition font-medium"
+                  @click="saveDraftAndLeave"
                 >
                   {{ t.proposalCreate?.cancelBtn || 'Cancel' }}
                 </button>
@@ -351,8 +351,8 @@
                     <AlertTriangle :size="24" class="text-amber-600" />
                   </div>
                   <button
-                    @click="showIdentityModal = false"
                     class="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors"
+                    @click="showIdentityModal = false"
                   >
                     <X :size="20" />
                   </button>
@@ -390,15 +390,15 @@
                   class="flex items-center justify-end gap-3 border-t border-gray-200 px-6 py-4 rounded-b-2xl bg-gray-50"
                 >
                   <button
-                    @click="showIdentityModal = false"
                     class="px-5 py-2.5 text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors"
+                    @click="showIdentityModal = false"
                   >
                     {{ t.proposalCreate?.identityIncompleteDismiss || 'Later' }}
                   </button>
                   <button
-                    @click="goToProfile"
                     :disabled="isSavingDraft"
                     class="px-6 py-2.5 bg-brand-brown text-white rounded-full font-semibold hover:bg-brand-brown-dark transition-all disabled:opacity-60 flex items-center gap-2"
+                    @click="goToProfile"
                   >
                     <Loader v-if="isSavingDraft" :size="16" class="animate-spin" />
                     {{
@@ -419,6 +419,7 @@
 
 <script setup>
 import { ref, computed, onMounted, nextTick } from 'vue'
+import { projectTypeLabel } from '@/constants/projectTaxonomy'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { ArrowLeft, FileText, Loader, Send, AlertTriangle, X } from 'lucide-vue-next'
@@ -437,7 +438,7 @@ const router = useRouter()
 const bidsStore = useBidsStore()
 const projectsStore = useProjectsStore()
 const profileStore = useArchitectProfileStore()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const identityMissing = computed(() => {
   const p = profileStore.profile

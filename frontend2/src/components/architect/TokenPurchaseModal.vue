@@ -32,9 +32,9 @@
                   {{ getT('tokenPurchase.modal.title') }}
                 </h2>
                 <button
-                  @click="handleClose"
                   :disabled="loading"
                   class="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  @click="handleClose"
                 >
                   <X :size="20" />
                 </button>
@@ -84,9 +84,9 @@
                       </label>
                       <div class="flex items-center gap-3">
                         <button
-                          @click="decrementQuantity"
                           :disabled="selectedQuantity <= 1 || loading"
                           class="flex h-10 w-10 items-center justify-center rounded-lg border-2 border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          @click="decrementQuantity"
                         >
                           <span class="text-xl font-semibold">−</span>
                         </button>
@@ -96,13 +96,13 @@
                           min="1"
                           max="50"
                           :disabled="loading"
-                          @input="handleQuantityInput"
                           class="flex-1 rounded-lg border-2 border-gray-300 px-4 py-2 text-center text-lg font-semibold focus:border-brand-brown focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed"
+                          @input="handleQuantityInput"
                         />
                         <button
-                          @click="incrementQuantity"
                           :disabled="selectedQuantity >= 50 || loading"
                           class="flex h-10 w-10 items-center justify-center rounded-lg border-2 border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                          @click="incrementQuantity"
                         >
                           <span class="text-xl font-semibold">+</span>
                         </button>
@@ -180,16 +180,16 @@
                 class="sticky bottom-0 flex items-center justify-end gap-3 border-t border-gray-200 bg-white px-6 py-4 rounded-b-2xl"
               >
                 <button
-                  @click="handleClose"
                   :disabled="loading"
                   class="rounded-lg px-6 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  @click="handleClose"
                 >
                   {{ getT('tokenPurchase.modal.cancel') }}
                 </button>
                 <button
-                  @click="handleConfirm"
                   :disabled="loading || !pricing"
                   class="relative rounded-lg bg-brand-brown px-6 py-2.5 text-sm font-medium text-white hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  @click="handleConfirm"
                 >
                   <span v-if="!loading">{{ getT('tokenPurchase.modal.confirm') }}</span>
                   <span v-else class="flex items-center gap-2">

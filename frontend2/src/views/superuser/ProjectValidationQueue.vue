@@ -40,16 +40,16 @@
             {{ t.projectValidationQueue.viewDetails }}
           </router-link>
           <button
-            @click="openRejectModal(project.id)"
             :disabled="processing === project.id"
             class="px-3 py-1.5 text-xs font-semibold rounded-lg border border-red-200 text-red-600 hover:bg-red-50 transition disabled:opacity-50"
+            @click="openRejectModal(project.id)"
           >
             {{ t.projectValidationQueue.reject }}
           </button>
           <button
-            @click="validate(project.id, true, null)"
             :disabled="processing === project.id"
             class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-gray-900 text-white hover:bg-gray-700 transition disabled:opacity-50"
+            @click="validate(project.id, true, null)"
           >
             <span v-if="processing === project.id">...</span>
             <span v-else>{{ t.projectValidationQueue.approve }}</span>
@@ -78,16 +78,16 @@
           <div class="flex gap-3 mt-5 justify-end">
             <button
               type="button"
-              @click="closeRejectModal"
               class="px-4 py-2 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-100 transition"
+              @click="closeRejectModal"
             >
               {{ t.projectValidationQueue.rejectModalCancel }}
             </button>
             <button
               type="button"
-              @click="confirmReject"
               :disabled="!rejectReason.trim() || processing === rejectModalProjectId"
               class="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition disabled:opacity-50"
+              @click="confirmReject"
             >
               {{ t.projectValidationQueue.rejectModalConfirm }}
             </button>
