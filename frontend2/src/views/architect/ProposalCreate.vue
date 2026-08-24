@@ -51,7 +51,7 @@
 
               <div>
                 <p class="text-xs text-gray-500 uppercase font-bold mb-1">
-                  {{ t.proposalCreate?.buildArea || 'Build Area' }}
+                  {{ t.proposalCreate?.buildArea || 'Lot Size' }}
                 </p>
                 <p class="text-gray-900">{{ project.estimatedBuildArea }} m²</p>
               </div>

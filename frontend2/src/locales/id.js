@@ -504,7 +504,7 @@ export default {
     project: 'Proyek',
     location: 'Lokasi',
     designBudget: 'Anggaran Desain',
-    buildArea: 'Luas Bangunan',
+    buildArea: 'Luas Lahan',
     buildingType: 'Tipe Bangunan',
     deliverables: 'Deliverables',
     bidAmount: 'Nilai Penawaran (IDR)',
@@ -961,7 +961,7 @@ export default {
   },
   projectDetailArchitect: {
     designBudgetRange: 'Rentang Anggaran Desain',
-    buildArea: 'Luas Bangunan',
+    buildArea: 'Luas Lahan',
     floors: 'Lantai',
     visualReferences: 'Referensi Visual',
     scopeOfWork: 'Lingkup Pekerjaan',

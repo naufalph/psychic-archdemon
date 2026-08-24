@@ -501,7 +501,7 @@ export default {
     project: 'Project',
     location: 'Location',
     designBudget: 'Design Budget',
-    buildArea: 'Build Area',
+    buildArea: 'Lot Size',
     buildingType: 'Building Type',
     deliverables: 'Deliverables',
     bidAmount: 'Bid Amount (IDR)',
@@ -953,7 +953,7 @@ export default {
   },
   projectDetailArchitect: {
     designBudgetRange: 'Design Budget Range',
-    buildArea: 'Build Area',
+    buildArea: 'Lot Size',
     floors: 'Floors',
     visualReferences: 'Visual References',
     scopeOfWork: 'Scope of Work',

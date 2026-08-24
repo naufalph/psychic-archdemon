@@ -284,7 +284,7 @@ if (!resource.getOwner().getUser().getId().equals(userId)) {
 - All token changes logged in `rmtr_bid_usage_log` for audit trail
 
 #### Individual Token Purchase
-1. Architect requests pricing (tier-based: FREE=IDR 400k, BASIC=IDR 250k per token)
+1. Architect requests pricing (flat IDR 149,900 per token, regardless of subscription tier)
 2. Architect initiates purchase (1-50 tokens)
 3. Backend creates Xendit one-time payment request
 4. User redirects to Xendit checkout, completes payment
@@ -371,7 +371,7 @@ Both workspace views (client + architect) use the real `ChatPanel` component con
 - `POST /api/subscriptions/webhook` - Xendit webhook handler (public, signature-verified)
 
 #### Token Purchase (Architect Role Required)
-- `GET /tokens/purchases/pricing` - Get tier-based pricing info
+- `GET /tokens/purchases/pricing` - Get flat per-token pricing info
 - `POST /tokens/purchases` - Initiate token purchase (returns Xendit payment link)
 - `GET /tokens/purchases/{id}` - Get purchase details (ownership verified)
 - `GET /tokens/purchases/history` - Get paginated purchase history

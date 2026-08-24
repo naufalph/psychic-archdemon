@@ -586,7 +586,7 @@
                   <p class="text-sm font-semibold text-gray-800">{{ projectTypeLabel(project, locale) }}</p>
                 </div>
                 <div v-if="project?.estimatedBuildArea" class="bg-gray-50 rounded-lg px-4 py-3">
-                  <p class="text-xs text-gray-400 mb-0.5">Luas Bangunan · Build Area</p>
+                  <p class="text-xs text-gray-400 mb-0.5">Luas Lahan · Lot Size</p>
                   <p class="text-sm font-semibold text-gray-800">{{ project.estimatedBuildArea }} m²</p>
                 </div>
                 <div v-if="project?.numberOfFloors" class="bg-gray-50 rounded-lg px-4 py-3">

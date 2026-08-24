@@ -52,8 +52,7 @@ public class TokenPurchaseService {
   @Value("${app.frontend.url:http://localhost:3000}")
   private String frontendUrl;
 
-  private static final BigDecimal FREE_TIER_PRICE_PER_TOKEN = new BigDecimal("400000");
-  private static final BigDecimal BASIC_TIER_PRICE_PER_TOKEN = new BigDecimal("250000");
+  private static final BigDecimal TOKEN_PRICE_PER_TOKEN = new BigDecimal("149900");
   private static final int MIN_QUANTITY = 1;
   private static final int MAX_QUANTITY = 50;
 
@@ -65,7 +64,7 @@ public class TokenPurchaseService {
 
     SubscriptionTier tier = subscriptionService.getActiveSubscription(architect.getId()).getTier();
 
-    BigDecimal pricePerToken = calculatePricePerToken(tier);
+    BigDecimal pricePerToken = TOKEN_PRICE_PER_TOKEN;
     BigDecimal totalAmount = pricePerToken.multiply(new BigDecimal(quantity));
 
     String referenceId = generateReferenceId(architect.getId());
@@ -271,21 +270,17 @@ public class TokenPurchaseService {
   public Map<String, Object> getPricingInfo(SubscriptionTier tier) {
     Map<String, Object> pricingInfo = new HashMap<>();
     pricingInfo.put("currentTier", tier.name());
-    pricingInfo.put("pricePerToken", calculatePricePerToken(tier));
+    pricingInfo.put("pricePerToken", TOKEN_PRICE_PER_TOKEN);
     pricingInfo.put("currency", "IDR");
     pricingInfo.put("minQuantity", MIN_QUANTITY);
     pricingInfo.put("maxQuantity", MAX_QUANTITY);
 
     Map<String, BigDecimal> tierPricing = new HashMap<>();
-    tierPricing.put("FREE", FREE_TIER_PRICE_PER_TOKEN);
-    tierPricing.put("BASIC", BASIC_TIER_PRICE_PER_TOKEN);
+    tierPricing.put("FREE", TOKEN_PRICE_PER_TOKEN);
+    tierPricing.put("BASIC", TOKEN_PRICE_PER_TOKEN);
     pricingInfo.put("tierPricing", tierPricing);
 
     return pricingInfo;
-  }
-
-  private BigDecimal calculatePricePerToken(SubscriptionTier tier) {
-    return tier == SubscriptionTier.BASIC ? BASIC_TIER_PRICE_PER_TOKEN : FREE_TIER_PRICE_PER_TOKEN;
   }
 
   private String generateReferenceId(Long architectId) {
