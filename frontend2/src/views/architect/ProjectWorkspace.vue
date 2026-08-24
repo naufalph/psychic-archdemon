@@ -455,7 +455,7 @@
                             <button
                               :disabled="!isDisbursementFormValid(phase.id) || actionLoading === phase.id"
                               class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
-                              @click="requestPayout(phase)"
+                              @click="pendingDisbursement = phase"
                             >
                               <span v-if="actionLoading === phase.id">Memproses...</span>
                               <template v-else><Banknote :size="14" />Konfirmasi Pencairan</template>
@@ -535,7 +535,7 @@
                             <button
                               :disabled="!isDisbursementFormValid(phase.id) || actionLoading === phase.id"
                               class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
-                              @click="requestPayout(phase)"
+                              @click="pendingDisbursement = phase"
                             >
                               <span v-if="actionLoading === phase.id">Memproses...</span>
                               <template v-else>
@@ -673,6 +673,12 @@
                           <p class="text-xs font-semibold text-gray-700">{{ formatLogAction(log.action) }}</p>
                           <p v-if="log.fromStatus && log.toStatus" class="text-xs text-gray-400 mt-0.5">
                             {{ log.fromStatus }} → {{ log.toStatus }}
+                          </p>
+                          <p
+                            v-if="logReasonText(log)"
+                            class="text-xs text-gray-700 mt-1 p-2 bg-gray-50 rounded-lg border border-gray-100"
+                          >
+                            "{{ logReasonText(log) }}"
                           </p>
                           <p class="text-xs text-gray-400 mt-0.5">{{ formatDateTime(log.createdAt) }}</p>
                         </div>
@@ -905,6 +911,74 @@
         </div>
       </div>
     </Teleport>
+
+    <!-- Disbursement Confirmation Modal -->
+    <Teleport to="body">
+      <div
+        v-if="pendingDisbursement"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+        @click.self="pendingDisbursement = null"
+      >
+        <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+          <div class="bg-green-600 px-6 py-5">
+            <p class="text-xs text-green-100 uppercase font-bold tracking-widest mb-1">
+              Konfirmasi Pencairan · Confirm Payout
+            </p>
+            <h2 class="text-lg font-bold text-white leading-tight">
+              {{ pendingDisbursement.title || `Fase ${pendingDisbursement.phaseNumber}` }}
+            </h2>
+          </div>
+          <div class="p-6 space-y-3">
+            <div class="p-3 bg-amber-50 border border-amber-200 rounded-lg">
+              <p class="text-xs text-amber-700 font-medium">
+                Periksa kembali detail berikut sebelum dana dicairkan melalui Xendit. Tindakan ini tidak dapat
+                dibatalkan.
+              </p>
+            </div>
+            <div class="divide-y divide-gray-100 border border-gray-200 rounded-lg overflow-hidden">
+              <div class="flex justify-between px-4 py-2.5 text-sm">
+                <span class="text-gray-500">Jumlah · Amount</span>
+                <span class="font-semibold text-gray-900">{{ formatAmount(pendingDisbursement.amount) }}</span>
+              </div>
+              <div class="flex justify-between px-4 py-2.5 text-sm">
+                <span class="text-gray-500">Bank</span>
+                <span class="font-semibold text-gray-900">{{
+                  bankLabel(disbursementForm[pendingDisbursement.id]?.channelCode)
+                }}</span>
+              </div>
+              <div class="flex justify-between px-4 py-2.5 text-sm">
+                <span class="text-gray-500">Nomor Rekening · Account No.</span>
+                <span class="font-semibold text-gray-900">{{
+                  disbursementForm[pendingDisbursement.id]?.accountNumber
+                }}</span>
+              </div>
+              <div class="flex justify-between px-4 py-2.5 text-sm">
+                <span class="text-gray-500">Nama Pemilik · Holder Name</span>
+                <span class="font-semibold text-gray-900">{{
+                  disbursementForm[pendingDisbursement.id]?.accountHolderName
+                }}</span>
+              </div>
+            </div>
+          </div>
+          <div class="px-6 py-4 border-t border-gray-100 flex justify-end gap-2">
+            <button
+              class="px-4 py-2 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-100 transition"
+              @click="pendingDisbursement = null"
+            >
+              Batal
+            </button>
+            <button
+              :disabled="actionLoading === pendingDisbursement.id"
+              class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
+              @click="confirmDisbursement"
+            >
+              <span v-if="actionLoading === pendingDisbursement.id">Memproses...</span>
+              <template v-else><Banknote :size="14" />Ya, Cairkan Dana Sekarang</template>
+            </button>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -1115,6 +1189,8 @@ const logIconClass = actorType =>
     XENDIT: 'bg-green-100 text-green-700'
   })[actorType] || 'bg-gray-100 text-gray-500'
 
+const logReasonText = log => log.metadata?.reason || log.metadata?.notes || null
+
 const formatLogAction = action => {
   const labels = {
     PHASE_CREATED: 'Fase dibuat',
@@ -1202,7 +1278,7 @@ const loadAll = async () => {
     await projectsStore.fetchProjectForArchitect(projectId)
     const [phasesRes, convsRes, bidsRes] = await Promise.all([
       phaseAPI.getPhases(projectId),
-      chatAPI.getMyConversations().catch(() => ({ data: { data: [] } })),
+      chatAPI.getMyConversations(),
       bidAPI.getMyBids().catch(() => ({ data: { data: [] } }))
     ])
     phases.value = phasesRes.data.data || phasesRes.data || []
@@ -1310,6 +1386,25 @@ const requestPayout = async phase => {
   } finally {
     actionLoading.value = null
   }
+}
+
+const BANK_LABELS = {
+  ID_BCA: 'BCA',
+  ID_MANDIRI: 'Mandiri',
+  ID_BNI: 'BNI',
+  ID_BRI: 'BRI',
+  ID_PERMATA: 'Permata',
+  ID_CIMB: 'CIMB Niaga',
+  ID_DANAMON: 'Danamon'
+}
+const bankLabel = code => BANK_LABELS[code] || code || '-'
+
+const pendingDisbursement = ref(null)
+const confirmDisbursement = async () => {
+  if (!pendingDisbursement.value) return
+  const phase = pendingDisbursement.value
+  await requestPayout(phase)
+  pendingDisbursement.value = null
 }
 
 onMounted(() => {

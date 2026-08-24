@@ -220,32 +220,56 @@
             <div class="space-y-8">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">{{
-                  t.projectCreate.constructionBudget
+                  t.projectCreate.designBudgetLabel
                 }}</label>
                 <p class="text-xs text-gray-500 mb-2">
-                  {{ t.projectCreate.constructionBudgetHint }}
+                  {{ t.projectCreate.designBudgetDescription }}
                 </p>
-                <div class="relative">
-                  <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">IDR</span>
-                  <input
-                    v-model="formData.constructionBudget"
-                    type="text"
-                    :placeholder="t.projectCreate.constructionBudgetPlaceholder"
-                    class="w-full pl-16 pr-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-right font-medium"
-                    @input="formatConstructionBudget"
-                  />
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1"
+                      >{{ t.projectCreate.designBudgetMinLabel }}<span class="text-red-500">*</span></label
+                    >
+                    <div class="relative">
+                      <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">IDR</span>
+                      <input
+                        v-model="formData.designBudgetMin"
+                        type="text"
+                        required
+                        :placeholder="t.projectCreate.budgetPlaceholder"
+                        class="w-full pl-16 pr-4 py-3 border-2 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-right font-medium"
+                        :class="budgetRangeError ? 'border-red-300' : 'border-gray-200'"
+                        @input="formatDesignBudgetMin"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="block text-xs font-medium text-gray-500 mb-1"
+                      >{{ t.projectCreate.designBudgetMaxLabel }}<span class="text-red-500">*</span></label
+                    >
+                    <div class="relative">
+                      <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">IDR</span>
+                      <input
+                        v-model="formData.designBudgetMax"
+                        type="text"
+                        required
+                        :placeholder="t.projectCreate.budgetPlaceholder"
+                        class="w-full pl-16 pr-4 py-3 border-2 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-right font-medium"
+                        :class="budgetRangeError ? 'border-red-300' : 'border-gray-200'"
+                        @input="formatDesignBudgetMax"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <p v-if="budgetRangeError" class="mt-2 text-sm text-red-600">{{ budgetRangeError }}</p>
+
+                <div class="mt-3 bg-brand-tan/30 p-4 rounded-xl border border-brand-gold/20 flex gap-3">
+                  <Info :size="20" class="text-brand-brown flex-shrink-0" />
+                  <p class="text-xs text-gray-700 leading-relaxed" v-html="t.projectCreate.designBudgetHint" />
                 </div>
               </div>
-
-              <BudgetRangeSlider
-                v-model="formData.designBudget"
-                :label="t.projectCreate.designBudgetLabel"
-                :description="t.projectCreate.designBudgetDescription"
-                :step="1000000"
-                :required="true"
-                :range-percent="25"
-                :hint="t.projectCreate.designBudgetHint"
-              />
             </div>
           </section>
 
@@ -369,7 +393,7 @@
             </button>
             <button
               type="submit"
-              :disabled="loading"
+              :disabled="loading || !!budgetRangeError"
               class="flex-1 px-6 py-3 text-white bg-brand-brown rounded-full hover:bg-black shadow-md hover:shadow-lg transition-all font-bold flex items-center justify-center gap-2 disabled:opacity-50"
             >
               <Loader v-if="loading" :size="20" class="animate-spin" />
@@ -388,13 +412,12 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from '@/composables/useI18n'
 import { PROJECT_SCOPES, PROJECT_CATEGORIES, subCategoriesFor, isValidSubCategory } from '@/constants/projectTaxonomy'
-import { Home, CheckSquare, Loader } from 'lucide-vue-next'
+import { Home, CheckSquare, Loader, Info } from 'lucide-vue-next'
 import { useProjectsStore } from '@/stores/projects'
 import { useClientProfileStore } from '@/stores/clientProfile'
 import { useProjectBrief } from '@/composables/useProjectBrief'
 import { landingAPI } from '@/services/api'
 import DeliverablesSelector from '@/components/project/DeliverablesSelector.vue'
-import BudgetRangeSlider from '@/components/project/BudgetRangeSlider.vue'
 import MultiImageUploader from '@/components/upload/MultiImageUploader.vue'
 import BaseAlert from '@/components/ui/BaseAlert.vue'
 
@@ -424,12 +447,8 @@ const formData = ref({
   category: null,
   subCategory: null,
   description: '',
-  constructionBudget: '',
-  designBudget: {
-    total: 0,
-    min: 0,
-    max: 0
-  },
+  designBudgetMin: '',
+  designBudgetMax: '',
   deliverables: [],
   startDateType: 'IMMEDIATELY',
   expectedStartDate: '',
@@ -486,26 +505,40 @@ const existingImages = ref([])
 const loading = ref(false)
 const error = ref(null)
 
-const formatConstructionBudget = event => {
+const formatDesignBudgetMin = event => {
   const value = event.target.value.replace(/[^0-9]/g, '')
-  if (value) {
-    formData.value.constructionBudget = parseInt(value, 10).toLocaleString('id-ID')
-  } else {
-    formData.value.constructionBudget = ''
-  }
+  formData.value.designBudgetMin = value ? parseInt(value, 10).toLocaleString('id-ID') : ''
 }
 
-const parseConstructionBudget = () => {
-  if (!formData.value.constructionBudget) return null
-  return parseInt(formData.value.constructionBudget.replace(/[^0-9]/g, ''), 10) || null
+const formatDesignBudgetMax = event => {
+  const value = event.target.value.replace(/[^0-9]/g, '')
+  formData.value.designBudgetMax = value ? parseInt(value, 10).toLocaleString('id-ID') : ''
 }
+
+const parseDesignBudgetMin = () => {
+  if (!formData.value.designBudgetMin) return null
+  return parseInt(String(formData.value.designBudgetMin).replace(/[^0-9]/g, ''), 10) || null
+}
+
+const parseDesignBudgetMax = () => {
+  if (!formData.value.designBudgetMax) return null
+  return parseInt(String(formData.value.designBudgetMax).replace(/[^0-9]/g, ''), 10) || null
+}
+
+const budgetRangeError = computed(() => {
+  const min = parseDesignBudgetMin()
+  const max = parseDesignBudgetMax()
+  if (min != null && max != null && max < min) {
+    return t.value.projectCreate.designBudgetRangeError
+  }
+  return ''
+})
 
 const buildProjectData = () => ({
   title: formData.value.title,
   location: formData.value.location,
-  budgetTotal: parseConstructionBudget(),
-  designBudgetMin: formData.value.designBudget.min,
-  designBudgetMax: formData.value.designBudget.max,
+  designBudgetMin: parseDesignBudgetMin(),
+  designBudgetMax: parseDesignBudgetMax(),
   buildingFunction: formData.value.category,
   projectScope: formData.value.projectScope,
   subCategory: formData.value.subCategory,
@@ -601,6 +634,11 @@ const handleSubmit = async () => {
     return
   }
 
+  if (budgetRangeError.value) {
+    loading.value = false
+    return
+  }
+
   try {
     await persistDraft()
     const newProject = await projectsStore.submitProject(existingProjectId.value, coverImages.value)
@@ -650,12 +688,11 @@ const applyLandingBrief = async () => {
   if (!formData.value.projectScope) formData.value.projectScope = brief.projectScope || null
   if (!formData.value.category) formData.value.category = brief.buildingFunction || null
   if (!formData.value.subCategory) formData.value.subCategory = brief.subCategory || null
-  if (brief.designBudgetTotal && !formData.value.designBudget.total) {
-    formData.value.designBudget = {
-      total: brief.designBudgetTotal,
-      min: brief.designBudgetMin ?? brief.designBudgetTotal,
-      max: brief.designBudgetMax ?? brief.designBudgetTotal
-    }
+  if (!formData.value.designBudgetMin && (brief.designBudgetMin ?? brief.designBudgetTotal)) {
+    formData.value.designBudgetMin = (brief.designBudgetMin ?? brief.designBudgetTotal).toLocaleString('id-ID')
+  }
+  if (!formData.value.designBudgetMax && (brief.designBudgetMax ?? brief.designBudgetTotal)) {
+    formData.value.designBudgetMax = (brief.designBudgetMax ?? brief.designBudgetTotal).toLocaleString('id-ID')
   }
   if (brief.startDateType && formData.value.startDateType === 'IMMEDIATELY') {
     formData.value.startDateType = brief.startDateType
@@ -685,14 +722,12 @@ onMounted(async () => {
       formData.value.category = existingDraft.buildingFunction || null
       formData.value.subCategory = existingDraft.subCategory || null
       formData.value.description = existingDraft.scopeOfWork || ''
-      formData.value.constructionBudget = existingDraft.budgetTotal
-        ? Number(existingDraft.budgetTotal).toLocaleString('id-ID')
+      formData.value.designBudgetMin = existingDraft.designBudgetMin
+        ? Number(existingDraft.designBudgetMin).toLocaleString('id-ID')
         : ''
-      formData.value.designBudget = {
-        total: existingDraft.designBudgetMax || 0,
-        min: existingDraft.designBudgetMin || 0,
-        max: existingDraft.designBudgetMax || 0
-      }
+      formData.value.designBudgetMax = existingDraft.designBudgetMax
+        ? Number(existingDraft.designBudgetMax).toLocaleString('id-ID')
+        : ''
       formData.value.deliverables = existingDraft.deliverables || []
       formData.value.startDateType = existingDraft.startDateType || 'IMMEDIATELY'
       formData.value.expectedStartDate = existingDraft.expectedStartDate || ''

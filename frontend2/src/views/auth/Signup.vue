@@ -413,10 +413,6 @@ const handleSignup = async () => {
 
     setTimeout(() => {
       // Always go to login after signup (both ARCHITECT and CLIENT)
-      // After email verification + login, backend returns needsArchitectOnboarding flag
-      // - ARCHITECT with needsArchitectOnboarding=true → /architect/onboarding
-      // - ARCHITECT with needsArchitectOnboarding=false → /architect/dashboard
-      // - CLIENT → /client/dashboard
       router.push({ path: '/login', query: route.query.redirect ? { redirect: route.query.redirect } : {} })
     }, 5000)
   } catch (error) {

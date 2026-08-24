@@ -39,6 +39,8 @@ public class ProjectDeadlineScheduler {
     log.info("Running project deadline scheduler at {}", now);
     closeExpiredProjects(now);
     sendDeadlineReminders(today);
+    sendNegotiationReminders(today);
+    expireNegotiations(now);
   }
 
   private void closeExpiredProjects(LocalDateTime now) {
@@ -135,6 +137,127 @@ public class ProjectDeadlineScheduler {
         } catch (Exception e) {
           log.error("Failed to send D-{} reminder for project {}", daysLeft, project.getId(), e);
         }
+      }
+    }
+  }
+
+  private void sendNegotiationReminders(LocalDate today) {
+    for (int daysLeft = 3; daysLeft >= 1; daysLeft--) {
+      int daysElapsed = 7 - daysLeft;
+      LocalDateTime from = today.minusDays(daysElapsed).atStartOfDay();
+      LocalDateTime to = today.minusDays(daysElapsed - 1).atStartOfDay();
+      List<Bid> acceptedBids =
+          bidRepository.findAcceptedBidsForNegotiationReminder(
+              BidStatus.ACCEPTED, ProjectStatus.NEGOTIATION, from, to);
+
+      for (Bid bid : acceptedBids) {
+        try {
+          Project project = bid.getProject();
+          Long clientUserId = project.getClient().getUser().getId();
+          String clientEmail = project.getClient().getUser().getEmail();
+          Long architectUserId = bid.getArchitect().getUser().getId();
+          String architectEmail = bid.getArchitect().getUser().getEmail();
+          String title = project.getTitle();
+          int days = daysLeft;
+
+          String message =
+              String.format(
+                  "The negotiation window for \"%s\" closes in %d day%s. Please confirm the terms.",
+                  title, days, days == 1 ? "" : "s");
+
+          notificationService.createNotification(
+              clientUserId,
+              NotificationType.NEGOTIATION_DEADLINE_REMINDER,
+              "Negotiation Deadline Reminder",
+              message,
+              null,
+              null,
+              "PROJECT",
+              project.getId());
+
+          notificationService.createNotification(
+              architectUserId,
+              NotificationType.NEGOTIATION_DEADLINE_REMINDER,
+              "Negotiation Deadline Reminder",
+              message,
+              null,
+              null,
+              "PROJECT",
+              project.getId());
+
+          emailService.sendNegotiationReminderEmail(
+              clientEmail, title, days, project.getId(), true);
+          emailService.sendNegotiationReminderEmail(
+              architectEmail, title, days, project.getId(), false);
+
+          log.info(
+              "Sent negotiation D-{} reminder for project {} to client {} and architect {}",
+              days,
+              project.getId(),
+              clientUserId,
+              architectUserId);
+        } catch (Exception e) {
+          log.error("Failed to send negotiation reminder for bid {}", bid.getId(), e);
+        }
+      }
+    }
+  }
+
+  private void expireNegotiations(LocalDateTime now) {
+    LocalDateTime threshold = now.minusDays(7);
+    List<Bid> expiredBids =
+        bidRepository.findAcceptedBidsForNegotiationExpiry(
+            BidStatus.ACCEPTED, ProjectStatus.NEGOTIATION, threshold);
+
+    log.info("Found {} negotiations past the 7-day window", expiredBids.size());
+
+    for (Bid bid : expiredBids) {
+      try {
+        Project project = bid.getProject();
+        project.setStatus(ProjectStatus.NEGOTIATION_EXPIRED);
+        projectRepository.save(project);
+
+        Long clientUserId = project.getClient().getUser().getId();
+        String clientEmail = project.getClient().getUser().getEmail();
+        Long architectUserId = bid.getArchitect().getUser().getId();
+        String architectEmail = bid.getArchitect().getUser().getEmail();
+        String title = project.getTitle();
+
+        String message =
+            String.format(
+                "The negotiation window for \"%s\" has closed without both parties confirming."
+                    + " This project is now under admin review.",
+                title);
+
+        notificationService.createNotification(
+            clientUserId,
+            NotificationType.NEGOTIATION_EXPIRED,
+            "Negotiation Window Closed",
+            message,
+            null,
+            null,
+            "PROJECT",
+            project.getId());
+
+        notificationService.createNotification(
+            architectUserId,
+            NotificationType.NEGOTIATION_EXPIRED,
+            "Negotiation Window Closed",
+            message,
+            null,
+            null,
+            "PROJECT",
+            project.getId());
+
+        emailService.sendNegotiationExpiredEmail(clientEmail, title, true);
+        emailService.sendNegotiationExpiredEmail(architectEmail, title, false);
+
+        log.info(
+            "Expired negotiation for project {} (bidId={}), now awaiting admin review",
+            project.getId(),
+            bid.getId());
+      } catch (Exception e) {
+        log.error("Failed to expire negotiation for bid {}", bid.getId(), e);
       }
     }
   }

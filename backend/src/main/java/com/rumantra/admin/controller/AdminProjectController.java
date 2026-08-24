@@ -5,13 +5,17 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.rumantra.admin.dto.AdminNegotiationResolutionRequest;
 import com.rumantra.admin.dto.AdminProjectDetailResponse;
+import com.rumantra.admin.dto.NegotiationDisputeResponse;
 import com.rumantra.admin.service.AdminProjectService;
 import com.rumantra.client.domain.ProjectStatus;
 import com.rumantra.client.dto.ProjectResponse;
+import com.rumantra.security.SecurityUtils;
 import com.rumantra.shared.dto.ApiResponse;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Tag(name = "Admin - Projects")
@@ -44,5 +48,19 @@ public class AdminProjectController {
       @PathVariable Long projectId) {
     return ResponseEntity.ok(
         ApiResponse.success(adminProjectService.overrideNegotiation(projectId)));
+  }
+
+  @GetMapping("/negotiation-disputes")
+  public ResponseEntity<ApiResponse<List<NegotiationDisputeResponse>>> getNegotiationDisputes() {
+    return ResponseEntity.ok(ApiResponse.success(adminProjectService.getNegotiationDisputes()));
+  }
+
+  @PostMapping("/{projectId}/resolve-negotiation-dispute")
+  public ResponseEntity<ApiResponse<ProjectResponse>> resolveNegotiationDispute(
+      @PathVariable Long projectId, @Valid @RequestBody AdminNegotiationResolutionRequest req) {
+    Long superuserId = SecurityUtils.getCurrentUserId();
+    return ResponseEntity.ok(
+        ApiResponse.success(
+            adminProjectService.resolveNegotiationDispute(projectId, superuserId, req)));
   }
 }

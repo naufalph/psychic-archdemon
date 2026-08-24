@@ -93,7 +93,8 @@ export default {
       lotSizePlaceholder: 'e.g. 200',
       budget: 'Design Budget (Architect Fee)',
       budgetPlaceholder: 'e.g. 150.000.000',
-      budgetHint: 'IAI guideline: roughly 5%–7% of your total construction budget.',
+      budgetHint:
+        'IAI guideline: set a fair design fee reflecting your project’s scope and complexity.',
       description: 'What do you have in mind?',
       descriptionPlaceholder:
         'Number of rooms, style preference, timeline constraints — anything helps.',
@@ -306,6 +307,12 @@ export default {
     editProfile: 'Edit Profile',
     saveProfile: 'Save Profile',
     cancel: 'Cancel',
+    done: 'Done',
+    autosave: {
+      saving: 'Saving...',
+      savedToast: 'Changes saved — profile {percent}% complete',
+      error: 'Could not save — check your connection'
+    },
     viewMode: {
       practiceName: 'Practice Name',
       city: 'City',
@@ -317,7 +324,9 @@ export default {
       npwp: 'NPWP',
       npwpVerified: 'NPWP Verified',
       verified: 'Verified',
-      notVerified: 'Not Verified'
+      notVerified: 'Not Verified',
+      category: 'Practice Type',
+      address: 'Address'
     },
     form: {
       practiceName: 'Practice Name',
@@ -338,29 +347,55 @@ export default {
       fullnameKtp: 'Full Name (as in KTP)',
       fullnameKtpPlaceholder: 'e.g., Budi Santoso',
       phoneNum: 'Phone Number',
-      phoneNumPlaceholder: 'e.g., 08123456789'
+      phoneNumPlaceholder: 'e.g., 08123456789',
+      category: 'Practice Type',
+      categoryFreelance: 'Freelance',
+      categoryCompany: 'Company',
+      fullAddress: 'Full Address',
+      fullAddressPlaceholder: 'Street, building, unit, etc.',
+      province: 'Province',
+      provincePlaceholder: 'Select province',
+      cityDropdownPlaceholder: 'Select city',
+      photo: 'Profile Photo'
     },
     validation: {
-      nameRequired: 'Practice name is required',
       nameMinLength: 'Practice name must be at least 2 characters',
-      cityRequired: 'City is required',
       cityMinLength: 'City must be at least 2 characters',
-      experienceRequired: 'Experience range is required',
-      philosophyRequired: 'Design philosophy is required',
-      philosophyMinLength: 'Philosophy must be at least 50 characters',
-      expertiseRequired: 'At least one expertise area is required',
-      fullnameKtpRequired: 'Full name as in KTP is required',
-      ktpNumRequired: 'KTP number is required',
       ktpNumInvalid: 'KTP number must be exactly 16 digits',
-      npwpRequired: 'NPWP is required',
       npwpInvalid: 'NPWP must be 15 or 16 digits',
-      phoneNumRequired: 'Phone number is required',
       phoneNumInvalid: 'Phone number must be 8 to 16 digits'
     },
     toast: {
       updateSuccess: 'Profile updated successfully',
       updateError: 'Failed to update profile. Please try again.',
-      loadError: 'Failed to load profile. Please try again.'
+      loadError: 'Failed to load profile. Please try again.',
+      photoUpdateSuccess: 'Profile photo updated',
+      photoUpdateError: 'Failed to upload photo. Please try again.'
+    },
+    completion: {
+      title: 'Profile Completion',
+      cta: 'Complete your profile',
+      basicInfo: 'Basic Info',
+      businessLocation: 'Business & Location',
+      identityDocs: 'Identity Documents',
+      portfolio: 'Portfolio'
+    }
+  },
+  settings: {
+    changePassword: {
+      title: 'Change Password',
+      currentPassword: 'Current Password',
+      currentPasswordPlaceholder: 'Enter current password',
+      newPassword: 'New Password',
+      newPasswordPlaceholder: 'Enter new password',
+      confirmPassword: 'Confirm New Password',
+      confirmPasswordPlaceholder: 'Re-enter new password',
+      submit: 'Update Password',
+      policyHint:
+        'At least 8 characters, with a digit, uppercase, lowercase, and special character',
+      mismatchError: 'New password and confirmation do not match',
+      success: 'Password changed successfully',
+      error: 'Failed to change password. Please try again.'
     }
   },
   portfolio: {
@@ -487,6 +522,15 @@ export default {
     identityIncompleteDismiss: 'Later',
     savingDraft: 'Saving draft...',
     completeProfileLink: 'Complete your profile →',
+    studioPhilosophyHelp:
+      "Prefilled from your profile's Design Philosophy — feel free to tailor it for this project.",
+    aspectRatioHint: 'Recommended aspect ratio: 16:9 for the best display in proposal comparisons',
+    referenceImages: 'Client Reference Images',
+    facadeDescriptionPlaceholder:
+      'Add context about these facade images (materials, style, site conditions)...',
+    interiorDescriptionPlaceholder: 'Add context about these interior images...',
+    massingDescriptionPlaceholder: 'Add context about these massing images...',
+    zoningDescriptionPlaceholder: 'Add context about these zoning images...',
     deliverableCategories: {
       siteAnalysis: 'Site Analysis & Planning',
       designPhases: 'Design Phases',
@@ -582,7 +626,6 @@ export default {
     acceptConfirm: 'Are you sure you want to accept this proposal?',
     lotSize: 'Lot Size',
     designBudget: 'Design Budget',
-    totalBudget: 'Total Budget',
     description: 'Description',
     deliverables: 'Required Deliverables',
     proposedCost: 'Proposed Cost',
@@ -632,6 +675,7 @@ export default {
     phoneLabel: 'Phone Number',
     phoneRequiredError: 'Phone number is required so architects and our team can reach you.',
     phoneInvalidError: 'Please enter a valid phone number.',
+    designBudgetRangeError: 'Maximum price must be equal to or greater than the minimum price.',
     part: 'Part',
     partImages: 'Project Images',
     partGeneral: 'General Information',
@@ -650,13 +694,12 @@ export default {
     detailedRequirements: 'Detailed Requirements',
     detailedRequirementsPlaceholder:
       'Describe number of rooms, style preference (e.g., Industrial, Tropical), timeline constraints...',
-    constructionBudget: 'Total Construction Budget',
-    constructionBudgetHint: 'Estimate for construction, material, and labor (Fisik Bangunan)',
-    constructionBudgetPlaceholder: 'e.g., 2.000.000.000 (optional)',
-    designBudgetLabel: 'Design Budget (Architect Fee)',
+    designBudgetLabel: 'Design Fee (Architect Fee)',
     designBudgetDescription: 'This is the main reference for architects to bid',
+    designBudgetMinLabel: 'Minimum Price',
+    designBudgetMaxLabel: 'Maximum Price',
     designBudgetHint:
-      '<strong>IAI Guideline:</strong> According to the Indonesian Institute of Architects (IAI), the design fee is typically around <strong>5% - 7%</strong> of the total construction budget.',
+      '<strong>IAI Guideline:</strong> According to the Indonesian Institute of Architects (IAI), design fees typically scale with project scope and complexity. Set a price range that reflects a fair budget for your project.',
     startDateHint: 'Let architects know when you expect construction to begin.',
     biddingClosesOn: 'Bidding Closes On',
     biddingDeadlineHint:
@@ -667,7 +710,6 @@ export default {
     cancel: 'Cancel',
     posting: 'Posting...',
     postProject: 'Post Project',
-    flexibleRange: 'Flexible Range',
     budgetPlaceholder: 'e.g., 2.000.000.000',
     dropImages: 'Drop images here or click to upload',
     imagesHint:
@@ -779,7 +821,7 @@ export default {
     bothConfirmed: 'Both parties have confirmed — project is now In Progress!',
     yourProposal: 'Your Proposal',
     proposedPrice: 'Proposed Price',
-    timeline: 'Timeline',
+    timeline: 'Duration',
     days: 'days',
     deliverables: 'Deliverables',
     revisionCommitments: 'Revision Commitments',
@@ -803,7 +845,9 @@ export default {
     clientConfirmedStatus: 'Client has confirmed their end.',
     awaitingClientStatus: 'Waiting for client to confirm...',
     confirmDialog: 'Confirm the terms and proceed with this project?',
-    confirmError: 'Failed to confirm terms'
+    confirmError: 'Failed to confirm terms',
+    confirmModalEyebrow: 'Confirm & Proceed',
+    modalCancel: 'Cancel'
   },
   notifications: {
     title: 'Notifications',
@@ -854,6 +898,7 @@ export default {
   support: {
     requestSupport: 'Request IT Support',
     opening: 'Opening...',
+    openError: 'Failed to open support chat',
     chatTitle: 'IT Support Chat',
     chatSubtitle: 'Our team will respond shortly',
     close: 'Close',
@@ -942,7 +987,15 @@ export default {
     proposalB: 'Proposal B',
     appointed: '✓ Appointed',
     appointLead: 'Appoint Lead Architect',
-    appointConfirm: 'Appoint this architect as the lead for this project?',
+    appointModalEyebrow: 'Confirm Appointment',
+    appointModalTitle: 'Appoint as Lead Architect?',
+    appointModalWarningTitle: 'Please Read Before Confirming',
+    appointModalWarningItem1: 'The project moves into negotiation with this architect immediately.',
+    appointModalWarningItem2: 'Other proposals will no longer be available for comparison.',
+    appointModalWarningItem3: 'This action cannot be undone from here.',
+    appointModalCancel: 'Cancel',
+    appointModalConfirm: 'Yes, Appoint Now',
+    appointModalLoading: 'Appointing...',
     visualOverlay: 'Visual Overlay',
     sideBySize: 'Design Review Side-by-Side',
     adjustSlider: 'Adjust slider for relative review',
@@ -962,6 +1015,7 @@ export default {
     costEstimate: 'Cost Estimate',
     timeline: 'Timeline',
     portfolios: 'Portfolios',
+    noPortfolios: 'No portfolios linked',
     scopeAlignment: 'Scope Alignment',
     paymentScheduleTitle: 'Payment Schedule',
     noPhases: 'No payment phases specified',
@@ -974,7 +1028,16 @@ export default {
     matchingDeliverable: 'Matches project requirement',
     additionalDeliverable: 'Additional offering from architect',
     missingDeliverable: 'Not covered in this proposal',
-    uncoveredTitle: 'Not yet covered from project requirements'
+    uncoveredTitle: 'Not yet covered from project requirements',
+    paymentFlowInfo: 'View payment flow details',
+    paymentFlowTitle: 'Payment Flow',
+    paymentFlowUpfront: '{amount} is due upfront when this phase begins.',
+    paymentFlowTimelineWithDeliverables:
+      'Assuming no revision requests, the architect is expected to complete and submit {deliverables} within {days} days.',
+    paymentFlowTimeline:
+      'Assuming no revision requests, this phase is expected to be completed within {days} days.',
+    paymentFlowRevisions:
+      'This phase includes up to {rounds} round(s) of revisions should adjustments be needed.'
   },
   paymentPhaseBuilder: {
     availableDeliverables: 'Available Deliverables',
@@ -983,12 +1046,11 @@ export default {
     paymentPhases: 'Payment Phases',
     addPhase: '+ Add Phase',
     phasesTotal: 'Phases total',
-    amount: 'Amount (IDR)',
+    percentage: 'Percentage (%)',
     revisionRounds: 'Revision rounds',
     estimatedDays: 'Est. days',
     daysTotal: 'Total duration',
     phase: 'Phase',
-    phaseTitlePlaceholder: 'title',
     dropZoneHint: 'Drop deliverables here or click above to assign'
   },
   bidDetail: {
@@ -1024,6 +1086,33 @@ export default {
     addToCompare: 'Add to Compare',
     viewDetails: 'View Full Details'
   },
+  portfolioPopup: {
+    built: 'Built',
+    concept: 'Concept',
+    noDescription: 'No description provided.'
+  },
+  bidTable: {
+    studio: 'Studio',
+    rating: 'Rating',
+    ratingComingSoon: 'Rating coming soon',
+    location: 'Location',
+    totalPrice: 'Total Price',
+    totalDuration: 'Total Duration',
+    detail: 'Detail',
+    filterByCity: 'City',
+    allCities: 'All Cities',
+    priceMin: 'Min Price',
+    priceMax: 'Max Price',
+    clearFilters: 'Clear filters',
+    noPendingBids: 'No pending bids yet',
+    noBidsMatchFilters: 'No bids match your filters',
+    minPrice: 'Min Price',
+    avgPrice: 'Avg Price',
+    maxPrice: 'Max Price',
+    minDuration: 'Min Duration',
+    avgDuration: 'Avg Duration',
+    maxDuration: 'Max Duration'
+  },
   projectCard: {
     manage: 'Manage →',
     continueDraft: 'Continue Draft →'
@@ -1043,6 +1132,7 @@ export default {
       awaitingArchitect: 'Awaiting architect confirmation...',
       confirmPrompt: 'Review the bid terms and discuss with the architect before confirming.',
       confirmButton: 'Confirm & Proceed to Payment',
+      confirmDialog: 'Confirm the terms and proceed to payment?',
       confirming: 'Confirming...',
       rejectButton: 'Reject Terms & Reopen Bidding'
     },
@@ -1059,7 +1149,9 @@ export default {
         "This will reject the current bid, refund the architect's token, and reopen the project for new bids. This action cannot be undone.",
       cancel: 'Cancel',
       confirm: 'Yes, Reject & Reopen',
-      rejecting: 'Rejecting...'
+      rejecting: 'Rejecting...',
+      successToast: 'Bidding reopened successfully',
+      error: 'Failed to reject terms'
     }
   },
   errors: {
@@ -1340,6 +1432,26 @@ export default {
     cancel: 'Cancel',
     resolve: 'Resolve Dispute'
   },
+  negotiationDisputes: {
+    title: 'Negotiation Disputes',
+    subtitle:
+      'Review projects where the 7-day negotiation window expired without both parties confirming',
+    noDisputes: 'No negotiation disputes',
+    expired: 'EXPIRED',
+    client: 'Client',
+    architect: 'Architect',
+    bidAmount: 'Bid Amount',
+    acceptedOn: 'Accepted on',
+    expiredOn: 'Expired on',
+    resolutionNote: 'Resolution note (optional)',
+    resolutionPlaceholder: 'Context for your decision...',
+    clientAbandoned: 'Client Abandoned',
+    architectAbandoned: 'Architect Abandoned',
+    clientAbandonedHint: 'Refunds every bid on this project, including the winning bid.',
+    architectAbandonedHint: 'Refunds every bid except the winning bid, which is forfeited.',
+    cancel: 'Cancel',
+    resolve: 'Resolve'
+  },
   allProjectsAdmin: {
     title: 'All Projects',
     subtitle: 'Platform-wide project management',
@@ -1364,120 +1476,6 @@ export default {
     selectConversation: 'Select a conversation',
     selectConversationHint: 'Choose a project chat from the list to start messaging.',
     typeMessage: 'Type a message...'
-  },
-  onboarding: {
-    welcome: {
-      title: 'Welcome to Your Studio',
-      subtitle:
-        "Let's craft your architectural presence and showcase your vision to clients seeking exceptional design.",
-      enterStudio: 'Enter Studio',
-      duration: 'This will take approximately 10 minutes to complete'
-    },
-    expertise: {
-      title: 'Define Your Expertise',
-      subtitle: 'Select the architectural domains you specialize in.',
-      selected: 'Selected {n} expertise',
-      selectedPlural: 'Selected {n} expertises',
-      back: 'Back',
-      continue: 'Continue'
-    },
-    philosophy: {
-      title: 'Define Your Philosophy',
-      subtitle: 'Share your design principles and approach to architecture.',
-      label: 'Design Philosophy',
-      placeholder: 'Describe your architectural philosophy and design approach...',
-      charactersCount: '{n} characters',
-      back: 'Back',
-      continue: 'Continue'
-    },
-    identity: {
-      title: 'Establish Your Identity',
-      subtitle: 'Tell us about your practice and professional background.',
-      practiceName: 'Practice Name',
-      practiceNamePlaceholder: 'e.g., Studio Archipelago',
-      city: 'City',
-      cityPlaceholder: 'e.g., Jakarta',
-      experience: 'Years of Experience',
-      experiencePlaceholder: 'Select experience range',
-      back: 'Back',
-      continue: 'Continue'
-    },
-    portfolioIntro: {
-      title: 'Build Your Portfolio',
-      subtitle: 'Showcase your best projects to attract clients.',
-      startPortfolio: 'Start Your Portfolio',
-      startDesc: 'Add at least one project to showcase your work to potential clients.',
-      addFirst: 'Add Your First Project',
-      addAnother: 'Add Another Project',
-      remove: 'Remove',
-      removeConfirm: 'Are you sure you want to remove this project?',
-      back: 'Back',
-      continue: 'Continue'
-    },
-    portfolioProject: {
-      title: 'Add Project Details',
-      subtitle: 'Share the story and visuals of your project.',
-      name: 'Project Name',
-      namePlaceholder: 'e.g., Tropical House Jakarta',
-      type: 'Project Type',
-      typePlaceholder: 'Select type',
-      year: 'Year Completed',
-      challenge: 'Project Challenge',
-      challengePlaceholder: 'What was the key challenge or constraint?',
-      solution: 'Design Solution',
-      solutionPlaceholder: 'How did your design address this challenge?',
-      images: 'Project Images (Maximum 8)',
-      imagesCount: '{n}/8 images uploaded. Maximum 10MB per image.',
-      saving: 'Saving...',
-      save: 'Save Project',
-      back: 'Back'
-    },
-    profileConfirm: {
-      title: 'Review Your Profile',
-      subtitle: 'Confirm your professional details before creating your portfolio.',
-      practiceName: 'Practice Name',
-      city: 'City',
-      experience: 'Experience',
-      philosophy: 'Design Philosophy',
-      expertise: 'Expertise',
-      editProfile: 'Edit Profile',
-      back: 'Back',
-      saving: 'Saving...',
-      proceed: 'Proceed to Portfolio'
-    },
-    review: {
-      title: 'Final Review',
-      subtitle: 'Review your complete profile before activation.',
-      professionalProfile: 'Professional Profile',
-      edit: 'Edit',
-      practiceName: 'Practice Name',
-      city: 'City',
-      experience: 'Experience',
-      philosophy: 'Philosophy',
-      expertise: 'Expertise',
-      identityDocs: 'Identity Documents',
-      fullNameKtp: 'Full Name (KTP)',
-      ktpNumber: 'KTP Number',
-      npwp: 'NPWP',
-      phone: 'Mobile Phone',
-      portfolioProjects: 'Portfolio Projects',
-      readyToActivate: 'Ready to Activate',
-      readyDesc:
-        'Your profile is complete. Click below to activate your architect presence and start connecting with clients.',
-      back: 'Back',
-      activate: 'Activate Presence'
-    },
-    activated: {
-      title: 'Studio Activated',
-      subtitle:
-        'Your architectural presence is now live. Clients can discover your work and connect with your practice.',
-      whatsNext: "What's Next?",
-      step1: 'Browse open project opportunities',
-      step2: 'Submit proposals to interested clients',
-      step3: 'Build your reputation and grow your practice',
-      dashboard: 'Go to Dashboard',
-      redirecting: 'or wait {n} seconds for automatic redirect'
-    }
   },
   projectStatus: {
     PENDING_APPROVAL: 'Pending Validation',

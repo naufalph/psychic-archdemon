@@ -9,6 +9,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import com.rumantra.admin.event.NegotiationDisputeResolvedEvent;
+import com.rumantra.bidding.event.BidAcceptedEvent;
 import com.rumantra.bidding.event.BidSubmittedEvent;
 import com.rumantra.notification.event.ProjectValidatedEvent;
 import com.rumantra.shared.email.EmailTemplateService;
@@ -131,6 +133,65 @@ public class EmailEventListener {
       log.error(
           "Failed to send bid notification email for bid {}: {}",
           event.getBidId(),
+          e.getMessage(),
+          e);
+    }
+  }
+
+  @Async
+  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+  public void handleBidAccepted(BidAcceptedEvent event) {
+    try {
+      emailService.sendBidAcceptedEmail(
+          event.getWinningArchitectEmail(), event.getProjectTitle(), event.getProjectId());
+
+      for (BidAcceptedEvent.RejectedArchitect rejected : event.getRejectedArchitects()) {
+        emailService.sendBidRejectedEmail(rejected.getEmail(), event.getProjectTitle());
+      }
+
+      log.info(
+          "Bid acceptance emails sent for bidId={}, projectId={}, rejectedCount={}",
+          event.getBidId(),
+          event.getProjectId(),
+          event.getRejectedArchitects().size());
+
+    } catch (Exception e) {
+      log.error(
+          "Failed to send bid acceptance emails for bid {}: {}",
+          event.getBidId(),
+          e.getMessage(),
+          e);
+    }
+  }
+
+  @Async
+  @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+  public void handleNegotiationDisputeResolved(NegotiationDisputeResolvedEvent event) {
+    try {
+      boolean clientAbandoned = "CLIENT_ABANDONED".equals(event.getDecision());
+
+      String clientOutcome =
+          clientAbandoned
+              ? "This project was cancelled because the negotiation window expired without confirmation on your end."
+              : "This project was cancelled because the architect did not confirm the terms in time.";
+
+      String architectOutcome =
+          clientAbandoned
+              ? "This project was cancelled and your bid token has been refunded to your account."
+              : "This project was cancelled because the negotiation window expired without your"
+                  + " confirmation. Your bid token was not refunded.";
+
+      emailService.sendNegotiationResolvedEmail(
+          event.getClientEmail(), event.getProjectTitle(), clientOutcome, true);
+      emailService.sendNegotiationResolvedEmail(
+          event.getArchitectEmail(), event.getProjectTitle(), architectOutcome, false);
+
+      log.info("Negotiation resolution emails sent for projectId={}", event.getProjectId());
+
+    } catch (Exception e) {
+      log.error(
+          "Failed to send negotiation resolution emails for project {}: {}",
+          event.getProjectId(),
           e.getMessage(),
           e);
     }

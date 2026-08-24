@@ -19,6 +19,8 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
 
   List<Project> findByClientIdOrderByCreatedAtDesc(Long clientId);
 
+  List<Project> findByStatus(ProjectStatus status);
+
   @Query("SELECT p FROM Project p LEFT JOIN FETCH p.files WHERE p.id = :projectId")
   Optional<Project> findByIdWithFiles(@Param("projectId") Long projectId);
 

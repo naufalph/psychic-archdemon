@@ -1,7 +1,8 @@
 <template>
   <div v-if="images && images.length > 0">
-    <h3 class="text-lg font-bold text-black mb-4">{{ title }}</h3>
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+    <h3 class="text-lg font-bold text-black mb-1">{{ title }}</h3>
+    <p v-if="description" class="text-sm text-gray-600 mb-4 whitespace-pre-line">{{ description }}</p>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 mt-3">
       <div
         v-for="(image, index) in images"
         :key="index"
@@ -96,6 +97,7 @@ import { X } from 'lucide-vue-next'
 const props = defineProps({
   images: { type: Array, default: () => [] },
   title: { type: String, required: true },
+  description: { type: String, default: '' },
   emptyMessage: { type: String, default: 'No images available' }
 })
 

@@ -36,7 +36,7 @@ Creates a new project. Requires `CLIENT` role. The `clientId` is derived from th
 ```bash
 curl --location 'http://localhost:8080/rmtr/projects' \
 --header 'Authorization: Bearer {{JWT_TOKEN}}' \
---form 'project={"title":"Modern Family Home","location":"Jakarta Selatan","budgetTotal":800000000,"designBudgetMin":50000000,"designBudgetMax":80000000,"projectCategory":"Residential","buildingFunction":"Single Family House","estimatedBuildArea":250,"numberOfFloors":2,"ownsLand":true,"hasLegalDocuments":true,"scopeOfWork":"Full architectural design from concept to construction documents","deliverables":["Floor plans","Elevations","3D renders","Construction drawings"],"designPreferences":"Modern minimalist with natural materials","contactPerson":"Budi Santoso","startDateType":"SPECIFIC_DATE","expectedStartDate":"2026-09-01","biddingDeadline":"2026-07-15"};type=application/json' \
+--form 'project={"title":"Modern Family Home","location":"Jakarta Selatan","designBudgetMin":50000000,"designBudgetMax":80000000,"projectCategory":"Residential","buildingFunction":"Single Family House","estimatedBuildArea":250,"numberOfFloors":2,"ownsLand":true,"hasLegalDocuments":true,"scopeOfWork":"Full architectural design from concept to construction documents","deliverables":["Floor plans","Elevations","3D renders","Construction drawings"],"designPreferences":"Modern minimalist with natural materials","contactPerson":"Budi Santoso","startDateType":"SPECIFIC_DATE","expectedStartDate":"2026-09-01","biddingDeadline":"2026-07-15"};type=application/json' \
 --form 'files=@"/home/user/documents/site_plan.pdf"' \
 --form 'files=@"/home/user/photos/site_photo.jpg"'
 ```
@@ -48,7 +48,6 @@ curl --location 'http://localhost:8080/rmtr/projects' \
 |-------|------|----------|-----------|
 | `title` | String | Yes | max 255 chars |
 | `location` | String | Yes | max 255 chars |
-| `budgetTotal` | Long | No | min 0 |
 | `designBudgetMin` | Long | No | min 0 |
 | `designBudgetMax` | Long | No | min 0 |
 | `projectCategory` | String | No | max 255 chars |
@@ -74,7 +73,6 @@ curl --location 'http://localhost:8080/rmtr/projects' \
     "clientId": 5,
     "title": "Modern Family Home",
     "location": "Jakarta Selatan",
-    "budgetTotal": 800000000,
     "designBudgetMin": 50000000,
     "designBudgetMax": 80000000,
     "projectCategory": "Residential",
@@ -210,8 +208,8 @@ Returns all validated, open projects available for bidding.
 curl --location 'http://localhost:8080/rmtr/projects/open' \
 --header 'Authorization: Bearer {{JWT_TOKEN}}'
 
-# Sort by budget, exclude own projects (if user is also a client)
-curl --location 'http://localhost:8080/rmtr/projects/open?sortBy=budgetTotal&sortDirection=desc&excludeOwnProjects=true' \
+# Sort by design fee, exclude own projects (if user is also a client)
+curl --location 'http://localhost:8080/rmtr/projects/open?sortBy=designBudgetMax&sortDirection=desc&excludeOwnProjects=true' \
 --header 'Authorization: Bearer {{JWT_TOKEN}}'
 ```
 
@@ -329,7 +327,6 @@ curl --location 'http://localhost:8080/rmtr/projects/1/initialize-phases' \
 | `clientId` | Long | |
 | `title` | String | |
 | `location` | String | |
-| `budgetTotal` | Long | |
 | `designBudgetMin` | Long | |
 | `designBudgetMax` | Long | |
 | `projectCategory` | String | |

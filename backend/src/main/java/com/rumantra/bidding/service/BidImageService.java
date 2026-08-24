@@ -36,14 +36,14 @@ public class BidImageService {
 
     long currentCount = bidImageRepository.countByBidIdAndImageType(bid.getId(), imageType);
     long totalAfterUpload = currentCount + images.size();
-    if (totalAfterUpload > 5) {
+    if (totalAfterUpload > 3) {
       throw new IllegalArgumentException(
           imageType.name()
               + " image limit exceeded. Current: "
               + currentCount
               + ", Uploading: "
               + images.size()
-              + ", Max: 5");
+              + ", Max: 3");
     }
 
     List<BidImage> savedImages = new ArrayList<>();

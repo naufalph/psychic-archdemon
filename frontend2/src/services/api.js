@@ -224,7 +224,11 @@ export const authAPI = {
   activateRole: role => api.post(`/rmtr/users/me/activate-role?role=${role}`),
 
   // Update last login role
-  updateLastLoginRole: role => api.put('/rmtr/users/me/last-login-role', null, { params: { role } })
+  updateLastLoginRole: role =>
+    api.put('/rmtr/users/me/last-login-role', null, { params: { role } }),
+
+  // Change password (email/password accounts only)
+  changePassword: payload => api.post('/rmtr/users/me/change-password', payload)
 }
 
 export const userAPI = {
@@ -293,9 +297,14 @@ export const architectAPI = {
   getProfile: () => api.get('/rmtr/architects/profile'),
   getPortfolio: id => api.get(`/architects/${id}/portfolio`),
   updatePortfolio: portfolioData => api.put('/architects/portfolio', portfolioData),
-  updateOnboardingProfile: profileData =>
-    api.put('/rmtr/architects/onboarding-profile', profileData),
-  updateFullProfile: profileData => api.put('/rmtr/architects/profile', profileData)
+  updateFullProfile: profileData => api.put('/rmtr/architects/profile', profileData),
+  uploadPhoto: file => {
+    const formData = new FormData()
+    formData.append('file', file)
+    return api.post('/rmtr/architects/photo', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    })
+  }
 }
 
 export const portfolioAPI = {

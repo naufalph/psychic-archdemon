@@ -39,8 +39,13 @@
           <LogOut :size="18" />
           <span>Sign Out</span>
         </button>
-        <div class="flex items-center gap-3 px-3 py-2 mt-2">
+        <RouterLink
+          to="/architect/profile"
+          class="flex items-center gap-3 px-3 py-2 mt-2 rounded-lg transition-all hover:bg-white/5"
+        >
+          <img v-if="userPhotoUrl" :src="userPhotoUrl" alt="" class="w-8 h-8 rounded-full object-cover shrink-0" />
           <div
+            v-else
             class="w-8 h-8 rounded-full bg-brand-brown text-white flex items-center justify-center text-xs font-bold shrink-0"
           >
             {{ userInitials }}
@@ -49,7 +54,7 @@
             <p class="text-white text-xs font-semibold truncate">{{ userName }}</p>
             <p class="text-white/40 text-xs truncate">Architect</p>
           </div>
-        </div>
+        </RouterLink>
       </div>
     </aside>
 
@@ -88,6 +93,7 @@ onMounted(async () => {
 
 const logoHovered = ref(false)
 const userName = computed(() => architectProfileStore.profileName || authStore.userName || 'Architect')
+const userPhotoUrl = computed(() => architectProfileStore.profilePhotoUrl)
 const userInitials = computed(() => {
   const name = userName.value
   return name

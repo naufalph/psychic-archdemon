@@ -33,6 +33,14 @@
               {{ disbursedCount }} / {{ phases.length }} selesai
             </span>
             <span
+              v-if="isCompleted"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-green-100 text-green-700 whitespace-nowrap"
+            >
+              <span class="w-1.5 h-1.5 rounded-full bg-green-600" />
+              Selesai · Completed
+            </span>
+            <span
+              v-else
               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 whitespace-nowrap"
             >
               <span class="w-1.5 h-1.5 rounded-full bg-blue-500" />
@@ -1008,6 +1016,7 @@ const previewState = reactive({
 })
 
 const project = computed(() => projectsStore.currentProject)
+const isCompleted = computed(() => project.value?.status === 'COMPLETED')
 
 const coverImage = computed(() => {
   const files = project.value?.files

@@ -31,7 +31,6 @@ export const analyzeProposals = async (project, proposals) => {
     Sub-Category: ${project.subCategory || 'N/A'}
     Lot Size: ${project.lotSize} m2
     Description: ${project.description}
-    Total Construction Budget: ${project.totalBudget || 'N/A'}
     Design Budget (Target): ${project.designBudget || project.budget}
     Requested Deliverables: ${project.deliverables ? project.deliverables.join(', ') : 'Not specified'}
 

@@ -140,6 +140,107 @@ public class EmailService {
   }
 
   @Async
+  public void sendBidAcceptedEmail(String toEmail, String projectTitle, Long projectId) {
+    try {
+      String subject = String.format("You've been selected — %s", projectTitle);
+      String html =
+          templateService.render(
+              "bid-accepted",
+              Map.of(
+                  "PROJECT_TITLE", projectTitle,
+                  "PROJECT_ID", String.valueOf(projectId),
+                  "FRONTEND_URL", frontendUrl));
+      sendHtmlEmail(toEmail, subject, html);
+      log.info("Bid accepted email sent to {}", toEmail);
+    } catch (Exception e) {
+      log.error("Failed to send bid accepted email to {}", toEmail, e);
+    }
+  }
+
+  @Async
+  public void sendBidRejectedEmail(String toEmail, String projectTitle) {
+    try {
+      String subject = String.format("Bid update — %s", projectTitle);
+      String html =
+          templateService.render(
+              "bid-rejected",
+              Map.of(
+                  "PROJECT_TITLE", projectTitle,
+                  "FRONTEND_URL", frontendUrl));
+      sendHtmlEmail(toEmail, subject, html);
+      log.info("Bid rejected email sent to {}", toEmail);
+    } catch (Exception e) {
+      log.error("Failed to send bid rejected email to {}", toEmail, e);
+    }
+  }
+
+  @Async
+  public void sendNegotiationReminderEmail(
+      String toEmail, String projectTitle, int daysLeft, Long projectId, boolean isClient) {
+    try {
+      String subject =
+          String.format(
+              "Reminder: %d day%s left to confirm — %s",
+              daysLeft, daysLeft == 1 ? "" : "s", projectTitle);
+      String ctaPath =
+          (isClient ? "/client/projects/" : "/architect/projects/") + projectId + "/finalization";
+      String html =
+          templateService.render(
+              "negotiation-deadline-reminder",
+              Map.of(
+                  "PROJECT_TITLE", projectTitle,
+                  "DAYS_LEFT", String.valueOf(daysLeft),
+                  "DAYS_SUFFIX", daysLeft == 1 ? "" : "s",
+                  "CTA_PATH", ctaPath,
+                  "FRONTEND_URL", frontendUrl));
+      sendHtmlEmail(toEmail, subject, html);
+      log.info("Negotiation reminder email ({} days) sent to {}", daysLeft, toEmail);
+    } catch (Exception e) {
+      log.error("Failed to send negotiation reminder email to {}", toEmail, e);
+    }
+  }
+
+  @Async
+  public void sendNegotiationExpiredEmail(String toEmail, String projectTitle, boolean isClient) {
+    try {
+      String subject = String.format("Negotiation window closed — %s", projectTitle);
+      String ctaPath = isClient ? "/client/dashboard" : "/architect/dashboard";
+      String html =
+          templateService.render(
+              "negotiation-expired",
+              Map.of(
+                  "PROJECT_TITLE", projectTitle,
+                  "CTA_PATH", ctaPath,
+                  "FRONTEND_URL", frontendUrl));
+      sendHtmlEmail(toEmail, subject, html);
+      log.info("Negotiation expired email sent to {}", toEmail);
+    } catch (Exception e) {
+      log.error("Failed to send negotiation expired email to {}", toEmail, e);
+    }
+  }
+
+  @Async
+  public void sendNegotiationResolvedEmail(
+      String toEmail, String projectTitle, String outcomeMessage, boolean isClient) {
+    try {
+      String subject = String.format("Project cancelled — %s", projectTitle);
+      String ctaPath = isClient ? "/client/dashboard" : "/architect/dashboard";
+      String html =
+          templateService.render(
+              "negotiation-resolved",
+              Map.of(
+                  "PROJECT_TITLE", projectTitle,
+                  "OUTCOME_MESSAGE", outcomeMessage,
+                  "CTA_PATH", ctaPath,
+                  "FRONTEND_URL", frontendUrl));
+      sendHtmlEmail(toEmail, subject, html);
+      log.info("Negotiation resolution email sent to {}", toEmail);
+    } catch (Exception e) {
+      log.error("Failed to send negotiation resolution email to {}", toEmail, e);
+    }
+  }
+
+  @Async
   public void sendBidNotificationEmail(String toEmail, String subject, String htmlBody) {
     long startTime = System.currentTimeMillis();
 

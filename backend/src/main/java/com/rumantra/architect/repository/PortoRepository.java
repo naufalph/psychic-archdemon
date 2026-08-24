@@ -31,4 +31,6 @@ public interface PortoRepository extends JpaRepository<Porto, Long> {
   boolean existsBySourceProjectId(Long sourceProjectId);
 
   Optional<Porto> findBySourceProjectId(Long sourceProjectId);
+
+  long countByArchitectId(Long architectId);
 }

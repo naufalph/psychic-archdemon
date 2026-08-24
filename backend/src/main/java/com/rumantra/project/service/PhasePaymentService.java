@@ -172,8 +172,8 @@ public class PhasePaymentService {
                     phase.getPhaseNumber(), phase.getTitle(), project.getTitle()))
             .currency("IDR")
             .invoiceDuration(86400)
-            .successRedirectUrl(frontendUrl + "/client/projects/" + project.getId() + "/phases")
-            .failureRedirectUrl(frontendUrl + "/client/projects/" + project.getId() + "/phases")
+            .successRedirectUrl(frontendUrl + "/client/projects/" + project.getId() + "/workspace")
+            .failureRedirectUrl(frontendUrl + "/client/projects/" + project.getId() + "/active")
             .customer(customer)
             .customerNotificationPreference(notifPref)
             .items(Arrays.asList(item))
@@ -323,6 +323,10 @@ public class PhasePaymentService {
 
     if (phase.getStatus() != PhaseStatus.IN_PROGRESS) {
       throw new BusinessException(ExceptionConstants.PHASE_WRONG_STATUS);
+    }
+
+    if (req.getFilePath() == null || !req.getFilePath().matches("^https?://.+")) {
+      throw new IllegalArgumentException("filePath must be an absolute http(s) URL");
     }
 
     User user =
@@ -864,6 +868,7 @@ public class PhasePaymentService {
         .action(l.getAction())
         .fromStatus(l.getFromStatus())
         .toStatus(l.getToStatus())
+        .metadata(l.getMetadata())
         .createdAt(l.getCreatedAt())
         .build();
   }

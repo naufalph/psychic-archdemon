@@ -111,13 +111,9 @@ public class UserService {
 
     // Collect user's current roles
     List<String> registeredRoles = new ArrayList<>();
-    Boolean needsArchitectOnboarding = null;
-    Boolean needsClientOnboarding = null;
 
     if (architectRepository.findByUserId(user.getId()).isPresent()) {
       registeredRoles.add(RumantraConstants.ARCH_ROLE);
-      Architect architect = architectRepository.findByUserId(user.getId()).get();
-      needsArchitectOnboarding = architect.getNeedsOnboarding();
     }
     if (clientRepository.findByUserId(user.getId()).isPresent()) {
       registeredRoles.add(RumantraConstants.CLIENT_ROLE);
@@ -137,8 +133,7 @@ public class UserService {
         .firstName(user.getFirstName())
         .lastName(user.getLastName())
         .registeredRoles(registeredRoles)
-        .needsArchitectOnboarding(needsArchitectOnboarding)
-        .needsClientOnboarding(needsClientOnboarding)
+        .socialType(user.getSocialType() != null ? user.getSocialType().name() : null)
         .lastLoginRole(user.getLastLoginRole())
         .build();
   }
@@ -156,13 +151,9 @@ public class UserService {
 
   private UserDto mapToDto(User user) {
     List<String> registeredRoles = new ArrayList<>();
-    Boolean needsArchitectOnboarding = null;
-    Boolean needsClientOnboarding = null;
 
     if (architectRepository.findByUserId(user.getId()).isPresent()) {
       registeredRoles.add(RumantraConstants.ARCH_ROLE);
-      Architect architect = architectRepository.findByUserId(user.getId()).get();
-      needsArchitectOnboarding = architect.getNeedsOnboarding();
     }
     if (clientRepository.findByUserId(user.getId()).isPresent()) {
       registeredRoles.add(RumantraConstants.CLIENT_ROLE);
@@ -179,8 +170,7 @@ public class UserService {
         .isEmailVerified(user.isEmailVerified())
         .isActive(user.isActive())
         .registeredRoles(registeredRoles)
-        .needsArchitectOnboarding(needsArchitectOnboarding)
-        .needsClientOnboarding(needsClientOnboarding)
+        .socialType(user.getSocialType() != null ? user.getSocialType().name() : null)
         .lastLoginRole(user.getLastLoginRole())
         .build();
   }
@@ -222,7 +212,6 @@ public class UserService {
               .npwpVerified(false)
               .successMatch(0)
               .successProject(0)
-              .needsOnboarding(true)
               .build();
       architect = architectRepository.save(architect);
       bidQuotaService.initializeBidQuota(architect);
@@ -344,8 +333,6 @@ public class UserService {
 
       String jwt = jwtUtils.generateJwtToken(user.getEmail());
       List<String> registeredRoles = new ArrayList<>();
-      Boolean needsArchitectOnboarding = null;
-      Boolean needsClientOnboarding = null;
 
       OAuthState oauthState = decodeOAuthState(state);
       String requestedRole = oauthState.getRole();
@@ -371,7 +358,6 @@ public class UserService {
                   .npwpVerified(false)
                   .successMatch(0)
                   .successProject(0)
-                  .needsOnboarding(true)
                   .build();
           architect = architectRepository.save(architect);
 
@@ -393,8 +379,6 @@ public class UserService {
 
       if (architectRepository.findByUserId(user.getId()).isPresent()) {
         registeredRoles.add(RumantraConstants.ARCH_ROLE);
-        Architect architect = architectRepository.findByUserId(user.getId()).get();
-        needsArchitectOnboarding = architect.getNeedsOnboarding();
       }
       if (clientRepository.findByUserId(user.getId()).isPresent()) {
         registeredRoles.add(RumantraConstants.CLIENT_ROLE);
@@ -411,8 +395,7 @@ public class UserService {
           .firstName(user.getFirstName())
           .lastName(user.getLastName())
           .registeredRoles(registeredRoles)
-          .needsArchitectOnboarding(needsArchitectOnboarding)
-          .needsClientOnboarding(needsClientOnboarding)
+          .socialType(user.getSocialType() != null ? user.getSocialType().name() : null)
           .lastLoginRole(user.getLastLoginRole())
           .build();
 
@@ -553,8 +536,6 @@ public class UserService {
 
       String jwt = jwtUtils.generateJwtToken(user.getEmail());
       List<String> registeredRoles = new ArrayList<>();
-      Boolean needsArchitectOnboarding = null;
-      Boolean needsClientOnboarding = null;
 
       OAuthState oauthState = decodeOAuthState(state);
       String requestedRole = oauthState.getRole();
@@ -580,7 +561,6 @@ public class UserService {
                   .npwpVerified(false)
                   .successMatch(0)
                   .successProject(0)
-                  .needsOnboarding(true)
                   .build();
           architect = architectRepository.save(architect);
 
@@ -602,8 +582,6 @@ public class UserService {
 
       if (architectRepository.findByUserId(user.getId()).isPresent()) {
         registeredRoles.add(RumantraConstants.ARCH_ROLE);
-        Architect architect = architectRepository.findByUserId(user.getId()).get();
-        needsArchitectOnboarding = architect.getNeedsOnboarding();
       }
       if (clientRepository.findByUserId(user.getId()).isPresent()) {
         registeredRoles.add(RumantraConstants.CLIENT_ROLE);
@@ -620,8 +598,7 @@ public class UserService {
           .firstName(user.getFirstName())
           .lastName(user.getLastName())
           .registeredRoles(registeredRoles)
-          .needsArchitectOnboarding(needsArchitectOnboarding)
-          .needsClientOnboarding(needsClientOnboarding)
+          .socialType(user.getSocialType() != null ? user.getSocialType().name() : null)
           .lastLoginRole(user.getLastLoginRole())
           .build();
 
@@ -748,7 +725,6 @@ public class UserService {
               .npwpVerified(false)
               .successMatch(0)
               .successProject(0)
-              .needsOnboarding(true)
               .build();
       architect = architectRepository.save(architect);
 
@@ -802,6 +778,26 @@ public class UserService {
     }
 
     user.setLastLoginRole(role);
+    user.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
+    userRepository.save(user);
+  }
+
+  @Transactional
+  public void changePassword(Long userId, ChangePasswordRequestDto request) {
+    User user =
+        userRepository
+            .findById(userId)
+            .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
+
+    if (user.getSocialType() != SocialType.EMAIL || user.getPassword() == null) {
+      throw new IllegalArgumentException("Password change is only available for email accounts.");
+    }
+
+    if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+      throw new IllegalArgumentException("Current password is incorrect.");
+    }
+
+    user.setPassword(passwordEncoder.encode(request.getNewPassword()));
     user.setUpdatedAt(Timestamp.valueOf(LocalDateTime.now()));
     userRepository.save(user);
   }

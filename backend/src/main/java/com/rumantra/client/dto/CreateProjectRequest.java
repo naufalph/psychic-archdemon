@@ -21,9 +21,6 @@ public class CreateProjectRequest {
   @Size(max = 255, message = "Location must not exceed 255 characters")
   private String location;
 
-  @Min(value = 0, message = "Budget total must be greater than or equal to 0")
-  private Long budgetTotal;
-
   @Min(value = 0, message = "Design budget minimum must be greater than or equal to 0")
   private Long designBudgetMin;
 

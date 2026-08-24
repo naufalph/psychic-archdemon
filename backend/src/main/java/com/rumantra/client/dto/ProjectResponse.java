@@ -21,7 +21,6 @@ public class ProjectResponse {
   private Long clientId;
   private String title;
   private String location;
-  private Long budgetTotal;
   private Long designBudgetMin;
   private Long designBudgetMax;
   private String projectCategory;

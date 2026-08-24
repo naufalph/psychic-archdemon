@@ -26,6 +26,18 @@ public class BidDetail {
   @Column(name = "concept_statement", columnDefinition = "TEXT")
   private String conceptStatement;
 
+  @Column(name = "facade_description", columnDefinition = "TEXT")
+  private String facadeDescription;
+
+  @Column(name = "interior_description", columnDefinition = "TEXT")
+  private String interiorDescription;
+
+  @Column(name = "massing_description", columnDefinition = "TEXT")
+  private String massingDescription;
+
+  @Column(name = "zoning_description", columnDefinition = "TEXT")
+  private String zoningDescription;
+
   @Column(name = "created_at", nullable = false, updatable = false)
   private LocalDateTime createdAt;
 

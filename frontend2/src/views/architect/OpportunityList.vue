@@ -49,6 +49,25 @@
         </button>
       </div>
 
+      <router-link
+        v-if="architectProfileStore.hasProfile && architectProfileStore.profileCompletionPercent < 100"
+        :to="{ name: 'ArchitectProfile' }"
+        class="flex items-center justify-between bg-brand-tan/40 border border-brand-brown/20 rounded-2xl p-4 mb-8 hover:bg-brand-tan/60 transition"
+      >
+        <div class="flex items-center gap-3">
+          <div class="h-2 w-24 rounded-full bg-black/10 overflow-hidden shrink-0">
+            <div
+              class="h-full bg-brand-brown"
+              :style="{ width: architectProfileStore.profileCompletionPercent + '%' }"
+            ></div>
+          </div>
+          <p class="text-sm font-medium text-black/70">
+            {{ t.profile.completion.cta }} ({{ architectProfileStore.profileCompletionPercent }}%)
+          </p>
+        </div>
+        <span class="text-xs font-bold text-brand-brown">{{ t.profile.editProfile }} →</span>
+      </router-link>
+
       <div v-if="loading" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
         <div v-for="n in 6" :key="n" class="bg-white rounded-3xl border border-gray-200 p-8 animate-pulse">
           <div class="h-6 bg-gray-200 rounded w-3/4 mb-4" />
@@ -89,6 +108,7 @@ import { useI18n } from '@/composables/useI18n'
 import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
 import { useTokenPurchaseStore } from '@/stores/tokenPurchase'
+import { useArchitectProfileStore } from '@/stores/architectProfile'
 import ProjectCard from '@/components/project/ProjectCard.vue'
 import TokenPurchaseModal from '@/components/architect/TokenPurchaseModal.vue'
 
@@ -97,6 +117,7 @@ const router = useRouter()
 const projectsStore = useProjectsStore()
 const bidsStore = useBidsStore()
 const tokenPurchaseStore = useTokenPurchaseStore()
+const architectProfileStore = useArchitectProfileStore()
 
 const { openProjects, loading } = storeToRefs(projectsStore)
 const { quota, myBids } = storeToRefs(bidsStore)

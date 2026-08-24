@@ -4,20 +4,28 @@
       <div
         v-for="(bid, idx) in [bidA, bidB]"
         :key="bid.id"
-        class="bg-white rounded-2xl border border-gray-200 p-6 shadow-soft text-center"
+        class="group relative bg-white rounded-2xl border border-gray-200 p-6 shadow-soft text-center transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-brand-brown/40 has-[button:focus-visible]:-translate-y-0.5 has-[button:focus-visible]:border-brand-brown/40 motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:has-[button:focus-visible]:translate-y-0"
       >
         <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">
           {{ idx === 0 ? t.proposalComparison.proposalA : t.proposalComparison.proposalB }}
         </p>
         <h3 class="text-xl font-bold text-black mb-1">{{ bid.architectName || 'Architect' }}</h3>
         <p v-if="bid.architectCompany" class="text-sm text-gray-500 mb-4">{{ bid.architectCompany }}</p>
-        <button
-          v-if="bid.status === 'PENDING'"
-          class="bg-brand-brown text-white px-5 py-2 rounded-full text-sm font-bold hover:bg-black transition"
-          @click="handleAppoint(bid.id)"
-        >
-          {{ t.proposalComparison.appointLead }}
-        </button>
+
+        <div v-if="bid.status === 'PENDING'" class="relative inline-block">
+          <span
+            aria-hidden="true"
+            class="pointer-events-none absolute -inset-5 rounded-full opacity-0 blur-xl bg-[radial-gradient(circle,rgba(124,71,40,0.35)_0%,rgba(124,71,40,0)_70%)] transition-opacity duration-500 ease-out group-hover:opacity-100 group-has-[button:focus-visible]:opacity-100"
+          />
+          <button
+            class="appoint-lead-btn relative inline-flex items-center gap-1.5 bg-brand-brown text-white px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 ease-out hover:bg-brand-brown-dark hover:-translate-y-px hover:shadow-[0_0_0_4px_rgba(124,71,40,0.18),0_6px_20px_-4px_rgba(124,71,40,0.45)] focus-visible:bg-brand-brown-dark focus-visible:-translate-y-px focus-visible:shadow-[0_0_0_4px_rgba(124,71,40,0.18),0_6px_20px_-4px_rgba(124,71,40,0.45)] focus-visible:outline-none active:scale-[0.98] motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:focus-visible:translate-y-0 motion-reduce:active:scale-100"
+            @click="pendingAppointBid = bid"
+          >
+            <Crown :size="14" aria-hidden="true" />
+            {{ t.proposalComparison.appointLead }}
+          </button>
+        </div>
+
         <span v-else-if="bid.status === 'ACCEPTED'" class="text-green-600 font-bold text-sm">{{
           t.proposalComparison.appointed
         }}</span>
@@ -96,6 +104,11 @@
           <span class="text-gray-300">{{ t.proposalComparison.reviewing }}</span>
           <span>{{ imageTypeLabel[activeImageType] }}</span>
         </div>
+      </div>
+
+      <div v-if="descriptionA || descriptionB" class="grid grid-cols-2 gap-4 mt-4">
+        <p class="text-xs text-gray-600 whitespace-pre-line">{{ descriptionA }}</p>
+        <p class="text-xs text-gray-600 whitespace-pre-line">{{ descriptionB }}</p>
       </div>
 
       <div class="flex justify-between items-center mt-3 min-h-[28px]">
@@ -183,6 +196,39 @@
       </div>
     </div>
 
+    <div v-if="portfoliosA.length || portfoliosB.length" class="grid grid-cols-2 gap-4">
+      <div
+        v-for="(portfolios, idx) in [portfoliosA, portfoliosB]"
+        :key="'portfolios-' + [bidA, bidB][idx].id"
+        class="bg-white rounded-2xl border border-gray-200 p-6 shadow-soft"
+      >
+        <h2 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">
+          {{ idx === 0 ? t.proposalComparison.proposalA : t.proposalComparison.proposalB }} —
+          {{ t.proposalComparison.portfolios }}
+        </h2>
+        <div v-if="portfolios.length" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+          <button
+            v-for="portfolio in portfolios"
+            :key="portfolio.id"
+            type="button"
+            class="text-left group"
+            @click="viewingPortfolio = portfolio"
+          >
+            <div class="aspect-square bg-gray-100 rounded-xl overflow-hidden mb-1.5">
+              <img
+                v-if="portfolio.images?.[0]"
+                :src="portfolio.images[0].mediumUrl || portfolio.images[0].originalUrl"
+                :alt="portfolio.title"
+                class="w-full h-full object-cover transition group-hover:scale-105"
+              />
+            </div>
+            <p class="text-xs text-gray-600 truncate">{{ portfolio.title }}</p>
+          </button>
+        </div>
+        <p v-else class="text-gray-400 text-sm">{{ t.proposalComparison.noPortfolios }}</p>
+      </div>
+    </div>
+
     <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-soft">
       <h2 class="text-sm font-bold text-gray-500 uppercase tracking-widest p-6 border-b border-gray-100">
         {{ t.proposalComparison.summaryStats }}
@@ -190,11 +236,11 @@
       <table class="w-full text-sm">
         <thead class="bg-gray-50">
           <tr>
-            <th class="text-left px-6 py-3 text-xs text-gray-500 font-bold uppercase tracking-wider">
-              {{ t.proposalComparison.metricHeader }}
-            </th>
             <th class="text-center px-6 py-3 text-xs text-brand-brown font-bold uppercase tracking-wider">
               {{ t.proposalComparison.proposalA }}
+            </th>
+            <th class="text-center px-6 py-3 text-xs text-gray-500 font-bold uppercase tracking-wider">
+              {{ t.proposalComparison.metricHeader }}
             </th>
             <th class="text-center px-6 py-3 text-xs font-bold uppercase tracking-wider">
               {{ t.proposalComparison.proposalB }}
@@ -203,27 +249,27 @@
         </thead>
         <tbody>
           <tr class="border-t border-gray-100">
-            <td class="px-6 py-4 text-gray-700 font-medium">{{ t.proposalComparison.costEstimate }}</td>
             <td class="px-6 py-4 text-center font-bold text-brand-brown">{{ formatCurrency(bidA.bidAmount) }}</td>
+            <td class="px-6 py-4 text-center text-gray-700 font-medium">{{ t.proposalComparison.costEstimate }}</td>
             <td class="px-6 py-4 text-center font-bold">{{ formatCurrency(bidB.bidAmount) }}</td>
           </tr>
           <tr class="border-t border-gray-100">
-            <td class="px-6 py-4 text-gray-700 font-medium">{{ t.proposalComparison.timeline }}</td>
             <td class="px-6 py-4 text-center">
               {{ bidA.proposedTimelineDays || '—' }} {{ t.proposalComparison.days }}
             </td>
+            <td class="px-6 py-4 text-center text-gray-700 font-medium">{{ t.proposalComparison.timeline }}</td>
             <td class="px-6 py-4 text-center">
               {{ bidB.proposedTimelineDays || '—' }} {{ t.proposalComparison.days }}
             </td>
           </tr>
           <tr class="border-t border-gray-100">
-            <td class="px-6 py-4 text-gray-700 font-medium">{{ t.proposalComparison.portfolios }}</td>
-            <td class="px-6 py-4 text-center">{{ bidA.portfolios?.length || 0 }}</td>
-            <td class="px-6 py-4 text-center">{{ bidB.portfolios?.length || 0 }}</td>
+            <td class="px-6 py-4 text-center">{{ bidA.portfolioReferences?.length || 0 }}</td>
+            <td class="px-6 py-4 text-center text-gray-700 font-medium">{{ t.proposalComparison.portfolios }}</td>
+            <td class="px-6 py-4 text-center">{{ bidB.portfolioReferences?.length || 0 }}</td>
           </tr>
           <tr class="border-t border-gray-100">
-            <td class="px-6 py-4 text-gray-700 font-medium">{{ t.proposalComparison.scopeAlignment }}</td>
             <td class="px-6 py-4 text-center">{{ Math.round(scopeScore(bidA)) }}%</td>
+            <td class="px-6 py-4 text-center text-gray-700 font-medium">{{ t.proposalComparison.scopeAlignment }}</td>
             <td class="px-6 py-4 text-center">{{ Math.round(scopeScore(bidB)) }}%</td>
           </tr>
         </tbody>
@@ -256,7 +302,22 @@
                   phase.title || `${t.paymentPhaseBuilder.phase} ${phase.phaseNumber}`
                 }}</span>
               </div>
-              <span class="text-xs font-bold text-brand-brown">{{ formatCurrency(phase.amount) }}</span>
+              <div class="flex items-center gap-1.5">
+                <span class="text-xs font-bold text-brand-brown">{{ formatCurrency(phase.amount) }}</span>
+                <button
+                  type="button"
+                  class="w-4 h-4 rounded-full flex items-center justify-center text-gray-400 hover:text-brand-brown hover:bg-brand-tan/40 transition"
+                  :title="t.proposalComparison.paymentFlowInfo"
+                  @click="
+                    activePhaseInfo = {
+                      phase,
+                      proposalLabel: idx === 0 ? t.proposalComparison.proposalA : t.proposalComparison.proposalB
+                    }
+                  "
+                >
+                  <Info :size="14" />
+                </button>
+              </div>
             </div>
             <div v-if="phase.deliverables?.length" class="flex flex-wrap gap-1 mb-1.5">
               <span
@@ -333,15 +394,147 @@
         {{ t.proposalComparison.missingDeliverable }}
       </span>
     </div>
+
+    <PortfolioDetailPopup :portfolio="viewingPortfolio" @close="viewingPortfolio = null" />
+
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition duration-150 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="activePhaseInfo"
+          class="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4"
+          @click.self="activePhaseInfo = null"
+        >
+          <div class="w-full max-w-md bg-white rounded-3xl shadow-2xl p-6">
+            <div class="flex items-start justify-between gap-4 mb-4">
+              <div>
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">
+                  {{ activePhaseInfo.proposalLabel }}
+                </p>
+                <h3 class="text-lg font-bold text-black">
+                  {{
+                    activePhaseInfo.phase.title || `${t.paymentPhaseBuilder.phase} ${activePhaseInfo.phase.phaseNumber}`
+                  }}
+                  — {{ t.proposalComparison.paymentFlowTitle }}
+                </h3>
+              </div>
+              <button
+                type="button"
+                class="w-8 h-8 shrink-0 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition"
+                @click="activePhaseInfo = null"
+              >
+                <X :size="16" />
+              </button>
+            </div>
+
+            <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
+              {{ buildPaymentFlowText(activePhaseInfo.phase) }}
+            </p>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
+
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition duration-150 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="pendingAppointBid"
+          class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+          @click.self="closeAppointModal"
+        >
+          <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+            <div class="bg-brand-brown px-6 py-5">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                  <Crown :size="20" class="text-white" aria-hidden="true" />
+                </div>
+                <div>
+                  <p class="text-xs text-brand-tan font-semibold uppercase tracking-wide">
+                    {{ t.proposalComparison.appointModalEyebrow }}
+                  </p>
+                  <h3 class="text-lg font-bold text-white">{{ t.proposalComparison.appointModalTitle }}</h3>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-6 space-y-4">
+              <div
+                class="flex items-center justify-between gap-3 p-4 bg-brand-tan/30 border border-brand-gold/30 rounded-xl"
+              >
+                <div class="min-w-0">
+                  <p class="font-bold text-gray-900 truncate">{{ pendingAppointBid.architectName || 'Architect' }}</p>
+                  <p v-if="pendingAppointBid.architectCompany" class="text-sm text-gray-500 truncate">
+                    {{ pendingAppointBid.architectCompany }}
+                  </p>
+                </div>
+                <p class="text-sm font-bold text-brand-brown shrink-0">
+                  {{ formatCurrency(pendingAppointBid.bidAmount) }}
+                </p>
+              </div>
+
+              <div class="p-4 bg-amber-50 border border-amber-200 rounded-xl">
+                <p class="text-sm font-bold text-amber-800 mb-2">
+                  {{ t.proposalComparison.appointModalWarningTitle }}
+                </p>
+                <ul class="text-xs text-amber-700 space-y-1.5 list-disc list-inside">
+                  <li>{{ t.proposalComparison.appointModalWarningItem1 }}</li>
+                  <li>{{ t.proposalComparison.appointModalWarningItem2 }}</li>
+                  <li>{{ t.proposalComparison.appointModalWarningItem3 }}</li>
+                </ul>
+              </div>
+
+              <p v-if="appointError" class="text-sm text-red-600">{{ appointError }}</p>
+
+              <div class="flex gap-3 pt-1">
+                <button
+                  type="button"
+                  :disabled="appointLoading"
+                  class="flex-1 px-4 py-2.5 border border-gray-200 text-gray-600 text-sm font-semibold rounded-lg hover:bg-gray-50 disabled:opacity-50 transition"
+                  @click="closeAppointModal"
+                >
+                  {{ t.proposalComparison.appointModalCancel }}
+                </button>
+                <button
+                  type="button"
+                  :disabled="appointLoading"
+                  class="flex-1 px-4 py-2.5 bg-brand-brown text-white text-sm font-bold rounded-lg hover:bg-brand-brown-dark disabled:opacity-50 transition flex items-center justify-center gap-2"
+                  @click="confirmAppoint"
+                >
+                  <span v-if="appointLoading">{{ t.proposalComparison.appointModalLoading }}</span>
+                  <template v-else>
+                    <Crown :size="15" aria-hidden="true" />
+                    {{ t.proposalComparison.appointModalConfirm }}
+                  </template>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { ChevronLeft, ChevronRight, Crown, Info, X } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
 import { useBidsStore } from '@/stores/bids'
+import PortfolioDetailPopup from '@/components/bid/PortfolioDetailPopup.vue'
 
 const props = defineProps({
   bidA: { type: Object, required: true },
@@ -359,6 +552,23 @@ const isDragging = ref(false)
 const sliderContainerRef = ref(null)
 const imageIndexA = ref(0)
 const imageIndexB = ref(0)
+const viewingPortfolio = ref(null)
+const activePhaseInfo = ref(null)
+const pendingAppointBid = ref(null)
+const appointLoading = ref(false)
+const appointError = ref(null)
+
+const handlePhaseInfoKeydown = e => {
+  if (e.key !== 'Escape') return
+  activePhaseInfo.value = null
+  if (!appointLoading.value) pendingAppointBid.value = null
+}
+
+onMounted(() => document.addEventListener('keydown', handlePhaseInfoKeydown))
+onUnmounted(() => document.removeEventListener('keydown', handlePhaseInfoKeydown))
+
+const portfoliosA = computed(() => props.bidA?.portfolioReferences || [])
+const portfoliosB = computed(() => props.bidB?.portfolioReferences || [])
 
 const IMAGE_TYPES = ['FACADE', 'INTERIOR', 'MASSING', 'ZONING']
 
@@ -376,10 +586,20 @@ const IMAGE_TYPE_FIELD = {
   ZONING: 'zoningImages'
 }
 
+const IMAGE_TYPE_DESCRIPTION_FIELD = {
+  FACADE: 'facadeDescription',
+  INTERIOR: 'interiorDescription',
+  MASSING: 'massingDescription',
+  ZONING: 'zoningDescription'
+}
+
 const getImages = (bid, type) => bid?.[IMAGE_TYPE_FIELD[type]] ?? []
+const getDescription = (bid, type) => bid?.details?.[IMAGE_TYPE_DESCRIPTION_FIELD[type]] ?? ''
 
 const imageAImages = computed(() => getImages(props.bidA, activeImageType.value))
 const imageBImages = computed(() => getImages(props.bidB, activeImageType.value))
+const descriptionA = computed(() => getDescription(props.bidA, activeImageType.value))
+const descriptionB = computed(() => getDescription(props.bidB, activeImageType.value))
 const imageAUrl = computed(() => imageAImages.value[imageIndexA.value]?.imageUrl ?? null)
 const imageBUrl = computed(() => imageBImages.value[imageIndexB.value]?.imageUrl ?? null)
 
@@ -429,6 +649,29 @@ const formatCurrency = value => {
   }).format(value)
 }
 
+const buildPaymentFlowText = phase => {
+  const deliverableLabels = (phase.deliverables || []).map(
+    d => t.value.proposalCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ')
+  )
+
+  const sentences = [t.value.proposalComparison.paymentFlowUpfront.replace('{amount}', formatCurrency(phase.amount))]
+
+  if (phase.estimatedDays) {
+    const timelineKey = deliverableLabels.length
+      ? t.value.proposalComparison.paymentFlowTimelineWithDeliverables
+          .replace('{days}', phase.estimatedDays)
+          .replace('{deliverables}', deliverableLabels.join(', '))
+      : t.value.proposalComparison.paymentFlowTimeline.replace('{days}', phase.estimatedDays)
+    sentences.push(timelineKey)
+  }
+
+  if (phase.revisionRounds != null) {
+    sentences.push(t.value.proposalComparison.paymentFlowRevisions.replace('{rounds}', phase.revisionRounds))
+  }
+
+  return sentences.join(' ')
+}
+
 const scopeScore = bid => {
   const projectDeliverables = props.project?.deliverables || []
   if (!projectDeliverables.length) return 0
@@ -437,13 +680,62 @@ const scopeScore = bid => {
   return (intersection.length / projectDeliverables.length) * 100
 }
 
-const handleAppoint = async bidId => {
-  if (!confirm(t.value.proposalComparison.appointConfirm)) return
+const closeAppointModal = () => {
+  if (appointLoading.value) return
+  pendingAppointBid.value = null
+  appointError.value = null
+}
+
+const confirmAppoint = async () => {
+  if (!pendingAppointBid.value) return
+  appointLoading.value = true
+  appointError.value = null
   try {
-    await bidsStore.acceptBid(bidId)
+    await bidsStore.acceptBid(pendingAppointBid.value.id)
     router.push(`/client/projects/${props.project.id}/finalization`)
   } catch (err) {
-    alert(err.response?.data?.message || 'Failed to appoint architect')
+    appointError.value = err.response?.data?.message || 'Failed to appoint architect'
+  } finally {
+    appointLoading.value = false
   }
 }
 </script>
+
+<style scoped>
+/* One-shot sheen sweep: replays only when hover/focus-visible re-enters, never loops. */
+.appoint-lead-btn {
+  overflow: hidden;
+}
+
+.appoint-lead-btn::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 25%,
+    rgba(255, 255, 255, 0.55) 48%,
+    rgba(255, 255, 255, 0.55) 52%,
+    transparent 75%
+  );
+  transform: translateX(-130%);
+  pointer-events: none;
+}
+
+.group:hover .appoint-lead-btn::after,
+.group:has(button:focus-visible) .appoint-lead-btn::after {
+  animation: appoint-sheen 0.9s ease-out;
+}
+
+@keyframes appoint-sheen {
+  to {
+    transform: translateX(130%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .appoint-lead-btn::after {
+    animation: none !important;
+  }
+}
+</style>

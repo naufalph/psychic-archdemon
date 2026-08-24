@@ -86,7 +86,11 @@ watch(
 
 onMounted(async () => {
   chatStore.clearCurrentChat()
-  await loadMessages()
+  try {
+    await loadMessages()
+  } catch {
+    // error is already surfaced via chatStore.error / the Retry button — still connect the socket below
+  }
 
   const token = localStorage.getItem('auth_token')
   stompClient = new Client({

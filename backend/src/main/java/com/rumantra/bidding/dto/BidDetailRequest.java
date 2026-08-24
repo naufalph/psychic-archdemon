@@ -15,4 +15,8 @@ public class BidDetailRequest {
 
   private String conceptStatement;
   private List<BidPaymentPhaseRequest> phases;
+  private String facadeDescription;
+  private String interiorDescription;
+  private String massingDescription;
+  private String zoningDescription;
 }

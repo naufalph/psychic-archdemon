@@ -95,7 +95,8 @@ export default {
       lotSizePlaceholder: 'cth. 200',
       budget: 'Budget Desain (Fee Arsitek)',
       budgetPlaceholder: 'cth. 150.000.000',
-      budgetHint: 'Panduan IAI: kisaran 5%–7% dari total budget konstruksi Kamu.',
+      budgetHint:
+        'Panduan IAI: tentukan fee desain yang wajar sesuai skala dan kompleksitas proyek Kamu.',
       description: 'Apa yang Kamu bayangkan?',
       descriptionPlaceholder:
         'Jumlah ruangan, preferensi gaya, target waktu — apa pun akan membantu.',
@@ -310,6 +311,12 @@ export default {
     editProfile: 'Edit Profil',
     saveProfile: 'Simpan Profil',
     cancel: 'Batal',
+    done: 'Selesai',
+    autosave: {
+      saving: 'Menyimpan...',
+      savedToast: 'Perubahan tersimpan — profil {percent}% lengkap',
+      error: 'Gagal menyimpan — periksa koneksi Anda'
+    },
     viewMode: {
       practiceName: 'Nama Praktik',
       city: 'Kota',
@@ -321,7 +328,9 @@ export default {
       npwp: 'NPWP',
       npwpVerified: 'NPWP Terverifikasi',
       verified: 'Terverifikasi',
-      notVerified: 'Belum Terverifikasi'
+      notVerified: 'Belum Terverifikasi',
+      category: 'Jenis Praktik',
+      address: 'Alamat'
     },
     form: {
       practiceName: 'Nama Praktik',
@@ -342,29 +351,54 @@ export default {
       fullnameKtp: 'Nama Lengkap (sesuai KTP)',
       fullnameKtpPlaceholder: 'contoh: Budi Santoso',
       phoneNum: 'Nomor HP',
-      phoneNumPlaceholder: 'contoh: 08123456789'
+      phoneNumPlaceholder: 'contoh: 08123456789',
+      category: 'Jenis Praktik',
+      categoryFreelance: 'Freelance',
+      categoryCompany: 'Perusahaan',
+      fullAddress: 'Alamat Lengkap',
+      fullAddressPlaceholder: 'Jalan, gedung, unit, dll.',
+      province: 'Provinsi',
+      provincePlaceholder: 'Pilih provinsi',
+      cityDropdownPlaceholder: 'Pilih kota',
+      photo: 'Foto Profil'
     },
     validation: {
-      nameRequired: 'Nama praktik wajib diisi',
       nameMinLength: 'Nama praktik minimal 2 karakter',
-      cityRequired: 'Kota wajib diisi',
       cityMinLength: 'Kota minimal 2 karakter',
-      experienceRequired: 'Rentang pengalaman wajib diisi',
-      philosophyRequired: 'Filosofi desain wajib diisi',
-      philosophyMinLength: 'Filosofi minimal 50 karakter',
-      expertiseRequired: 'Minimal satu bidang keahlian wajib dipilih',
-      fullnameKtpRequired: 'Nama lengkap sesuai KTP wajib diisi',
-      ktpNumRequired: 'Nomor KTP wajib diisi',
       ktpNumInvalid: 'Nomor KTP harus tepat 16 digit',
-      npwpRequired: 'NPWP wajib diisi',
       npwpInvalid: 'NPWP harus 15 atau 16 digit',
-      phoneNumRequired: 'Nomor HP wajib diisi',
       phoneNumInvalid: 'Nomor HP harus 8 hingga 16 digit'
     },
     toast: {
       updateSuccess: 'Profil berhasil diperbarui',
       updateError: 'Gagal memperbarui profil. Silakan coba lagi.',
-      loadError: 'Gagal memuat profil. Silakan coba lagi.'
+      loadError: 'Gagal memuat profil. Silakan coba lagi.',
+      photoUpdateSuccess: 'Foto profil berhasil diperbarui',
+      photoUpdateError: 'Gagal mengunggah foto. Silakan coba lagi.'
+    },
+    completion: {
+      title: 'Kelengkapan Profil',
+      cta: 'Lengkapi profil Anda',
+      basicInfo: 'Info Dasar',
+      businessLocation: 'Bisnis & Lokasi',
+      identityDocs: 'Dokumen Identitas',
+      portfolio: 'Portofolio'
+    }
+  },
+  settings: {
+    changePassword: {
+      title: 'Ubah Kata Sandi',
+      currentPassword: 'Kata Sandi Saat Ini',
+      currentPasswordPlaceholder: 'Masukkan kata sandi saat ini',
+      newPassword: 'Kata Sandi Baru',
+      newPasswordPlaceholder: 'Masukkan kata sandi baru',
+      confirmPassword: 'Konfirmasi Kata Sandi Baru',
+      confirmPasswordPlaceholder: 'Masukkan ulang kata sandi baru',
+      submit: 'Perbarui Kata Sandi',
+      policyHint: 'Minimal 8 karakter, dengan angka, huruf besar, huruf kecil, dan karakter khusus',
+      mismatchError: 'Kata sandi baru dan konfirmasi tidak cocok',
+      success: 'Kata sandi berhasil diubah',
+      error: 'Gagal mengubah kata sandi. Silakan coba lagi.'
     }
   },
   portfolio: {
@@ -492,6 +526,16 @@ export default {
     identityIncompleteDismiss: 'Nanti Saja',
     savingDraft: 'Menyimpan draft...',
     completeProfileLink: 'Lengkapi Profil →',
+    studioPhilosophyHelp:
+      'Diisi otomatis dari Filosofi Desain di profil Anda — silakan sesuaikan untuk proyek ini.',
+    aspectRatioHint:
+      'Rasio aspek yang disarankan: 16:9 agar tampil optimal pada perbandingan proposal',
+    referenceImages: 'Foto Referensi dari Klien',
+    facadeDescriptionPlaceholder:
+      'Tambahkan konteks tentang foto fasad ini (material, gaya, kondisi lokasi)...',
+    interiorDescriptionPlaceholder: 'Tambahkan konteks tentang foto interior ini...',
+    massingDescriptionPlaceholder: 'Tambahkan konteks tentang foto massing ini...',
+    zoningDescriptionPlaceholder: 'Tambahkan konteks tentang foto zonasi ini...',
     deliverableCategories: {
       siteAnalysis: 'Analisis Lokasi & Perencanaan',
       designPhases: 'Fase Desain',
@@ -587,7 +631,6 @@ export default {
     acceptConfirm: 'Apakah Anda yakin ingin menerima proposal ini?',
     lotSize: 'Luas Lahan',
     designBudget: 'Anggaran Desain',
-    totalBudget: 'Total Anggaran',
     description: 'Deskripsi',
     deliverables: 'Deliverables yang Diperlukan',
     proposedCost: 'Biaya yang Diajukan',
@@ -639,6 +682,7 @@ export default {
     phoneRequiredError:
       'Nomor telepon wajib diisi agar arsitek dan tim kami dapat menghubungi Anda.',
     phoneInvalidError: 'Masukkan nomor telepon yang valid.',
+    designBudgetRangeError: 'Harga maksimum harus sama dengan atau lebih besar dari harga minimum.',
     part: 'Bagian',
     partImages: 'Gambar Proyek',
     partGeneral: 'Informasi Umum',
@@ -657,14 +701,12 @@ export default {
     detailedRequirements: 'Kebutuhan Detail',
     detailedRequirementsPlaceholder:
       'Jelaskan jumlah ruangan, preferensi gaya (cth. Industrial, Tropis), dan batasan waktu...',
-    constructionBudget: 'Total Anggaran Konstruksi',
-    constructionBudgetHint:
-      'Perkiraan untuk konstruksi, material, dan tenaga kerja (Fisik Bangunan)',
-    constructionBudgetPlaceholder: 'cth. 2.000.000.000 (opsional)',
-    designBudgetLabel: 'Anggaran Desain (Fee Arsitek)',
+    designBudgetLabel: 'Fee Desain (Fee Arsitek)',
     designBudgetDescription: 'Ini adalah acuan utama arsitek untuk mengajukan penawaran',
+    designBudgetMinLabel: 'Harga Minimum',
+    designBudgetMaxLabel: 'Harga Maksimum',
     designBudgetHint:
-      '<strong>Panduan IAI:</strong> Menurut Ikatan Arsitek Indonesia (IAI), fee desain umumnya berkisar <strong>5% - 7%</strong> dari total anggaran konstruksi.',
+      '<strong>Panduan IAI:</strong> Menurut Ikatan Arsitek Indonesia (IAI), fee desain umumnya menyesuaikan skala dan kompleksitas proyek. Tentukan rentang harga yang wajar untuk proyek Anda.',
     startDateHint: 'Beri tahu arsitek kapan Anda memperkirakan konstruksi dimulai.',
     biddingClosesOn: 'Penawaran Ditutup Pada',
     biddingDeadlineHint:
@@ -675,7 +717,6 @@ export default {
     cancel: 'Batal',
     posting: 'Memasang...',
     postProject: 'Pasang Proyek',
-    flexibleRange: 'Rentang Fleksibel',
     budgetPlaceholder: 'cth. 2.000.000.000',
     dropImages: 'Letakkan gambar di sini atau klik untuk mengunggah',
     imagesHint:
@@ -788,7 +829,7 @@ export default {
     bothConfirmed: 'Kedua pihak telah mengkonfirmasi — proyek kini berjalan!',
     yourProposal: 'Proposal Anda',
     proposedPrice: 'Harga yang Diajukan',
-    timeline: 'Timeline',
+    timeline: 'Durasi',
     days: 'hari',
     deliverables: 'Deliverable',
     revisionCommitments: 'Komitmen Revisi',
@@ -812,7 +853,9 @@ export default {
     clientConfirmedStatus: 'Klien telah mengkonfirmasi bagian mereka.',
     awaitingClientStatus: 'Menunggu klien untuk mengkonfirmasi...',
     confirmDialog: 'Konfirmasi ketentuan dan lanjutkan proyek ini?',
-    confirmError: 'Gagal mengkonfirmasi ketentuan'
+    confirmError: 'Gagal mengkonfirmasi ketentuan',
+    confirmModalEyebrow: 'Konfirmasi & Lanjutkan',
+    modalCancel: 'Batal'
   },
   notifications: {
     title: 'Notifikasi',
@@ -863,6 +906,7 @@ export default {
   support: {
     requestSupport: 'Minta Dukungan IT',
     opening: 'Membuka...',
+    openError: 'Gagal membuka chat dukungan',
     chatTitle: 'Chat Dukungan IT',
     chatSubtitle: 'Tim kami akan segera merespons',
     close: 'Tutup',
@@ -951,7 +995,16 @@ export default {
     proposalB: 'Proposal B',
     appointed: '✓ Ditunjuk',
     appointLead: 'Tunjuk Arsitek Utama',
-    appointConfirm: 'Tunjuk arsitek ini sebagai pemimpin untuk proyek ini?',
+    appointModalEyebrow: 'Konfirmasi Penunjukan',
+    appointModalTitle: 'Tunjuk sebagai Arsitek Utama?',
+    appointModalWarningTitle: 'Harap Baca Sebelum Konfirmasi',
+    appointModalWarningItem1:
+      'Proyek akan langsung berpindah ke tahap negosiasi dengan arsitek ini.',
+    appointModalWarningItem2: 'Proposal arsitek lain tidak akan tersedia lagi untuk dibandingkan.',
+    appointModalWarningItem3: 'Tindakan ini tidak dapat dibatalkan setelah dikonfirmasi.',
+    appointModalCancel: 'Batal',
+    appointModalConfirm: 'Ya, Tunjuk Sekarang',
+    appointModalLoading: 'Menunjuk...',
     visualOverlay: 'Overlay Visual',
     sideBySize: 'Tinjauan Desain Berdampingan',
     adjustSlider: 'Geser untuk perbandingan relatif',
@@ -971,6 +1024,7 @@ export default {
     costEstimate: 'Estimasi Biaya',
     timeline: 'Timeline',
     portfolios: 'Portofolio',
+    noPortfolios: 'Tidak ada portofolio terlampir',
     scopeAlignment: 'Kesesuaian Scope',
     paymentScheduleTitle: 'Jadwal Pembayaran',
     noPhases: 'Tidak ada fase pembayaran',
@@ -983,7 +1037,16 @@ export default {
     matchingDeliverable: 'Sesuai kebutuhan proyek',
     additionalDeliverable: 'Tambahan dari arsitek',
     missingDeliverable: 'Belum tercakup dalam proposal',
-    uncoveredTitle: 'Belum tercakup dari kebutuhan proyek'
+    uncoveredTitle: 'Belum tercakup dari kebutuhan proyek',
+    paymentFlowInfo: 'Lihat detail alur pembayaran',
+    paymentFlowTitle: 'Alur Pembayaran',
+    paymentFlowUpfront: '{amount} dibayarkan di muka saat fase ini dimulai.',
+    paymentFlowTimelineWithDeliverables:
+      'Dengan asumsi tidak ada permintaan revisi, arsitek akan menyelesaikan dan menyerahkan {deliverables} dalam waktu {days} hari.',
+    paymentFlowTimeline:
+      'Dengan asumsi tidak ada permintaan revisi, fase ini akan diselesaikan dalam waktu {days} hari.',
+    paymentFlowRevisions:
+      'Fase ini mencakup hingga {rounds} putaran revisi apabila diperlukan penyesuaian.'
   },
   paymentPhaseBuilder: {
     availableDeliverables: 'Deliverable Tersedia',
@@ -992,12 +1055,11 @@ export default {
     paymentPhases: 'Fase Pembayaran',
     addPhase: '+ Tambah Fase',
     phasesTotal: 'Total fase',
-    amount: 'Jumlah (IDR)',
+    percentage: 'Persentase (%)',
     revisionRounds: 'Putaran revisi',
     estimatedDays: 'Est. hari',
     daysTotal: 'Total durasi',
     phase: 'Fase',
-    phaseTitlePlaceholder: 'judul',
     dropZoneHint: 'Seret deliverable ke sini atau klik di atas untuk menetapkan'
   },
   bidDetail: {
@@ -1033,6 +1095,33 @@ export default {
     addToCompare: 'Tambah untuk Dibandingkan',
     viewDetails: 'Lihat Detail Lengkap'
   },
+  portfolioPopup: {
+    built: 'Terbangun',
+    concept: 'Konsep',
+    noDescription: 'Tidak ada deskripsi.'
+  },
+  bidTable: {
+    studio: 'Studio',
+    rating: 'Rating',
+    ratingComingSoon: 'Rating segera hadir',
+    location: 'Lokasi',
+    totalPrice: 'Total Harga',
+    totalDuration: 'Total Durasi',
+    detail: 'Detail',
+    filterByCity: 'Kota',
+    allCities: 'Semua Kota',
+    priceMin: 'Harga Min',
+    priceMax: 'Harga Maks',
+    clearFilters: 'Hapus filter',
+    noPendingBids: 'Belum ada penawaran yang tertunda',
+    noBidsMatchFilters: 'Tidak ada penawaran yang cocok dengan filter Anda',
+    minPrice: 'Harga Min',
+    avgPrice: 'Harga Rata-rata',
+    maxPrice: 'Harga Maks',
+    minDuration: 'Durasi Min',
+    avgDuration: 'Durasi Rata-rata',
+    maxDuration: 'Durasi Maks'
+  },
   projectCard: {
     manage: 'Kelola →',
     continueDraft: 'Lanjutkan Draf →'
@@ -1053,6 +1142,7 @@ export default {
       confirmPrompt:
         'Tinjau syarat penawaran dan diskusikan dengan arsitek sebelum mengkonfirmasi.',
       confirmButton: 'Konfirmasi & Lanjut ke Pembayaran',
+      confirmDialog: 'Konfirmasi ketentuan dan lanjutkan ke pembayaran?',
       confirming: 'Mengkonfirmasi...',
       rejectButton: 'Tolak Syarat & Buka Kembali Bidding'
     },
@@ -1070,7 +1160,9 @@ export default {
         'Ini akan menolak penawaran, mengembalikan token arsitek, dan membuka kembali proyek untuk penawaran baru. Tindakan ini tidak dapat dibatalkan.',
       cancel: 'Batal',
       confirm: 'Ya, Tolak & Buka Kembali',
-      rejecting: 'Menolak...'
+      rejecting: 'Menolak...',
+      successToast: 'Bidding berhasil dibuka kembali',
+      error: 'Gagal menolak ketentuan'
     }
   },
   errors: {
@@ -1356,6 +1448,28 @@ export default {
     cancel: 'Batal',
     resolve: 'Selesaikan Sengketa'
   },
+  negotiationDisputes: {
+    title: 'Sengketa Negosiasi',
+    subtitle:
+      'Tinjau proyek yang jendela negosiasi 7 harinya berakhir tanpa konfirmasi kedua pihak',
+    noDisputes: 'Tidak ada sengketa negosiasi',
+    expired: 'BERAKHIR',
+    client: 'Klien',
+    architect: 'Arsitek',
+    bidAmount: 'Nilai Penawaran',
+    acceptedOn: 'Diterima pada',
+    expiredOn: 'Berakhir pada',
+    resolutionNote: 'Catatan resolusi (opsional)',
+    resolutionPlaceholder: 'Konteks untuk keputusan Anda...',
+    clientAbandoned: 'Klien Meninggalkan',
+    architectAbandoned: 'Arsitek Meninggalkan',
+    clientAbandonedHint:
+      'Mengembalikan semua token penawaran di proyek ini, termasuk penawaran pemenang.',
+    architectAbandonedHint:
+      'Mengembalikan semua token penawaran kecuali penawaran pemenang, yang hangus.',
+    cancel: 'Batal',
+    resolve: 'Selesaikan'
+  },
   allProjectsAdmin: {
     title: 'Semua Proyek',
     subtitle: 'Manajemen proyek seluruh platform',
@@ -1380,121 +1494,6 @@ export default {
     selectConversation: 'Pilih percakapan',
     selectConversationHint: 'Pilih obrolan proyek dari daftar untuk mulai berkirim pesan.',
     typeMessage: 'Ketik pesan...'
-  },
-  onboarding: {
-    welcome: {
-      title: 'Selamat Datang di Studio Anda',
-      subtitle:
-        'Mari ciptakan kehadiran arsitektur Anda dan tampilkan visi Anda kepada klien yang mencari desain luar biasa.',
-      enterStudio: 'Masuk Studio',
-      duration: 'Ini akan memakan waktu sekitar 10 menit untuk diselesaikan'
-    },
-    expertise: {
-      title: 'Tentukan Keahlian Anda',
-      subtitle: 'Pilih domain arsitektur yang Anda kuasai.',
-      selected: 'Dipilih {n} keahlian',
-      selectedPlural: 'Dipilih {n} keahlian',
-      back: 'Kembali',
-      continue: 'Lanjut'
-    },
-    philosophy: {
-      title: 'Tentukan Filosofi Anda',
-      subtitle: 'Bagikan prinsip desain dan pendekatan Anda terhadap arsitektur.',
-      label: 'Filosofi Desain',
-      placeholder: 'Jelaskan filosofi arsitektur dan pendekatan desain Anda...',
-      charactersCount: '{n} karakter',
-      back: 'Kembali',
-      continue: 'Lanjut'
-    },
-    identity: {
-      title: 'Tetapkan Identitas Anda',
-      subtitle: 'Ceritakan tentang praktik dan latar belakang profesional Anda.',
-      practiceName: 'Nama Studio',
-      practiceNamePlaceholder: 'mis. Studio Nusantara',
-      city: 'Kota',
-      cityPlaceholder: 'mis. Jakarta',
-      experience: 'Tahun Pengalaman',
-      experiencePlaceholder: 'Pilih rentang pengalaman',
-      back: 'Kembali',
-      continue: 'Lanjut'
-    },
-    portfolioIntro: {
-      title: 'Bangun Portofolio Anda',
-      subtitle: 'Tampilkan proyek terbaik Anda untuk menarik klien.',
-      startPortfolio: 'Mulai Portofolio Anda',
-      startDesc:
-        'Tambahkan setidaknya satu proyek untuk menampilkan karya Anda kepada klien potensial.',
-      addFirst: 'Tambah Proyek Pertama Anda',
-      addAnother: 'Tambah Proyek Lain',
-      remove: 'Hapus',
-      removeConfirm: 'Apakah Anda yakin ingin menghapus proyek ini?',
-      back: 'Kembali',
-      continue: 'Lanjut'
-    },
-    portfolioProject: {
-      title: 'Tambah Detail Proyek',
-      subtitle: 'Bagikan cerita dan visual proyek Anda.',
-      name: 'Nama Proyek',
-      namePlaceholder: 'mis. Rumah Tropis Jakarta',
-      type: 'Tipe Proyek',
-      typePlaceholder: 'Pilih tipe',
-      year: 'Tahun Selesai',
-      challenge: 'Tantangan Proyek',
-      challengePlaceholder: 'Apa tantangan atau kendala utama?',
-      solution: 'Solusi Desain',
-      solutionPlaceholder: 'Bagaimana desain Anda mengatasi tantangan ini?',
-      images: 'Gambar Proyek (Maksimum 8)',
-      imagesCount: '{n}/8 gambar diunggah. Maksimum 10MB per gambar.',
-      saving: 'Menyimpan...',
-      save: 'Simpan Proyek',
-      back: 'Kembali'
-    },
-    profileConfirm: {
-      title: 'Tinjau Profil Anda',
-      subtitle: 'Konfirmasi detail profesional Anda sebelum membuat portofolio.',
-      practiceName: 'Nama Studio',
-      city: 'Kota',
-      experience: 'Pengalaman',
-      philosophy: 'Filosofi Desain',
-      expertise: 'Keahlian',
-      editProfile: 'Edit Profil',
-      back: 'Kembali',
-      saving: 'Menyimpan...',
-      proceed: 'Lanjut ke Portofolio'
-    },
-    review: {
-      title: 'Tinjauan Akhir',
-      subtitle: 'Tinjau profil lengkap Anda sebelum aktivasi.',
-      professionalProfile: 'Profil Profesional',
-      edit: 'Edit',
-      practiceName: 'Nama Studio',
-      city: 'Kota',
-      experience: 'Pengalaman',
-      philosophy: 'Filosofi',
-      expertise: 'Keahlian',
-      identityDocs: 'Dokumen Identitas',
-      fullNameKtp: 'Nama Lengkap (KTP)',
-      ktpNumber: 'Nomor KTP',
-      npwp: 'NPWP',
-      phone: 'Nomor HP',
-      portfolioProjects: 'Proyek Portofolio',
-      readyToActivate: 'Siap Diaktifkan',
-      readyDesc:
-        'Profil Anda lengkap. Klik di bawah untuk mengaktifkan kehadiran arsitek Anda dan mulai terhubung dengan klien.',
-      back: 'Kembali',
-      activate: 'Aktifkan Kehadiran'
-    },
-    activated: {
-      title: 'Studio Diaktifkan',
-      subtitle:
-        'Kehadiran arsitektur Anda kini aktif. Klien dapat menemukan karya Anda dan terhubung dengan studio Anda.',
-      whatsNext: 'Apa Selanjutnya?',
-      step1: 'Jelajahi peluang proyek terbuka',
-      step2: 'Ajukan proposal kepada klien yang tertarik',
-      step3: 'Bangun reputasi dan kembangkan studio Anda',
-      dashboard: 'Ke Dashboard',
-      redirecting: 'atau tunggu {n} detik untuk pengalihan otomatis'
-    }
   },
   projectStatus: {
     PENDING_APPROVAL: 'Menunggu Validasi',

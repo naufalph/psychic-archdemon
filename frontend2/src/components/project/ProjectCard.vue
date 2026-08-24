@@ -91,12 +91,6 @@
           {{ project.lotSize }} m²
         </span>
         <span
-          v-if="project.totalBudget"
-          class="bg-gray-100 px-3 py-1.5 rounded-full text-xs font-medium border border-gray-200"
-        >
-          IDR {{ formatCurrency(project.totalBudget) }}
-        </span>
-        <span
           v-if="showProposalCount && proposalCount > 0"
           class="bg-brand-brown text-white px-3 py-1.5 rounded-full text-xs font-bold"
         >

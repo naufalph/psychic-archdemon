@@ -1,9 +1,11 @@
 package com.rumantra.architect.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.rumantra.architect.dto.*;
 import com.rumantra.architect.service.ArchitectService;
@@ -76,29 +78,29 @@ public class ArchitectController {
     }
   }
 
-  @PutMapping("/onboarding-profile")
-  public ResponseEntity<ApiResponse<ArchitectDto>> updateOnboardingProfile(
-      @Valid @RequestBody UpdateArchitectProfileRequest request, Authentication authentication) {
+  @PostMapping(value = "/photo", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<ApiResponse<ArchitectDto>> uploadPhoto(
+      @RequestParam("file") MultipartFile file, Authentication authentication) {
     try {
       Long userId = getUserIdFromAuthentication(authentication);
 
-      ArchitectDto updatedArchitect = architectService.updateProfile(userId, request);
+      ArchitectDto updatedArchitect = architectService.uploadPhoto(userId, file);
       return ResponseEntity.ok(
           ApiResponse.<ArchitectDto>builder()
               .success(true)
-              .message("Onboarding profile updated successfully!")
+              .message("Profile photo updated successfully!")
               .data(updatedArchitect)
               .build());
     } catch (IllegalArgumentException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(ApiResponse.<ArchitectDto>builder().success(false).message(e.getMessage()).build());
     } catch (Exception e) {
-      log.error("Failed to update architect onboarding profile", e);
+      log.error("Failed to upload architect profile photo", e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(
               ApiResponse.<ArchitectDto>builder()
                   .success(false)
-                  .message("An error occurred while updating onboarding profile")
+                  .message("An error occurred while uploading profile photo")
                   .build());
     }
   }

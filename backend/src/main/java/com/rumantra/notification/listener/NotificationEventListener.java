@@ -1,11 +1,15 @@
 package com.rumantra.notification.listener;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rumantra.admin.event.NegotiationDisputeResolvedEvent;
+import com.rumantra.bidding.event.BidAcceptedEvent;
 import com.rumantra.bidding.event.BidSubmittedEvent;
 import com.rumantra.chat.event.SupportRequestedEvent;
 import com.rumantra.notification.domain.NotificationType;
@@ -25,6 +29,7 @@ public class NotificationEventListener {
 
   private final DashboardNotificationService dashboardNotificationService;
   private final UserRepository userRepository;
+  private final ObjectMapper objectMapper;
 
   @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
   public void handleProjectValidated(ProjectValidatedEvent event) {
@@ -102,6 +107,110 @@ public class NotificationEventListener {
       log.error(
           "Failed to create dashboard notification for bid {}: {}",
           event.getBidId(),
+          e.getMessage(),
+          e);
+    }
+  }
+
+  @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
+  public void handleBidAccepted(BidAcceptedEvent event) {
+    try {
+      String messageData =
+          objectMapper.writeValueAsString(Map.of("projectName", event.getProjectTitle()));
+
+      dashboardNotificationService.createNotification(
+          event.getWinningArchitectUserId(),
+          NotificationType.BID_ACCEPTED,
+          "Bid Accepted",
+          String.format(
+              "Your bid on \"%s\" has been accepted! Head to the finalization page to confirm the terms.",
+              event.getProjectTitle()),
+          "NOTIFICATION_BID_ACCEPTED",
+          messageData,
+          "PROJECT",
+          event.getProjectId());
+
+      for (BidAcceptedEvent.RejectedArchitect rejected : event.getRejectedArchitects()) {
+        dashboardNotificationService.createNotification(
+            rejected.getUserId(),
+            NotificationType.BID_REJECTED,
+            "Bid Update",
+            String.format("Your bid on \"%s\" was not selected.", event.getProjectTitle()),
+            "NOTIFICATION_BID_REJECTED",
+            messageData,
+            "PROJECT",
+            event.getProjectId());
+      }
+
+      log.info(
+          "Dashboard notifications created for bid acceptance: bidId={}, projectId={}, winnerUserId={}, rejectedCount={}",
+          event.getBidId(),
+          event.getProjectId(),
+          event.getWinningArchitectUserId(),
+          event.getRejectedArchitects().size());
+
+    } catch (Exception e) {
+      log.error(
+          "Failed to create dashboard notifications for bid acceptance {}: {}",
+          event.getBidId(),
+          e.getMessage(),
+          e);
+    }
+  }
+
+  @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
+  public void handleNegotiationDisputeResolved(NegotiationDisputeResolvedEvent event) {
+    try {
+      boolean clientAbandoned = "CLIENT_ABANDONED".equals(event.getDecision());
+
+      String clientMessage =
+          clientAbandoned
+              ? String.format(
+                  "Your project \"%s\" was cancelled after the negotiation window expired without your confirmation.",
+                  event.getProjectTitle())
+              : String.format(
+                  "Your project \"%s\" was cancelled after the architect did not confirm the terms in time.",
+                  event.getProjectTitle());
+
+      String architectMessage =
+          clientAbandoned
+              ? String.format(
+                  "Project \"%s\" was cancelled and your bid token has been refunded.",
+                  event.getProjectTitle())
+              : String.format(
+                  "Project \"%s\" was cancelled because the negotiation window expired without your"
+                      + " confirmation. Your bid token was not refunded.",
+                  event.getProjectTitle());
+
+      dashboardNotificationService.createNotification(
+          event.getClientUserId(),
+          NotificationType.NEGOTIATION_DISPUTE_RESOLVED,
+          "Project Cancelled",
+          clientMessage,
+          null,
+          null,
+          "PROJECT",
+          event.getProjectId());
+
+      dashboardNotificationService.createNotification(
+          event.getArchitectUserId(),
+          NotificationType.NEGOTIATION_DISPUTE_RESOLVED,
+          "Project Cancelled",
+          architectMessage,
+          null,
+          null,
+          "PROJECT",
+          event.getProjectId());
+
+      log.info(
+          "Dashboard notifications created for negotiation dispute resolution: projectId={}, decision={}",
+          event.getProjectId(),
+          event.getDecision());
+
+    } catch (Exception e) {
+      log.error(
+          "Failed to create dashboard notifications for negotiation dispute resolution {}: {}",
+          event.getProjectId(),
           e.getMessage(),
           e);
     }

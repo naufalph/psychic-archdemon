@@ -82,13 +82,6 @@ public class Architect {
   @Builder.Default()
   private int successProject = 0;
 
-  @Column(name = "needs_onboarding")
-  @Builder.Default
-  private Boolean needsOnboarding = true;
-
-  @Column(name = "onboarding_completed_at")
-  private java.sql.Timestamp onboardingCompletedAt;
-
   @Column(name = "city", length = 255)
   private String city;
 
@@ -101,4 +94,13 @@ public class Architect {
   @Type(JsonType.class)
   @Column(name = "expertise", columnDefinition = "jsonb")
   private java.util.List<String> expertise;
+
+  @Column(name = "full_address", columnDefinition = "TEXT")
+  private String fullAddress;
+
+  @Column(name = "province", length = 100)
+  private String province;
+
+  @Column(name = "photo_url", length = 500)
+  private String photoUrl;
 }

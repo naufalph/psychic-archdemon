@@ -36,9 +36,6 @@ public class Project {
   @Column(name = "location")
   private String location;
 
-  @Column(name = "budget_total")
-  private Long budgetTotal;
-
   @Column(name = "design_budget_min")
   private Long designBudgetMin;
 

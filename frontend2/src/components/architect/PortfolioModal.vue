@@ -188,7 +188,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useI18n } from '@/composables/useI18n'
-import { PROJECT_TYPES } from '@/constants/onboarding'
+import { PROJECT_TYPES } from '@/constants/architectProfileOptions'
 import PortfolioImageManager from './PortfolioImageManager.vue'
 
 const props = defineProps({

@@ -91,6 +91,33 @@
         </div>
 
         <div class="space-y-6">
+          <div
+            v-if="architectProfileStore.hasProfile && architectProfileStore.profileCompletionPercent < 100"
+            class="bg-white rounded-2xl border border-gray-200 p-6 shadow-soft"
+          >
+            <div class="flex items-center justify-between mb-2">
+              <h2 class="text-sm font-bold text-black tracking-widest uppercase">
+                {{ t.profile.completion.title }}
+              </h2>
+              <span class="text-sm font-bold text-brand-brown">
+                {{ architectProfileStore.profileCompletionPercent }}%
+              </span>
+            </div>
+            <div class="h-2 rounded-full bg-black/5 overflow-hidden mb-4">
+              <div
+                class="h-full bg-brand-brown transition-all duration-300"
+                :style="{ width: architectProfileStore.profileCompletionPercent + '%' }"
+              ></div>
+            </div>
+            <router-link :to="{ name: 'ArchitectProfile' }">
+              <button
+                class="w-full bg-brand-brown text-white px-4 py-2 rounded-full text-xs font-bold tracking-wider hover:bg-black transition"
+              >
+                {{ t.profile.completion.cta }}
+              </button>
+            </router-link>
+          </div>
+
           <div class="bg-white rounded-2xl border border-gray-200 p-6 shadow-soft">
             <h2 class="text-sm font-bold text-black tracking-widest uppercase mb-4">
               {{ t.architectDashboard.bidTokens }}
@@ -140,6 +167,7 @@ import { Search, ClipboardList, FileText } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 import { useBidsStore } from '@/stores/bids'
 import { useTokenPurchaseStore } from '@/stores/tokenPurchase'
+import { useArchitectProfileStore } from '@/stores/architectProfile'
 import { useI18n } from '@/composables/useI18n'
 import TokenPurchaseModal from '@/components/architect/TokenPurchaseModal.vue'
 
@@ -147,6 +175,7 @@ const { t } = useI18n()
 const authStore = useAuthStore()
 const bidsStore = useBidsStore()
 const tokenPurchaseStore = useTokenPurchaseStore()
+const architectProfileStore = useArchitectProfileStore()
 
 const { myBids, pendingBids, acceptedBids } = storeToRefs(bidsStore)
 

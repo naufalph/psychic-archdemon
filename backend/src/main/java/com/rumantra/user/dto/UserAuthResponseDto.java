@@ -20,7 +20,7 @@ public class UserAuthResponseDto {
   private String firstName;
   private String lastName;
   private List<String> registeredRoles;
-  private Boolean needsArchitectOnboarding;
   private Boolean needsClientOnboarding;
   private String lastLoginRole;
+  private String socialType;
 }

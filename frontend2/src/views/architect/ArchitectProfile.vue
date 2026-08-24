@@ -28,6 +28,31 @@
           </button>
         </div>
 
+        <div v-if="store.hasProfile" class="bg-white rounded-3xl p-6 shadow-sm border border-black/5">
+          <div class="flex items-center justify-between mb-3">
+            <p class="text-sm font-semibold text-black/70">{{ t.profile.completion.title }}</p>
+            <p class="text-sm font-bold text-brand-brown">{{ store.profileCompletionPercent }}%</p>
+          </div>
+          <div v-if="checklist" class="grid grid-cols-4 gap-1.5">
+            <div
+              v-for="item in checklistItems"
+              :key="item.key"
+              class="h-2 rounded-full overflow-hidden"
+              :class="item.complete ? 'bg-brand-brown' : 'bg-black/5'"
+            ></div>
+          </div>
+          <div v-if="checklist" class="grid grid-cols-4 gap-1.5 mt-2">
+            <span
+              v-for="item in checklistItems"
+              :key="item.key"
+              class="text-xs text-center leading-tight"
+              :class="item.complete ? 'text-black/40 line-through' : 'text-black/60 font-medium'"
+            >
+              {{ item.label }}
+            </span>
+          </div>
+        </div>
+
         <div v-if="store.isLoading && !store.hasProfile" class="space-y-6">
           <div class="bg-white rounded-3xl p-8 shadow-sm border border-black/5 animate-pulse">
             <div class="space-y-6">
@@ -53,19 +78,33 @@
 
         <div v-else-if="store.hasProfile && !store.isEditMode" class="space-y-6">
           <div class="bg-white rounded-3xl p-8 shadow-sm border border-black/5 space-y-6">
-            <div>
-              <label class="block text-sm font-semibold text-black/50 mb-2">
-                {{ t.profile.viewMode.practiceName }}
-              </label>
-              <p class="text-lg font-semibold text-black">{{ store.profileName }}</p>
+            <div class="flex items-center gap-4">
+              <img
+                v-if="store.profilePhotoUrl"
+                :src="store.profilePhotoUrl"
+                alt=""
+                class="w-16 h-16 rounded-full object-cover border border-black/10"
+              />
+              <div
+                v-else
+                class="w-16 h-16 rounded-full bg-brand-brown/10 text-brand-brown flex items-center justify-center text-lg font-bold"
+              >
+                {{ initials }}
+              </div>
+              <div>
+                <label class="block text-sm font-semibold text-black/50 mb-1">
+                  {{ t.profile.viewMode.practiceName }}
+                </label>
+                <p class="text-lg font-semibold text-black">{{ store.profileName }}</p>
+              </div>
             </div>
 
             <div class="grid grid-cols-2 gap-6">
               <div>
                 <label class="block text-sm font-semibold text-black/50 mb-2">
-                  {{ t.profile.viewMode.city }}
+                  {{ t.profile.viewMode.category }}
                 </label>
-                <p class="text-lg font-semibold text-black">{{ store.profileCity }}</p>
+                <p class="text-lg font-semibold text-black">{{ store.profileCategory || '-' }}</p>
               </div>
 
               <div>
@@ -74,6 +113,17 @@
                 </label>
                 <p class="text-lg font-semibold text-black">{{ store.profileExperience }}</p>
               </div>
+            </div>
+
+            <div>
+              <label class="block text-sm font-semibold text-black/50 mb-2">
+                {{ t.profile.viewMode.address }}
+              </label>
+              <p class="text-lg font-semibold text-black">
+                {{
+                  [store.profileFullAddress, store.profileCity, store.profileProvince].filter(Boolean).join(', ') || '-'
+                }}
+              </p>
             </div>
 
             <div>
@@ -136,7 +186,10 @@
           v-else-if="store.isEditMode"
           :initial-data="{
             name: store.profileName,
+            category: store.profileCategory,
             city: store.profileCity,
+            province: store.profileProvince,
+            fullAddress: store.profileFullAddress,
             experienceRange: store.profileExperience,
             philosophy: store.profilePhilosophy,
             expertise: store.profileExpertise,
@@ -145,10 +198,10 @@
             npwp: store.profileNpwp,
             phoneNum: store.profilePhoneNumber
           }"
-          :is-loading="store.isLoading"
           :error="store.error"
-          @submit="handleSaveProfile"
           @cancel="handleCancel"
+          @saved="handleAutosaved"
+          @save-error="handleAutosaveError"
         />
 
         <Transition
@@ -173,7 +226,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useArchitectProfileStore } from '@/stores/architectProfile'
 import { useI18n } from '@/composables/useI18n'
 import ProfileForm from '@/components/architect/ProfileForm.vue'
@@ -185,6 +238,35 @@ const showToast = ref(false)
 const toastMessage = ref('')
 const toastType = ref('success')
 
+const initials = computed(() =>
+  (store.profileName || 'Architect')
+    .split(' ')
+    .map(w => w[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase()
+)
+
+const checklist = computed(() => store.profileCompletionChecklist)
+
+const checklistItems = computed(() => {
+  if (!checklist.value) return []
+  return [
+    { key: 'basicInfo', label: t.value.profile.completion.basicInfo, complete: checklist.value.basicInfoComplete },
+    {
+      key: 'businessLocation',
+      label: t.value.profile.completion.businessLocation,
+      complete: checklist.value.businessLocationComplete
+    },
+    {
+      key: 'identityDocs',
+      label: t.value.profile.completion.identityDocs,
+      complete: checklist.value.identityDocsComplete
+    },
+    { key: 'portfolio', label: t.value.profile.completion.portfolio, complete: checklist.value.portfolioComplete }
+  ]
+})
+
 const displayToast = (message, type = 'success') => {
   toastMessage.value = message
   toastType.value = type
@@ -194,18 +276,20 @@ const displayToast = (message, type = 'success') => {
   }, 5000)
 }
 
-const handleSaveProfile = async profileData => {
-  try {
-    await store.updateProfile(profileData)
-    displayToast(t('profile.toast.updateSuccess'), 'success')
-  } catch (error) {
-    displayToast(t('profile.toast.updateError'), 'error')
-  }
-}
-
 const handleCancel = () => {
   store.disableEditMode()
   store.clearError()
+}
+
+// Fixed-position toast (not the in-form indicator) is the reliable autosave
+// confirmation — the form itself can be long enough to scroll past inline feedback.
+const handleAutosaved = () => {
+  const message = (t.value.profile.autosave.savedToast || '').replace('{percent}', store.profileCompletionPercent)
+  displayToast(message, 'success')
+}
+
+const handleAutosaveError = () => {
+  displayToast(t.value.profile.autosave.error, 'error')
 }
 
 onMounted(async () => {

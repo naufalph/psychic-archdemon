@@ -64,6 +64,7 @@ import {
   ClipboardCheck,
   FolderOpen,
   AlertTriangle,
+  Timer,
   MessageSquare,
   Users,
   Image,
@@ -92,6 +93,12 @@ const navItems = [
   { name: 'queue', label: 'Project Queue', to: '/superuser/projects/queue', icon: ClipboardCheck },
   { name: 'projects', label: 'All Projects', to: '/superuser/projects', icon: FolderOpen },
   { name: 'disputes', label: 'Disputes', to: '/superuser/disputes', icon: AlertTriangle },
+  {
+    name: 'negotiation-disputes',
+    label: 'Negotiation Disputes',
+    to: '/superuser/negotiation-disputes',
+    icon: Timer
+  },
   { name: 'support', label: 'Support', to: '/superuser/support', icon: MessageSquare },
   { name: 'users', label: 'Users', to: '/superuser/users', icon: Users },
   { name: 'landing', label: 'Landing Page', to: '/superuser/landing', icon: Image },

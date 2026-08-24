@@ -87,6 +87,54 @@
               </div>
             </div>
 
+            <!-- Concept Statement -->
+            <div
+              v-if="bid.details?.conceptStatement"
+              class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft"
+            >
+              <h3 class="font-bold text-black mb-3">{{ t.finalization.designConcept }}</h3>
+              <p class="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
+                {{ bid.details.conceptStatement }}
+              </p>
+            </div>
+
+            <!-- Proposal Images -->
+            <div class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft">
+              <BidImageGallery
+                :images="bid.facadeImages"
+                :title="t.bidDetail.facade"
+                :description="bid.details?.facadeDescription"
+                :empty-message="t.bidDetail.noFacade"
+              />
+            </div>
+
+            <div class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft">
+              <BidImageGallery
+                :images="bid.interiorImages"
+                :title="t.bidDetail.interior"
+                :description="bid.details?.interiorDescription"
+                :empty-message="t.bidDetail.noInterior"
+              />
+            </div>
+
+            <div class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft">
+              <BidImageGallery
+                :images="bid.massingImages"
+                :title="t.bidDetail.massing"
+                :description="bid.details?.massingDescription"
+                :empty-message="t.bidDetail.noMassing"
+              />
+            </div>
+
+            <div class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft">
+              <BidImageGallery
+                :images="bid.zoningImages"
+                :title="t.bidDetail.zoning"
+                :description="bid.details?.zoningDescription"
+                :empty-message="t.bidDetail.noZoning"
+              />
+            </div>
+
             <!-- Payment Schedule -->
             <div v-if="bid.details?.phases?.length" class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft">
               <h3 class="font-bold text-black mb-4">{{ t.clientFinalization.paymentSchedule }}</h3>
@@ -129,17 +177,6 @@
                 <span class="text-gray-500 font-bold">{{ t.clientFinalization.total }}</span>
                 <span class="font-bold text-brand-brown">{{ formatCurrency(bid.bidAmount) }}</span>
               </div>
-            </div>
-
-            <!-- Concept Statement -->
-            <div
-              v-if="bid.details?.conceptStatement"
-              class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft"
-            >
-              <h3 class="font-bold text-black mb-3">{{ t.finalization.designConcept }}</h3>
-              <p class="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
-                {{ bid.details.conceptStatement }}
-              </p>
             </div>
 
             <!-- Portfolio References -->
@@ -209,6 +246,7 @@
                       : t.support.requestSupport
                 }}
               </button>
+              <p v-if="supportError" class="text-xs text-red-500 mt-1">{{ supportError }}</p>
             </div>
 
             <!-- Client action panel -->
@@ -234,7 +272,7 @@
                   <button
                     :disabled="actionLoading"
                     class="w-full px-5 py-3.5 bg-brand-brown text-white rounded-full font-bold hover:bg-black transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    @click="handleConfirm"
+                    @click="openConfirmModal"
                   >
                     <CheckCircle :size="18" />
                     {{
@@ -277,7 +315,7 @@
                 <button
                   :disabled="actionLoading"
                   class="w-full px-5 py-3.5 bg-brand-brown text-white rounded-full font-bold hover:bg-black transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  @click="handleArchitectConfirm"
+                  @click="openConfirmModal"
                 >
                   <CheckCircle :size="18" />
                   {{
@@ -300,6 +338,7 @@
         <p class="text-gray-600 text-sm mb-6">
           {{ t.clientFinalization.rejectDialog.message }}
         </p>
+        <p v-if="rejectError" class="text-sm text-red-600 mb-4">{{ rejectError }}</p>
         <div class="flex gap-3">
           <button
             class="flex-1 px-5 py-3 border border-gray-200 rounded-full font-bold text-gray-700 hover:bg-gray-50 transition"
@@ -321,11 +360,94 @@
         </div>
       </div>
     </div>
+
+    <!-- Styled Confirm Modal -->
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition duration-150 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="showConfirmModal"
+          class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+          @click.self="closeConfirmModal"
+        >
+          <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+            <div class="bg-brand-brown px-6 py-5">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                  <CheckCircle :size="20" class="text-white" aria-hidden="true" />
+                </div>
+                <div>
+                  <p class="text-xs text-brand-tan font-semibold uppercase tracking-wide">
+                    {{ t.finalization.confirmModalEyebrow }}
+                  </p>
+                  <h3 class="text-lg font-bold text-white">
+                    {{
+                      isClient
+                        ? t.clientFinalization.clientPanel.confirmButton
+                        : t.clientFinalization.architectPanel.confirmButton
+                    }}
+                  </h3>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-6 space-y-4">
+              <p class="text-sm text-gray-600 leading-relaxed">
+                {{
+                  isClient
+                    ? t.clientFinalization.clientPanel.confirmPrompt
+                    : t.clientFinalization.architectPanel.confirmPrompt
+                }}
+              </p>
+
+              <p class="text-sm font-semibold text-gray-900">
+                {{ isClient ? t.clientFinalization.clientPanel.confirmDialog : t.finalization.confirmDialog }}
+              </p>
+
+              <p v-if="confirmModalError" class="text-sm text-red-600">{{ confirmModalError }}</p>
+
+              <div class="flex gap-3 pt-1">
+                <button
+                  type="button"
+                  :disabled="!!actionLoading"
+                  class="flex-1 px-4 py-2.5 border border-gray-200 text-gray-600 text-sm font-semibold rounded-lg hover:bg-gray-50 disabled:opacity-50 transition"
+                  @click="closeConfirmModal"
+                >
+                  {{ t.finalization.modalCancel }}
+                </button>
+                <button
+                  type="button"
+                  :disabled="!!actionLoading"
+                  class="flex-1 px-4 py-2.5 bg-brand-brown text-white text-sm font-bold rounded-lg hover:bg-brand-brown-dark disabled:opacity-50 transition flex items-center justify-center gap-2"
+                  @click="confirmModalSubmit"
+                >
+                  <span v-if="actionLoading">{{ t.clientFinalization.clientPanel.confirming }}</span>
+                  <template v-else>
+                    <CheckCircle :size="15" aria-hidden="true" />
+                    {{
+                      isClient
+                        ? t.clientFinalization.clientPanel.confirmButton
+                        : t.clientFinalization.architectPanel.confirmButton
+                    }}
+                  </template>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Clock, CheckCircle, XCircle } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
@@ -333,6 +455,7 @@ import { useBidsStore } from '@/stores/bids'
 import { useAuthStore } from '@/stores/auth'
 import { projectAPI, supportAPI } from '@/services/api'
 import ChatPanel from '@/components/chat/ChatPanel.vue'
+import BidImageGallery from '@/components/bid/BidImageGallery.vue'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -346,8 +469,12 @@ const loading = ref(false)
 const error = ref(null)
 const actionLoading = ref(null)
 const showRejectDialog = ref(false)
+const rejectError = ref(null)
+const showConfirmModal = ref(false)
+const confirmModalError = ref(null)
 const itSupportRequested = ref(false)
 const supportLoading = ref(false)
+const supportError = ref(null)
 
 const isClient = computed(() => authStore.hasRole('CLIENT'))
 
@@ -381,7 +508,7 @@ const loadData = async () => {
       const acceptedBid = bidsStore.projectBids.find(b => b.status === 'ACCEPTED')
 
       if (!acceptedBid) {
-        error.value = 'No accepted bid found for this project'
+        error.value = t.value.finalization.noAcceptedBid
         return
       }
 
@@ -395,7 +522,7 @@ const loadData = async () => {
       const acceptedBid = bidsStore.myBids.find(b => b.projectId === Number(projectId) && b.status === 'ACCEPTED')
 
       if (!acceptedBid) {
-        error.value = 'No accepted bid found for this project'
+        error.value = t.value.finalization.noAcceptedBid
         return
       }
 
@@ -405,57 +532,75 @@ const loadData = async () => {
       project.value = response.data.data
     }
   } catch (err) {
-    error.value = err.response?.data?.message || 'Failed to load negotiation data'
+    error.value = err.response?.data?.message || t.value.finalization.loadError
     console.error('Failed to load negotiation data:', err)
   } finally {
     loading.value = false
   }
 }
 
+const openConfirmModal = () => {
+  confirmModalError.value = null
+  showConfirmModal.value = true
+}
+
+const closeConfirmModal = () => {
+  if (actionLoading.value) return
+  showConfirmModal.value = false
+  confirmModalError.value = null
+}
+
 const handleConfirm = async () => {
-  if (!confirm('Confirm the terms and proceed to payment?')) return
   actionLoading.value = 'confirm'
+  confirmModalError.value = null
   try {
     const response = await projectAPI.confirmNegotiation(route.params.projectId)
     project.value = response.data.data
+    showConfirmModal.value = false
     if (project.value.status === 'IN_PROGRESS') {
       router.push(`/client/projects/${route.params.projectId}/payments`)
     }
   } catch (err) {
-    alert(err.response?.data?.message || 'Failed to confirm terms')
+    confirmModalError.value = err.response?.data?.message || t.value.finalization.confirmError
   } finally {
     actionLoading.value = null
   }
 }
 
 const handleArchitectConfirm = async () => {
-  if (!confirm('Confirm the terms and proceed with this project?')) return
   actionLoading.value = 'architect-confirm'
+  confirmModalError.value = null
   try {
     const response = await projectAPI.architectConfirmNegotiation(route.params.projectId)
     project.value = response.data.data
+    showConfirmModal.value = false
     if (project.value.status === 'IN_PROGRESS') {
       router.push(`/architect/projects/${route.params.projectId}`)
     }
   } catch (err) {
-    alert(err.response?.data?.message || 'Failed to confirm terms')
+    confirmModalError.value = err.response?.data?.message || t.value.finalization.confirmError
   } finally {
     actionLoading.value = null
   }
 }
 
+const confirmModalSubmit = () => {
+  if (isClient.value) handleConfirm()
+  else handleArchitectConfirm()
+}
+
 const handleReject = async () => {
   actionLoading.value = 'reject'
+  rejectError.value = null
   try {
     await projectAPI.rejectNegotiation(route.params.projectId)
     showRejectDialog.value = false
     router.push({
       path: `/client/projects/${route.params.projectId}`,
-      query: { toast: 'Bidding reopened successfully' }
+      query: { toast: t.value.clientFinalization.rejectDialog.successToast }
     })
   } catch (err) {
-    alert(err.response?.data?.message || 'Failed to reject terms')
-    showRejectDialog.value = false
+    rejectError.value = err.response?.data?.message || t.value.clientFinalization.rejectDialog.error
   } finally {
     actionLoading.value = null
   }
@@ -464,17 +609,29 @@ const handleReject = async () => {
 const openSupportChat = async () => {
   if (!bid.value?.id) return
   supportLoading.value = true
+  supportError.value = null
   try {
     await supportAPI.createSupportConversation(route.params.projectId, bid.value.id)
     itSupportRequested.value = true
   } catch (err) {
-    alert(err.response?.data?.message || 'Failed to open support chat')
+    supportError.value = err.response?.data?.message || t.value.support.openError
   } finally {
     supportLoading.value = false
   }
 }
 
+const handleEscapeKeydown = e => {
+  if (e.key !== 'Escape') return
+  closeConfirmModal()
+  if (actionLoading.value !== 'reject') showRejectDialog.value = false
+}
+
 onMounted(() => {
   loadData()
+  document.addEventListener('keydown', handleEscapeKeydown)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleEscapeKeydown)
 })
 </script>

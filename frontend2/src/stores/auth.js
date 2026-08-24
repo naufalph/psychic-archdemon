@@ -97,9 +97,9 @@ export const useAuthStore = defineStore('auth', {
           firstName: authResponse.firstName,
           lastName: authResponse.lastName,
           registeredRoles: authResponse.registeredRoles || [],
-          needsArchitectOnboarding: authResponse.needsArchitectOnboarding,
           needsClientOnboarding: authResponse.needsClientOnboarding,
-          lastLoginRole: authResponse.lastLoginRole
+          lastLoginRole: authResponse.lastLoginRole,
+          socialType: authResponse.socialType
         }
 
         // Persist only token to localStorage (NOT user data)
@@ -231,9 +231,9 @@ export const useAuthStore = defineStore('auth', {
           firstName: authResponse.firstName,
           lastName: authResponse.lastName,
           registeredRoles: authResponse.registeredRoles || [],
-          needsArchitectOnboarding: authResponse.needsArchitectOnboarding,
           needsClientOnboarding: authResponse.needsClientOnboarding,
-          lastLoginRole: authResponse.lastLoginRole
+          lastLoginRole: authResponse.lastLoginRole,
+          socialType: authResponse.socialType
         }
 
         // Persist only token to localStorage (NOT user data)
@@ -279,9 +279,9 @@ export const useAuthStore = defineStore('auth', {
           firstName: authResponse.firstName,
           lastName: authResponse.lastName,
           registeredRoles: authResponse.registeredRoles || [],
-          needsArchitectOnboarding: authResponse.needsArchitectOnboarding,
           needsClientOnboarding: authResponse.needsClientOnboarding,
-          lastLoginRole: authResponse.lastLoginRole
+          lastLoginRole: authResponse.lastLoginRole,
+          socialType: authResponse.socialType
         }
 
         // Persist only token to localStorage (NOT user data)

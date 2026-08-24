@@ -12,7 +12,7 @@ Prerequisites:
 2. Set auth_token in localStorage
 3. Navigate to http://localhost:3001/architect/dashboard
 4. Take a screenshot
-5. Verify: dashboard content is visible — may show bid quota, active projects, or onboarding prompt
+5. Verify: dashboard content is visible — may show bid quota, active projects, or a profile completion nudge
 6. Verify: navigation links to Opportunities, Portfolios, My Bids are present
 
 **Pass criteria:** Dashboard loads, nav links present.

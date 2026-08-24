@@ -27,6 +27,7 @@ public class BidResponse {
   private Long architectId;
   private String architectName;
   private String architectCompany;
+  private String architectCity;
   private BigDecimal bidAmount;
   private Integer proposedTimelineDays;
   private String proposal;

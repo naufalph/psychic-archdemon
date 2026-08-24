@@ -163,9 +163,21 @@ public class BidController {
       @PathVariable String imageType,
       @RequestParam("images") List<MultipartFile> images) {
 
+    BidImageType type;
     try {
-      BidImageType type = BidImageType.valueOf(imageType.toUpperCase());
+      type = BidImageType.valueOf(imageType.toUpperCase());
+    } catch (IllegalArgumentException e) {
+      log.error("Invalid image type: {}", imageType);
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              ApiResponse.<List<BidImageResponse>>builder()
+                  .success(false)
+                  .message("Invalid image type. Must be one of: FACADE, INTERIOR, MASSING, ZONING")
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
 
+    try {
       log.info("Uploading {} {} images for bid ID: {}", images.size(), type, bidId);
 
       Long userId = SecurityUtils.getCurrentUserId();
@@ -187,12 +199,12 @@ public class BidController {
               .build());
 
     } catch (IllegalArgumentException e) {
-      log.error("Invalid image type or limit exceeded: {}", e.getMessage());
+      log.error("Image upload limit exceeded: {}", e.getMessage());
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(
               ApiResponse.<List<BidImageResponse>>builder()
                   .success(false)
-                  .message("Invalid image type. Must be one of: FACADE, INTERIOR, MASSING, ZONING")
+                  .message(e.getMessage())
                   .timestamp(LocalDateTime.now().toString())
                   .build());
     } catch (RuntimeException e) {

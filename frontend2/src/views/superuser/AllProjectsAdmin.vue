@@ -44,7 +44,10 @@
                 {{ t.projectStatus?.[project.status] || project.status }}
               </span>
             </div>
-            <p class="text-sm text-gray-500">{{ project.location }} · IDR {{ formatCurrency(project.budgetTotal) }}</p>
+            <p class="text-sm text-gray-500">
+              {{ project.location }} · Design Fee IDR {{ formatCurrency(project.designBudgetMin) }} -
+              {{ formatCurrency(project.designBudgetMax) }}
+            </p>
             <p class="text-xs text-gray-400 mt-1">
               {{ project.bidCount || 0 }} bid(s) · Created {{ formatDate(project.createdAt) }}
             </p>

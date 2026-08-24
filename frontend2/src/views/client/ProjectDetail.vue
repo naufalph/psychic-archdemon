@@ -159,6 +159,21 @@
           </div>
         </div>
 
+        <!-- Bid Registry -->
+        <BidComparisonTable
+          v-if="proposalCount > 0"
+          :bids="projectBids"
+          :compare-ids="compareIds"
+          @toggle-compare="toggleCompare"
+          @view-details="handleViewDetails"
+        />
+
+        <div v-else class="bg-white rounded-3xl border border-gray-200 p-12 text-center shadow-soft">
+          <FileText :size="64" class="text-gray-300 mx-auto mb-4" />
+          <h3 class="text-xl font-bold text-gray-900 mb-2">{{ t.clientDashboard.noProposalsYet }}</h3>
+          <p class="text-gray-500">{{ t.clientDashboard.noProposalsMessage }}</p>
+        </div>
+
         <!-- Comparative Analysis Zone (always visible) -->
         <div class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
           <h2 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-6">
@@ -211,34 +226,6 @@
             <ProposalComparison :bid-a="bidA" :bid-b="bidB" :project="currentProject" />
           </div>
         </div>
-
-        <!-- Bid Registry -->
-        <div v-if="proposalCount > 0" class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
-          <h2 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-6">
-            {{ t.clientDashboard.bidRegistry }} ({{ proposalCount }})
-          </h2>
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <ProposalCard
-              v-for="proposal in projectBids"
-              :key="proposal.id"
-              :proposal="proposal"
-              :project-status="currentProject.status"
-              :is-selected-for-compare="compareIds.includes(proposal.id)"
-              @toggle-compare="toggleCompare(proposal.id)"
-              @accept="handleAcceptBid"
-              @view-details="handleViewDetails"
-            />
-          </div>
-        </div>
-
-        <div
-          v-else-if="proposalCount === 0"
-          class="bg-white rounded-3xl border border-gray-200 p-12 text-center shadow-soft"
-        >
-          <FileText :size="64" class="text-gray-300 mx-auto mb-4" />
-          <h3 class="text-xl font-bold text-gray-900 mb-2">{{ t.clientDashboard.noProposalsYet }}</h3>
-          <p class="text-gray-500">{{ t.clientDashboard.noProposalsMessage }}</p>
-        </div>
       </div>
     </div>
   </div>
@@ -255,7 +242,7 @@ import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
 import ProjectStatusBadge from '@/components/project/ProjectStatusBadge.vue'
 import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
-import ProposalCard from '@/components/bid/ProposalCard.vue'
+import BidComparisonTable from '@/components/bid/BidComparisonTable.vue'
 import ProposalComparison from '@/components/bid/ProposalComparison.vue'
 
 const { t, locale } = useI18n()
@@ -324,17 +311,6 @@ const fetchProject = async () => {
     await bidsStore.fetchProjectBids(route.params.id)
   } catch (err) {
     console.error('Failed to fetch project:', err)
-  }
-}
-
-const handleAcceptBid = async bidId => {
-  if (!confirm(t.value.clientDashboard?.acceptConfirm)) return
-
-  try {
-    await bidsStore.acceptBid(bidId)
-    router.push(`/client/projects/${route.params.id}/finalization`)
-  } catch (err) {
-    alert(err.response?.data?.message || 'Failed to accept proposal')
   }
 }
 

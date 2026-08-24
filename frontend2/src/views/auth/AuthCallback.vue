@@ -76,11 +76,6 @@ const errorMessage = ref('')
 const getRedirectPath = user => {
   const roles = user?.registeredRoles || []
 
-  // Priority 1: Check onboarding status
-  if (user?.needsArchitectOnboarding === true) {
-    return '/architect/onboarding'
-  }
-
   // Priority 2: Use lastLoginRole from database
   if (user?.lastLoginRole && roles.includes(user.lastLoginRole)) {
     return user.lastLoginRole === 'ARCHITECT' ? '/architect/dashboard' : '/client/dashboard'
@@ -110,7 +105,6 @@ const processCallback = () => {
   const email = route.query.email
   const id = route.query.id
   const rolesParam = route.query.roles
-  const needsArchitectOnboarding = route.query.needsArchitectOnboarding
   const needsClientOnboarding = route.query.needsClientOnboarding
   const lastLoginRole = route.query.lastLoginRole
   const error = route.query.error
@@ -123,8 +117,6 @@ const processCallback = () => {
       id,
       email,
       registeredRoles,
-      needsArchitectOnboarding:
-        needsArchitectOnboarding === 'true' ? true : needsArchitectOnboarding === 'false' ? false : null,
       needsClientOnboarding: needsClientOnboarding === 'true' ? true : needsClientOnboarding === 'false' ? false : null,
       lastLoginRole: lastLoginRole || null
     }

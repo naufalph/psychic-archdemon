@@ -198,7 +198,6 @@ public class ProjectService {
   private void applyDraftFields(Project project, CreateProjectRequest request) {
     project.setTitle(request.getTitle());
     project.setLocation(request.getLocation());
-    project.setBudgetTotal(request.getBudgetTotal());
     project.setDesignBudgetMin(request.getDesignBudgetMin());
     project.setDesignBudgetMax(request.getDesignBudgetMax());
     project.setProjectCategory(request.getProjectCategory());
@@ -687,7 +686,6 @@ public class ProjectService {
         .clientId(project.getClient().getId())
         .title(project.getTitle())
         .location(project.getLocation())
-        .budgetTotal(project.getBudgetTotal())
         .designBudgetMin(project.getDesignBudgetMin())
         .designBudgetMax(project.getDesignBudgetMax())
         .projectCategory(project.getProjectCategory())
@@ -741,16 +739,11 @@ public class ProjectService {
             .map(f -> fileStorageService.getPublicUrl(f.getFilePath()))
             .orElse(null);
 
-    Long budgetDisplay =
-        project.getDesignBudgetMax() != null
-            ? project.getDesignBudgetMax()
-            : project.getBudgetTotal();
-
     return com.rumantra.client.dto.ProjectPublicPreviewResponse.builder()
         .id(project.getId())
         .title(project.getTitle())
         .location(project.getLocation())
-        .budgetDisplay(budgetDisplay)
+        .budgetDisplay(project.getDesignBudgetMax())
         .projectCategory(project.getProjectCategory())
         .buildingFunction(project.getBuildingFunction())
         .projectScope(project.getProjectScope())

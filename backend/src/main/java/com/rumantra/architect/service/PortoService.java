@@ -122,19 +122,6 @@ public class PortoService {
     // Get architect reference
     Architect architect = entityManager.getReference(Architect.class, architectId);
 
-    // Mark onboarding as complete on first portfolio
-    Architect fullArchitect =
-        architectRepository
-            .findById(architectId)
-            .orElseThrow(() -> new RuntimeException("Architect not found"));
-
-    if (fullArchitect.getNeedsOnboarding() != null && fullArchitect.getNeedsOnboarding()) {
-      fullArchitect.setNeedsOnboarding(false);
-      fullArchitect.setOnboardingCompletedAt(java.sql.Timestamp.from(java.time.Instant.now()));
-      architectRepository.save(fullArchitect);
-      log.info("Architect {} completed onboarding", architectId);
-    }
-
     // Create Porto entity
     Porto porto =
         Porto.builder()

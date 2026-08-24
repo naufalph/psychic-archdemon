@@ -51,7 +51,7 @@
           class="border rounded-xl px-4 py-2 mb-2 text-xs font-bold flex items-center justify-between"
         >
           <span>{{ t.paymentPhaseBuilder.phasesTotal }}</span>
-          <span>{{ formatCurrency(phasesTotal) }} / {{ formatCurrency(bidAmount) }}</span>
+          <span>{{ percentageTotal }}% / 100%</span>
         </div>
         <div
           class="border border-gray-200 rounded-xl px-4 py-2 mb-4 text-xs font-bold flex items-center justify-between text-gray-600 bg-gray-50"
@@ -76,16 +76,10 @@
           >
             <!-- Phase header -->
             <div class="flex items-center gap-2 mb-3">
-              <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-brand-brown text-white whitespace-nowrap">
+              <span class="text-sm font-bold px-2.5 py-1 rounded-full bg-brand-brown text-white whitespace-nowrap">
                 {{ t.paymentPhaseBuilder.phase }} {{ phase.phaseNumber }}
               </span>
-              <input
-                v-model="phase.title"
-                type="text"
-                :placeholder="`${t.paymentPhaseBuilder.phase} ${phase.phaseNumber} ${t.paymentPhaseBuilder.phaseTitlePlaceholder}`"
-                class="flex-1 text-sm font-bold bg-transparent border-b border-gray-200 focus:border-brand-brown outline-none pb-0.5"
-                @click.stop
-              />
+              <span class="flex-1" />
               <button
                 v-if="phases.length > 1"
                 type="button"
@@ -99,15 +93,19 @@
             <!-- Amount + revisions + days -->
             <div class="grid grid-cols-3 gap-2 mb-3">
               <div>
-                <label class="text-xs text-gray-500 font-bold">{{ t.paymentPhaseBuilder.amount }}</label>
+                <label class="text-xs text-gray-500 font-bold">{{ t.paymentPhaseBuilder.percentage }}</label>
                 <input
-                  v-model.number="phase.amount"
+                  :value="phase.percentage"
                   type="number"
                   min="0"
+                  max="100"
+                  step="1"
                   placeholder="0"
                   class="w-full mt-1 px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:border-brand-brown outline-none"
                   @click.stop
+                  @input="phase.percentage = clampPercentage($event.target.value)"
                 />
+                <p class="text-xs text-gray-400 mt-1">Rp {{ formatIDRDisplay(phaseDisplayAmount(phase)) }}</p>
               </div>
               <div>
                 <label class="text-xs text-gray-500 font-bold">{{ t.paymentPhaseBuilder.revisionRounds }}</label>
@@ -167,6 +165,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useI18n } from '@/composables/useI18n'
+import { formatIDRDisplay } from '@/utils/currencyFormat'
 
 const props = defineProps({
   modelValue: {
@@ -210,16 +209,21 @@ const getLabelForValue = value => t.value.proposalCreate?.deliverableItems?.[val
 
 const newPhase = number => ({
   phaseNumber: number,
-  title: '',
   deliverables: [],
-  amount: 0,
+  percentage: 0,
   revisionRounds: null,
   estimatedDays: null
 })
 
 const initPhases = incoming => {
   if (incoming && incoming.length > 0) {
-    return incoming.map(p => ({ ...p, deliverables: p.deliverables || [], estimatedDays: p.estimatedDays ?? null }))
+    return incoming.map(p => ({
+      phaseNumber: p.phaseNumber,
+      deliverables: p.deliverables || [],
+      percentage: props.bidAmount ? Math.round(((Number(p.amount) || 0) / props.bidAmount) * 100) : 0,
+      revisionRounds: p.revisionRounds ?? null,
+      estimatedDays: p.estimatedDays ?? null
+    }))
   }
   return [newPhase(1)]
 }
@@ -229,23 +233,41 @@ const activePhaseIndex = ref(0)
 const dragOverPhaseIndex = ref(null)
 let draggedItem = null
 
-watch(
-  phases,
-  val => {
-    emit(
-      'update:modelValue',
-      val.map(p => ({
-        phaseNumber: p.phaseNumber,
-        title: p.title || `${t.value.paymentPhaseBuilder.phase} ${p.phaseNumber}`,
-        deliverables: p.deliverables,
-        amount: Number(p.amount) || 0,
-        revisionRounds: p.revisionRounds ?? null,
-        estimatedDays: Number(p.estimatedDays) || null
-      }))
-    )
-  },
-  { deep: true }
-)
+const clampPercentage = val => {
+  const n = Math.round(Number(val) || 0)
+  return Math.min(100, Math.max(0, n))
+}
+
+const phaseDisplayAmount = phase => Math.round(((Number(props.bidAmount) || 0) * (Number(phase.percentage) || 0)) / 100)
+
+const computeAmounts = () => {
+  const bid = Number(props.bidAmount) || 0
+  const amounts = phases.value.map(p => Math.round((bid * (Number(p.percentage) || 0)) / 100))
+  const pctTotal = phases.value.reduce((sum, p) => sum + (Number(p.percentage) || 0), 0)
+  if (amounts.length > 0 && pctTotal === 100) {
+    const sumExceptLast = amounts.slice(0, -1).reduce((sum, a) => sum + a, 0)
+    amounts[amounts.length - 1] = bid - sumExceptLast
+  }
+  return amounts
+}
+
+const emitPhases = () => {
+  const amounts = computeAmounts()
+  emit(
+    'update:modelValue',
+    phases.value.map((p, i) => ({
+      phaseNumber: p.phaseNumber,
+      title: null,
+      deliverables: p.deliverables,
+      amount: amounts[i],
+      revisionRounds: p.revisionRounds ?? null,
+      estimatedDays: Number(p.estimatedDays) || null
+    }))
+  )
+}
+
+watch(phases, emitPhases, { deep: true })
+watch(() => props.bidAmount, emitPhases)
 
 const isAssigned = value => phases.value.some(p => p.deliverables.includes(value))
 
@@ -273,23 +295,10 @@ const removePhase = index => {
   }
 }
 
-const phasesTotal = computed(() => phases.value.reduce((sum, p) => sum + (Number(p.amount) || 0), 0))
+const percentageTotal = computed(() => phases.value.reduce((sum, p) => sum + (Number(p.percentage) || 0), 0))
 const daysTotal = computed(() => phases.value.reduce((sum, p) => sum + (Number(p.estimatedDays) || 0), 0))
 
-const totalMatchesBid = computed(() => {
-  if (!props.bidAmount) return false
-  return Math.abs(phasesTotal.value - Number(props.bidAmount)) < 1
-})
-
-const formatCurrency = value => {
-  if (!value && value !== 0) return 'N/A'
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    notation: 'compact',
-    compactDisplay: 'short'
-  }).format(value)
-}
+const totalMatchesBid = computed(() => percentageTotal.value === 100)
 
 const chipClasses = value => {
   const base = 'px-3 py-1 rounded-full text-xs font-medium border transition-all cursor-pointer'

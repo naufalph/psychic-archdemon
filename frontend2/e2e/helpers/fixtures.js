@@ -40,7 +40,6 @@ export const ROUTES = {
   architectOpportunities: '/architect/opportunities',
   architectBids: '/architect/bids',
   architectProfile: '/architect/profile',
-  architectOnboarding: '/architect/onboarding',
   clientDashboard: '/client/dashboard',
   clientProjects: '/client/projects',
   clientProjectCreate: '/client/projects/create',

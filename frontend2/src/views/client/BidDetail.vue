@@ -138,6 +138,7 @@
             <BidImageGallery
               :images="currentBid.facadeImages"
               :title="t.bidDetail.facade"
+              :description="currentBid.details?.facadeDescription"
               :empty-message="t.bidDetail.noFacade"
             />
           </div>
@@ -146,6 +147,7 @@
             <BidImageGallery
               :images="currentBid.interiorImages"
               :title="t.bidDetail.interior"
+              :description="currentBid.details?.interiorDescription"
               :empty-message="t.bidDetail.noInterior"
             />
           </div>
@@ -154,6 +156,7 @@
             <BidImageGallery
               :images="currentBid.massingImages"
               :title="t.bidDetail.massing"
+              :description="currentBid.details?.massingDescription"
               :empty-message="t.bidDetail.noMassing"
             />
           </div>
@@ -162,6 +165,7 @@
             <BidImageGallery
               :images="currentBid.zoningImages"
               :title="t.bidDetail.zoning"
+              :description="currentBid.details?.zoningDescription"
               :empty-message="t.bidDetail.noZoning"
             />
           </div>
@@ -274,18 +278,26 @@
           >
             <h2 class="text-2xl font-bold text-black mb-4">{{ t.bidDetail.portfolioProjects }}</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              <div
+              <button
                 v-for="portfolio in currentBid.portfolioReferences"
                 :key="portfolio.id"
-                class="bg-gray-50 rounded-2xl p-4 border border-gray-200 hover:border-brand-gold transition"
+                type="button"
+                class="text-left bg-gray-50 rounded-2xl p-4 border border-gray-200 hover:border-brand-gold transition"
+                @click="viewingPortfolio = portfolio"
               >
-                <div v-if="portfolio.coverImage" class="aspect-video bg-gray-200 rounded-xl mb-3 overflow-hidden">
-                  <img :src="portfolio.coverImage" :alt="portfolio.projectName" class="w-full h-full object-cover" />
+                <div v-if="portfolio.images?.[0]" class="aspect-video bg-gray-200 rounded-xl mb-3 overflow-hidden">
+                  <img
+                    :src="portfolio.images[0].mediumUrl || portfolio.images[0].originalUrl"
+                    :alt="portfolio.title"
+                    class="w-full h-full object-cover"
+                  />
                 </div>
-                <p class="font-medium text-gray-900">{{ portfolio.projectName }}</p>
-              </div>
+                <p class="font-medium text-gray-900">{{ portfolio.title }}</p>
+              </button>
             </div>
           </div>
+
+          <PortfolioDetailPopup :portfolio="viewingPortfolio" @close="viewingPortfolio = null" />
 
           <div class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
             <div class="flex gap-4">
@@ -314,7 +326,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { projectTypeLabel } from '@/constants/projectTaxonomy'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
@@ -324,6 +336,7 @@ import { useBidsStore } from '@/stores/bids'
 import { useProjectsStore } from '@/stores/projects'
 import BidImageGallery from '@/components/bid/BidImageGallery.vue'
 import BidStatusBadge from '@/components/project/BidStatusBadge.vue'
+import PortfolioDetailPopup from '@/components/bid/PortfolioDetailPopup.vue'
 
 const { t, locale } = useI18n()
 const route = useRoute()
@@ -333,6 +346,8 @@ const projectsStore = useProjectsStore()
 
 const { currentBid, loading, error } = storeToRefs(bidsStore)
 const { currentProject } = storeToRefs(projectsStore)
+
+const viewingPortfolio = ref(null)
 
 const DELIVERABLE_CATEGORIES = [
   { categoryKey: 'siteAnalysis', items: ['SITE_ANALYSIS', 'ZONING_STUDY'] },

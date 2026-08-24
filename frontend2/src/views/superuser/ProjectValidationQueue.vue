@@ -23,7 +23,8 @@
         <div class="flex-1 min-w-0">
           <p class="font-semibold text-gray-900 truncate">{{ project.title }}</p>
           <p class="text-sm text-gray-500 mt-0.5">
-            {{ project.location }} · Budget IDR {{ formatCurrency(project.budgetTotal) }}
+            {{ project.location }} · Design Fee IDR {{ formatCurrency(project.designBudgetMin) }} -
+            {{ formatCurrency(project.designBudgetMax) }}
           </p>
           <p class="text-xs text-gray-400 mt-1">
             {{ t.projectValidationQueue.submittedOn }} {{ formatDate(project.createdAt) }}

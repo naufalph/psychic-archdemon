@@ -5,15 +5,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.rumantra.admin.dto.AdminNegotiationResolutionRequest;
 import com.rumantra.admin.dto.AdminProjectDetailResponse;
+import com.rumantra.admin.dto.NegotiationDisputeResponse;
+import com.rumantra.admin.event.NegotiationDisputeResolvedEvent;
 import com.rumantra.bidding.domain.Bid;
 import com.rumantra.bidding.domain.BidPaymentPhase;
 import com.rumantra.bidding.domain.BidStatus;
 import com.rumantra.bidding.repository.BidPaymentPhaseRepository;
 import com.rumantra.bidding.repository.BidRepository;
+import com.rumantra.bidding.service.BidService;
 import com.rumantra.client.domain.Client;
 import com.rumantra.client.domain.Project;
 import com.rumantra.client.domain.ProjectStatus;
@@ -39,6 +44,8 @@ public class AdminProjectService {
   private final BidRepository bidRepository;
   private final BidPaymentPhaseRepository bidPaymentPhaseRepository;
   private final ProjectPhaseRepository projectPhaseRepository;
+  private final BidService bidService;
+  private final ApplicationEventPublisher eventPublisher;
 
   @Transactional(readOnly = true)
   public List<ProjectResponse> getProjects(ProjectStatus status) {
@@ -118,6 +125,104 @@ public class AdminProjectService {
         .filter(p -> p.getId().equals(projectId))
         .findFirst()
         .orElseThrow();
+  }
+
+  @Transactional(readOnly = true)
+  public List<NegotiationDisputeResponse> getNegotiationDisputes() {
+    List<Project> projects = projectRepository.findByStatus(ProjectStatus.NEGOTIATION_EXPIRED);
+    List<NegotiationDisputeResponse> result = new ArrayList<>();
+
+    for (Project project : projects) {
+      List<Bid> acceptedBids =
+          bidRepository.findByProjectIdAndStatus(project.getId(), BidStatus.ACCEPTED);
+      Bid acceptedBid = acceptedBids.isEmpty() ? null : acceptedBids.get(0);
+
+      result.add(
+          NegotiationDisputeResponse.builder()
+              .projectId(project.getId())
+              .projectTitle(project.getTitle())
+              .clientName(displayName(project.getClient().getUser()))
+              .clientEmail(project.getClient().getUser().getEmail())
+              .architectName(
+                  acceptedBid != null ? displayName(acceptedBid.getArchitect().getUser()) : null)
+              .architectCompany(
+                  acceptedBid != null ? acceptedBid.getArchitect().getCompanyName() : null)
+              .bidAmount(acceptedBid != null ? acceptedBid.getBidAmount() : null)
+              .acceptedAt(acceptedBid != null ? acceptedBid.getAcceptedAt() : null)
+              .expiredAt(project.getUpdatedAt())
+              .build());
+    }
+
+    return result;
+  }
+
+  @Transactional
+  public ProjectResponse resolveNegotiationDispute(
+      Long projectId, Long superuserUserId, AdminNegotiationResolutionRequest req) {
+    Project project =
+        projectRepository
+            .findById(projectId)
+            .orElseThrow(() -> new ResourceNotFoundException("Project not found: " + projectId));
+
+    if (project.getStatus() != ProjectStatus.NEGOTIATION_EXPIRED) {
+      throw new IllegalStateException(
+          "Project is not awaiting negotiation-dispute review. Current: " + project.getStatus());
+    }
+
+    List<Bid> allBids = bidRepository.findByProjectId(projectId);
+    Bid acceptedBid =
+        allBids.stream().filter(b -> b.getStatus() == BidStatus.ACCEPTED).findFirst().orElse(null);
+
+    boolean clientAbandoned =
+        req.getDecision() == AdminNegotiationResolutionRequest.Decision.CLIENT_ABANDONED;
+    String reason =
+        clientAbandoned
+            ? "Negotiation dispute resolved: client abandoned the project"
+            : "Negotiation dispute resolved: architect abandoned the project";
+
+    for (Bid bid : allBids) {
+      boolean isAcceptedBid = acceptedBid != null && bid.getId().equals(acceptedBid.getId());
+      boolean shouldRefund = clientAbandoned || !isAcceptedBid;
+      if (shouldRefund && bid.getStatus() != BidStatus.REFUNDED) {
+        bidService.refundBid(bid, reason);
+      }
+    }
+
+    project.setStatus(ProjectStatus.CANCELLED);
+    project = projectRepository.save(project);
+
+    log.info(
+        "Superuser {} resolved negotiation dispute for project {}: decision={}",
+        superuserUserId,
+        projectId,
+        req.getDecision());
+
+    if (acceptedBid != null) {
+      eventPublisher.publishEvent(
+          new NegotiationDisputeResolvedEvent(
+              this,
+              project.getId(),
+              project.getTitle(),
+              project.getClient().getUser().getId(),
+              project.getClient().getUser().getEmail(),
+              acceptedBid.getArchitect().getUser().getId(),
+              acceptedBid.getArchitect().getUser().getEmail(),
+              req.getDecision().name()));
+    }
+
+    Long resolvedProjectId = project.getId();
+    return projectService.getAllProjects().stream()
+        .filter(p -> p.getId().equals(resolvedProjectId))
+        .findFirst()
+        .orElseThrow();
+  }
+
+  private String displayName(com.rumantra.user.domain.User user) {
+    return String.join(
+            " ",
+            user.getFirstName() != null ? user.getFirstName() : "",
+            user.getLastName() != null ? user.getLastName() : "")
+        .trim();
   }
 
   private void initializeProjectPhasesFromBid(Project project) {

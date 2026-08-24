@@ -18,7 +18,10 @@ export const adminProjectsAPI = {
   getDetail: projectId => api.get(`/rmtr/admin/projects/${projectId}`),
   forceCancel: projectId => api.post(`/rmtr/admin/projects/${projectId}/force-cancel`),
   overrideNegotiation: projectId =>
-    api.post(`/rmtr/admin/projects/${projectId}/override-negotiation`)
+    api.post(`/rmtr/admin/projects/${projectId}/override-negotiation`),
+  getNegotiationDisputes: () => api.get('/rmtr/admin/projects/negotiation-disputes'),
+  resolveNegotiationDispute: (projectId, decision, note) =>
+    api.post(`/rmtr/admin/projects/${projectId}/resolve-negotiation-dispute`, { decision, note })
 }
 
 // Phases / Disputes

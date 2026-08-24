@@ -15,6 +15,7 @@ import com.rumantra.shared.RumantraConstants;
 import com.rumantra.shared.dto.ApiResponse;
 import com.rumantra.shared.exception.BusinessException;
 import com.rumantra.shared.exception.ResourceNotFoundException;
+import com.rumantra.user.dto.ChangePasswordRequestDto;
 import com.rumantra.user.dto.UserAuthResponseDto;
 import com.rumantra.user.dto.UserDto;
 import com.rumantra.user.dto.UserLoginRequestDto;
@@ -109,10 +110,6 @@ public class UserController {
               + authResponse.getId()
               + "&roles="
               + roles
-              + "&needsArchitectOnboarding="
-              + (authResponse.getNeedsArchitectOnboarding() != null
-                  ? authResponse.getNeedsArchitectOnboarding()
-                  : "")
               + "&needsClientOnboarding="
               + (authResponse.getNeedsClientOnboarding() != null
                   ? authResponse.getNeedsClientOnboarding()
@@ -290,10 +287,6 @@ public class UserController {
               + authResponse.getId()
               + "&roles="
               + roles
-              + "&needsArchitectOnboarding="
-              + (authResponse.getNeedsArchitectOnboarding() != null
-                  ? authResponse.getNeedsArchitectOnboarding()
-                  : "")
               + "&needsClientOnboarding="
               + (authResponse.getNeedsClientOnboarding() != null
                   ? authResponse.getNeedsClientOnboarding()
@@ -439,6 +432,39 @@ public class UserController {
               ApiResponse.<String>builder()
                   .success(false)
                   .message("An error occurred while updating last login role")
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
+  }
+
+  @PostMapping("/me/change-password")
+  public ResponseEntity<ApiResponse<Void>> changePassword(
+      @Valid @RequestBody ChangePasswordRequestDto request) {
+    try {
+      Long userId = SecurityUtils.getCurrentUserId();
+      userService.changePassword(userId, request);
+
+      return ResponseEntity.ok(
+          ApiResponse.<Void>builder()
+              .success(true)
+              .message("Password changed successfully!")
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              ApiResponse.<Void>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    } catch (Exception e) {
+      log.error("Failed to change password", e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(
+              ApiResponse.<Void>builder()
+                  .success(false)
+                  .message("An error occurred while changing password")
                   .timestamp(LocalDateTime.now().toString())
                   .build());
     }

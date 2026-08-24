@@ -7,6 +7,8 @@ public enum ProjectStatus {
   OPEN, // Validated by superuser, accepting bids
   BIDDING_CLOSED, // No more bids accepted
   NEGOTIATION, // Bid accepted, awaiting client confirmation before work starts
+  NEGOTIATION_EXPIRED, // Negotiation window (7 days) lapsed without both parties confirming;
+  // awaiting superuser fault review
   IN_PROGRESS, // Terms confirmed, work started
   COMPLETED, // Project done
   CANCELLED // Project cancelled by client

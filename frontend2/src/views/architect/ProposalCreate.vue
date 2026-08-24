@@ -85,6 +85,23 @@
                 </div>
               </div>
 
+              <div v-if="sidebarImages.length > 0" class="pt-4 border-t border-gray-100">
+                <p class="text-xs text-gray-500 uppercase font-bold mb-2">
+                  {{ t.proposalCreate?.referenceImages || 'Client Reference Images' }}
+                </p>
+                <div class="grid grid-cols-3 gap-2">
+                  <button
+                    v-for="(img, index) in sidebarImages"
+                    :key="img.id"
+                    type="button"
+                    class="aspect-square rounded-lg overflow-hidden border border-gray-200 hover:border-brand-brown transition"
+                    @click="openLightbox(index)"
+                  >
+                    <img :src="img.url" :alt="img.name" class="w-full h-full object-cover" />
+                  </button>
+                </div>
+              </div>
+
               <div v-if="project.biddingDeadline" class="pt-4 border-t border-gray-100">
                 <BiddingCountdown :deadline="project.biddingDeadline" size="sm" />
               </div>
@@ -155,23 +172,14 @@
             </div>
 
             <form class="p-8 space-y-8" @submit.prevent="handleSubmit">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-2"
-                    >{{ t.proposalCreate?.bidAmount || 'Bid Amount (IDR)' }}<span class="text-red-500">*</span></label
-                  >
-                  <input
-                    v-model.number="formData.bidAmount"
-                    required
-                    type="number"
-                    placeholder="e.g., 50000000"
-                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
-                  />
-                </div>
-              </div>
-
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">About your studio</label>
+                <p class="text-xs text-gray-500 mb-3">
+                  {{
+                    t.proposalCreate?.studioPhilosophyHelp ||
+                    "Prefilled from your profile's Design Philosophy — feel free to tailor it for this project."
+                  }}
+                </p>
                 <textarea
                   v-model="formData.proposal"
                   rows="6"
@@ -199,6 +207,133 @@
               </div>
 
               <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Facade Images <span class="text-gray-400 font-normal">(exterior views, max 3)</span>
+                </label>
+                <MultiImageUploader
+                  v-model="facadeImages"
+                  :max-files="3"
+                  :existing-images="existingFacade"
+                  @delete-existing="id => deleteExistingImage(id, 'facade')"
+                />
+                <p class="text-xs text-gray-400 mt-2">
+                  {{
+                    t.proposalCreate?.aspectRatioHint ||
+                    'Recommended aspect ratio: 16:9 for the best display in proposal comparisons'
+                  }}
+                </p>
+                <textarea
+                  v-model="formData.facadeDescription"
+                  rows="2"
+                  :placeholder="
+                    t.proposalCreate?.facadeDescriptionPlaceholder ||
+                    'Add context about these facade images (materials, style, site conditions)...'
+                  "
+                  class="w-full mt-3 px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-sm"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Interior Images <span class="text-gray-400 font-normal">(interior spaces, max 3)</span>
+                </label>
+                <MultiImageUploader
+                  v-model="interiorImages"
+                  :max-files="3"
+                  :existing-images="existingInterior"
+                  @delete-existing="id => deleteExistingImage(id, 'interior')"
+                />
+                <p class="text-xs text-gray-400 mt-2">
+                  {{
+                    t.proposalCreate?.aspectRatioHint ||
+                    'Recommended aspect ratio: 16:9 for the best display in proposal comparisons'
+                  }}
+                </p>
+                <textarea
+                  v-model="formData.interiorDescription"
+                  rows="2"
+                  :placeholder="
+                    t.proposalCreate?.interiorDescriptionPlaceholder || 'Add context about these interior images...'
+                  "
+                  class="w-full mt-3 px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-sm"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Massing Images <span class="text-gray-400 font-normal">(3D form studies, max 3)</span>
+                </label>
+                <MultiImageUploader
+                  v-model="massingImages"
+                  :max-files="3"
+                  :existing-images="existingMassing"
+                  @delete-existing="id => deleteExistingImage(id, 'massing')"
+                />
+                <p class="text-xs text-gray-400 mt-2">
+                  {{
+                    t.proposalCreate?.aspectRatioHint ||
+                    'Recommended aspect ratio: 16:9 for the best display in proposal comparisons'
+                  }}
+                </p>
+                <textarea
+                  v-model="formData.massingDescription"
+                  rows="2"
+                  :placeholder="
+                    t.proposalCreate?.massingDescriptionPlaceholder || 'Add context about these massing images...'
+                  "
+                  class="w-full mt-3 px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-sm"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  Zoning Images <span class="text-gray-400 font-normal">(site plan diagrams, max 3)</span>
+                </label>
+                <MultiImageUploader
+                  v-model="zoningImages"
+                  :max-files="3"
+                  :existing-images="existingZoning"
+                  @delete-existing="id => deleteExistingImage(id, 'zoning')"
+                />
+                <p class="text-xs text-gray-400 mt-2">
+                  {{
+                    t.proposalCreate?.aspectRatioHint ||
+                    'Recommended aspect ratio: 16:9 for the best display in proposal comparisons'
+                  }}
+                </p>
+                <textarea
+                  v-model="formData.zoningDescription"
+                  rows="2"
+                  :placeholder="
+                    t.proposalCreate?.zoningDescriptionPlaceholder || 'Add context about these zoning images...'
+                  "
+                  class="w-full mt-3 px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-sm"
+                />
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Attach Relevant Portfolios</label>
+                <p class="text-xs text-gray-500 mb-3">Select portfolios that demonstrate your relevant experience</p>
+                <PortfolioSelector v-model="formData.portfolioIds" />
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2"
+                    >{{ t.proposalCreate?.bidAmount || 'Bid Amount (IDR)' }}<span class="text-red-500">*</span></label
+                  >
+                  <input
+                    v-model="bidAmountDisplay"
+                    required
+                    type="text"
+                    inputmode="numeric"
+                    placeholder="e.g., 50.000.000"
+                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
+                  />
+                </div>
+              </div>
+
+              <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">{{
                   t.proposalCreate?.paymentPhases || 'Payment Phases'
                 }}</label>
@@ -209,60 +344,6 @@
                   }}
                 </p>
                 <PaymentPhaseBuilder v-model="formData.phases" :bid-amount="formData.bidAmount" />
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Attach Relevant Portfolios</label>
-                <p class="text-xs text-gray-500 mb-3">Select portfolios that demonstrate your relevant experience</p>
-                <PortfolioSelector v-model="formData.portfolioIds" />
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Facade Images <span class="text-gray-400 font-normal">(exterior views, max 5)</span>
-                </label>
-                <MultiImageUploader
-                  v-model="facadeImages"
-                  :max-files="5"
-                  :existing-images="existingFacade"
-                  @delete-existing="id => deleteExistingImage(id, 'facade')"
-                />
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Interior Images <span class="text-gray-400 font-normal">(interior spaces, max 5)</span>
-                </label>
-                <MultiImageUploader
-                  v-model="interiorImages"
-                  :max-files="5"
-                  :existing-images="existingInterior"
-                  @delete-existing="id => deleteExistingImage(id, 'interior')"
-                />
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Massing Images <span class="text-gray-400 font-normal">(3D form studies, max 5)</span>
-                </label>
-                <MultiImageUploader
-                  v-model="massingImages"
-                  :max-files="5"
-                  :existing-images="existingMassing"
-                  @delete-existing="id => deleteExistingImage(id, 'massing')"
-                />
-              </div>
-
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Zoning Images <span class="text-gray-400 font-normal">(site plan diagrams, max 5)</span>
-                </label>
-                <MultiImageUploader
-                  v-model="zoningImages"
-                  :max-files="5"
-                  :existing-images="existingZoning"
-                  @delete-existing="id => deleteExistingImage(id, 'zoning')"
-                />
               </div>
 
               <div v-if="uploadProgress > 0" class="bg-gray-50 rounded-2xl p-6">
@@ -414,11 +495,57 @@
         </div>
       </Transition>
     </Teleport>
+
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition ease-out duration-200"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition ease-in duration-150"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div v-if="lightboxIndex !== null" class="fixed inset-0 z-50 overflow-y-auto" @click.self="closeLightbox">
+          <div class="flex min-h-screen items-center justify-center p-4">
+            <div class="fixed inset-0 bg-black/80 backdrop-blur-sm" @click="closeLightbox"></div>
+
+            <div class="relative z-10 w-full max-w-3xl">
+              <button class="absolute -top-10 right-0 text-white hover:text-gray-300 transition" @click="closeLightbox">
+                <X :size="28" />
+              </button>
+
+              <img
+                v-if="sidebarImages[lightboxIndex]"
+                :src="sidebarImages[lightboxIndex].url"
+                :alt="sidebarImages[lightboxIndex].name"
+                class="w-full h-auto rounded-2xl"
+              />
+
+              <div v-if="sidebarImages.length > 1" class="flex justify-between mt-4">
+                <button
+                  class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full transition"
+                  @click="prevLightboxImage"
+                >
+                  ← Previous
+                </button>
+                <p class="text-white text-sm self-center">{{ lightboxIndex + 1 }} / {{ sidebarImages.length }}</p>
+                <button
+                  class="px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-full transition"
+                  @click="nextLightboxImage"
+                >
+                  Next →
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { projectTypeLabel } from '@/constants/projectTaxonomy'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
@@ -427,6 +554,7 @@ import { useBidsStore } from '@/stores/bids'
 import { useProjectsStore } from '@/stores/projects'
 import { useArchitectProfileStore } from '@/stores/architectProfile'
 import { useI18n } from '@/composables/useI18n'
+import { formatIDRDisplay, parseIDRInput } from '@/utils/currencyFormat'
 import MultiImageUploader from '@/components/upload/MultiImageUploader.vue'
 import UploadProgress from '@/components/upload/UploadProgress.vue'
 import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
@@ -473,7 +601,18 @@ const formData = ref({
   proposal: '',
   conceptStatement: '',
   phases: [],
-  portfolioIds: []
+  portfolioIds: [],
+  facadeDescription: '',
+  interiorDescription: '',
+  massingDescription: '',
+  zoningDescription: ''
+})
+
+const bidAmountDisplay = computed({
+  get: () => formatIDRDisplay(formData.value.bidAmount),
+  set: val => {
+    formData.value.bidAmount = parseIDRInput(val)
+  }
 })
 
 const facadeImages = ref([])
@@ -490,6 +629,36 @@ const existingBidId = ref(null)
 const project = ref(null)
 const projectLoading = ref(false)
 const projectError = ref(null)
+
+const sidebarImages = computed(() =>
+  (project.value?.files || [])
+    .filter(f => f.fileType?.startsWith('image/'))
+    .map(f => ({ id: f.id, url: f.filePath, name: f.fileName }))
+)
+
+const lightboxIndex = ref(null)
+const openLightbox = index => {
+  lightboxIndex.value = index
+}
+const closeLightbox = () => {
+  lightboxIndex.value = null
+}
+const nextLightboxImage = () => {
+  if (lightboxIndex.value === null || sidebarImages.value.length === 0) return
+  lightboxIndex.value = (lightboxIndex.value + 1) % sidebarImages.value.length
+}
+const prevLightboxImage = () => {
+  if (lightboxIndex.value === null || sidebarImages.value.length === 0) return
+  lightboxIndex.value = (lightboxIndex.value - 1 + sidebarImages.value.length) % sidebarImages.value.length
+}
+const onLightboxKeydown = e => {
+  if (lightboxIndex.value === null) return
+  if (e.key === 'Escape') closeLightbox()
+  else if (e.key === 'ArrowRight') nextLightboxImage()
+  else if (e.key === 'ArrowLeft') prevLightboxImage()
+}
+onMounted(() => document.addEventListener('keydown', onLightboxKeydown))
+onUnmounted(() => document.removeEventListener('keydown', onLightboxKeydown))
 
 const formatCurrency = value => {
   if (!value) return 'N/A'
@@ -563,7 +732,11 @@ const persistDraft = async () => {
   }
   await bidsStore.updateBidDetails(bid.id, {
     conceptStatement: formData.value.conceptStatement,
-    phases: formData.value.phases
+    phases: formData.value.phases,
+    facadeDescription: formData.value.facadeDescription,
+    interiorDescription: formData.value.interiorDescription,
+    massingDescription: formData.value.massingDescription,
+    zoningDescription: formData.value.zoningDescription
   })
 
   if (formData.value.portfolioIds.length > 0) {
@@ -668,7 +841,11 @@ const handleSubmit = async () => {
 
     const bidDetailData = {
       conceptStatement: formData.value.conceptStatement,
-      phases: formData.value.phases
+      phases: formData.value.phases,
+      facadeDescription: formData.value.facadeDescription,
+      interiorDescription: formData.value.interiorDescription,
+      massingDescription: formData.value.massingDescription,
+      zoningDescription: formData.value.zoningDescription
     }
     await bidsStore.updateBidDetails(bid.id, bidDetailData)
 
@@ -723,6 +900,10 @@ onMounted(async () => {
       formData.value.proposal = existingDraft.proposal || ''
       formData.value.conceptStatement = existingDraft.details?.conceptStatement || ''
       formData.value.phases = existingDraft.details?.phases || []
+      formData.value.facadeDescription = existingDraft.details?.facadeDescription || ''
+      formData.value.interiorDescription = existingDraft.details?.interiorDescription || ''
+      formData.value.massingDescription = existingDraft.details?.massingDescription || ''
+      formData.value.zoningDescription = existingDraft.details?.zoningDescription || ''
 
       try {
         const fullDraft = await bidsStore.fetchBidById(existingDraft.id)
@@ -751,6 +932,8 @@ onMounted(async () => {
         url: img.imageUrl,
         name: img.fileName || 'Zoning'
       }))
+    } else {
+      formData.value.proposal = profileStore.profilePhilosophy
     }
   } catch (err) {
     projectError.value = err.response?.data?.message || 'Failed to load project details'

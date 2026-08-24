@@ -99,10 +99,10 @@
                   <div class="flex items-center justify-between mb-2">
                     <div class="flex items-center gap-2">
                       <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-brand-brown text-white">
-                        Phase {{ phase.phaseNumber }}
+                        {{ t.clientFinalization?.phase }} {{ phase.phaseNumber }}
                       </span>
                       <span class="text-sm font-bold text-black">{{
-                        phase.title || `Phase ${phase.phaseNumber}`
+                        phase.title || `${t.clientFinalization?.phase} ${phase.phaseNumber}`
                       }}</span>
                     </div>
                     <span class="text-sm font-bold text-brand-brown">{{ formatCurrency(phase.amount) }}</span>
@@ -116,12 +116,17 @@
                     >
                   </div>
                   <p v-if="phase.revisionRounds != null" class="text-xs text-gray-500">
-                    {{ phase.revisionRounds }} revision round{{ phase.revisionRounds !== 1 ? 's' : '' }}
+                    {{ phase.revisionRounds }}
+                    {{
+                      phase.revisionRounds !== 1
+                        ? t.clientFinalization?.revisionRounds
+                        : t.clientFinalization?.revisionRound
+                    }}
                   </p>
                 </div>
               </div>
               <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between text-sm">
-                <span class="text-gray-500 font-bold">Total</span>
+                <span class="text-gray-500 font-bold">{{ t.clientFinalization?.total }}</span>
                 <span class="font-bold text-brand-brown">{{ formatCurrency(bid.bidAmount) }}</span>
               </div>
             </div>
@@ -135,6 +140,43 @@
               <p class="text-gray-700 text-sm leading-relaxed whitespace-pre-line">
                 {{ bid.details.conceptStatement }}
               </p>
+            </div>
+
+            <!-- Proposal Images -->
+            <div class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft">
+              <BidImageGallery
+                :images="bid.facadeImages"
+                :title="t.bidDetail?.facade"
+                :description="bid.details?.facadeDescription"
+                :empty-message="t.bidDetail?.noFacade"
+              />
+            </div>
+
+            <div class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft">
+              <BidImageGallery
+                :images="bid.interiorImages"
+                :title="t.bidDetail?.interior"
+                :description="bid.details?.interiorDescription"
+                :empty-message="t.bidDetail?.noInterior"
+              />
+            </div>
+
+            <div class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft">
+              <BidImageGallery
+                :images="bid.massingImages"
+                :title="t.bidDetail?.massing"
+                :description="bid.details?.massingDescription"
+                :empty-message="t.bidDetail?.noMassing"
+              />
+            </div>
+
+            <div class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft">
+              <BidImageGallery
+                :images="bid.zoningImages"
+                :title="t.bidDetail?.zoning"
+                :description="bid.details?.zoningDescription"
+                :empty-message="t.bidDetail?.noZoning"
+              />
             </div>
 
             <!-- Portfolio References -->
@@ -176,7 +218,7 @@
                 <div class="flex items-center gap-2">
                   <h3 class="font-bold text-black">{{ t.finalization?.discussion }}</h3>
                   <span v-if="itSupportRequested" class="text-xs text-brand-brown font-medium"
-                    >· IT Support invited</span
+                    >· {{ t.clientFinalization?.itSupportInvited }}</span
                   >
                 </div>
                 <p class="text-xs text-gray-500 mt-0.5">{{ t.finalization?.discussionSubtitle }}</p>
@@ -196,8 +238,15 @@
                 class="text-xs text-gray-400 hover:text-gray-600 underline disabled:cursor-not-allowed"
                 @click="openSupportChat"
               >
-                {{ supportLoading ? 'Opening...' : itSupportRequested ? 'IT Support invited' : 'Request IT Support' }}
+                {{
+                  supportLoading
+                    ? t.support?.opening
+                    : itSupportRequested
+                      ? t.clientFinalization?.itSupportInvited
+                      : t.support?.requestSupport
+                }}
               </button>
+              <p v-if="supportError" class="text-xs text-red-500 mt-1">{{ supportError }}</p>
             </div>
 
             <!-- Architect Action Panel -->
@@ -222,7 +271,7 @@
                 <button
                   :disabled="actionLoading"
                   class="w-full px-5 py-3.5 bg-brand-brown text-white rounded-full font-bold hover:bg-black transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  @click="handleConfirm"
+                  @click="openConfirmModal"
                 >
                   <CheckCircle :size="18" />
                   {{ actionLoading ? t.finalization?.confirming : t.finalization?.confirmButton }}
@@ -233,17 +282,82 @@
         </div>
       </div>
     </div>
+
+    <!-- Styled Confirm Modal -->
+    <Teleport to="body">
+      <Transition
+        enter-active-class="transition duration-200 ease-out"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition duration-150 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="showConfirmModal"
+          class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm px-4"
+          @click.self="closeConfirmModal"
+        >
+          <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+            <div class="bg-brand-brown px-6 py-5">
+              <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+                  <CheckCircle :size="20" class="text-white" aria-hidden="true" />
+                </div>
+                <div>
+                  <p class="text-xs text-brand-tan font-semibold uppercase tracking-wide">
+                    {{ t.finalization?.confirmModalEyebrow }}
+                  </p>
+                  <h3 class="text-lg font-bold text-white">{{ t.finalization?.confirmButton }}</h3>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-6 space-y-4">
+              <p class="text-sm text-gray-600 leading-relaxed">{{ t.finalization?.confirmPrompt }}</p>
+              <p class="text-sm font-semibold text-gray-900">{{ t.finalization?.confirmDialog }}</p>
+
+              <p v-if="confirmModalError" class="text-sm text-red-600">{{ confirmModalError }}</p>
+
+              <div class="flex gap-3 pt-1">
+                <button
+                  type="button"
+                  :disabled="actionLoading"
+                  class="flex-1 px-4 py-2.5 border border-gray-200 text-gray-600 text-sm font-semibold rounded-lg hover:bg-gray-50 disabled:opacity-50 transition"
+                  @click="closeConfirmModal"
+                >
+                  {{ t.finalization?.modalCancel }}
+                </button>
+                <button
+                  type="button"
+                  :disabled="actionLoading"
+                  class="flex-1 px-4 py-2.5 bg-brand-brown text-white text-sm font-bold rounded-lg hover:bg-brand-brown-dark disabled:opacity-50 transition flex items-center justify-center gap-2"
+                  @click="handleConfirm"
+                >
+                  <span v-if="actionLoading">{{ t.finalization?.confirming }}</span>
+                  <template v-else>
+                    <CheckCircle :size="15" aria-hidden="true" />
+                    {{ t.finalization?.confirmButton }}
+                  </template>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Transition>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Clock, CheckCircle } from 'lucide-vue-next'
 import { useBidsStore } from '@/stores/bids'
 import { projectAPI, supportAPI } from '@/services/api'
 import { useI18n } from '@/composables/useI18n'
 import ChatPanel from '@/components/chat/ChatPanel.vue'
+import BidImageGallery from '@/components/bid/BidImageGallery.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -257,6 +371,9 @@ const error = ref(null)
 const actionLoading = ref(false)
 const itSupportRequested = ref(false)
 const supportLoading = ref(false)
+const supportError = ref(null)
+const showConfirmModal = ref(false)
+const confirmModalError = ref(null)
 
 const formatCurrency = value => {
   if (!value) return 'N/A'
@@ -303,17 +420,29 @@ const loadData = async () => {
   }
 }
 
+const openConfirmModal = () => {
+  confirmModalError.value = null
+  showConfirmModal.value = true
+}
+
+const closeConfirmModal = () => {
+  if (actionLoading.value) return
+  showConfirmModal.value = false
+  confirmModalError.value = null
+}
+
 const handleConfirm = async () => {
-  if (!confirm(getT('finalization.confirmDialog'))) return
   actionLoading.value = true
+  confirmModalError.value = null
   try {
     const response = await projectAPI.architectConfirmNegotiation(route.params.projectId)
     project.value = response.data.data
+    showConfirmModal.value = false
     if (project.value.status === 'IN_PROGRESS') {
       router.push(`/architect/projects/${route.params.projectId}/workspace`)
     }
   } catch (err) {
-    alert(err.response?.data?.message || getT('finalization.confirmError'))
+    confirmModalError.value = err.response?.data?.message || getT('finalization.confirmError')
   } finally {
     actionLoading.value = false
   }
@@ -322,17 +451,27 @@ const handleConfirm = async () => {
 const openSupportChat = async () => {
   if (!bid.value?.id) return
   supportLoading.value = true
+  supportError.value = null
   try {
     await supportAPI.createSupportConversation(route.params.projectId, bid.value.id)
     itSupportRequested.value = true
   } catch (err) {
-    alert(err.response?.data?.message || 'Failed to open support chat')
+    supportError.value = err.response?.data?.message || getT('support.openError')
   } finally {
     supportLoading.value = false
   }
 }
 
+const handleEscapeKeydown = e => {
+  if (e.key === 'Escape') closeConfirmModal()
+}
+
 onMounted(() => {
   loadData()
+  document.addEventListener('keydown', handleEscapeKeydown)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('keydown', handleEscapeKeydown)
 })
 </script>

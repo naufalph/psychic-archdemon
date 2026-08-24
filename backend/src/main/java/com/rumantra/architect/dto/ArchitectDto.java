@@ -29,6 +29,8 @@ public class ArchitectDto {
   private String experienceRange;
   private String philosophy;
   private java.util.List<String> expertise;
-  private Boolean needsOnboarding;
-  private java.sql.Timestamp onboardingCompletedAt;
+  private String fullAddress;
+  private String province;
+  private String photoUrl;
+  private ProfileCompletionDto profileCompletion;
 }

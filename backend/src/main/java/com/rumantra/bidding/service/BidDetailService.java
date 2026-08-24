@@ -37,6 +37,18 @@ public class BidDetailService {
     if (request.getConceptStatement() != null) {
       detail.setConceptStatement(request.getConceptStatement());
     }
+    if (request.getFacadeDescription() != null) {
+      detail.setFacadeDescription(request.getFacadeDescription());
+    }
+    if (request.getInteriorDescription() != null) {
+      detail.setInteriorDescription(request.getInteriorDescription());
+    }
+    if (request.getMassingDescription() != null) {
+      detail.setMassingDescription(request.getMassingDescription());
+    }
+    if (request.getZoningDescription() != null) {
+      detail.setZoningDescription(request.getZoningDescription());
+    }
 
     detail = bidDetailRepository.save(detail);
 
@@ -98,6 +110,10 @@ public class BidDetailService {
                   .id(detail.getId())
                   .conceptStatement(detail.getConceptStatement())
                   .phases(phases)
+                  .facadeDescription(detail.getFacadeDescription())
+                  .interiorDescription(detail.getInteriorDescription())
+                  .massingDescription(detail.getMassingDescription())
+                  .zoningDescription(detail.getZoningDescription())
                   .build();
             })
         .orElse(null);

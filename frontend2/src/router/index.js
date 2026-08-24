@@ -110,12 +110,6 @@ const routes = [
   },
 
   // ── Architect routes ────────────────────────────────────────────────────────
-  {
-    path: '/architect/onboarding',
-    name: 'ArchitectOnboarding',
-    component: () => import('@/views/architect/ArchitectOnboarding.vue'),
-    meta: { requiresAuth: true, requiresOnboarding: true, role: 'ARCHITECT' }
-  },
   // Full-screen flows (no sidebar)
   {
     path: '/architect/projects/:projectId/finalization',
@@ -211,6 +205,11 @@ const routes = [
         component: () => import('@/views/superuser/DisputeManagement.vue')
       },
       {
+        path: 'negotiation-disputes',
+        name: 'NegotiationDisputes',
+        component: () => import('@/views/superuser/NegotiationDisputes.vue')
+      },
+      {
         path: 'support',
         name: 'SupportDashboard',
         component: () => import('@/views/superuser/SupportDashboard.vue')
@@ -279,21 +278,6 @@ router.beforeEach(async (to, from, next) => {
       next({ name: 'Landing' })
     }
     return
-  }
-
-  if (to.name === 'ArchitectDashboard' && authStore.user?.needsArchitectOnboarding === true) {
-    next({ name: 'ArchitectOnboarding' })
-    return
-  }
-
-  if (to.meta.requiresOnboarding) {
-    const needsOnboarding =
-      to.meta.role === 'ARCHITECT' ? authStore.user?.needsArchitectOnboarding : false
-    if (!needsOnboarding) {
-      const dashboardRoute = to.meta.role === 'ARCHITECT' ? 'ArchitectDashboard' : 'ClientDashboard'
-      next({ name: dashboardRoute })
-      return
-    }
   }
 
   // For nested client routes, role check is on the parent; skip redundant check on children

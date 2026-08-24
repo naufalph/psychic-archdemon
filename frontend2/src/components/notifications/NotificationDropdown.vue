@@ -197,6 +197,7 @@ const getNotificationIcon = type => {
     PROJECT_UPDATED: PencilSquareIcon,
     BID_RECEIVED: DocumentTextIcon,
     BID_ACCEPTED: CheckCircleIcon,
+    BID_REJECTED: ExclamationCircleIcon,
     PAYMENT_RECEIVED: CurrencyDollarIcon
   }
   return iconMap[type] || BellIcon
@@ -216,6 +217,7 @@ const getNotificationRoute = notification => {
     PROJECT_UPDATED: { name: 'ClientProjects' },
     BID_RECEIVED: { name: 'ClientProjects', params: { id: notification.referenceId } },
     BID_ACCEPTED: { name: 'ArchitectMyBids' },
+    BID_REJECTED: { name: 'ArchitectMyBids' },
     PAYMENT_RECEIVED: { name: 'ArchitectDashboard' }
   }
 

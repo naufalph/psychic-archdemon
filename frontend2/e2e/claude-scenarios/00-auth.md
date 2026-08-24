@@ -45,7 +45,7 @@ App runs at: http://localhost:3001
 5. Take a screenshot
 6. Verify: architect dashboard content is visible (opportunities, bid quota, etc.)
 
-**Pass criteria:** Lands on `/architect/dashboard` or `/architect/onboarding`.
+**Pass criteria:** Lands on `/architect/dashboard`.
 
 ---
 

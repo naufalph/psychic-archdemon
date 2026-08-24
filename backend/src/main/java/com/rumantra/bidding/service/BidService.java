@@ -27,6 +27,7 @@ import com.rumantra.bidding.dto.BidResponse;
 import com.rumantra.bidding.dto.CreateBidRequest;
 import com.rumantra.bidding.dto.LinkPortfoliosRequest;
 import com.rumantra.bidding.dto.UpdateBidRequest;
+import com.rumantra.bidding.event.BidAcceptedEvent;
 import com.rumantra.bidding.event.BidSubmittedEvent;
 import com.rumantra.bidding.repository.BidPortfolioRefRepository;
 import com.rumantra.bidding.repository.BidRepository;
@@ -351,6 +352,7 @@ public class BidService {
                 + " "
                 + bid.getArchitect().getUser().getLastName())
         .architectCompany(bid.getArchitect().getCompanyName())
+        .architectCity(bid.getArchitect().getCity())
         .bidAmount(bid.getBidAmount())
         .proposedTimelineDays(bid.getProposedTimelineDays())
         .proposal(bid.getProposal())
@@ -441,7 +443,39 @@ public class BidService {
     conversationService.createConversation(
         bid.getId(), project.getId(), bid.getArchitect().getId(), project.getClient().getId());
 
+    List<Bid> siblingBids =
+        bidRepository.findPendingBidsWithArchitect(project.getId(), BidStatus.PENDING);
+    List<BidAcceptedEvent.RejectedArchitect> rejectedArchitects = new java.util.ArrayList<>();
+    for (Bid sibling : siblingBids) {
+      if (sibling.getId().equals(bid.getId())) continue;
+      sibling.setStatus(BidStatus.REJECTED);
+      bidRepository.save(sibling);
+      com.rumantra.user.domain.User siblingUser = sibling.getArchitect().getUser();
+      rejectedArchitects.add(
+          new BidAcceptedEvent.RejectedArchitect(
+              siblingUser.getId(), siblingUser.getEmail(), resolveDisplayName(siblingUser)));
+    }
+
+    com.rumantra.user.domain.User winningArchitectUser = bid.getArchitect().getUser();
+    eventPublisher.publishEvent(
+        new BidAcceptedEvent(
+            this,
+            bid.getId(),
+            project.getId(),
+            project.getTitle(),
+            winningArchitectUser.getId(),
+            winningArchitectUser.getEmail(),
+            resolveDisplayName(winningArchitectUser),
+            rejectedArchitects));
+
     return mapToResponse(bid);
+  }
+
+  private String resolveDisplayName(com.rumantra.user.domain.User user) {
+    if (user.getFirstName() != null && user.getLastName() != null) {
+      return user.getFirstName() + " " + user.getLastName();
+    }
+    return user.getEmail().split("@")[0];
   }
 
   private void validateArchitectIdentity(Architect architect) {
