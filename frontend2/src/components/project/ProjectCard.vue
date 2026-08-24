@@ -35,7 +35,7 @@
           <MapPin :size="11" /> {{ project.location }}
         </span>
         <span v-if="project.designBudget" class="flex items-center gap-1">
-          <DollarSign :size="11" /> {{ formatCurrency(project.designBudget) }}
+          Rp {{ formatCurrency(project.designBudget) }}
         </span>
         <span v-if="project.createdAt" class="flex items-center gap-1 ml-auto">
           <Clock :size="11" /> {{ timeAgo(project.createdAt) }}
@@ -118,7 +118,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { MapPin, DollarSign, Clock } from 'lucide-vue-next'
+import { MapPin, Clock } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
 import { projectTypeLabel } from '@/constants/projectTaxonomy'
 import ProjectStatusBadge from './ProjectStatusBadge.vue'
