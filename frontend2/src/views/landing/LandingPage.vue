@@ -8,12 +8,6 @@
     >
       <!-- Left: copy -->
       <div class="max-w-xl">
-        <div
-          class="inline-flex items-center gap-2 px-3 py-1.5 bg-white border border-hairline-alt rounded-full text-micro-sm font-semibold mb-6"
-        >
-          ⭐ {{ t.landing.eyebrow }}
-        </div>
-
         <h1 class="text-h1 text-ink-900 mb-5 max-w-[480px]">
           {{ t.landing.hero.title }}
         </h1>

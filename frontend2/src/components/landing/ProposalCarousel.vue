@@ -21,7 +21,7 @@
               v-if="slide.imageUrl"
               :src="slide.imageUrl"
               :alt="slide.architectName"
-              class="w-full h-full object-cover"
+              class="w-full h-full object-contain"
             />
             <div v-else class="w-full h-full flex items-center justify-center bg-surface-muted">
               <ImageIcon class="w-10 h-10 text-hairline-alt" stroke-width="1.25" />
