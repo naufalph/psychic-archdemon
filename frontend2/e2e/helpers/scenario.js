@@ -12,9 +12,18 @@ export const createApprovedOpenProject = async (page, title) => {
   await page.goto(ROUTES.clientProjectCreate)
 
   await page.locator('input[placeholder="e.g., Modern Student Housing in Depok"]').fill(title)
-  await page.locator('input[placeholder="City, Area"]').fill('Jakarta Selatan')
+
+  // Address is a Google Places autocomplete, which needs a live API key and can't be driven
+  // deterministically in CI. Without a key it degrades to a plain text input, which is the
+  // path this helper targets; city/province/coordinates are then legitimately left empty.
+  await page
+    .locator('input[placeholder^="Search an address"], input[placeholder^="Cari alamat"]')
+    .fill('Jl. Test No. 1, Jakarta Selatan')
+
   await page.locator('input[type="number"][placeholder="e.g., 200"]').fill('200')
-  await page.locator('select').selectOption('RESIDENTIAL')
+  // Build area is optional, but filling it keeps the fixture representative of a real brief.
+  await page.locator('input[type="number"][placeholder="e.g., 120"]').fill('120')
+  await page.locator('form select').nth(1).selectOption('RESIDENTIAL')
   await page
     .locator('textarea[placeholder^="Describe number of rooms"]')
     .fill('3 bedroom modern house, industrial style, e2e test project.')

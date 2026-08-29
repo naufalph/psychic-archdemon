@@ -137,3 +137,11 @@ export const CITIES_BY_PROVINCE = {
 
 export const citiesFor = province =>
   (CITIES_BY_PROVINCE[province] || []).map(city => ({ value: city, label: city }))
+
+// Province is stored as a code (DKI_JAKARTA) but city as a display string, so anything
+// user-facing or geocoded needs the label resolved back out.
+export const provinceLabel = province => PROVINCES.find(p => p.value === province)?.label || ''
+
+// Projects store the province as Google's Places API returns it ("Jawa Barat"), while the
+// architect profile stores a code ("JAWA_BARAT"). Render either without the caller caring which.
+export const displayProvince = value => provinceLabel(value) || value || ''

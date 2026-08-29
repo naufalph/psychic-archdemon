@@ -1,5 +1,6 @@
 package com.rumantra.client.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -21,6 +22,18 @@ public class CreateProjectRequest {
   @Size(max = 255, message = "Location must not exceed 255 characters")
   private String location;
 
+  private String fullAddress;
+
+  @Size(max = 255, message = "City must not exceed 255 characters")
+  private String city;
+
+  @Size(max = 100, message = "Province must not exceed 100 characters")
+  private String province;
+
+  private BigDecimal latitude;
+
+  private BigDecimal longitude;
+
   @Min(value = 0, message = "Design budget minimum must be greater than or equal to 0")
   private Long designBudgetMin;
 
@@ -38,6 +51,9 @@ public class CreateProjectRequest {
 
   @Size(max = 60, message = "Sub-category must not exceed 60 characters")
   private String subCategory;
+
+  @Min(value = 1, message = "Lot size must be at least 1 square meter")
+  private Integer lotSize;
 
   @Min(value = 1, message = "Estimated build area must be at least 1 square meter")
   private Integer estimatedBuildArea;

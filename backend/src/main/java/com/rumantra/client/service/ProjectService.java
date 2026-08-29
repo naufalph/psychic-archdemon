@@ -198,12 +198,18 @@ public class ProjectService {
   private void applyDraftFields(Project project, CreateProjectRequest request) {
     project.setTitle(request.getTitle());
     project.setLocation(request.getLocation());
+    project.setFullAddress(request.getFullAddress());
+    project.setCity(request.getCity());
+    project.setProvince(request.getProvince());
+    project.setLatitude(request.getLatitude());
+    project.setLongitude(request.getLongitude());
     project.setDesignBudgetMin(request.getDesignBudgetMin());
     project.setDesignBudgetMax(request.getDesignBudgetMax());
     project.setProjectCategory(request.getProjectCategory());
     project.setBuildingFunction(request.getBuildingFunction());
     project.setProjectScope(request.getProjectScope());
     project.setSubCategory(request.getSubCategory());
+    project.setLotSize(request.getLotSize());
     project.setEstimatedBuildArea(request.getEstimatedBuildArea());
     project.setNumberOfFloors(request.getNumberOfFloors());
     project.setOwnsLand(request.getOwnsLand());
@@ -240,7 +246,7 @@ public class ProjectService {
     if (project.getLocation() == null || project.getLocation().isBlank()) {
       missing.add("Location");
     }
-    if (project.getEstimatedBuildArea() == null) {
+    if (project.getLotSize() == null) {
       missing.add("Lot Size");
     }
     if (project.getNumberOfFloors() == null) {
@@ -686,12 +692,18 @@ public class ProjectService {
         .clientId(project.getClient().getId())
         .title(project.getTitle())
         .location(project.getLocation())
+        .fullAddress(project.getFullAddress())
+        .city(project.getCity())
+        .province(project.getProvince())
+        .latitude(project.getLatitude())
+        .longitude(project.getLongitude())
         .designBudgetMin(project.getDesignBudgetMin())
         .designBudgetMax(project.getDesignBudgetMax())
         .projectCategory(project.getProjectCategory())
         .buildingFunction(project.getBuildingFunction())
         .projectScope(project.getProjectScope())
         .subCategory(project.getSubCategory())
+        .lotSize(project.getLotSize())
         .estimatedBuildArea(project.getEstimatedBuildArea())
         .numberOfFloors(project.getNumberOfFloors())
         .ownsLand(project.getOwnsLand())
@@ -743,6 +755,9 @@ public class ProjectService {
         .id(project.getId())
         .title(project.getTitle())
         .location(project.getLocation())
+        // Deliberately no fullAddress/latitude/longitude - this DTO is served unauthenticated.
+        .city(project.getCity())
+        .province(project.getProvince())
         .budgetDisplay(project.getDesignBudgetMax())
         .projectCategory(project.getProjectCategory())
         .buildingFunction(project.getBuildingFunction())

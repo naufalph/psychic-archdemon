@@ -26,7 +26,7 @@
             <ProjectStatusBadge :status="detail.project.status" />
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div class="bg-gray-50 rounded-2xl p-6">
               <p class="text-xs text-gray-500 uppercase font-bold mb-2">
                 {{ t.projectDetailArchitect.designBudgetRange }}
@@ -37,8 +37,16 @@
               </p>
             </div>
             <div class="bg-gray-50 rounded-2xl p-6">
+              <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.projectDetailArchitect.lotSize }}</p>
+              <p class="text-2xl font-bold text-black">
+                {{ detail.project.lotSize ? `${detail.project.lotSize} m²` : '—' }}
+              </p>
+            </div>
+            <div class="bg-gray-50 rounded-2xl p-6">
               <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.projectDetailArchitect.buildArea }}</p>
-              <p class="text-2xl font-bold text-black">{{ detail.project.estimatedBuildArea }} m²</p>
+              <p class="text-2xl font-bold text-black">
+                {{ detail.project.estimatedBuildArea ? `${detail.project.estimatedBuildArea} m²` : '—' }}
+              </p>
             </div>
             <div class="bg-gray-50 rounded-2xl p-6">
               <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.projectDetailArchitect.floors }}</p>
@@ -46,22 +54,24 @@
             </div>
           </div>
 
-          <div v-if="imageFiles.length > 0" class="mb-8">
-            <h2 class="text-lg font-bold text-black mb-3">{{ t.projectDetailArchitect.visualReferences }}</h2>
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-              <div
-                v-for="file in imageFiles"
-                :key="file.id"
-                class="relative aspect-square rounded-2xl overflow-hidden cursor-pointer group"
-                @click="window.open(file.filePath, '_blank')"
-              >
-                <img
-                  :src="file.filePath"
-                  :alt="file.fileName"
-                  class="w-full h-full object-cover transition group-hover:scale-105"
-                />
-              </div>
-            </div>
+          <div v-if="hasLocation" class="mb-8">
+            <h2 class="text-lg font-bold text-black mb-3">{{ t.projectDetailArchitect.siteLocation }}</h2>
+            <SiteLocationMap
+              :full-address="detail.project.fullAddress"
+              :city="detail.project.city"
+              :province="detail.project.province"
+              :latitude="detail.project.latitude"
+              :longitude="detail.project.longitude"
+              :legacy-location="detail.project.location"
+            />
+          </div>
+
+          <div v-if="galleryImages.length > 0" class="mb-8">
+            <BidImageGallery
+              :images="galleryImages"
+              :title="t.projectDetailArchitect.visualReferences"
+              :description="t.projectDetailArchitect.visualReferencesHint"
+            />
           </div>
 
           <div class="mb-8">
@@ -202,6 +212,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Phone } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
 import ProjectStatusBadge from '@/components/project/ProjectStatusBadge.vue'
+import BidImageGallery from '@/components/bid/BidImageGallery.vue'
+import SiteLocationMap from '@/components/project/SiteLocationMap.vue'
 import { adminProjectsAPI, superuserProjectsAPI } from '@/services/adminApi'
 
 const { t } = useI18n()
@@ -216,6 +228,14 @@ const showRejectModal = ref(false)
 const rejectReason = ref('')
 
 const imageFiles = computed(() => (detail.value?.project?.files ?? []).filter(f => f.fileType?.startsWith('image/')))
+const galleryImages = computed(() =>
+  imageFiles.value.map(file => ({ imageUrl: file.filePath, fileName: file.fileName }))
+)
+
+const hasLocation = computed(() => {
+  const p = detail.value?.project
+  return !!(p?.fullAddress || p?.city || p?.location)
+})
 
 const formatCurrency = value => {
   if (!value) return 'N/A'

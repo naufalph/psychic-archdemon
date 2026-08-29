@@ -25,12 +25,12 @@
           <div class="flex justify-between items-start mb-6">
             <div>
               <h1 class="text-3xl font-bold text-black mb-2">{{ project.title }}</h1>
-              <p class="text-gray-500">{{ project.location }} • {{ projectTypeLabel(project, locale) }}</p>
+              <p class="text-gray-500">{{ regionLine }} • {{ projectTypeLabel(project, locale) }}</p>
             </div>
             <ProjectStatusBadge :status="project.status" />
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div class="bg-gray-50 rounded-2xl p-6">
               <p class="text-xs text-gray-500 uppercase font-bold mb-2">
                 {{ t.projectDetailArchitect.designBudgetRange }}
@@ -40,35 +40,24 @@
               </p>
             </div>
             <div class="bg-gray-50 rounded-2xl p-6">
-              <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.projectDetailArchitect.buildArea }}</p>
-              <p class="text-2xl font-bold text-black">{{ project.estimatedBuildArea }} m²</p>
-            </div>
-            <div class="bg-gray-50 rounded-2xl p-6">
               <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.projectDetailArchitect.floors }}</p>
               <p class="text-2xl font-bold text-black">{{ project.numberOfFloors }}</p>
             </div>
           </div>
 
-          <div v-if="imageFiles.length > 0" class="mb-8">
-            <h2 class="text-lg font-bold text-black mb-3">{{ t.projectDetailArchitect.visualReferences }}</h2>
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-              <div
-                v-for="file in imageFiles"
-                :key="file.id"
-                class="relative aspect-square rounded-2xl overflow-hidden cursor-pointer group"
-                @click="window.open(file.filePath, '_blank')"
-              >
-                <img
-                  :src="file.filePath"
-                  :alt="file.fileName"
-                  class="w-full h-full object-cover transition group-hover:scale-105"
-                />
-                <div
-                  class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition flex items-center justify-center"
-                >
-                  <ExternalLink :size="24" class="text-white opacity-0 group-hover:opacity-100 transition" />
-                </div>
-              </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div class="bg-gray-50 rounded-2xl p-6">
+              <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.projectDetailArchitect.lotSize }}</p>
+              <p class="text-2xl font-bold text-black">{{ project.lotSize ? `${project.lotSize} m²` : '—' }}</p>
+            </div>
+            <div class="bg-gray-50 rounded-2xl p-6">
+              <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.projectDetailArchitect.buildArea }}</p>
+              <p class="text-2xl font-bold text-black">
+                {{ project.estimatedBuildArea ? `${project.estimatedBuildArea} m²` : '—' }}
+              </p>
+              <p v-if="!project.estimatedBuildArea" class="text-xs text-gray-400 mt-1">
+                {{ t.projectDetailArchitect.buildAreaNotSpecified }}
+              </p>
             </div>
           </div>
 
@@ -102,7 +91,12 @@
             </div>
           </div>
 
-          <div class="mb-6 rounded-2xl p-5 border-2 border-amber-200 bg-amber-50 flex items-center gap-4">
+          <div v-if="project.designPreferences" class="mb-8">
+            <h2 class="text-lg font-bold text-black mb-3">{{ t.projectDetailArchitect.designPreferences }}</h2>
+            <p class="text-gray-700 leading-relaxed">{{ project.designPreferences }}</p>
+          </div>
+
+          <div class="rounded-2xl p-5 border-2 border-amber-200 bg-amber-50 flex items-center gap-4">
             <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0">
               <CalendarDays :size="20" class="text-amber-600" />
             </div>
@@ -118,36 +112,50 @@
               </p>
             </div>
           </div>
+        </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-            <div>
-              <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.projectDetailArchitect.category }}</p>
-              <p class="text-base text-gray-900">{{ project.category }}</p>
-            </div>
-            <div>
-              <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.projectDetailArchitect.landOwnership }}</p>
-              <p class="text-base text-gray-900">
-                {{ project.hasOwnedLand ? t.projectDetailArchitect.yes : t.projectDetailArchitect.no }}
-              </p>
-            </div>
-            <div>
-              <p class="text-xs text-gray-500 uppercase font-bold mb-2">
-                {{ t.projectDetailArchitect.legalDocumentation }}
-              </p>
-              <p class="text-base text-gray-900">
-                {{
-                  project.hasLegalDocuments ? t.projectDetailArchitect.complete : t.projectDetailArchitect.incomplete
-                }}
-              </p>
-            </div>
+        <div v-if="hasLocation" class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
+          <h2 class="text-2xl font-bold text-black mb-6">{{ t.projectDetailArchitect.siteLocation }}</h2>
+          <SiteLocationMap
+            :full-address="project.fullAddress"
+            :city="project.city"
+            :province="project.province"
+            :latitude="project.latitude"
+            :longitude="project.longitude"
+            :legacy-location="project.location"
+          />
+        </div>
+
+        <div v-if="galleryImages.length > 0" class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
+          <BidImageGallery
+            :images="galleryImages"
+            :title="t.projectDetailArchitect.visualReferences"
+            :description="t.projectDetailArchitect.visualReferencesHint"
+          />
+        </div>
+
+        <div v-if="documentFiles.length > 0" class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
+          <h2 class="text-2xl font-bold text-black mb-6">{{ t.projectDetailArchitect.projectDocuments }}</h2>
+          <div class="space-y-3">
+            <a
+              v-for="file in documentFiles"
+              :key="file.id"
+              :href="file.filePath"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center gap-3 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition border border-gray-200"
+            >
+              <FileText :size="24" class="text-brand-brown" />
+              <div class="flex-1">
+                <p class="font-medium text-gray-900">{{ file.fileName }}</p>
+                <p class="text-sm text-gray-500">{{ file.fileType }}</p>
+              </div>
+            </a>
           </div>
+        </div>
 
-          <div v-if="project.designPreferences" class="mb-8">
-            <h2 class="text-lg font-bold text-black mb-3">{{ t.projectDetailArchitect.designPreferences }}</h2>
-            <p class="text-gray-700 leading-relaxed">{{ project.designPreferences }}</p>
-          </div>
-
-          <div v-if="project.biddingDeadline" class="pt-6 border-t border-gray-100 mb-8">
+        <div class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
+          <div v-if="project.biddingDeadline" class="mb-6">
             <BiddingCountdown :deadline="project.biddingDeadline" size="lg" />
           </div>
 
@@ -229,25 +237,6 @@
             {{ t.projectDetailArchitect.noBidYet }}
           </button>
         </div>
-
-        <div v-if="documentFiles.length > 0" class="bg-white rounded-3xl border border-gray-200 p-8 shadow-soft">
-          <h2 class="text-2xl font-bold text-black mb-6">Project Documents</h2>
-          <div class="space-y-3">
-            <a
-              v-for="file in documentFiles"
-              :key="file.id"
-              :href="file.filePath"
-              target="_blank"
-              class="flex items-center gap-3 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition border border-gray-200"
-            >
-              <FileText :size="24" class="text-brand-brown" />
-              <div class="flex-1">
-                <p class="font-medium text-gray-900">{{ file.fileName }}</p>
-                <p class="text-sm text-gray-500">{{ file.fileType }}</p>
-              </div>
-            </a>
-          </div>
-        </div>
       </div>
     </div>
   </div>
@@ -257,10 +246,13 @@
 import { ref, onMounted, computed } from 'vue'
 import { projectTypeLabel } from '@/constants/projectTaxonomy'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft, Send, FileText, AlertCircle, Check, CheckCircle, ExternalLink, CalendarDays } from 'lucide-vue-next'
+import { ArrowLeft, Send, FileText, AlertCircle, Check, CheckCircle, CalendarDays } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
 import ProjectStatusBadge from '@/components/project/ProjectStatusBadge.vue'
 import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
+import BidImageGallery from '@/components/bid/BidImageGallery.vue'
+import SiteLocationMap from '@/components/project/SiteLocationMap.vue'
+import { displayProvince } from '@/constants/regions'
 import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
 
@@ -299,6 +291,17 @@ const error = ref(null)
 const existingBid = ref(null)
 
 const imageFiles = computed(() => (project.value?.files ?? []).filter(f => f.fileType?.startsWith('image/')))
+
+const galleryImages = computed(() =>
+  imageFiles.value.map(file => ({ imageUrl: file.filePath, fileName: file.fileName }))
+)
+
+const regionLine = computed(() => {
+  const structured = [project.value?.city, displayProvince(project.value?.province)].filter(Boolean).join(', ')
+  return structured || project.value?.location || ''
+})
+
+const hasLocation = computed(() => !!(project.value?.fullAddress || project.value?.city || project.value?.location))
 
 const documentFiles = computed(() => (project.value?.files ?? []).filter(f => !f.fileType?.startsWith('image/')))
 

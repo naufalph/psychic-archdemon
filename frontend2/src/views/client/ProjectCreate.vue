@@ -51,25 +51,6 @@
           <section class="space-y-6">
             <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
               <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
-                >{{ t.projectCreate.part }} 0</span
-              >
-              <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partImages }}</h2>
-            </div>
-            <p class="text-xs text-gray-500">
-              {{ t.projectCreate.imagesHint }}
-            </p>
-            <MultiImageUploader
-              v-model="coverImages"
-              label=""
-              :max-files="10"
-              :existing-images="existingImages"
-              @delete-existing="handleDeleteExistingImage"
-            />
-          </section>
-
-          <section class="space-y-6">
-            <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
-              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
                 >{{ t.projectCreate.part }} 1</span
               >
               <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partGeneral }}</h2>
@@ -88,20 +69,17 @@
               />
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >{{ t.projectCreate.location }}<span class="text-red-500">*</span></label
-                >
-                <input
-                  v-model="formData.location"
-                  required
-                  type="text"
-                  :placeholder="t.projectCreate.locationPlaceholder"
-                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
-                />
-              </div>
+            <AddressAutocomplete
+              v-model:full-address="formData.fullAddress"
+              v-model:city="formData.city"
+              v-model:province="formData.province"
+              v-model:latitude="formData.latitude"
+              v-model:longitude="formData.longitude"
+            />
 
+            <LocationPicker v-model:latitude="formData.latitude" v-model:longitude="formData.longitude" />
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2"
                   >{{ t.projectCreate.lotSize }}<span class="text-red-500">*</span></label
@@ -110,9 +88,25 @@
                   v-model.number="formData.lotSize"
                   required
                   type="number"
+                  min="1"
                   :placeholder="t.projectCreate.lotSizePlaceholder"
                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
                 />
+                <p class="mt-1 text-xs text-gray-500">{{ t.projectCreate.lotSizeHint }}</p>
+              </div>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">{{ t.projectCreate.buildArea }}</label>
+                <input
+                  v-model.number="formData.buildArea"
+                  type="number"
+                  min="1"
+                  :placeholder="t.projectCreate.buildAreaPlaceholder"
+                  class="w-full px-4 py-3 border-2 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
+                  :class="buildAreaError ? 'border-red-300' : 'border-gray-200'"
+                />
+                <p v-if="buildAreaError" class="mt-1 text-xs text-red-600">{{ buildAreaError }}</p>
+                <p v-else class="mt-1 text-xs text-gray-500">{{ t.projectCreate.buildAreaHint }}</p>
               </div>
 
               <div>
@@ -214,6 +208,25 @@
               <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
                 >{{ t.projectCreate.part }} 3</span
               >
+              <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partImages }}</h2>
+            </div>
+            <p class="text-xs text-gray-500">
+              {{ t.projectCreate.imagesHint }}
+            </p>
+            <MultiImageUploader
+              v-model="coverImages"
+              label=""
+              :max-files="10"
+              :existing-images="existingImages"
+              @delete-existing="handleDeleteExistingImage"
+            />
+          </section>
+
+          <section class="space-y-6">
+            <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
+              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
+                >{{ t.projectCreate.part }} 4</span
+              >
               <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partBudget }}</h2>
             </div>
 
@@ -276,7 +289,7 @@
           <section class="space-y-6">
             <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
               <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
-                >{{ t.projectCreate.part }} 4</span
+                >{{ t.projectCreate.part }} 5</span
               >
               <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partStartDate }}</h2>
             </div>
@@ -353,7 +366,7 @@
           <section class="space-y-6">
             <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
               <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
-                >{{ t.projectCreate.part }} 5</span
+                >{{ t.projectCreate.part }} 6</span
               >
               <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partDeadline }}</h2>
             </div>
@@ -393,7 +406,7 @@
             </button>
             <button
               type="submit"
-              :disabled="loading || !!budgetRangeError"
+              :disabled="loading || !!budgetRangeError || !!buildAreaError"
               class="flex-1 px-6 py-3 text-white bg-brand-brown rounded-full hover:bg-black shadow-md hover:shadow-lg transition-all font-bold flex items-center justify-center gap-2 disabled:opacity-50"
             >
               <Loader v-if="loading" :size="20" class="animate-spin" />
@@ -419,6 +432,8 @@ import { useProjectBrief } from '@/composables/useProjectBrief'
 import { landingAPI } from '@/services/api'
 import DeliverablesSelector from '@/components/project/DeliverablesSelector.vue'
 import MultiImageUploader from '@/components/upload/MultiImageUploader.vue'
+import AddressAutocomplete from '@/components/project/AddressAutocomplete.vue'
+import LocationPicker from '@/components/project/LocationPicker.vue'
 import BaseAlert from '@/components/ui/BaseAlert.vue'
 
 const route = useRoute()
@@ -439,9 +454,14 @@ const showPhoneField = computed(
 
 const formData = ref({
   title: '',
-  location: '',
+  province: '',
+  city: '',
+  fullAddress: '',
+  latitude: null,
+  longitude: null,
   phoneNumber: '',
   lotSize: null,
+  buildArea: null,
   numberOfFloors: 1,
   projectScope: null,
   category: null,
@@ -525,6 +545,17 @@ const parseDesignBudgetMax = () => {
   return parseInt(String(formData.value.designBudgetMax).replace(/[^0-9]/g, ''), 10) || null
 }
 
+// A building footprint larger than its own plot is a data-entry slip, not a valid brief.
+// Only checked against a single floor — multi-storey buildings legitimately exceed the lot.
+const buildAreaError = computed(() => {
+  const lot = formData.value.lotSize
+  const build = formData.value.buildArea
+  if (lot && build && formData.value.numberOfFloors === 1 && build > lot) {
+    return t.value.projectCreate.buildAreaExceedsLotError
+  }
+  return ''
+})
+
 const budgetRangeError = computed(() => {
   const min = parseDesignBudgetMin()
   const max = parseDesignBudgetMax()
@@ -536,13 +567,21 @@ const budgetRangeError = computed(() => {
 
 const buildProjectData = () => ({
   title: formData.value.title,
-  location: formData.value.location,
+  // location stays the human-readable summary every existing consumer already renders
+  // (project cards, admin lists, the public landing preview) — derived, never typed.
+  location: [formData.value.city, formData.value.province].filter(Boolean).join(', '),
+  province: formData.value.province || null,
+  city: formData.value.city || null,
+  fullAddress: formData.value.fullAddress?.trim() || null,
+  latitude: formData.value.latitude,
+  longitude: formData.value.longitude,
   designBudgetMin: parseDesignBudgetMin(),
   designBudgetMax: parseDesignBudgetMax(),
   buildingFunction: formData.value.category,
   projectScope: formData.value.projectScope,
   subCategory: formData.value.subCategory,
-  estimatedBuildArea: formData.value.lotSize,
+  lotSize: formData.value.lotSize,
+  estimatedBuildArea: formData.value.buildArea,
   numberOfFloors: formData.value.numberOfFloors,
   scopeOfWork: formData.value.description,
   deliverables: formData.value.deliverables,
@@ -634,7 +673,7 @@ const handleSubmit = async () => {
     return
   }
 
-  if (budgetRangeError.value) {
+  if (budgetRangeError.value || buildAreaError.value) {
     loading.value = false
     return
   }
@@ -681,7 +720,11 @@ const applyLandingBrief = async () => {
 
   // A server-side draft always wins — the brief only fills gaps it left behind
   if (!formData.value.title) formData.value.title = brief.title || ''
-  if (!formData.value.location) formData.value.location = brief.location || ''
+  // The brief captures location as free text. Seed it as the address so the client can refine
+  // it in the autocomplete rather than losing what they already typed on the landing page.
+  if (brief.location && !formData.value.fullAddress) {
+    formData.value.fullAddress = brief.location
+  }
   if (!formData.value.description) formData.value.description = brief.description || ''
   if (!formData.value.lotSize) formData.value.lotSize = brief.lotSize ?? null
   if (!formData.value.phoneNumber) formData.value.phoneNumber = brief.phoneNumber || ''
@@ -715,8 +758,13 @@ onMounted(async () => {
     if (existingDraft) {
       existingProjectId.value = existingDraft.id
       formData.value.title = existingDraft.title || ''
-      formData.value.location = existingDraft.location || ''
-      formData.value.lotSize = existingDraft.estimatedBuildArea ?? null
+      formData.value.province = existingDraft.province || ''
+      formData.value.city = existingDraft.city || ''
+      formData.value.fullAddress = existingDraft.fullAddress || ''
+      formData.value.latitude = existingDraft.latitude ?? null
+      formData.value.longitude = existingDraft.longitude ?? null
+      formData.value.lotSize = existingDraft.lotSize ?? null
+      formData.value.buildArea = existingDraft.estimatedBuildArea ?? null
       formData.value.numberOfFloors = existingDraft.numberOfFloors ?? 1
       formData.value.projectScope = existingDraft.projectScope || null
       formData.value.category = existingDraft.buildingFunction || null

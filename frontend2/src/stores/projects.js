@@ -5,7 +5,7 @@ const transformProjectData = backendProject => ({
   ...backendProject,
   buildingType: backendProject.buildingFunction,
   description: backendProject.scopeOfWork,
-  lotSize: backendProject.estimatedBuildArea,
+  lotSize: backendProject.lotSize,
   designBudget: backendProject.designBudgetMax,
   buildingFunction: backendProject.buildingFunction,
   scopeOfWork: backendProject.scopeOfWork,

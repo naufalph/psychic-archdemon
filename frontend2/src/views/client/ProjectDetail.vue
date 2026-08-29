@@ -48,27 +48,24 @@
             </div>
           </div>
 
-          <div v-if="imageFiles.length > 0" class="mb-8">
-            <h2 class="text-lg font-bold text-black mb-3">{{ t.projectDetailArchitect.visualReferences }}</h2>
-            <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-              <div
-                v-for="file in imageFiles"
-                :key="file.id"
-                class="relative aspect-square rounded-2xl overflow-hidden cursor-pointer group"
-                @click="window.open(file.filePath, '_blank')"
-              >
-                <img
-                  :src="file.filePath"
-                  :alt="file.fileName"
-                  class="w-full h-full object-cover transition group-hover:scale-105"
-                />
-                <div
-                  class="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition flex items-center justify-center"
-                >
-                  <ExternalLink :size="24" class="text-white opacity-0 group-hover:opacity-100 transition" />
-                </div>
-              </div>
-            </div>
+          <div v-if="hasLocation" class="mb-8">
+            <h2 class="text-lg font-bold text-black mb-3">{{ t.projectDetailArchitect.siteLocation }}</h2>
+            <SiteLocationMap
+              :full-address="currentProject.fullAddress"
+              :city="currentProject.city"
+              :province="currentProject.province"
+              :latitude="currentProject.latitude"
+              :longitude="currentProject.longitude"
+              :legacy-location="currentProject.location"
+            />
+          </div>
+
+          <div v-if="galleryImages.length > 0" class="mb-8">
+            <BidImageGallery
+              :images="galleryImages"
+              :title="t.projectDetailArchitect.visualReferences"
+              :description="t.projectDetailArchitect.visualReferencesHint"
+            />
           </div>
 
           <div class="mb-8">
@@ -237,10 +234,12 @@ import { projectTypeLabel } from '@/constants/projectTaxonomy'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/composables/useI18n'
-import { ArrowLeft, FileText, Plus, X, ExternalLink } from 'lucide-vue-next'
+import { ArrowLeft, FileText, Plus, X } from 'lucide-vue-next'
 import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
 import ProjectStatusBadge from '@/components/project/ProjectStatusBadge.vue'
+import BidImageGallery from '@/components/bid/BidImageGallery.vue'
+import SiteLocationMap from '@/components/project/SiteLocationMap.vue'
 import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
 import BidComparisonTable from '@/components/bid/BidComparisonTable.vue'
 import ProposalComparison from '@/components/bid/ProposalComparison.vue'
@@ -257,6 +256,13 @@ const { projectBids } = storeToRefs(bidsStore)
 const compareIds = ref([])
 
 const imageFiles = computed(() => (currentProject.value?.files ?? []).filter(f => f.fileType?.startsWith('image/')))
+const galleryImages = computed(() =>
+  imageFiles.value.map(file => ({ imageUrl: file.filePath, fileName: file.fileName }))
+)
+
+const hasLocation = computed(
+  () => !!(currentProject.value?.fullAddress || currentProject.value?.city || currentProject.value?.location)
+)
 
 const DELIVERABLE_CATEGORIES = [
   { categoryKey: 'siteAnalysis', items: ['SITE_ANALYSIS', 'ZONING_STUDY'] },

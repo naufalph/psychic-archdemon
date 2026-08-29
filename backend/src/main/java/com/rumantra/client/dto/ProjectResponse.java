@@ -1,5 +1,6 @@
 package com.rumantra.client.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,12 +22,18 @@ public class ProjectResponse {
   private Long clientId;
   private String title;
   private String location;
+  private String fullAddress;
+  private String city;
+  private String province;
+  private BigDecimal latitude;
+  private BigDecimal longitude;
   private Long designBudgetMin;
   private Long designBudgetMax;
   private String projectCategory;
   private String buildingFunction;
   private String projectScope;
   private String subCategory;
+  private Integer lotSize;
   private Integer estimatedBuildArea;
   private Integer numberOfFloors;
   private Boolean ownsLand;

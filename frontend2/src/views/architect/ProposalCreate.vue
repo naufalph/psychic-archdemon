@@ -51,9 +51,16 @@
 
               <div>
                 <p class="text-xs text-gray-500 uppercase font-bold mb-1">
-                  {{ t.proposalCreate?.buildArea || 'Lot Size' }}
+                  {{ t.projectDetailArchitect.lotSize }}
                 </p>
-                <p class="text-gray-900">{{ project.estimatedBuildArea }} m²</p>
+                <p class="text-gray-900">{{ project.lotSize ? `${project.lotSize} m²` : '—' }}</p>
+              </div>
+
+              <div>
+                <p class="text-xs text-gray-500 uppercase font-bold mb-1">
+                  {{ t.proposalCreate?.buildArea || 'Build Area' }}
+                </p>
+                <p class="text-gray-900">{{ project.estimatedBuildArea ? `${project.estimatedBuildArea} m²` : '—' }}</p>
               </div>
 
               <div>

@@ -1,5 +1,6 @@
 package com.rumantra.client.domain;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -36,6 +37,21 @@ public class Project {
   @Column(name = "location")
   private String location;
 
+  @Column(name = "full_address", columnDefinition = "TEXT")
+  private String fullAddress;
+
+  @Column(name = "city", length = 255)
+  private String city;
+
+  @Column(name = "province", length = 100)
+  private String province;
+
+  @Column(name = "latitude", precision = 10, scale = 7)
+  private BigDecimal latitude;
+
+  @Column(name = "longitude", precision = 10, scale = 7)
+  private BigDecimal longitude;
+
   @Column(name = "design_budget_min")
   private Long designBudgetMin;
 
@@ -54,8 +70,11 @@ public class Project {
   @Column(name = "sub_category", length = 60)
   private String subCategory;
 
+  @Column(name = "lot_size")
+  private Integer lotSize; // land area in square meters
+
   @Column(name = "estimated_build_area")
-  private Integer estimatedBuildArea; // in square meters
+  private Integer estimatedBuildArea; // building floor area in square meters
 
   @Column(name = "number_of_floors")
   private Integer numberOfFloors;

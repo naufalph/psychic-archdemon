@@ -91,37 +91,7 @@
         />
       </div>
 
-      <div class="grid grid-cols-2 gap-4">
-        <div class="space-y-2">
-          <label class="block text-sm font-semibold text-black/70 tracking-tight">
-            {{ t.profile.form.province }}
-          </label>
-          <select
-            v-model="formData.province"
-            class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all bg-white"
-            @change="onProvinceChange"
-          >
-            <option value="" disabled>{{ t.profile.form.provincePlaceholder }}</option>
-            <option v-for="p in PROVINCES" :key="p.value" :value="p.value">{{ p.label }}</option>
-          </select>
-        </div>
-
-        <div class="space-y-2">
-          <label class="block text-sm font-semibold text-black/70 tracking-tight">
-            {{ t.profile.form.city }}
-          </label>
-          <select
-            v-model="formData.city"
-            class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all bg-white"
-            :disabled="availableCities.length === 0"
-            :class="{ 'border-red-300': errors.city }"
-          >
-            <option value="" disabled>{{ t.profile.form.cityDropdownPlaceholder }}</option>
-            <option v-for="c in availableCities" :key="c.value" :value="c.value">{{ c.label }}</option>
-          </select>
-          <p v-if="errors.city" class="text-xs text-red-600">{{ errors.city }}</p>
-        </div>
-      </div>
+      <ProvinceCitySelect v-model:province="formData.province" v-model:city="formData.city" :error="errors.city" />
 
       <div class="space-y-2">
         <label class="block text-sm font-semibold text-black/70 tracking-tight">
@@ -288,9 +258,9 @@
 import { ref, computed, watch, onBeforeUnmount } from 'vue'
 import { useI18n } from '@/composables/useI18n'
 import { EXPERTISE_TAGS, EXPERIENCE_OPTIONS } from '@/constants/architectProfileOptions'
-import { PROVINCES, citiesFor } from '@/constants/regions'
 import { useArchitectProfileStore } from '@/stores/architectProfile'
 import BaseAlert from '@/components/ui/BaseAlert.vue'
+import ProvinceCitySelect from '@/components/project/ProvinceCitySelect.vue'
 
 const props = defineProps({
   initialData: {
@@ -343,14 +313,6 @@ const errors = ref({
   npwp: '',
   phoneNum: ''
 })
-
-const availableCities = computed(() => citiesFor(formData.value.province))
-
-const onProvinceChange = () => {
-  if (!availableCities.value.some(c => c.value === formData.value.city)) {
-    formData.value.city = ''
-  }
-}
 
 // Live format feedback only — a field with a formatting problem never blocks the rest
 // of the form from autosaving; the store simply omits that one field until it's fixed.
