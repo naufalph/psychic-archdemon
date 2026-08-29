@@ -1060,7 +1060,9 @@ export default {
     estimatedDays: 'Est. hari',
     daysTotal: 'Total durasi',
     phase: 'Fase',
-    dropZoneHint: 'Seret deliverable ke sini atau klik di atas untuk menetapkan'
+    dropZoneHint: 'Seret deliverable ke sini atau klik di atas untuk menetapkan',
+    selectAll: 'Pilih semua',
+    addAllRequired: '+ Tambah semua wajib'
   },
   bidDetail: {
     backToProject: 'Kembali ke Proyek',

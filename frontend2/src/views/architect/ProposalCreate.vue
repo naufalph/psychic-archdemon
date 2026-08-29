@@ -343,7 +343,11 @@
                     'Define payment phases. Phase 0 is free (pre-project). Phase 1+ must total your bid amount.'
                   }}
                 </p>
-                <PaymentPhaseBuilder v-model="formData.phases" :bid-amount="formData.bidAmount" />
+                <PaymentPhaseBuilder
+                  v-model="formData.phases"
+                  :bid-amount="formData.bidAmount"
+                  :required-deliverables="project?.deliverables || []"
+                />
               </div>
 
               <div v-if="uploadProgress > 0" class="bg-gray-50 rounded-2xl p-6">

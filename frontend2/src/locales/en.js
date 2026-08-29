@@ -1051,7 +1051,9 @@ export default {
     estimatedDays: 'Est. days',
     daysTotal: 'Total duration',
     phase: 'Phase',
-    dropZoneHint: 'Drop deliverables here or click above to assign'
+    dropZoneHint: 'Drop deliverables here or click above to assign',
+    selectAll: 'Select all',
+    addAllRequired: '+ Add all required'
   },
   bidDetail: {
     backToProject: 'Back to Project',

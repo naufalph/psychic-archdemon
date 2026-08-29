@@ -3,15 +3,36 @@
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Left: Deliverable Pool -->
       <div>
-        <h4 class="font-bold text-gray-900 mb-3">{{ t.paymentPhaseBuilder.availableDeliverables }}</h4>
+        <div class="flex items-center justify-between gap-2 mb-3">
+          <h4 class="font-bold text-gray-900">{{ t.paymentPhaseBuilder.availableDeliverables }}</h4>
+          <button
+            v-if="requiredDeliverables.length > 0"
+            type="button"
+            :disabled="remainingRequired.length === 0"
+            :class="bulkButtonClasses"
+            @click="assignMany(remainingRequired)"
+          >
+            {{ t.paymentPhaseBuilder.addAllRequired }} ({{ remainingRequired.length }})
+          </button>
+        </div>
         <p class="text-xs text-gray-500 mb-4">
           {{ t.paymentPhaseBuilder.availableDeliverablesHelp }}
         </p>
         <div class="space-y-4">
           <div v-for="group in deliverableGroups" :key="group.categoryKey">
-            <p class="text-xs font-bold text-gray-500 uppercase mb-2">
-              {{ t.proposalCreate.deliverableCategories[group.categoryKey] }}
-            </p>
+            <div class="flex items-center justify-between gap-2 mb-2">
+              <p class="text-xs font-bold text-gray-500 uppercase">
+                {{ t.proposalCreate.deliverableCategories[group.categoryKey] }}
+              </p>
+              <button
+                type="button"
+                :disabled="unassignedIn(group.items).length === 0"
+                :class="bulkButtonClasses"
+                @click="assignMany(unassignedIn(group.items))"
+              >
+                {{ t.paymentPhaseBuilder.selectAll }}
+              </button>
+            </div>
             <div class="flex flex-wrap gap-2">
               <button
                 v-for="value in group.items"
@@ -175,6 +196,10 @@ const props = defineProps({
   bidAmount: {
     type: Number,
     default: 0
+  },
+  requiredDeliverables: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -276,6 +301,15 @@ const assignToActivePhase = value => {
   phases.value[activePhaseIndex.value].deliverables.push(value)
 }
 
+const unassignedIn = items => items.filter(value => !isAssigned(value))
+
+const remainingRequired = computed(() => unassignedIn(props.requiredDeliverables))
+
+const assignMany = values => {
+  if (values.length === 0) return
+  phases.value[activePhaseIndex.value].deliverables.push(...new Set(values))
+}
+
 const removeDeliverable = (phaseIndex, value) => {
   phases.value[phaseIndex].deliverables = phases.value[phaseIndex].deliverables.filter(d => d !== value)
 }
@@ -299,6 +333,9 @@ const percentageTotal = computed(() => phases.value.reduce((sum, p) => sum + (Nu
 const daysTotal = computed(() => phases.value.reduce((sum, p) => sum + (Number(p.estimatedDays) || 0), 0))
 
 const totalMatchesBid = computed(() => percentageTotal.value === 100)
+
+const bulkButtonClasses =
+  'text-xs font-semibold text-brand-brown hover:text-black transition disabled:text-gray-300 disabled:cursor-not-allowed'
 
 const chipClasses = value => {
   const base = 'px-3 py-1 rounded-full text-xs font-medium border transition-all cursor-pointer'
