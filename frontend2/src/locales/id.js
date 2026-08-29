@@ -330,7 +330,8 @@ export default {
       verified: 'Terverifikasi',
       notVerified: 'Belum Terverifikasi',
       category: 'Jenis Praktik',
-      address: 'Alamat'
+      address: 'Alamat',
+      education: 'Pendidikan'
     },
     form: {
       practiceName: 'Nama Praktik',
@@ -360,7 +361,18 @@ export default {
       province: 'Provinsi',
       provincePlaceholder: 'Pilih provinsi',
       cityDropdownPlaceholder: 'Pilih kota',
-      photo: 'Foto Profil'
+      photo: 'Foto Profil',
+      education: 'Pendidikan',
+      educationAdd: 'Tambah pendidikan',
+      educationRemove: 'Hapus',
+      educationLevel: 'Jenjang Pendidikan',
+      educationLevelPlaceholder: 'Pilih jenjang pendidikan',
+      educationUniversity: 'Universitas',
+      educationUniversityPlaceholder: 'Pilih universitas',
+      educationFieldOfStudy: 'Program Studi',
+      educationFieldOfStudyPlaceholder: 'contoh: Arsitektur',
+      educationGraduationYear: 'Tahun Lulus',
+      educationGraduationYearPlaceholder: 'contoh: 2018'
     },
     validation: {
       nameMinLength: 'Nama praktik minimal 2 karakter',
@@ -1127,6 +1139,8 @@ export default {
     rating: 'Rating',
     ratingComingSoon: 'Rating segera hadir',
     location: 'Lokasi',
+    education: 'Pendidikan',
+    noEducation: '—',
     totalPrice: 'Total Harga',
     totalDuration: 'Total Durasi',
     detail: 'Detail',
@@ -1425,9 +1439,11 @@ export default {
     awaitingClientPaymentTitle: 'Menunggu Pembayaran Klien',
     awaitingClientPaymentDesc:
       'Klien perlu membuat invoice dan membayar fase ini sebelum Anda dapat memulai pekerjaan.',
-    invoiceSentDescArchitect: 'Invoice sudah dikirim ke klien. Anda akan diberitahu setelah pembayaran dikonfirmasi.',
+    invoiceSentDescArchitect:
+      'Invoice sudah dikirim ke klien. Anda akan diberitahu setelah pembayaran dikonfirmasi.',
     workPhaseActiveTitle: 'Fase Aktif',
-    workPhaseActiveDesc: 'Pembayaran dikonfirmasi. Unggah deliverable Anda ketika siap untuk direview klien.',
+    workPhaseActiveDesc:
+      'Pembayaran dikonfirmasi. Unggah deliverable Anda ketika siap untuk direview klien.',
     uploadFileLabel: 'Unggah File',
     chooseFileLabel: 'Pilih file',
     fileDescPlaceholder: 'Deskripsi file (opsional)',
@@ -1438,7 +1454,8 @@ export default {
       'Setelah semua file diunggah, kirim fase ini untuk direview oleh klien. Klien akan diberi notifikasi.',
     submitForReviewBtn: 'Kirim untuk Review',
     underClientReviewTitle: 'Sedang Direview',
-    underClientReviewDesc: 'Deliverable Anda sudah dikirim. Menunggu persetujuan atau revisi dari klien.',
+    underClientReviewDesc:
+      'Deliverable Anda sudah dikirim. Menunggu persetujuan atau revisi dari klien.',
     workApprovedExclaim: 'Pekerjaan Disetujui!',
     workApprovedArchitectDesc: 'Klien menyetujui pekerjaan Anda. Ajukan pencairan dana di bawah.',
     payoutDetailsLabel: 'Detail Pencairan',
@@ -1448,7 +1465,8 @@ export default {
     accountHolderLabel: 'Nama Pemilik Rekening',
     accountHolderPlaceholder: 'Nama sesuai buku tabungan',
     disbursementAmountLabel: 'Jumlah pencairan',
-    xenditTransferHint: 'Transfer akan diproses melalui Xendit. Harap periksa detail rekening dengan cermat.',
+    xenditTransferHint:
+      'Transfer akan diproses melalui Xendit. Harap periksa detail rekening dengan cermat.',
     processing: 'Memproses...',
     confirmPayoutBtn: 'Konfirmasi Pencairan',
     payoutDisbursedSuccess: 'Dana berhasil dicairkan.',
@@ -1748,5 +1766,10 @@ export default {
     Industrial: 'Industri',
     'Mixed-Use': 'Fungsi Campuran',
     Hospitality: 'Hospitalitas'
+  },
+  degreeLevelLabels: {
+    S1: 'S1 — Sarjana',
+    S2: 'S2 — Magister',
+    S3: 'S3 — Doktor'
   }
 }

@@ -82,6 +82,9 @@
                 <ChevronDown v-else-if="sortKey === 'architectCity' && sortDir === 'desc'" :size="12" />
               </span>
             </th>
+            <th class="text-left px-6 py-3 text-xs text-gray-500 font-bold uppercase tracking-wider whitespace-nowrap">
+              {{ t.bidTable.education }}
+            </th>
             <th
               class="text-right px-6 py-3 text-xs text-gray-500 font-bold uppercase tracking-wider cursor-pointer select-none whitespace-nowrap"
               @click="toggleSort('bidAmount')"
@@ -121,6 +124,17 @@
             </td>
             <td class="px-6 py-4 text-gray-600">
               {{ bid.architectCity || '—' }}
+            </td>
+            <td class="px-6 py-4">
+              <span
+                v-if="highestEducation(bid)"
+                :title="allEducationTitle(bid)"
+                class="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-100 text-amber-900 rounded-full text-xs font-medium border border-amber-200 whitespace-nowrap"
+              >
+                <GraduationCap :size="12" />
+                {{ highestEducation(bid).level }} · {{ highestEducation(bid).universityName }}
+              </span>
+              <span v-else class="text-gray-400">{{ t.bidTable.noEducation }}</span>
             </td>
             <td class="px-6 py-4 text-right font-bold text-brand-brown whitespace-nowrap">
               {{ formatCurrency(bid.bidAmount) }}
@@ -202,7 +216,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { Eye, Plus, Check, Star, ChevronUp, ChevronDown, FileText } from 'lucide-vue-next'
+import { Eye, Plus, Check, Star, ChevronUp, ChevronDown, FileText, GraduationCap } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
 import { formatIDRDisplay, parseIDRInput } from '@/utils/currencyFormat'
 
@@ -297,6 +311,19 @@ const durationStats = computed(() => {
   if (!values.length) return { min: 0, avg: 0, max: 0 }
   return { min: Math.min(...values), avg: average(values), max: Math.max(...values) }
 })
+
+const DEGREE_RANK = { S3: 3, S2: 2, S1: 1 }
+
+const highestEducation = bid => {
+  const list = bid.architectEducation || []
+  if (!list.length) return null
+  return [...list].sort((a, b) => (DEGREE_RANK[b.level] || 0) - (DEGREE_RANK[a.level] || 0))[0]
+}
+
+const allEducationTitle = bid =>
+  (bid.architectEducation || [])
+    .map(e => `${e.level} — ${e.universityName}${e.fieldOfStudy ? ` (${e.fieldOfStudy})` : ''}`)
+    .join('\n')
 
 const formatCurrency = value => {
   if (!value) return 'N/A'

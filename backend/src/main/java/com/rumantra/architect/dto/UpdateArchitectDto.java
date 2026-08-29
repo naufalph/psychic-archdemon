@@ -48,4 +48,6 @@ public class UpdateArchitectDto {
   private String philosophy;
 
   private java.util.List<String> expertise;
+
+  private java.util.List<EducationEntry> education;
 }

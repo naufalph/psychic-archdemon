@@ -408,5 +408,9 @@ export const landingAPI = {
   consumeMyBrief: () => api.post('/rmtr/landing/briefs/mine/consume')
 }
 
+export const universityAPI = {
+  list: search => api.get('/rmtr/universities', { params: search ? { search } : {} })
+}
+
 // Default export
 export default api

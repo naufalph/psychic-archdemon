@@ -353,6 +353,7 @@ public class BidService {
                 + bid.getArchitect().getUser().getLastName())
         .architectCompany(bid.getArchitect().getCompanyName())
         .architectCity(bid.getArchitect().getCity())
+        .architectEducation(bid.getArchitect().getEducation())
         .bidAmount(bid.getBidAmount())
         .proposedTimelineDays(bid.getProposedTimelineDays())
         .proposal(bid.getProposal())

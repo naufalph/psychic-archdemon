@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.hibernate.annotations.Type;
 
+import com.rumantra.architect.dto.EducationEntry;
 import com.rumantra.user.domain.User;
 
 import io.hypersistence.utils.hibernate.type.json.JsonType;
@@ -94,6 +95,10 @@ public class Architect {
   @Type(JsonType.class)
   @Column(name = "expertise", columnDefinition = "jsonb")
   private java.util.List<String> expertise;
+
+  @Type(JsonType.class)
+  @Column(name = "education", columnDefinition = "jsonb")
+  private java.util.List<EducationEntry> education;
 
   @Column(name = "full_address", columnDefinition = "TEXT")
   private String fullAddress;

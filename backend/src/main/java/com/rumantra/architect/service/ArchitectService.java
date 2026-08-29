@@ -101,6 +101,10 @@ public class ArchitectService {
       architect.setExpertise(updateRequest.getExpertise());
     }
 
+    if (updateRequest.getEducation() != null) {
+      architect.setEducation(updateRequest.getEducation());
+    }
+
     architect = architectRepository.save(architect);
 
     return mapToDto(architect);
@@ -141,7 +145,9 @@ public class ArchitectService {
             && notBlank(architect.getPhilosophy())
             && notBlank(architect.getExperienceRange())
             && architect.getExpertise() != null
-            && !architect.getExpertise().isEmpty();
+            && !architect.getExpertise().isEmpty()
+            && architect.getEducation() != null
+            && !architect.getEducation().isEmpty();
 
     boolean businessLocationComplete =
         notBlank(architect.getCategory())
@@ -194,6 +200,7 @@ public class ArchitectService {
         .experienceRange(architect.getExperienceRange())
         .philosophy(architect.getPhilosophy())
         .expertise(architect.getExpertise())
+        .education(architect.getEducation())
         .fullAddress(architect.getFullAddress())
         .province(architect.getProvince())
         .photoUrl(

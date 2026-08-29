@@ -29,6 +29,7 @@ public class ArchitectDto {
   private String experienceRange;
   private String philosophy;
   private java.util.List<String> expertise;
+  private java.util.List<EducationEntry> education;
   private String fullAddress;
   private String province;
   private String photoUrl;

@@ -148,6 +148,92 @@
         </p>
       </div>
 
+      <div class="space-y-4">
+        <label class="block text-sm font-semibold text-black/70 tracking-tight">
+          {{ t.profile.form.education }}
+        </label>
+
+        <div
+          v-for="(entry, index) in formData.education"
+          :key="index"
+          class="p-4 rounded-2xl border border-black/10 space-y-3 relative"
+        >
+          <button
+            v-if="formData.education.length > 1"
+            type="button"
+            class="absolute top-3 right-3 text-black/30 hover:text-red-500 transition-colors"
+            :title="t.profile.form.educationRemove"
+            @click="removeEducation(index)"
+          >
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="block text-xs font-medium text-black/50">{{ t.profile.form.educationLevel }}</label>
+              <select
+                v-model="entry.level"
+                class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all bg-white"
+              >
+                <option value="" disabled>{{ t.profile.form.educationLevelPlaceholder }}</option>
+                <option v-for="lvl in DEGREE_LEVELS" :key="lvl" :value="lvl">
+                  {{ t.degreeLevelLabels?.[lvl] || lvl }}
+                </option>
+              </select>
+            </div>
+
+            <div class="space-y-2">
+              <label class="block text-xs font-medium text-black/50">{{ t.profile.form.educationUniversity }}</label>
+              <select
+                v-model="entry.universityName"
+                class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all bg-white"
+              >
+                <option value="" disabled>{{ t.profile.form.educationUniversityPlaceholder }}</option>
+                <optgroup label="Indonesia">
+                  <option v-for="u in universitiesIndonesia" :key="u.id" :value="u.name">{{ u.name }}</option>
+                </optgroup>
+                <optgroup label="International">
+                  <option v-for="u in universitiesInternational" :key="u.id" :value="u.name">{{ u.name }}</option>
+                </optgroup>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-2">
+              <label class="block text-xs font-medium text-black/50">{{ t.profile.form.educationFieldOfStudy }}</label>
+              <input
+                v-model="entry.fieldOfStudy"
+                type="text"
+                :placeholder="t.profile.form.educationFieldOfStudyPlaceholder"
+                class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
+              />
+            </div>
+            <div class="space-y-2">
+              <label class="block text-xs font-medium text-black/50">
+                {{ t.profile.form.educationGraduationYear }}
+              </label>
+              <input
+                v-model.number="entry.graduationYear"
+                type="number"
+                :placeholder="t.profile.form.educationGraduationYearPlaceholder"
+                class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
+              />
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="px-4 py-2 rounded-full text-sm font-medium bg-black/5 text-black/70 hover:bg-black/10 transition-all"
+          @click="addEducation"
+        >
+          + {{ t.profile.form.educationAdd }}
+        </button>
+      </div>
+
       <div class="space-y-2">
         <label class="block text-sm font-semibold text-black/70 tracking-tight">
           {{ t.profile.form.fullnameKtp }}
@@ -255,10 +341,11 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onBeforeUnmount } from 'vue'
+import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from '@/composables/useI18n'
-import { EXPERTISE_TAGS, EXPERIENCE_OPTIONS } from '@/constants/architectProfileOptions'
+import { EXPERTISE_TAGS, EXPERIENCE_OPTIONS, DEGREE_LEVELS } from '@/constants/architectProfileOptions'
 import { useArchitectProfileStore } from '@/stores/architectProfile'
+import { universityAPI } from '@/services/api'
 import BaseAlert from '@/components/ui/BaseAlert.vue'
 import ProvinceCitySelect from '@/components/project/ProvinceCitySelect.vue'
 
@@ -274,6 +361,7 @@ const props = defineProps({
       experienceRange: '',
       philosophy: '',
       expertise: [],
+      education: [],
       fullnameKtp: '',
       ktpNum: '',
       npwp: '',
@@ -300,6 +388,9 @@ const formData = ref({
   experienceRange: props.initialData.experienceRange || '',
   philosophy: props.initialData.philosophy || '',
   expertise: [...(props.initialData.expertise || [])],
+  education: props.initialData.education?.length
+    ? props.initialData.education.map(e => ({ ...e }))
+    : [{ level: '', universityName: '', fieldOfStudy: '', graduationYear: '' }],
   fullnameKtp: props.initialData.fullnameKtp || '',
   ktpNum: props.initialData.ktpNum || '',
   npwp: props.initialData.npwp || '',
@@ -359,6 +450,31 @@ const toggleExpertise = tag => {
     formData.value.expertise.push(tag)
   }
 }
+
+const addEducation = () => {
+  formData.value.education.push({ level: '', universityName: '', fieldOfStudy: '', graduationYear: '' })
+}
+
+const removeEducation = index => {
+  if (formData.value.education.length > 1) {
+    formData.value.education.splice(index, 1)
+  }
+}
+
+// Fetched once — the university list is a fixed, finite reference table (~150 rows),
+// not worth re-querying per keystroke.
+const universities = ref([])
+const universitiesIndonesia = computed(() => universities.value.filter(u => u.indonesia))
+const universitiesInternational = computed(() => universities.value.filter(u => !u.indonesia))
+
+onMounted(async () => {
+  try {
+    const response = await universityAPI.list()
+    universities.value = response.data.data
+  } catch (err) {
+    console.error('Failed to load universities:', err)
+  }
+})
 
 // Autosave: debounced 1s after the last edit. The confirmation itself is emitted up to
 // the parent, which surfaces it as a fixed-position toast — this form can be long enough

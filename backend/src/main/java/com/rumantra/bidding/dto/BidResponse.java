@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.rumantra.architect.dto.EducationEntry;
 import com.rumantra.architect.dto.PortoListResponse;
 import com.rumantra.bidding.domain.BidStatus;
 
@@ -28,6 +29,7 @@ public class BidResponse {
   private String architectName;
   private String architectCompany;
   private String architectCity;
+  private List<EducationEntry> architectEducation;
   private BigDecimal bidAmount;
   private Integer proposedTimelineDays;
   private String proposal;

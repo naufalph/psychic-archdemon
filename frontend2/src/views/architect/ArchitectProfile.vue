@@ -150,6 +150,30 @@
               </div>
             </div>
 
+            <div>
+              <label class="block text-sm font-semibold text-black/50 mb-3">
+                {{ t.profile.viewMode.education }}
+              </label>
+              <div v-if="store.profileEducation.length" class="space-y-2">
+                <div
+                  v-for="(entry, index) in store.profileEducation"
+                  :key="index"
+                  class="flex items-center gap-3"
+                >
+                  <span
+                    class="px-4 py-2 bg-amber-100 text-amber-900 rounded-full text-sm font-medium border border-amber-200"
+                  >
+                    {{ entry.level }}
+                  </span>
+                  <p class="text-base text-black/80">
+                    {{ entry.universityName }}<span v-if="entry.fieldOfStudy"> · {{ entry.fieldOfStudy }}</span
+                    ><span v-if="entry.graduationYear"> · {{ entry.graduationYear }}</span>
+                  </p>
+                </div>
+              </div>
+              <p v-else class="text-lg font-semibold text-black">-</p>
+            </div>
+
             <div class="grid grid-cols-2 gap-6">
               <div>
                 <label class="block text-sm font-semibold text-black/50 mb-2">
@@ -193,6 +217,7 @@
             experienceRange: store.profileExperience,
             philosophy: store.profilePhilosophy,
             expertise: store.profileExpertise,
+            education: store.profileEducation,
             fullnameKtp: store.profileFullnameKtp,
             ktpNum: store.profileKtpNum,
             npwp: store.profileNpwp,

@@ -112,6 +112,10 @@ public class SecurityConfig {
                     .permitAll()
                     .requestMatchers(HttpMethod.GET, "/rmtr/landing/presets")
                     .permitAll()
+
+                    // University reference data (public read; backs the education dropdown)
+                    .requestMatchers(HttpMethod.GET, "/rmtr/universities")
+                    .permitAll()
                     // Anonymous visitors submit the landing mini-form before signing up;
                     // claiming a brief stays authenticated so it binds to a real user.
                     .requestMatchers(HttpMethod.POST, "/rmtr/landing/briefs")

@@ -326,7 +326,8 @@ export default {
       verified: 'Verified',
       notVerified: 'Not Verified',
       category: 'Practice Type',
-      address: 'Address'
+      address: 'Address',
+      education: 'Education'
     },
     form: {
       practiceName: 'Practice Name',
@@ -356,7 +357,18 @@ export default {
       province: 'Province',
       provincePlaceholder: 'Select province',
       cityDropdownPlaceholder: 'Select city',
-      photo: 'Profile Photo'
+      photo: 'Profile Photo',
+      education: 'Education',
+      educationAdd: 'Add education',
+      educationRemove: 'Remove',
+      educationLevel: 'Degree Level',
+      educationLevelPlaceholder: 'Select degree level',
+      educationUniversity: 'University',
+      educationUniversityPlaceholder: 'Select university',
+      educationFieldOfStudy: 'Field of Study',
+      educationFieldOfStudyPlaceholder: 'e.g., Architecture',
+      educationGraduationYear: 'Graduation Year',
+      educationGraduationYearPlaceholder: 'e.g., 2018'
     },
     validation: {
       nameMinLength: 'Practice name must be at least 2 characters',
@@ -1117,6 +1129,8 @@ export default {
     rating: 'Rating',
     ratingComingSoon: 'Rating coming soon',
     location: 'Location',
+    education: 'Education',
+    noEducation: '—',
     totalPrice: 'Total Price',
     totalDuration: 'Total Duration',
     detail: 'Detail',
@@ -1411,19 +1425,23 @@ export default {
     awaitingClientPaymentTitle: 'Awaiting Client Payment',
     awaitingClientPaymentDesc:
       'The client needs to create an invoice and pay for this phase before you can start work.',
-    invoiceSentDescArchitect: 'The invoice has been sent to the client. You will be notified once payment is confirmed.',
+    invoiceSentDescArchitect:
+      'The invoice has been sent to the client. You will be notified once payment is confirmed.',
     workPhaseActiveTitle: 'Work Phase Active',
-    workPhaseActiveDesc: 'Payment confirmed. Upload your deliverables when ready for client review.',
+    workPhaseActiveDesc:
+      'Payment confirmed. Upload your deliverables when ready for client review.',
     uploadFileLabel: 'Upload File',
     chooseFileLabel: 'Choose file',
     fileDescPlaceholder: 'File description (optional)',
     uploading: 'Uploading...',
     uploadBtn: 'Upload',
     markCompleteLabel: 'Mark Complete',
-    markCompleteDesc: 'Once all files are uploaded, submit this phase for client review. The client will be notified.',
+    markCompleteDesc:
+      'Once all files are uploaded, submit this phase for client review. The client will be notified.',
     submitForReviewBtn: 'Submit for Review',
     underClientReviewTitle: 'Under Client Review',
-    underClientReviewDesc: 'Your deliverables have been submitted. Awaiting approval or a revision request from the client.',
+    underClientReviewDesc:
+      'Your deliverables have been submitted. Awaiting approval or a revision request from the client.',
     workApprovedExclaim: 'Work Approved!',
     workApprovedArchitectDesc: 'The client approved your work. Request your payout below.',
     payoutDetailsLabel: 'Payout Details',
@@ -1433,12 +1451,14 @@ export default {
     accountHolderLabel: 'Account Holder Name',
     accountHolderPlaceholder: 'Name as per bank passbook',
     disbursementAmountLabel: 'Payout amount',
-    xenditTransferHint: 'The transfer will be processed via Xendit. Please double-check the account details.',
+    xenditTransferHint:
+      'The transfer will be processed via Xendit. Please double-check the account details.',
     processing: 'Processing...',
     confirmPayoutBtn: 'Confirm Payout',
     payoutDisbursedSuccess: 'Payout disbursed successfully.',
     clientDisputeTitle: 'Client Raised a Dispute',
-    clientDisputeDesc: 'The client has raised a dispute for this deliverable. Our support team will contact both parties.',
+    clientDisputeDesc:
+      'The client has raised a dispute for this deliverable. Our support team will contact both parties.',
     confirmPayoutEyebrow: 'Confirm Payout',
     confirmPayoutWarning:
       'Double-check the details below before funds are disbursed via Xendit. This action cannot be undone.',
@@ -1726,5 +1746,10 @@ export default {
     Industrial: 'Industrial',
     'Mixed-Use': 'Mixed-Use',
     Hospitality: 'Hospitality'
+  },
+  degreeLevelLabels: {
+    S1: "S1 — Bachelor's Degree (Sarjana)",
+    S2: "S2 — Master's Degree (Magister)",
+    S3: 'S3 — Doctorate (Doktor/PhD)'
   }
 }
