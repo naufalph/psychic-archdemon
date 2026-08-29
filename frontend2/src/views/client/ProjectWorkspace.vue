@@ -3,14 +3,14 @@
     <div v-if="loading" class="flex items-center justify-center h-screen">
       <div class="text-center">
         <div class="w-10 h-10 border-2 border-brand-gold border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p class="text-gray-500">Memuat workspace...</p>
+        <p class="text-gray-500">{{ t.projectWorkspace?.loading }}</p>
       </div>
     </div>
 
     <div v-else-if="error" class="flex items-center justify-center h-screen">
       <div class="text-center">
         <p class="text-red-500 mb-4">{{ error }}</p>
-        <button class="text-brand-brown hover:underline" @click="loadAll">Coba lagi</button>
+        <button class="text-brand-brown hover:underline" @click="loadAll">{{ t.projectWorkspace?.tryAgain }}</button>
       </div>
     </div>
 
@@ -23,28 +23,28 @@
               <ArrowLeft :size="20" />
             </button>
             <div>
-              <p class="text-xs text-gray-400 uppercase font-bold tracking-wide">Project Workspace</p>
-              <h1 class="text-lg font-bold text-black">{{ project?.title || 'Active Project' }}</h1>
+              <p class="text-xs text-gray-400 uppercase font-bold tracking-wide">{{ t.projectWorkspace?.eyebrow }}</p>
+              <h1 class="text-lg font-bold text-black">{{ project?.title || t.projectWorkspace?.titleFallback }}</h1>
             </div>
           </div>
           <div class="flex items-center gap-3">
             <span class="text-sm text-gray-500 flex items-center gap-1.5">
               <Layers :size="14" />
-              {{ disbursedCount }} / {{ phases.length }} selesai
+              {{ disbursedCount }} / {{ phases.length }} {{ t.projectWorkspace?.phasesDone }}
             </span>
             <span
               v-if="isCompleted"
               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-green-100 text-green-700 whitespace-nowrap"
             >
               <span class="w-1.5 h-1.5 rounded-full bg-green-600" />
-              Selesai · Completed
+              {{ t.projectWorkspace?.completedBadge }}
             </span>
             <span
               v-else
               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 whitespace-nowrap"
             >
               <span class="w-1.5 h-1.5 rounded-full bg-blue-500" />
-              Dalam Proses
+              {{ t.projectWorkspace?.inProgressBadge }}
             </span>
           </div>
         </div>
@@ -71,7 +71,9 @@
                   <div>
                     <div class="flex items-center gap-2">
                       <h2 class="font-bold text-gray-900">{{ project?.title }}</h2>
-                      <span class="text-xs text-brand-brown font-medium group-hover:underline">Lihat Detail ↗</span>
+                      <span class="text-xs text-brand-brown font-medium group-hover:underline">{{
+                        t.projectWorkspace?.viewDetail
+                      }}</span>
                     </div>
                     <div class="flex flex-wrap items-center gap-3 mt-1 text-sm text-gray-500">
                       <span v-if="project?.location" class="flex items-center gap-1">
@@ -83,13 +85,13 @@
                     </div>
                   </div>
                   <div class="text-right shrink-0">
-                    <p class="text-xs text-gray-400">Total Nilai</p>
+                    <p class="text-xs text-gray-400">{{ t.projectWorkspace?.totalValue }}</p>
                     <p class="font-bold text-gray-900">{{ formatAmount(totalAmount) }}</p>
                   </div>
                 </div>
                 <div class="space-y-1">
                   <div class="flex justify-between text-xs text-gray-500">
-                    <span>{{ formatAmount(paidAmount) }} terbayar</span>
+                    <span>{{ formatAmount(paidAmount) }} {{ t.projectWorkspace?.paidLabel }}</span>
                     <span>{{ Math.round(progressPercent) }}%</span>
                   </div>
                   <div class="w-full bg-gray-100 rounded-full h-1.5">
@@ -99,8 +101,11 @@
                     />
                   </div>
                   <div class="flex justify-between text-xs text-gray-400">
-                    <span>{{ disbursedCount }} dari {{ phases.length }} fase selesai</span>
-                    <span>{{ formatAmount(remainingAmount) }} tersisa</span>
+                    <span
+                      >{{ disbursedCount }} {{ t.projectWorkspace?.of }} {{ phases.length }}
+                      {{ t.projectWorkspace?.phasesDone }}</span
+                    >
+                    <span>{{ formatAmount(remainingAmount) }} {{ t.projectWorkspace?.remaining }}</span>
                   </div>
                 </div>
               </div>
@@ -109,18 +114,20 @@
 
           <!-- Phase list -->
           <div class="space-y-3">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-wide px-1">Fase Pembayaran · Payment Phases</p>
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-wide px-1">
+              {{ t.projectWorkspace?.paymentPhasesTitle }}
+            </p>
 
             <div v-if="phases.length === 0" class="bg-white rounded-xl border border-gray-200 py-14 text-center">
               <Layers :size="32" class="text-gray-300 mx-auto mb-3" />
-              <p class="text-gray-500 font-medium">Belum ada fase</p>
-              <p class="text-sm text-gray-400 mt-1 mb-4">Detail fase akan muncul setelah arsitek menyiapkannya.</p>
+              <p class="text-gray-500 font-medium">{{ t.projectWorkspace?.noPhasesTitle }}</p>
+              <p class="text-sm text-gray-400 mt-1 mb-4">{{ t.projectWorkspace?.noPhasesDesc }}</p>
               <button
                 :disabled="initializingPhases"
                 class="px-4 py-2 bg-brand-brown text-white text-sm font-semibold rounded-lg hover:bg-black disabled:opacity-50 transition"
                 @click="initPhases"
               >
-                {{ initializingPhases ? 'Menginisialisasi...' : 'Inisialisasi Fase dari Penawaran' }}
+                {{ initializingPhases ? t.projectWorkspace?.initializing : t.projectWorkspace?.initPhasesBtn }}
               </button>
             </div>
 
@@ -145,11 +152,13 @@
                     </div>
                     <div>
                       <p class="font-semibold text-gray-900 text-sm">
-                        {{ phase.title || `Fase ${phase.phaseNumber}` }}
+                        {{ phase.title || phaseFallbackTitle(phase) }}
                       </p>
                       <div class="flex items-center gap-2 text-xs text-gray-500">
                         <span>{{ formatAmount(phase.amount) }}</span>
-                        <span v-if="phase.dueDate">· Tenggat {{ formatDate(phase.dueDate) }}</span>
+                        <span v-if="phase.dueDate"
+                          >· {{ t.projectWorkspace?.deadline }} {{ formatDate(phase.dueDate) }}</span
+                        >
                       </div>
                     </div>
                   </div>
@@ -174,7 +183,7 @@
                   <!-- Description -->
                   <div v-if="phase.description" class="px-5 py-4">
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-1.5">
-                      Deskripsi · Description
+                      {{ t.projectWorkspace?.descriptionLabel }}
                     </p>
                     <p class="text-sm text-gray-600 leading-relaxed">{{ phase.description }}</p>
                   </div>
@@ -195,22 +204,20 @@
                         class="text-xs font-semibold"
                         :class="revisionsLeft(phase) === 0 ? 'text-red-700' : 'text-purple-700'"
                       >
-                        Sisa Revisi: {{ revisionsLeft(phase) }} dari {{ phase.maxRevisions }}
-                        <span
-                          class="font-normal ml-1"
-                          :class="revisionsLeft(phase) === 0 ? 'text-red-500' : 'text-purple-500'"
-                          >(Revisions Remaining)</span
-                        >
+                        {{ t.projectWorkspace?.revisionsLeftLabel }}: {{ revisionsLeft(phase) }}
+                        {{ t.projectWorkspace?.of }} {{ phase.maxRevisions }}
                       </span>
                       <span v-if="revisionsLeft(phase) === 0" class="text-xs text-red-600 font-medium ml-1"
-                        >· Revisi habis</span
+                        >· {{ t.projectWorkspace?.revisionsExhausted }}</span
                       >
                     </div>
                   </div>
 
                   <!-- Client actions -->
                   <div class="px-5 py-4">
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Tindakan · Actions</p>
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">
+                      {{ t.projectWorkspace?.actionsLabel }}
+                    </p>
 
                     <!-- NOT STARTED -->
                     <div
@@ -219,9 +226,9 @@
                     >
                       <Lock :size="16" class="text-gray-400 shrink-0" />
                       <div>
-                        <p class="text-sm font-semibold text-gray-500">Belum Dimulai · Not Started</p>
+                        <p class="text-sm font-semibold text-gray-500">{{ t.projectWorkspace?.notStartedTitle }}</p>
                         <p class="text-xs text-gray-400 mt-0.5">
-                          Fase ini akan aktif setelah fase sebelumnya selesai sepenuhnya.
+                          {{ t.projectWorkspace?.notStartedDesc }}
                         </p>
                       </div>
                     </div>
@@ -229,10 +236,11 @@
                     <!-- PENDING: bill the phase (current phase only) -->
                     <div v-else-if="phase.status === 'PENDING'" class="flex items-start gap-3">
                       <div class="flex-1 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                        <p class="text-sm font-semibold text-amber-800">Pembayaran Diperlukan · Payment Required</p>
+                        <p class="text-sm font-semibold text-amber-800">
+                          {{ t.projectWorkspace?.paymentRequiredTitle }}
+                        </p>
                         <p class="text-xs text-amber-600 mt-0.5">
-                          Buat invoice untuk memulai fase ini. Arsitek dapat mulai bekerja setelah pembayaran
-                          dikonfirmasi.
+                          {{ t.projectWorkspace?.paymentRequiredDesc }}
                         </p>
                       </div>
                       <button
@@ -240,8 +248,8 @@
                         class="px-4 py-2.5 bg-ink-700 text-white text-sm font-semibold rounded-lg hover:bg-ink-500 disabled:opacity-50 disabled:cursor-not-allowed transition whitespace-nowrap shrink-0"
                         @click="billPhase(phase)"
                       >
-                        <span v-if="actionLoading === phase.id">Membuat...</span>
-                        <span v-else>Buat Invoice</span>
+                        <span v-if="actionLoading === phase.id">{{ t.projectWorkspace?.creating }}</span>
+                        <span v-else>{{ t.projectWorkspace?.createInvoice }}</span>
                       </button>
                     </div>
 
@@ -251,9 +259,9 @@
                       class="flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg"
                     >
                       <div>
-                        <p class="text-sm font-semibold text-blue-800">Invoice Terkirim · Invoice Sent</p>
+                        <p class="text-sm font-semibold text-blue-800">{{ t.projectWorkspace?.invoiceSentTitle }}</p>
                         <p class="text-xs text-blue-600 mt-0.5">
-                          Menunggu konfirmasi pembayaran · Awaiting payment confirmation.
+                          {{ t.projectWorkspace?.invoiceSentDesc }}
                         </p>
                       </div>
                       <a
@@ -279,18 +287,20 @@
                       v-else-if="phase.status === 'IN_PROGRESS'"
                       class="p-3 bg-sky-50 border border-sky-200 rounded-lg"
                     >
-                      <p class="text-sm font-semibold text-sky-800">Pekerjaan Berlangsung · Work In Progress</p>
+                      <p class="text-sm font-semibold text-sky-800">{{ t.projectWorkspace?.workInProgressTitle }}</p>
                       <p class="text-xs text-sky-600 mt-0.5">
-                        Arsitek sedang mengerjakan fase ini. Deliverable akan muncul di bawah ketika dikirimkan.
+                        {{ t.projectWorkspace?.workInProgressDesc }}
                       </p>
                     </div>
 
                     <!-- DELIVERED: approve, request revision, or dispute -->
                     <div v-else-if="phase.status === 'DELIVERED'">
                       <div class="p-3 bg-purple-50 border border-purple-200 rounded-lg mb-3">
-                        <p class="text-sm font-semibold text-purple-800">Pekerjaan Dikirimkan · Work Submitted</p>
+                        <p class="text-sm font-semibold text-purple-800">
+                          {{ t.projectWorkspace?.workSubmittedTitle }}
+                        </p>
                         <p class="text-xs text-purple-600 mt-0.5">
-                          Tinjau deliverable di bawah, lalu setujui, minta revisi, atau ajukan sengketa.
+                          {{ t.projectWorkspace?.workSubmittedDesc }}
                         </p>
                       </div>
 
@@ -304,7 +314,7 @@
                             @click="showApproveConfirm = phase.id"
                           >
                             <ThumbsUp :size="15" />
-                            Setujui · Approve
+                            {{ t.projectWorkspace?.approveBtn }}
                           </button>
 
                           <!-- Request revision button (if revisions remain) -->
@@ -315,7 +325,7 @@
                             @click="doRequestRevision(phase)"
                           >
                             <RotateCcw :size="15" />
-                            Minta Revisi
+                            {{ t.projectWorkspace?.requestRevisionBtn }}
                           </button>
                         </div>
 
@@ -325,18 +335,18 @@
                           @click="showDisputeForm[phase.id] = true"
                         >
                           <AlertTriangle :size="12" />
-                          Ajukan Sengketa · Dispute
+                          {{ t.projectWorkspace?.disputeBtn }}
                         </button>
                       </div>
 
                       <!-- Dispute form -->
                       <div v-else class="space-y-3">
                         <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">
-                          Alasan Sengketa · Dispute Reason
+                          {{ t.projectWorkspace?.disputeReasonLabel }}
                         </p>
                         <textarea
                           v-model="disputeReason[phase.id]"
-                          placeholder="Jelaskan apa yang tidak sesuai dengan spesifikasi yang disepakati... · Describe what doesn't match the agreed specification..."
+                          :placeholder="t.projectWorkspace?.disputeReasonPlaceholder"
                           rows="3"
                           class="w-full px-3 py-2.5 border border-gray-200 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-300"
                         />
@@ -346,14 +356,14 @@
                             class="px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
                             @click="submitDispute(phase)"
                           >
-                            <span v-if="actionLoading === phase.id">Mengirimkan...</span>
-                            <span v-else>Kirim Sengketa</span>
+                            <span v-if="actionLoading === phase.id">{{ t.projectWorkspace?.submitting }}</span>
+                            <span v-else>{{ t.projectWorkspace?.submitDispute }}</span>
                           </button>
                           <button
                             class="px-4 py-2 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-100 transition"
                             @click="showDisputeForm[phase.id] = false"
                           >
-                            Batal
+                            {{ t.projectWorkspace?.cancel }}
                           </button>
                         </div>
                       </div>
@@ -364,17 +374,17 @@
                       v-else-if="phase.status === 'APPROVED'"
                       class="p-3 bg-green-50 border border-green-200 rounded-lg"
                     >
-                      <p class="text-sm font-semibold text-green-800">Pekerjaan Disetujui · Work Approved</p>
+                      <p class="text-sm font-semibold text-green-800">{{ t.projectWorkspace?.workApprovedTitle }}</p>
                       <p class="text-xs text-green-600 mt-0.5">
-                        Anda menyetujui fase ini. Arsitek sedang memproses pencairan dana.
+                        {{ t.projectWorkspace?.workApprovedDesc }}
                       </p>
                     </div>
 
                     <!-- DISPUTED -->
                     <div v-else-if="phase.status === 'DISPUTED'" class="p-3 bg-red-50 border border-red-200 rounded-lg">
-                      <p class="text-sm font-semibold text-red-800">Dalam Sengketa · Under Dispute</p>
+                      <p class="text-sm font-semibold text-red-800">{{ t.projectWorkspace?.underDisputeTitle }}</p>
                       <p class="text-xs text-red-600 mt-0.5">
-                        Fase ini sedang ditinjau oleh tim dukungan kami. Kedua pihak akan dihubungi.
+                        {{ t.projectWorkspace?.underDisputeDesc }}
                       </p>
                     </div>
 
@@ -385,7 +395,7 @@
                     >
                       <CheckCircle :size="16" class="text-green-500 shrink-0" />
                       <p class="text-sm text-gray-600 font-medium">
-                        Fase selesai. Dana telah dicairkan ke arsitek · Phase complete. Payout disbursed.
+                        {{ t.projectWorkspace?.phaseCompleteDisbursed }}
                       </p>
                     </div>
                   </div>
@@ -393,8 +403,12 @@
                   <!-- Deliverables -->
                   <div class="px-5 py-4">
                     <div class="flex items-center justify-between mb-3">
-                      <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">Deliverable</p>
-                      <span class="text-xs text-gray-400">{{ phase.deliverables?.length || 0 }} file</span>
+                      <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">
+                        {{ t.projectWorkspace?.deliverablesLabel }}
+                      </p>
+                      <span class="text-xs text-gray-400"
+                        >{{ phase.deliverables?.length || 0 }} {{ t.projectWorkspace?.fileCountSuffix }}</span
+                      >
                     </div>
                     <div v-if="phase.deliverables && phase.deliverables.length > 0" class="space-y-4">
                       <div v-for="group in groupedDeliverables(phase)" :key="group.round">
@@ -466,18 +480,18 @@
                     </div>
                     <div v-else class="py-8 text-center border-2 border-dashed border-gray-200 rounded-xl">
                       <FileX :size="24" class="text-gray-300 mx-auto mb-2" />
-                      <p class="text-xs text-gray-400">Belum ada deliverable yang diunggah</p>
+                      <p class="text-xs text-gray-400">{{ t.projectWorkspace?.noDeliverablesUploaded }}</p>
                     </div>
                   </div>
 
                   <!-- Audit log -->
                   <div class="px-5 py-4">
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">
-                      Log Aktivitas · Activity Log
+                      {{ t.projectWorkspace?.activityLogLabel }}
                     </p>
                     <div v-if="logsLoading[phase.id]" class="flex items-center gap-2 py-4">
                       <div class="w-4 h-4 border border-brand-gold border-t-transparent rounded-full animate-spin" />
-                      <p class="text-xs text-gray-400">Memuat aktivitas...</p>
+                      <p class="text-xs text-gray-400">{{ t.projectWorkspace?.loadingActivity }}</p>
                     </div>
                     <div v-else-if="phaseLogs[phase.id] && phaseLogs[phase.id].length > 0" class="space-y-3">
                       <div v-for="(log, i) in phaseLogs[phase.id]" :key="i" class="flex items-start gap-3">
@@ -497,7 +511,7 @@
                       </div>
                     </div>
                     <div v-else class="py-4 text-center">
-                      <p class="text-xs text-gray-400">Belum ada aktivitas tercatat</p>
+                      <p class="text-xs text-gray-400">{{ t.projectWorkspace?.noActivityRecorded }}</p>
                     </div>
                   </div>
                 </div>
@@ -513,7 +527,9 @@
             style="height: calc(100vh - 7.5rem)"
           >
             <div class="px-4 py-4 border-b border-gray-100 shrink-0">
-              <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2.5">Chat Proyek · Project Chat</p>
+              <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2.5">
+                {{ t.projectWorkspace?.chatTitle }}
+              </p>
               <div class="flex items-center gap-2.5">
                 <div
                   class="w-8 h-8 rounded-full bg-ink-700 text-white flex items-center justify-center text-xs font-bold shrink-0"
@@ -524,7 +540,7 @@
                   <p class="text-sm font-semibold text-gray-900">{{ architectName }}</p>
                   <span class="inline-flex items-center gap-1 text-xs text-green-600">
                     <span class="w-1.5 h-1.5 rounded-full bg-green-500" />
-                    Aktif di proyek
+                    {{ t.projectWorkspace?.activeOnProject }}
                   </span>
                 </div>
               </div>
@@ -532,7 +548,7 @@
             <div class="flex-1 min-h-0 flex flex-col">
               <ChatPanel v-if="conversationId" :conversation-id="conversationId" class="flex-1 min-h-0" />
               <div v-else class="flex-1 flex items-center justify-center text-center px-4">
-                <p class="text-sm text-gray-400">Chat tersedia setelah kedua pihak mengkonfirmasi proyek.</p>
+                <p class="text-sm text-gray-400">{{ t.projectWorkspace?.chatUnavailableHint }}</p>
               </div>
             </div>
           </div>
@@ -551,7 +567,7 @@
           <div class="bg-ink-700 px-6 py-5 flex items-start justify-between">
             <div>
               <p class="text-xs text-brand-gold uppercase font-bold tracking-widest mb-1">
-                Detail Proyek · Project Details
+                {{ t.projectWorkspace?.projectDetailsLabel }}
               </p>
               <h2 class="text-xl font-bold text-white leading-tight">{{ project?.title }}</h2>
             </div>
@@ -570,34 +586,34 @@
 
             <div>
               <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">
-                Informasi Proyek · Project Information
+                {{ t.projectWorkspace?.projectInfoLabel }}
               </p>
               <div class="grid grid-cols-2 gap-3">
                 <div v-if="project?.location" class="bg-gray-50 rounded-lg px-4 py-3">
-                  <p class="text-xs text-gray-400 mb-0.5">Lokasi · Location</p>
+                  <p class="text-xs text-gray-400 mb-0.5">{{ t.projectWorkspace?.locationLabel }}</p>
                   <p class="text-sm font-semibold text-gray-800">{{ project.location }}</p>
                 </div>
                 <div v-if="project?.projectCategory" class="bg-gray-50 rounded-lg px-4 py-3">
-                  <p class="text-xs text-gray-400 mb-0.5">Kategori · Category</p>
+                  <p class="text-xs text-gray-400 mb-0.5">{{ t.projectWorkspace?.categoryLabel }}</p>
                   <p class="text-sm font-semibold text-gray-800">{{ project.projectCategory }}</p>
                 </div>
                 <div v-if="project?.buildingFunction" class="bg-gray-50 rounded-lg px-4 py-3">
-                  <p class="text-xs text-gray-400 mb-0.5">Fungsi Bangunan · Building Function</p>
+                  <p class="text-xs text-gray-400 mb-0.5">{{ t.projectWorkspace?.buildingFunctionLabel }}</p>
                   <p class="text-sm font-semibold text-gray-800">{{ projectTypeLabel(project, locale) }}</p>
                 </div>
                 <div v-if="project?.estimatedBuildArea" class="bg-gray-50 rounded-lg px-4 py-3">
-                  <p class="text-xs text-gray-400 mb-0.5">Luas Lahan · Lot Size</p>
+                  <p class="text-xs text-gray-400 mb-0.5">{{ t.projectWorkspace?.lotSizeLabel }}</p>
                   <p class="text-sm font-semibold text-gray-800">{{ project.estimatedBuildArea }} m²</p>
                 </div>
                 <div v-if="project?.numberOfFloors" class="bg-gray-50 rounded-lg px-4 py-3">
-                  <p class="text-xs text-gray-400 mb-0.5">Jumlah Lantai · Floors</p>
+                  <p class="text-xs text-gray-400 mb-0.5">{{ t.projectWorkspace?.floorsLabel }}</p>
                   <p class="text-sm font-semibold text-gray-800">{{ project.numberOfFloors }}</p>
                 </div>
                 <div
                   v-if="project?.designBudgetMin || project?.designBudgetMax"
                   class="bg-gray-50 rounded-lg px-4 py-3"
                 >
-                  <p class="text-xs text-gray-400 mb-0.5">Anggaran Desain · Design Budget</p>
+                  <p class="text-xs text-gray-400 mb-0.5">{{ t.projectWorkspace?.designBudgetLabel }}</p>
                   <p class="text-sm font-semibold text-gray-800">
                     {{ formatAmount(project.designBudgetMin) }} – {{ formatAmount(project.designBudgetMax) }}
                   </p>
@@ -607,14 +623,14 @@
 
             <div v-if="project?.scopeOfWork">
               <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">
-                Lingkup Pekerjaan · Scope of Work
+                {{ t.projectWorkspace?.scopeOfWorkLabel }}
               </p>
               <p class="text-sm text-gray-700 leading-relaxed bg-gray-50 rounded-lg p-4">{{ project.scopeOfWork }}</p>
             </div>
 
             <div v-if="project?.deliverables && project.deliverables.length > 0">
               <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">
-                Deliverable Proyek · Project Deliverables
+                {{ t.projectWorkspace?.projectDeliverablesLabel }}
               </p>
               <ul class="space-y-1">
                 <li
@@ -631,7 +647,9 @@
             <div class="border-t border-gray-100" />
 
             <div v-if="acceptedBid">
-              <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Penawaran Menang · Winning Bid</p>
+              <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">
+                {{ t.projectWorkspace?.winningBidLabel }}
+              </p>
               <div class="bg-brand-tan/40 border border-brand-gold/30 rounded-xl p-4 space-y-3">
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-3">
@@ -655,14 +673,14 @@
                     </div>
                   </div>
                   <div class="text-right">
-                    <p class="text-xs text-gray-400">Nilai Penawaran · Bid Amount</p>
+                    <p class="text-xs text-gray-400">{{ t.projectWorkspace?.bidAmountLabel }}</p>
                     <p class="font-bold text-brand-brown">{{ formatAmount(acceptedBid.bidAmount) }}</p>
                   </div>
                 </div>
 
                 <div v-if="acceptedBid.proposedTimelineDays" class="flex items-center gap-2 text-xs text-gray-600">
                   <Clock :size="13" />
-                  <span>{{ acceptedBid.proposedTimelineDays }} hari pengerjaan · days of work</span>
+                  <span>{{ acceptedBid.proposedTimelineDays }} {{ t.projectWorkspace?.workDaysSuffix }}</span>
                 </div>
 
                 <div v-if="acceptedBid.proposal" class="pt-2 border-t border-brand-gold/20">
@@ -674,7 +692,7 @@
                   v-if="acceptedBid.details?.phases && acceptedBid.details.phases.length > 0"
                   class="pt-2 border-t border-brand-gold/20"
                 >
-                  <p class="text-xs font-semibold text-gray-500 mb-2">Rencana Fase · Phase Plan</p>
+                  <p class="text-xs font-semibold text-gray-500 mb-2">{{ t.projectWorkspace?.phasePlanLabel }}</p>
                   <div class="space-y-2">
                     <div
                       v-for="(bp, i) in acceptedBid.details.phases"
@@ -690,10 +708,10 @@
                         <div>
                           <p class="text-xs font-semibold text-gray-800">{{ bp.title }}</p>
                           <p v-if="bp.estimatedDays" class="text-xs text-gray-500 mt-0.5">
-                            {{ bp.estimatedDays }} hari · days
+                            {{ bp.estimatedDays }} {{ t.projectWorkspace?.days }}
                           </p>
                           <p v-if="bp.revisionRounds" class="text-xs text-gray-400 mt-0.5">
-                            {{ bp.revisionRounds }}x revisi
+                            {{ bp.revisionRounds }}x {{ t.projectWorkspace?.revisionsWord }}
                           </p>
                         </div>
                       </div>
@@ -710,7 +728,7 @@
               class="px-5 py-2 bg-ink-700 text-white text-sm font-semibold rounded-lg hover:bg-ink-500 transition"
               @click="showProjectModal = false"
             >
-              Tutup · Close
+              {{ t.projectWorkspace?.closeLabel }}
             </button>
           </div>
         </div>
@@ -731,33 +749,28 @@
                 <ShieldCheck :size="22" class="text-white" />
               </div>
               <div>
-                <p class="text-xs text-green-100 font-semibold uppercase tracking-wide">Konfirmasi Persetujuan</p>
-                <h3 class="text-lg font-bold text-white">Setujui Pekerjaan Fase Ini?</h3>
+                <p class="text-xs text-green-100 font-semibold uppercase tracking-wide">
+                  {{ t.projectWorkspace?.confirmApprovalEyebrow }}
+                </p>
+                <h3 class="text-lg font-bold text-white">{{ t.projectWorkspace?.approveModalTitle }}</h3>
               </div>
             </div>
           </div>
 
           <div class="p-6 space-y-4">
             <div class="p-4 bg-amber-50 border border-amber-200 rounded-xl">
-              <p class="text-sm font-bold text-amber-800 mb-2">⚠️ Harap Baca Sebelum Menyetujui</p>
+              <p class="text-sm font-bold text-amber-800 mb-2">{{ t.projectWorkspace?.approveModalWarningTitle }}</p>
               <ul class="text-xs text-amber-700 space-y-1.5 list-disc list-inside">
-                <li>
-                  Dengan menyetujui, Anda mengkonfirmasi bahwa pekerjaan <strong>telah sesuai</strong> dengan
-                  spesifikasi yang disepakati.
-                </li>
-                <li>
-                  Arsitek akan dapat mengajukan <strong>pencairan dana</strong> untuk fase ini segera setelah
-                  persetujuan.
-                </li>
-                <li>Jika ada masalah setelah persetujuan, silakan hubungi tim dukungan kami.</li>
+                <li v-html="t.projectWorkspace?.approveModalItem1" />
+                <li v-html="t.projectWorkspace?.approveModalItem2" />
+                <li>{{ t.projectWorkspace?.approveModalItem3 }}</li>
               </ul>
             </div>
 
             <div class="p-4 bg-gray-50 border border-gray-200 rounded-xl text-xs text-gray-600">
-              <p class="font-semibold text-gray-700 mb-1">By approving:</p>
+              <p class="font-semibold text-gray-700 mb-1">{{ t.projectWorkspace?.approveModalConfirmLabel }}</p>
               <p>
-                You confirm the delivered work meets the agreed specifications. The architect will be able to initiate
-                their payout immediately. This action cannot be undone.
+                {{ t.projectWorkspace?.approveModalConfirmDesc }}
               </p>
             </div>
 
@@ -766,17 +779,17 @@
                 class="flex-1 px-4 py-2.5 border border-gray-200 text-gray-600 text-sm font-semibold rounded-lg hover:bg-gray-50 transition"
                 @click="showApproveConfirm = null"
               >
-                Batal · Cancel
+                {{ t.projectWorkspace?.cancel }}
               </button>
               <button
                 :disabled="actionLoading === showApproveConfirm"
                 class="flex-1 px-4 py-2.5 bg-green-600 text-white text-sm font-bold rounded-lg hover:bg-green-700 disabled:opacity-50 transition flex items-center justify-center gap-2"
                 @click="approvePhase(showApproveConfirm)"
               >
-                <span v-if="actionLoading === showApproveConfirm">Menyetujui...</span>
+                <span v-if="actionLoading === showApproveConfirm">{{ t.projectWorkspace?.approving }}</span>
                 <template v-else>
                   <ThumbsUp :size="15" />
-                  Ya, Setujui Sekarang
+                  {{ t.projectWorkspace?.confirmApproveBtn }}
                 </template>
               </button>
             </div>
@@ -815,7 +828,7 @@
               class="flex items-center gap-2 px-3 py-1.5 border border-white/20 text-white text-xs font-semibold rounded-lg hover:bg-white/10 transition"
             >
               <Download :size="14" />
-              Unduh · Download
+              {{ t.projectWorkspace?.downloadLabel }}
             </a>
             <button
               class="p-2 text-gray-400 hover:text-white transition rounded-lg hover:bg-white/10"
@@ -865,14 +878,14 @@
               <p class="text-white font-semibold mb-1">
                 {{ fileNameFromPath(previewState.items[previewState.index]?.filePath) }}
               </p>
-              <p class="text-gray-400 text-sm mb-4">Preview tidak tersedia untuk tipe file ini</p>
+              <p class="text-gray-400 text-sm mb-4">{{ t.projectWorkspace?.previewUnavailable }}</p>
               <a
                 :href="previewState.items[previewState.index]?.filePath"
                 target="_blank"
                 class="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-gray-900 text-sm font-semibold rounded-lg hover:bg-gray-100 transition"
               >
                 <Download :size="16" />
-                Unduh File · Download File
+                {{ t.projectWorkspace?.downloadFileLabel }}
               </a>
             </div>
           </template>
@@ -1025,7 +1038,7 @@ const coverImage = computed(() => {
 })
 
 const acceptedBid = computed(() => bidsStore.projectBids.find(b => b.status === 'ACCEPTED') || null)
-const architectName = computed(() => acceptedBid.value?.architectName || 'Arsitek')
+const architectName = computed(() => acceptedBid.value?.architectName || t.value.projectWorkspace?.architectFallback)
 const architectInitials = computed(() =>
   architectName.value
     .split(' ')
@@ -1070,58 +1083,50 @@ const groupedDeliverables = phase => {
     .sort((a, b) => a.round - b.round)
 }
 
-const statusConfig = {
+const statusStyles = {
   NOT_STARTED: {
-    label: 'Belum Dimulai',
     bg: 'bg-gray-100',
     text: 'text-gray-500',
     dot: 'bg-gray-400',
     icon: 'bg-gray-100 text-gray-400'
   },
   PENDING: {
-    label: 'Menunggu Bayar',
     bg: 'bg-amber-50',
     text: 'text-amber-700',
     dot: 'bg-amber-500',
     icon: 'bg-amber-100 text-amber-700'
   },
   BILLED: {
-    label: 'Invoice Terkirim',
     bg: 'bg-blue-50',
     text: 'text-blue-700',
     dot: 'bg-blue-500',
     icon: 'bg-blue-100 text-blue-700'
   },
   IN_PROGRESS: {
-    label: 'Sedang Berjalan',
     bg: 'bg-sky-50',
     text: 'text-sky-700',
     dot: 'bg-sky-500',
     icon: 'bg-sky-100 text-sky-700'
   },
   DELIVERED: {
-    label: 'Dikirimkan',
     bg: 'bg-purple-50',
     text: 'text-purple-700',
     dot: 'bg-purple-500',
     icon: 'bg-purple-100 text-purple-700'
   },
   APPROVED: {
-    label: 'Disetujui',
     bg: 'bg-green-50',
     text: 'text-green-700',
     dot: 'bg-green-500',
     icon: 'bg-green-100 text-green-700'
   },
   DISBURSED: {
-    label: 'Selesai',
     bg: 'bg-gray-50',
     text: 'text-gray-500',
     dot: 'bg-gray-400',
     icon: 'bg-green-100 text-green-600'
   },
   DISPUTED: {
-    label: 'Disengketakan',
     bg: 'bg-red-50',
     text: 'text-red-700',
     dot: 'bg-red-500',
@@ -1129,24 +1134,24 @@ const statusConfig = {
   }
 }
 
+const statusLabels = computed(() => t.value.projectWorkspace?.statusLabels || {})
+
 const phaseStatusConfig = (phase, index) => {
-  if (isNotStarted(phase, index)) return statusConfig.NOT_STARTED
-  return (
-    statusConfig[phase.status] || {
-      label: phase.status,
-      bg: 'bg-gray-50',
-      text: 'text-gray-500',
-      dot: 'bg-gray-400',
-      icon: 'bg-gray-100 text-gray-500'
-    }
-  )
+  const key = isNotStarted(phase, index) ? 'NOT_STARTED' : phase.status
+  const style = statusStyles[key] || {
+    bg: 'bg-gray-50',
+    text: 'text-gray-500',
+    dot: 'bg-gray-400',
+    icon: 'bg-gray-100 text-gray-500'
+  }
+  return { ...style, label: statusLabels.value[key] || phase.status }
 }
 
 const phaseIconClass = (status, index) => {
   const phase = sortedPhases.value[index]
   if (phase && isNotStarted(phase, index)) return 'bg-gray-100 text-gray-400'
   if (status === 'DISBURSED') return 'bg-green-100 text-green-600'
-  return statusConfig[status]?.icon || 'bg-gray-100 text-gray-500'
+  return statusStyles[status]?.icon || 'bg-gray-100 text-gray-500'
 }
 
 const logIconClass = actorType =>
@@ -1158,19 +1163,7 @@ const logIconClass = actorType =>
   })[actorType] || 'bg-gray-100 text-gray-500'
 
 const formatLogAction = action => {
-  const labels = {
-    PHASE_CREATED: 'Fase dibuat',
-    PHASE_BILLED: 'Invoice dibuat',
-    PAYMENT_RECEIVED: 'Pembayaran diterima',
-    DELIVERABLE_UPLOADED: 'File diunggah arsitek',
-    PHASE_SUBMITTED_FOR_REVIEW: 'Fase dikirim untuk review',
-    DELIVERABLE_APPROVED: 'Deliverable disetujui',
-    REVISION_REQUESTED: 'Revisi diminta',
-    DELIVERABLE_DISPUTED: 'Sengketa diajukan',
-    PAYOUT_INITIATED: 'Pencairan diajukan arsitek',
-    PAYOUT_COMPLETED: 'Pencairan berhasil',
-    PAYOUT_FAILED: 'Pencairan gagal'
-  }
+  const labels = t.value.projectWorkspace?.logActions || {}
   return (
     labels[action] ||
     action
@@ -1179,6 +1172,9 @@ const formatLogAction = action => {
       .replace(/\b\w/g, c => c.toUpperCase())
   )
 }
+
+const phaseFallbackTitle = phase =>
+  (t.value.projectWorkspace?.phaseFallback || 'Phase {n}').replace('{n}', phase.phaseNumber)
 
 const isImage = fileType => fileType?.startsWith('image/')
 const isPdf = fileType => fileType === 'application/pdf'
@@ -1191,12 +1187,14 @@ const formatAmount = amount => {
 
 const formatDate = dateStr => {
   if (!dateStr) return ''
-  return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+  const intlLocale = locale.value === 'en' ? 'en-US' : 'id-ID'
+  return new Date(dateStr).toLocaleDateString(intlLocale, { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 const formatDateTime = dateStr => {
   if (!dateStr) return ''
-  return new Date(dateStr).toLocaleString('id-ID', {
+  const intlLocale = locale.value === 'en' ? 'en-US' : 'id-ID'
+  return new Date(dateStr).toLocaleString(intlLocale, {
     day: 'numeric',
     month: 'short',
     hour: '2-digit',
@@ -1237,7 +1235,7 @@ const loadAll = async () => {
       fetchLogs(active.id)
     }
   } catch (err) {
-    error.value = err.response?.data?.message || 'Gagal memuat workspace'
+    error.value = err.response?.data?.message || t.value.projectWorkspace?.loadError
   } finally {
     loading.value = false
   }
@@ -1281,7 +1279,7 @@ const billPhase = async phase => {
     delete phaseLogs[phase.id]
     fetchLogs(phase.id)
   } catch (err) {
-    alert(err.response?.data?.message || 'Gagal membuat invoice')
+    alert(err.response?.data?.message || t.value.projectWorkspace?.billError)
   } finally {
     actionLoading.value = null
   }
@@ -1296,7 +1294,7 @@ const approvePhase = async phaseId => {
     delete phaseLogs[phaseId]
     fetchLogs(phaseId)
   } catch (err) {
-    alert(err.response?.data?.message || 'Gagal menyetujui fase')
+    alert(err.response?.data?.message || t.value.projectWorkspace?.approveError)
   } finally {
     actionLoading.value = null
   }
@@ -1318,7 +1316,7 @@ const submitRevision = async phase => {
     delete phaseLogs[phase.id]
     fetchLogs(phase.id)
   } catch (err) {
-    alert(err.response?.data?.message || 'Gagal meminta revisi')
+    alert(err.response?.data?.message || t.value.projectWorkspace?.revisionError)
   } finally {
     actionLoading.value = null
   }
@@ -1336,7 +1334,7 @@ const submitDispute = async phase => {
     delete phaseLogs[phase.id]
     fetchLogs(phase.id)
   } catch (err) {
-    alert(err.response?.data?.message || 'Gagal mengajukan sengketa')
+    alert(err.response?.data?.message || t.value.projectWorkspace?.disputeError)
   } finally {
     actionLoading.value = null
   }
@@ -1348,7 +1346,7 @@ const initPhases = async () => {
     await projectAPI.initializePhases(projectId)
     await refreshPhases()
   } catch (err) {
-    alert(err.response?.data?.message || 'Gagal menginisialisasi fase')
+    alert(err.response?.data?.message || t.value.projectWorkspace?.initError)
   } finally {
     initializingPhases.value = false
   }
