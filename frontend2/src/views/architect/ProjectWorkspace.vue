@@ -3,14 +3,14 @@
     <div v-if="loading" class="flex items-center justify-center h-screen">
       <div class="text-center">
         <div class="w-10 h-10 border-2 border-brand-gold border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-        <p class="text-gray-500">Memuat workspace...</p>
+        <p class="text-gray-500">{{ t.projectWorkspace?.loading }}</p>
       </div>
     </div>
 
     <div v-else-if="error" class="flex items-center justify-center h-screen">
       <div class="text-center">
         <p class="text-red-500 mb-4">{{ error }}</p>
-        <button class="text-brand-brown hover:underline" @click="loadAll">Coba lagi</button>
+        <button class="text-brand-brown hover:underline" @click="loadAll">{{ t.projectWorkspace?.tryAgain }}</button>
       </div>
     </div>
 
@@ -23,14 +23,14 @@
               <ArrowLeft :size="20" />
             </button>
             <div>
-              <p class="text-xs text-gray-400 uppercase font-bold tracking-wide">Project Workspace</p>
-              <h1 class="text-lg font-bold text-black">{{ project?.title || 'Active Project' }}</h1>
+              <p class="text-xs text-gray-400 uppercase font-bold tracking-wide">{{ t.projectWorkspace?.eyebrow }}</p>
+              <h1 class="text-lg font-bold text-black">{{ project?.title || t.projectWorkspace?.titleFallback }}</h1>
             </div>
           </div>
           <div class="flex items-center gap-3">
             <span class="text-sm text-gray-500 flex items-center gap-1.5">
               <Layers :size="14" />
-              {{ disbursedCount }} / {{ phases.length }} selesai
+              {{ disbursedCount }} / {{ phases.length }} {{ t.projectWorkspace?.phasesDone }}
             </span>
             <span
               v-if="activePhase?.dueDate"
@@ -95,7 +95,9 @@
                   <div>
                     <div class="flex items-center gap-2">
                       <h2 class="font-bold text-gray-900">{{ project?.title }}</h2>
-                      <span class="text-xs text-brand-brown font-medium group-hover:underline">Lihat Detail ↗</span>
+                      <span class="text-xs text-brand-brown font-medium group-hover:underline">{{
+                        t.projectWorkspace?.viewDetail
+                      }}</span>
                     </div>
                     <div class="flex flex-wrap items-center gap-3 mt-1 text-sm text-gray-500">
                       <span v-if="project?.location" class="flex items-center gap-1">
@@ -107,15 +109,17 @@
                     </div>
                   </div>
                   <div class="text-right shrink-0">
-                    <p class="text-xs text-gray-400">Total Nilai Proyek</p>
+                    <p class="text-xs text-gray-400">{{ t.projectWorkspace?.totalProjectValue }}</p>
                     <p class="font-bold text-gray-900">{{ formatAmount(totalAmount) }}</p>
-                    <p class="text-xs text-gray-400 mt-0.5">{{ formatAmount(disbursedAmount) }} dicairkan</p>
+                    <p class="text-xs text-gray-400 mt-0.5">
+                      {{ formatAmount(disbursedAmount) }} {{ t.projectWorkspace?.disbursedLabel }}
+                    </p>
                   </div>
                 </div>
                 <div class="space-y-1">
                   <div class="flex justify-between text-xs text-gray-500">
-                    <span>{{ Math.round(progressPercent) }}% selesai</span>
-                    <span>{{ disbursedCount }}/{{ phases.length }} fase</span>
+                    <span>{{ Math.round(progressPercent) }}% {{ t.projectWorkspace?.percentCompleteSuffix }}</span>
+                    <span>{{ disbursedCount }}/{{ phases.length }} {{ t.projectWorkspace?.phasesWord }}</span>
                   </div>
                   <div class="w-full bg-gray-100 rounded-full h-1.5">
                     <div
@@ -130,12 +134,14 @@
 
           <!-- Phase list -->
           <div class="space-y-3">
-            <p class="text-xs font-bold text-gray-400 uppercase tracking-wide px-1">Fase Pembayaran · Payment Phases</p>
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-wide px-1">
+              {{ t.projectWorkspace?.paymentPhasesTitle }}
+            </p>
 
             <div v-if="phases.length === 0" class="bg-white rounded-xl border border-gray-200 py-14 text-center">
               <Layers :size="32" class="text-gray-300 mx-auto mb-3" />
-              <p class="text-gray-500 font-medium">Belum ada fase</p>
-              <p class="text-sm text-gray-400 mt-1">Detail fase akan muncul setelah klien menyiapkannya.</p>
+              <p class="text-gray-500 font-medium">{{ t.projectWorkspace?.noPhasesTitle }}</p>
+              <p class="text-sm text-gray-400 mt-1">{{ t.projectWorkspace?.noPhasesDescArchitect }}</p>
             </div>
 
             <div v-for="(phase, index) in sortedPhases" :key="phase.id">
@@ -159,11 +165,13 @@
                     </div>
                     <div>
                       <p class="font-semibold text-gray-900 text-sm">
-                        {{ phase.title || `Fase ${phase.phaseNumber}` }}
+                        {{ phase.title || phaseFallbackTitle(phase.phaseNumber) }}
                       </p>
                       <div class="flex items-center gap-2 text-xs text-gray-500">
                         <span>{{ formatAmount(phase.amount) }}</span>
-                        <span v-if="phase.dueDate">· Tenggat {{ formatDate(phase.dueDate) }}</span>
+                        <span v-if="phase.dueDate"
+                          >· {{ t.projectWorkspace?.deadline }} {{ formatDate(phase.dueDate) }}</span
+                        >
                         <span
                           v-if="phase.status === 'IN_PROGRESS' && phase.dueDate"
                           class="font-semibold"
@@ -195,7 +203,7 @@
                   <!-- Description -->
                   <div v-if="phase.description" class="px-5 py-4">
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-1.5">
-                      Deskripsi · Description
+                      {{ t.projectWorkspace?.descriptionLabel }}
                     </p>
                     <p class="text-sm text-gray-600 leading-relaxed">{{ phase.description }}</p>
                   </div>
@@ -205,21 +213,23 @@
                     <div class="flex items-center gap-2">
                       <RotateCcw :size="14" class="text-purple-600" />
                       <span class="text-xs font-semibold text-purple-700">
-                        Sisa Revisi: {{ phase.maxRevisions - phase.revisionsUsed }} dari {{ phase.maxRevisions }}
-                        <span class="font-normal text-purple-500 ml-1">(Revisions Remaining)</span>
+                        {{ t.projectWorkspace?.revisionsLeftLabel }}: {{ phase.maxRevisions - phase.revisionsUsed }}
+                        {{ t.projectWorkspace?.of }} {{ phase.maxRevisions }}
                       </span>
                     </div>
                   </div>
 
                   <!-- Architect actions -->
                   <div class="px-5 py-4">
-                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Tindakan · Actions</p>
+                    <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">
+                      {{ t.projectWorkspace?.actionsLabel }}
+                    </p>
 
                     <!-- NOT STARTED -->
                     <div v-if="isNotStarted(phase, index)" class="p-3 bg-gray-50 border border-gray-200 rounded-lg">
-                      <p class="text-sm font-semibold text-gray-500">Belum Dimulai · Not Started</p>
+                      <p class="text-sm font-semibold text-gray-500">{{ t.projectWorkspace?.notStartedTitle }}</p>
                       <p class="text-xs text-gray-400 mt-0.5">
-                        Fase ini akan dimulai setelah fase sebelumnya selesai sepenuhnya.
+                        {{ t.projectWorkspace?.notStartedDesc }}
                       </p>
                     </div>
 
@@ -229,18 +239,18 @@
                       class="p-3 bg-amber-50 border border-amber-200 rounded-lg"
                     >
                       <p class="text-sm font-semibold text-amber-800">
-                        Menunggu Pembayaran Klien · Awaiting Client Payment
+                        {{ t.projectWorkspace?.awaitingClientPaymentTitle }}
                       </p>
                       <p class="text-xs text-amber-600 mt-0.5">
-                        Klien perlu membuat invoice dan membayar fase ini sebelum Anda dapat memulai pekerjaan.
+                        {{ t.projectWorkspace?.awaitingClientPaymentDesc }}
                       </p>
                     </div>
 
                     <!-- BILLED: invoice sent, waiting for payment -->
                     <div v-else-if="phase.status === 'BILLED'" class="p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                      <p class="text-sm font-semibold text-blue-800">Invoice Terkirim · Invoice Sent</p>
+                      <p class="text-sm font-semibold text-blue-800">{{ t.projectWorkspace?.invoiceSentTitle }}</p>
                       <p class="text-xs text-blue-600 mt-0.5">
-                        Invoice sudah dikirim ke klien. Anda akan diberitahu setelah pembayaran dikonfirmasi.
+                        {{ t.projectWorkspace?.invoiceSentDescArchitect }}
                       </p>
                     </div>
 
@@ -249,9 +259,11 @@
                       <div class="p-3 bg-sky-50 border border-sky-200 rounded-lg mb-3">
                         <div class="flex items-center justify-between">
                           <div>
-                            <p class="text-sm font-semibold text-sky-800">Fase Aktif · Work Phase Active</p>
+                            <p class="text-sm font-semibold text-sky-800">
+                              {{ t.projectWorkspace?.workPhaseActiveTitle }}
+                            </p>
                             <p class="text-xs text-sky-600 mt-0.5">
-                              Pembayaran dikonfirmasi. Unggah deliverable Anda ketika siap untuk direview klien.
+                              {{ t.projectWorkspace?.workPhaseActiveDesc }}
                             </p>
                           </div>
                           <div v-if="phase.dueDate" class="shrink-0 ml-3 text-right">
@@ -268,7 +280,9 @@
 
                       <!-- File upload -->
                       <div class="space-y-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">Unggah File · Upload File</p>
+                        <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">
+                          {{ t.projectWorkspace?.uploadFileLabel }}
+                        </p>
 
                         <div class="flex items-center gap-3">
                           <label
@@ -276,7 +290,7 @@
                           >
                             <Paperclip :size="16" class="text-gray-400 shrink-0" />
                             <span class="text-sm text-gray-500 truncate">
-                              {{ selectedFile[phase.id]?.name || 'Pilih file / Choose file' }}
+                              {{ selectedFile[phase.id]?.name || t.projectWorkspace?.chooseFileLabel }}
                             </span>
                             <input
                               type="file"
@@ -298,7 +312,7 @@
                           <input
                             v-model="deliverableDesc[phase.id]"
                             type="text"
-                            placeholder="Deskripsi file (opsional) · File description (optional)"
+                            :placeholder="t.projectWorkspace?.fileDescPlaceholder"
                             class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
                           />
                         </div>
@@ -313,11 +327,11 @@
                               <div
                                 class="w-3.5 h-3.5 border border-white border-t-transparent rounded-full animate-spin"
                               />
-                              Mengunggah...
+                              {{ t.projectWorkspace?.uploading }}
                             </span>
                             <template v-else>
                               <Upload :size="14" />
-                              Unggah
+                              {{ t.projectWorkspace?.uploadBtn }}
                             </template>
                           </button>
                         </div>
@@ -329,24 +343,20 @@
                         class="mt-3 p-4 bg-amber-50 border border-amber-200 rounded-xl"
                       >
                         <p class="text-xs font-bold text-amber-700 uppercase tracking-wide mb-2">
-                          Tandai Selesai · Mark Complete
+                          {{ t.projectWorkspace?.markCompleteLabel }}
                         </p>
                         <p class="text-xs text-amber-600 mb-3">
-                          Setelah semua file diunggah, kirim fase ini untuk direview oleh klien. Klien akan diberi
-                          notifikasi.
-                          <span class="block mt-0.5 text-amber-500"
-                            >Once all files are uploaded, submit this phase for client review.</span
-                          >
+                          {{ t.projectWorkspace?.markCompleteDesc }}
                         </p>
                         <button
                           :disabled="actionLoading === phase.id"
                           class="flex items-center gap-2 px-4 py-2.5 bg-amber-600 text-white text-sm font-semibold rounded-lg hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed transition"
                           @click="submitForReview(phase)"
                         >
-                          <span v-if="actionLoading === phase.id">Mengirimkan...</span>
+                          <span v-if="actionLoading === phase.id">{{ t.projectWorkspace?.submitting }}</span>
                           <template v-else>
                             <Send :size="14" />
-                            Kirim untuk Review
+                            {{ t.projectWorkspace?.submitForReviewBtn }}
                           </template>
                         </button>
                       </div>
@@ -357,18 +367,22 @@
                       v-else-if="phase.status === 'DELIVERED'"
                       class="p-3 bg-purple-50 border border-purple-200 rounded-lg"
                     >
-                      <p class="text-sm font-semibold text-purple-800">Sedang Direview · Under Client Review</p>
+                      <p class="text-sm font-semibold text-purple-800">
+                        {{ t.projectWorkspace?.underClientReviewTitle }}
+                      </p>
                       <p class="text-xs text-purple-600 mt-0.5">
-                        Deliverable Anda sudah dikirim. Menunggu persetujuan atau revisi dari klien.
+                        {{ t.projectWorkspace?.underClientReviewDesc }}
                       </p>
                     </div>
 
                     <!-- APPROVED: request payout -->
                     <div v-else-if="phase.status === 'APPROVED'">
                       <div class="p-3 bg-green-50 border border-green-200 rounded-lg mb-3">
-                        <p class="text-sm font-semibold text-green-800">Pekerjaan Disetujui! · Work Approved!</p>
+                        <p class="text-sm font-semibold text-green-800">
+                          {{ t.projectWorkspace?.workApprovedExclaim }}
+                        </p>
                         <p class="text-xs text-green-600 mt-0.5">
-                          Klien menyetujui pekerjaan Anda. Ajukan pencairan dana di bawah.
+                          {{ t.projectWorkspace?.workApprovedArchitectDesc }}
                         </p>
                       </div>
 
@@ -403,7 +417,7 @@
                         </div>
                         <div v-else class="space-y-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
                           <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">
-                            Detail Pencairan · Payout Details
+                            {{ t.projectWorkspace?.payoutDetailsLabel }}
                           </p>
                           <div>
                             <label class="text-xs font-medium text-gray-600 mb-1 block">Bank / Channel</label>
@@ -411,7 +425,7 @@
                               v-model="disbursementForm[phase.id].channelCode"
                               class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-300"
                             >
-                              <option value="">Pilih bank...</option>
+                              <option value="">{{ t.projectWorkspace?.selectBankPlaceholder }}</option>
                               <option value="ID_BCA">BCA</option>
                               <option value="ID_MANDIRI">Mandiri</option>
                               <option value="ID_BNI">BNI</option>
@@ -422,33 +436,33 @@
                             </select>
                           </div>
                           <div>
-                            <label class="text-xs font-medium text-gray-600 mb-1 block"
-                              >Nomor Rekening · Account Number</label
-                            >
+                            <label class="text-xs font-medium text-gray-600 mb-1 block">{{
+                              t.projectWorkspace?.accountNumberLabel
+                            }}</label>
                             <input
                               v-model="disbursementForm[phase.id].accountNumber"
                               type="text"
-                              placeholder="cth. 1234567890"
+                              :placeholder="t.projectWorkspace?.accountNumberPlaceholder"
                               class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
                             />
                           </div>
                           <div>
-                            <label class="text-xs font-medium text-gray-600 mb-1 block"
-                              >Nama Pemilik Rekening · Account Holder Name</label
-                            >
+                            <label class="text-xs font-medium text-gray-600 mb-1 block">{{
+                              t.projectWorkspace?.accountHolderLabel
+                            }}</label>
                             <input
                               v-model="disbursementForm[phase.id].accountHolderName"
                               type="text"
-                              placeholder="Nama sesuai buku tabungan"
+                              :placeholder="t.projectWorkspace?.accountHolderPlaceholder"
                               class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
                             />
                           </div>
                           <div class="pt-1 p-3 bg-amber-50 border border-amber-200 rounded-lg">
                             <p class="text-xs text-amber-700 font-medium">
-                              Jumlah pencairan: {{ formatAmount(phase.amount) }}
+                              {{ t.projectWorkspace?.disbursementAmountLabel }}: {{ formatAmount(phase.amount) }}
                             </p>
                             <p class="text-xs text-amber-600 mt-0.5">
-                              Transfer akan diproses melalui Xendit. Harap periksa detail rekening dengan cermat.
+                              {{ t.projectWorkspace?.xenditTransferHint }}
                             </p>
                           </div>
                           <div class="flex gap-2">
@@ -457,14 +471,16 @@
                               class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
                               @click="pendingDisbursement = phase"
                             >
-                              <span v-if="actionLoading === phase.id">Memproses...</span>
-                              <template v-else><Banknote :size="14" />Konfirmasi Pencairan</template>
+                              <span v-if="actionLoading === phase.id">{{ t.projectWorkspace?.processing }}</span>
+                              <template v-else
+                                ><Banknote :size="14" />{{ t.projectWorkspace?.confirmPayoutBtn }}</template
+                              >
                             </button>
                             <button
                               class="px-4 py-2 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-200 transition"
                               @click="showDisbursementForm[phase.id] = false"
                             >
-                              Batal
+                              {{ t.projectWorkspace?.cancel }}
                             </button>
                           </div>
                         </div>
@@ -483,7 +499,7 @@
                         </div>
                         <div v-else class="space-y-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
                           <p class="text-xs font-bold text-gray-500 uppercase tracking-wide">
-                            Detail Pencairan · Payout Details
+                            {{ t.projectWorkspace?.payoutDetailsLabel }}
                           </p>
                           <div>
                             <label class="text-xs font-medium text-gray-600 mb-1 block">Bank / Channel</label>
@@ -491,7 +507,7 @@
                               v-model="disbursementForm[phase.id].channelCode"
                               class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-gray-300"
                             >
-                              <option value="">Pilih bank...</option>
+                              <option value="">{{ t.projectWorkspace?.selectBankPlaceholder }}</option>
                               <option value="ID_BCA">BCA</option>
                               <option value="ID_MANDIRI">Mandiri</option>
                               <option value="ID_BNI">BNI</option>
@@ -502,33 +518,33 @@
                             </select>
                           </div>
                           <div>
-                            <label class="text-xs font-medium text-gray-600 mb-1 block"
-                              >Nomor Rekening · Account Number</label
-                            >
+                            <label class="text-xs font-medium text-gray-600 mb-1 block">{{
+                              t.projectWorkspace?.accountNumberLabel
+                            }}</label>
                             <input
                               v-model="disbursementForm[phase.id].accountNumber"
                               type="text"
-                              placeholder="cth. 1234567890"
+                              :placeholder="t.projectWorkspace?.accountNumberPlaceholder"
                               class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
                             />
                           </div>
                           <div>
-                            <label class="text-xs font-medium text-gray-600 mb-1 block"
-                              >Nama Pemilik Rekening · Account Holder Name</label
-                            >
+                            <label class="text-xs font-medium text-gray-600 mb-1 block">{{
+                              t.projectWorkspace?.accountHolderLabel
+                            }}</label>
                             <input
                               v-model="disbursementForm[phase.id].accountHolderName"
                               type="text"
-                              placeholder="Nama sesuai buku tabungan"
+                              :placeholder="t.projectWorkspace?.accountHolderPlaceholder"
                               class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-300"
                             />
                           </div>
                           <div class="pt-1 p-3 bg-amber-50 border border-amber-200 rounded-lg">
                             <p class="text-xs text-amber-700 font-medium">
-                              Jumlah pencairan: {{ formatAmount(phase.amount) }}
+                              {{ t.projectWorkspace?.disbursementAmountLabel }}: {{ formatAmount(phase.amount) }}
                             </p>
                             <p class="text-xs text-amber-600 mt-0.5">
-                              Transfer akan diproses melalui Xendit. Harap periksa detail rekening dengan cermat.
+                              {{ t.projectWorkspace?.xenditTransferHint }}
                             </p>
                           </div>
                           <div class="flex gap-2">
@@ -537,17 +553,17 @@
                               class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
                               @click="pendingDisbursement = phase"
                             >
-                              <span v-if="actionLoading === phase.id">Memproses...</span>
+                              <span v-if="actionLoading === phase.id">{{ t.projectWorkspace?.processing }}</span>
                               <template v-else>
                                 <Banknote :size="14" />
-                                Konfirmasi Pencairan
+                                {{ t.projectWorkspace?.confirmPayoutBtn }}
                               </template>
                             </button>
                             <button
                               class="px-4 py-2 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-200 transition"
                               @click="showDisbursementForm[phase.id] = false"
                             >
-                              Batal
+                              {{ t.projectWorkspace?.cancel }}
                             </button>
                           </div>
                         </div>
@@ -561,17 +577,17 @@
                     >
                       <CheckCircle :size="16" class="text-green-500 shrink-0" />
                       <p class="text-sm text-gray-600 font-medium">
-                        Dana berhasil dicairkan · Payout disbursed successfully.
+                        {{ t.projectWorkspace?.payoutDisbursedSuccess }}
                       </p>
                     </div>
 
                     <!-- DISPUTED -->
                     <div v-else-if="phase.status === 'DISPUTED'" class="p-3 bg-red-50 border border-red-200 rounded-lg">
                       <p class="text-sm font-semibold text-red-800">
-                        Klien Mengajukan Sengketa · Client Raised a Dispute
+                        {{ t.projectWorkspace?.clientDisputeTitle }}
                       </p>
                       <p class="text-xs text-red-600 mt-0.5">
-                        Klien mengajukan sengketa untuk deliverable ini. Tim dukungan kami akan menghubungi kedua pihak.
+                        {{ t.projectWorkspace?.clientDisputeDesc }}
                       </p>
                     </div>
                   </div>
@@ -579,8 +595,12 @@
                   <!-- Deliverables -->
                   <div class="px-5 py-4">
                     <div class="flex items-center justify-between mb-3">
-                      <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">Deliverable</p>
-                      <span class="text-xs text-gray-400">{{ phase.deliverables?.length || 0 }} file</span>
+                      <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">
+                        {{ t.projectWorkspace?.deliverablesLabel }}
+                      </p>
+                      <span class="text-xs text-gray-400"
+                        >{{ phase.deliverables?.length || 0 }} {{ t.projectWorkspace?.fileCountSuffix }}</span
+                      >
                     </div>
                     <div v-if="phase.deliverables && phase.deliverables.length > 0" class="space-y-4">
                       <div v-for="group in groupedDeliverables(phase)" :key="group.round">
@@ -648,18 +668,18 @@
                     </div>
                     <div v-else class="py-8 text-center border-2 border-dashed border-gray-200 rounded-xl">
                       <FileX :size="24" class="text-gray-300 mx-auto mb-2" />
-                      <p class="text-xs text-gray-400">Belum ada deliverable yang diunggah</p>
+                      <p class="text-xs text-gray-400">{{ t.projectWorkspace?.noDeliverablesUploaded }}</p>
                     </div>
                   </div>
 
                   <!-- Audit log -->
                   <div class="px-5 py-4">
                     <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">
-                      Log Aktivitas · Activity Log
+                      {{ t.projectWorkspace?.activityLogLabel }}
                     </p>
                     <div v-if="logsLoading[phase.id]" class="flex items-center gap-2 py-4">
                       <div class="w-4 h-4 border border-brand-gold border-t-transparent rounded-full animate-spin" />
-                      <p class="text-xs text-gray-400">Memuat aktivitas...</p>
+                      <p class="text-xs text-gray-400">{{ t.projectWorkspace?.loadingActivity }}</p>
                     </div>
                     <div v-else-if="phaseLogs[phase.id] && phaseLogs[phase.id].length > 0" class="space-y-3">
                       <div v-for="(log, i) in phaseLogs[phase.id]" :key="i" class="flex items-start gap-3">
@@ -685,7 +705,7 @@
                       </div>
                     </div>
                     <div v-else class="py-4 text-center">
-                      <p class="text-xs text-gray-400">Belum ada aktivitas tercatat</p>
+                      <p class="text-xs text-gray-400">{{ t.projectWorkspace?.noActivityRecorded }}</p>
                     </div>
                   </div>
                 </div>
@@ -701,7 +721,9 @@
             style="height: calc(100vh - 7.5rem)"
           >
             <div class="px-4 py-4 border-b border-gray-100 shrink-0">
-              <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2.5">Chat Proyek · Project Chat</p>
+              <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2.5">
+                {{ t.projectWorkspace?.chatTitle }}
+              </p>
               <div class="flex items-center gap-2.5">
                 <div
                   class="w-8 h-8 rounded-full bg-brand-tan text-brand-brown flex items-center justify-center text-xs font-bold shrink-0"
@@ -712,7 +734,7 @@
                   <p class="text-sm font-semibold text-gray-900">{{ clientName }}</p>
                   <span class="inline-flex items-center gap-1 text-xs text-green-600">
                     <span class="w-1.5 h-1.5 rounded-full bg-green-500" />
-                    Aktif di proyek
+                    {{ t.projectWorkspace?.activeOnProject }}
                   </span>
                 </div>
               </div>
@@ -720,7 +742,7 @@
             <div class="flex-1 min-h-0 flex flex-col">
               <ChatPanel v-if="conversationId" :conversation-id="conversationId" class="flex-1 min-h-0" />
               <div v-else class="flex-1 flex items-center justify-center text-center px-4">
-                <p class="text-sm text-gray-400">Chat tersedia setelah kedua pihak mengkonfirmasi proyek.</p>
+                <p class="text-sm text-gray-400">{{ t.projectWorkspace?.chatUnavailableHint }}</p>
               </div>
             </div>
           </div>
@@ -740,7 +762,7 @@
           <div class="bg-ink-700 px-6 py-5 flex items-start justify-between">
             <div>
               <p class="text-xs text-brand-gold uppercase font-bold tracking-widest mb-1">
-                Detail Proyek · Project Details
+                {{ t.projectWorkspace?.projectDetailsLabel }}
               </p>
               <h2 class="text-xl font-bold text-white leading-tight">{{ project?.title }}</h2>
             </div>
@@ -762,34 +784,34 @@
             <!-- Project info grid -->
             <div>
               <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">
-                Informasi Proyek · Project Information
+                {{ t.projectWorkspace?.projectInfoLabel }}
               </p>
               <div class="grid grid-cols-2 gap-3">
                 <div v-if="project?.location" class="bg-gray-50 rounded-lg px-4 py-3">
-                  <p class="text-xs text-gray-400 mb-0.5">Lokasi · Location</p>
+                  <p class="text-xs text-gray-400 mb-0.5">{{ t.projectWorkspace?.locationLabel }}</p>
                   <p class="text-sm font-semibold text-gray-800">{{ project.location }}</p>
                 </div>
                 <div v-if="project?.projectCategory" class="bg-gray-50 rounded-lg px-4 py-3">
-                  <p class="text-xs text-gray-400 mb-0.5">Kategori · Category</p>
+                  <p class="text-xs text-gray-400 mb-0.5">{{ t.projectWorkspace?.categoryLabel }}</p>
                   <p class="text-sm font-semibold text-gray-800">{{ project.projectCategory }}</p>
                 </div>
                 <div v-if="project?.buildingFunction" class="bg-gray-50 rounded-lg px-4 py-3">
-                  <p class="text-xs text-gray-400 mb-0.5">Fungsi Bangunan · Building Function</p>
+                  <p class="text-xs text-gray-400 mb-0.5">{{ t.projectWorkspace?.buildingFunctionLabel }}</p>
                   <p class="text-sm font-semibold text-gray-800">{{ projectTypeLabel(project, locale) }}</p>
                 </div>
                 <div v-if="project?.estimatedBuildArea" class="bg-gray-50 rounded-lg px-4 py-3">
-                  <p class="text-xs text-gray-400 mb-0.5">Luas Lahan · Lot Size</p>
+                  <p class="text-xs text-gray-400 mb-0.5">{{ t.projectWorkspace?.lotSizeLabel }}</p>
                   <p class="text-sm font-semibold text-gray-800">{{ project.estimatedBuildArea }} m²</p>
                 </div>
                 <div v-if="project?.numberOfFloors" class="bg-gray-50 rounded-lg px-4 py-3">
-                  <p class="text-xs text-gray-400 mb-0.5">Jumlah Lantai · Floors</p>
+                  <p class="text-xs text-gray-400 mb-0.5">{{ t.projectWorkspace?.floorsLabel }}</p>
                   <p class="text-sm font-semibold text-gray-800">{{ project.numberOfFloors }}</p>
                 </div>
                 <div
                   v-if="project?.designBudgetMin || project?.designBudgetMax"
                   class="bg-gray-50 rounded-lg px-4 py-3"
                 >
-                  <p class="text-xs text-gray-400 mb-0.5">Anggaran Desain · Design Budget</p>
+                  <p class="text-xs text-gray-400 mb-0.5">{{ t.projectWorkspace?.designBudgetLabel }}</p>
                   <p class="text-sm font-semibold text-gray-800">
                     {{ formatAmount(project.designBudgetMin) }} – {{ formatAmount(project.designBudgetMax) }}
                   </p>
@@ -800,7 +822,7 @@
             <!-- Scope of Work -->
             <div v-if="project?.scopeOfWork">
               <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">
-                Lingkup Pekerjaan · Scope of Work
+                {{ t.projectWorkspace?.scopeOfWorkLabel }}
               </p>
               <p class="text-sm text-gray-700 leading-relaxed bg-gray-50 rounded-lg p-4">{{ project.scopeOfWork }}</p>
             </div>
@@ -808,7 +830,7 @@
             <!-- Deliverables list from project -->
             <div v-if="project?.deliverables && project.deliverables.length > 0">
               <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-2">
-                Deliverable Proyek · Project Deliverables
+                {{ t.projectWorkspace?.projectDeliverablesLabel }}
               </p>
               <ul class="space-y-1">
                 <li
@@ -827,7 +849,9 @@
 
             <!-- Winning bid section -->
             <div v-if="myBid">
-              <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">Penawaran Menang · Winning Bid</p>
+              <p class="text-xs font-bold text-gray-400 uppercase tracking-wide mb-3">
+                {{ t.projectWorkspace?.winningBidLabel }}
+              </p>
               <div class="bg-brand-tan/40 border border-brand-gold/30 rounded-xl p-4 space-y-3">
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-3">
@@ -849,14 +873,14 @@
                     </div>
                   </div>
                   <div class="text-right">
-                    <p class="text-xs text-gray-400">Nilai Penawaran · Bid Amount</p>
+                    <p class="text-xs text-gray-400">{{ t.projectWorkspace?.bidAmountLabel }}</p>
                     <p class="font-bold text-brand-brown">{{ formatAmount(myBid.bidAmount) }}</p>
                   </div>
                 </div>
 
                 <div v-if="myBid.proposedTimelineDays" class="flex items-center gap-2 text-xs text-gray-600">
                   <Clock :size="13" />
-                  <span>{{ myBid.proposedTimelineDays }} hari pengerjaan · days of work</span>
+                  <span>{{ myBid.proposedTimelineDays }} {{ t.projectWorkspace?.workDaysSuffix }}</span>
                 </div>
 
                 <div v-if="myBid.proposal" class="pt-2 border-t border-brand-gold/20">
@@ -869,7 +893,7 @@
                   v-if="myBid.details?.phases && myBid.details.phases.length > 0"
                   class="pt-2 border-t border-brand-gold/20"
                 >
-                  <p class="text-xs font-semibold text-gray-500 mb-2">Rencana Fase · Phase Plan</p>
+                  <p class="text-xs font-semibold text-gray-500 mb-2">{{ t.projectWorkspace?.phasePlanLabel }}</p>
                   <div class="space-y-2">
                     <div
                       v-for="(bp, i) in myBid.details.phases"
@@ -885,10 +909,10 @@
                         <div>
                           <p class="text-xs font-semibold text-gray-800">{{ bp.title }}</p>
                           <p v-if="bp.estimatedDays" class="text-xs text-gray-500 mt-0.5">
-                            {{ bp.estimatedDays }} hari · days
+                            {{ bp.estimatedDays }} {{ t.projectWorkspace?.days }}
                           </p>
                           <p v-if="bp.revisionRounds" class="text-xs text-gray-400 mt-0.5">
-                            {{ bp.revisionRounds }}x revisi
+                            {{ bp.revisionRounds }}x {{ t.projectWorkspace?.revisionsWord }}
                           </p>
                         </div>
                       </div>
@@ -905,7 +929,7 @@
               class="px-5 py-2 bg-ink-700 text-white text-sm font-semibold rounded-lg hover:bg-ink-500 transition"
               @click="showProjectModal = false"
             >
-              Tutup · Close
+              {{ t.projectWorkspace?.closeLabel }}
             </button>
           </div>
         </div>
@@ -922,22 +946,21 @@
         <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
           <div class="bg-green-600 px-6 py-5">
             <p class="text-xs text-green-100 uppercase font-bold tracking-widest mb-1">
-              Konfirmasi Pencairan · Confirm Payout
+              {{ t.projectWorkspace?.confirmPayoutEyebrow }}
             </p>
             <h2 class="text-lg font-bold text-white leading-tight">
-              {{ pendingDisbursement.title || `Fase ${pendingDisbursement.phaseNumber}` }}
+              {{ pendingDisbursement.title || phaseFallbackTitle(pendingDisbursement.phaseNumber) }}
             </h2>
           </div>
           <div class="p-6 space-y-3">
             <div class="p-3 bg-amber-50 border border-amber-200 rounded-lg">
               <p class="text-xs text-amber-700 font-medium">
-                Periksa kembali detail berikut sebelum dana dicairkan melalui Xendit. Tindakan ini tidak dapat
-                dibatalkan.
+                {{ t.projectWorkspace?.confirmPayoutWarning }}
               </p>
             </div>
             <div class="divide-y divide-gray-100 border border-gray-200 rounded-lg overflow-hidden">
               <div class="flex justify-between px-4 py-2.5 text-sm">
-                <span class="text-gray-500">Jumlah · Amount</span>
+                <span class="text-gray-500">{{ t.projectWorkspace?.amountLabel }}</span>
                 <span class="font-semibold text-gray-900">{{ formatAmount(pendingDisbursement.amount) }}</span>
               </div>
               <div class="flex justify-between px-4 py-2.5 text-sm">
@@ -947,13 +970,13 @@
                 }}</span>
               </div>
               <div class="flex justify-between px-4 py-2.5 text-sm">
-                <span class="text-gray-500">Nomor Rekening · Account No.</span>
+                <span class="text-gray-500">{{ t.projectWorkspace?.accountNumberLabel }}</span>
                 <span class="font-semibold text-gray-900">{{
                   disbursementForm[pendingDisbursement.id]?.accountNumber
                 }}</span>
               </div>
               <div class="flex justify-between px-4 py-2.5 text-sm">
-                <span class="text-gray-500">Nama Pemilik · Holder Name</span>
+                <span class="text-gray-500">{{ t.projectWorkspace?.holderNameLabel }}</span>
                 <span class="font-semibold text-gray-900">{{
                   disbursementForm[pendingDisbursement.id]?.accountHolderName
                 }}</span>
@@ -965,15 +988,15 @@
               class="px-4 py-2 text-gray-600 text-sm font-medium rounded-lg hover:bg-gray-100 transition"
               @click="pendingDisbursement = null"
             >
-              Batal
+              {{ t.projectWorkspace?.cancel }}
             </button>
             <button
               :disabled="actionLoading === pendingDisbursement.id"
               class="px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center gap-2"
               @click="confirmDisbursement"
             >
-              <span v-if="actionLoading === pendingDisbursement.id">Memproses...</span>
-              <template v-else><Banknote :size="14" />Ya, Cairkan Dana Sekarang</template>
+              <span v-if="actionLoading === pendingDisbursement.id">{{ t.projectWorkspace?.processing }}</span>
+              <template v-else><Banknote :size="14" />{{ t.projectWorkspace?.confirmPayoutBtnFull }}</template>
             </button>
           </div>
         </div>
@@ -1063,7 +1086,7 @@ const coverImage = computed(() => {
   return files.find(f => f.fileType?.startsWith('image/'))?.filePath || null
 })
 
-const clientName = computed(() => project.value?.clientName || 'Klien')
+const clientName = computed(() => project.value?.clientName || t.value.projectWorkspace?.clientFallback)
 const clientInitials = computed(() =>
   clientName.value
     .split(' ')
@@ -1102,58 +1125,50 @@ const groupedDeliverables = phase => {
     .sort((a, b) => a.round - b.round)
 }
 
-const statusConfig = {
+const statusStyles = {
   NOT_STARTED: {
-    label: 'Belum Dimulai',
     bg: 'bg-gray-100',
     text: 'text-gray-500',
     dot: 'bg-gray-400',
     icon: 'bg-gray-100 text-gray-400'
   },
   PENDING: {
-    label: 'Menunggu',
     bg: 'bg-amber-50',
     text: 'text-amber-700',
     dot: 'bg-amber-500',
     icon: 'bg-amber-100 text-amber-700'
   },
   BILLED: {
-    label: 'Ditagihkan',
     bg: 'bg-blue-50',
     text: 'text-blue-700',
     dot: 'bg-blue-500',
     icon: 'bg-blue-100 text-blue-700'
   },
   IN_PROGRESS: {
-    label: 'Sedang Berjalan',
     bg: 'bg-sky-50',
     text: 'text-sky-700',
     dot: 'bg-sky-500',
     icon: 'bg-sky-100 text-sky-700'
   },
   DELIVERED: {
-    label: 'Dikirimkan',
     bg: 'bg-purple-50',
     text: 'text-purple-700',
     dot: 'bg-purple-500',
     icon: 'bg-purple-100 text-purple-700'
   },
   APPROVED: {
-    label: 'Disetujui',
     bg: 'bg-green-50',
     text: 'text-green-700',
     dot: 'bg-green-500',
     icon: 'bg-green-100 text-green-700'
   },
   DISBURSED: {
-    label: 'Dicairkan',
     bg: 'bg-gray-50',
     text: 'text-gray-500',
     dot: 'bg-gray-400',
     icon: 'bg-green-100 text-green-600'
   },
   DISPUTED: {
-    label: 'Disengketakan',
     bg: 'bg-red-50',
     text: 'text-red-700',
     dot: 'bg-red-500',
@@ -1161,24 +1176,24 @@ const statusConfig = {
   }
 }
 
+const statusLabels = computed(() => t.value.projectWorkspace?.statusLabelsArchitect || {})
+
 const phaseStatusConfig = (phase, index) => {
-  if (isNotStarted(phase, index)) return statusConfig.NOT_STARTED
-  return (
-    statusConfig[phase.status] || {
-      label: phase.status,
-      bg: 'bg-gray-50',
-      text: 'text-gray-500',
-      dot: 'bg-gray-400',
-      icon: 'bg-gray-100 text-gray-500'
-    }
-  )
+  const key = isNotStarted(phase, index) ? 'NOT_STARTED' : phase.status
+  const style = statusStyles[key] || {
+    bg: 'bg-gray-50',
+    text: 'text-gray-500',
+    dot: 'bg-gray-400',
+    icon: 'bg-gray-100 text-gray-500'
+  }
+  return { ...style, label: statusLabels.value[key] || phase.status }
 }
 
 const phaseIconClass = (status, index) => {
   const phase = sortedPhases.value[index]
   if (phase && isNotStarted(phase, index)) return 'bg-gray-100 text-gray-400'
   if (status === 'DISBURSED') return 'bg-green-100 text-green-600'
-  return statusConfig[status]?.icon || 'bg-gray-100 text-gray-500'
+  return statusStyles[status]?.icon || 'bg-gray-100 text-gray-500'
 }
 
 const logIconClass = actorType =>
@@ -1192,19 +1207,7 @@ const logIconClass = actorType =>
 const logReasonText = log => log.metadata?.reason || log.metadata?.notes || null
 
 const formatLogAction = action => {
-  const labels = {
-    PHASE_CREATED: 'Fase dibuat',
-    PHASE_BILLED: 'Invoice dibuat',
-    PAYMENT_RECEIVED: 'Pembayaran diterima',
-    DELIVERABLE_UPLOADED: 'File diunggah',
-    PHASE_SUBMITTED_FOR_REVIEW: 'Fase dikirim untuk review',
-    DELIVERABLE_APPROVED: 'Deliverable disetujui klien',
-    REVISION_REQUESTED: 'Revisi diminta klien',
-    DELIVERABLE_DISPUTED: 'Sengketa diajukan klien',
-    PAYOUT_INITIATED: 'Pencairan diajukan',
-    PAYOUT_COMPLETED: 'Pencairan berhasil',
-    PAYOUT_FAILED: 'Pencairan gagal'
-  }
+  const labels = t.value.projectWorkspace?.logActionsArchitect || {}
   return (
     labels[action] ||
     action
@@ -1213,6 +1216,9 @@ const formatLogAction = action => {
       .replace(/\b\w/g, c => c.toUpperCase())
   )
 }
+
+const phaseFallbackTitle = phaseNumber =>
+  (t.value.projectWorkspace?.phaseFallback || 'Phase {n}').replace('{n}', phaseNumber)
 
 const isImage = fileType => fileType?.startsWith('image/')
 const isPdf = fileType => fileType === 'application/pdf'
@@ -1225,12 +1231,14 @@ const formatAmount = amount => {
 
 const formatDate = dateStr => {
   if (!dateStr) return ''
-  return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+  const intlLocale = locale.value === 'en' ? 'en-US' : 'id-ID'
+  return new Date(dateStr).toLocaleDateString(intlLocale, { day: 'numeric', month: 'short', year: 'numeric' })
 }
 
 const formatDateTime = dateStr => {
   if (!dateStr) return ''
-  return new Date(dateStr).toLocaleString('id-ID', {
+  const intlLocale = locale.value === 'en' ? 'en-US' : 'id-ID'
+  return new Date(dateStr).toLocaleString(intlLocale, {
     day: 'numeric',
     month: 'short',
     hour: '2-digit',
@@ -1246,10 +1254,11 @@ const daysLeft = dueDate => {
 
 const countdownText = dueDate => {
   const d = daysLeft(dueDate)
-  if (d < 0) return `${Math.abs(d)} hari terlambat`
-  if (d === 0) return 'Tenggat hari ini!'
-  if (d === 1) return '1 hari tersisa'
-  return `${d} hari tersisa`
+  const pw = t.value.projectWorkspace
+  if (d < 0) return (pw?.overdueDays || '{d} days overdue').replace('{d}', Math.abs(d))
+  if (d === 0) return pw?.dueToday
+  if (d === 1) return pw?.oneDayLeft
+  return (pw?.daysLeftCount || '{d} days left').replace('{d}', d)
 }
 
 const isDisbursementFormValid = phaseId => {
@@ -1296,7 +1305,7 @@ const loadAll = async () => {
       initDisbursementForm(active.id)
     }
   } catch (err) {
-    error.value = err.response?.data?.message || 'Gagal memuat workspace'
+    error.value = err.response?.data?.message || t.value.projectWorkspace?.loadError
   } finally {
     loading.value = false
   }
@@ -1346,7 +1355,7 @@ const uploadFile = async phase => {
     delete phaseLogs[phase.id]
     fetchLogs(phase.id)
   } catch (err) {
-    alert(err.response?.data?.message || 'Gagal mengunggah file')
+    alert(err.response?.data?.message || t.value.projectWorkspace?.uploadError)
   } finally {
     uploadLoading.value = null
   }
@@ -1360,7 +1369,7 @@ const submitForReview = async phase => {
     delete phaseLogs[phase.id]
     fetchLogs(phase.id)
   } catch (err) {
-    alert(err.response?.data?.message || 'Gagal mengirim untuk review')
+    alert(err.response?.data?.message || t.value.projectWorkspace?.submitReviewError)
   } finally {
     actionLoading.value = null
   }
@@ -1382,7 +1391,7 @@ const requestPayout = async phase => {
     delete phaseLogs[phase.id]
     fetchLogs(phase.id)
   } catch (err) {
-    alert(err.response?.data?.message || 'Gagal mengajukan pencairan')
+    alert(err.response?.data?.message || t.value.projectWorkspace?.payoutError)
   } finally {
     actionLoading.value = null
   }
