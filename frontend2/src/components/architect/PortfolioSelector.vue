@@ -6,7 +6,7 @@
     </div>
 
     <div v-else-if="portfolios.length === 0" class="text-center py-8 bg-gray-50 rounded-2xl">
-      <p class="text-gray-500">No portfolios available. Create portfolios first to attach them to proposals.</p>
+      <p class="text-gray-500">No portfolios available. Create portfolios first to attach them to bids.</p>
     </div>
 
     <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">

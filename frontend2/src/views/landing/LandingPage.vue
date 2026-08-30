@@ -35,9 +35,9 @@
         </p>
       </div>
 
-      <!-- Right: proposal carousel -->
+      <!-- Right: bid carousel -->
       <div>
-        <ProposalCarousel :slides="heroSlides" :loading="isLoading" />
+        <BidCarousel :slides="heroSlides" :loading="isLoading" />
       </div>
     </section>
 
@@ -217,7 +217,7 @@ import { ShieldCheck, Tag, Lock, MessageSquare, Layers, MapPin } from 'lucide-vu
 import Navbar from '@/components/layout/Navbar.vue'
 import Footer from '@/components/layout/Footer.vue'
 import BaseButton from '@/components/ui/BaseButton.vue'
-import ProposalCarousel from '@/components/landing/ProposalCarousel.vue'
+import BidCarousel from '@/components/landing/BidCarousel.vue'
 import SearchInput from '@/components/landing/SearchInput.vue'
 import CategoryChip from '@/components/landing/CategoryChip.vue'
 import ImageCard from '@/components/landing/ImageCard.vue'

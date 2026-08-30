@@ -9,7 +9,7 @@
         <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-4">
           {{ t.landingEditor.previewLabel }}
         </p>
-        <ProposalCarousel :slides="previewSlides" :loading="loading" />
+        <BidCarousel :slides="previewSlides" :loading="loading" />
       </div>
 
       <!-- Editor panel -->
@@ -234,7 +234,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { ChevronUp, ChevronDown, Pencil, Trash2, Plus, Image as ImageIcon } from 'lucide-vue-next'
-import ProposalCarousel from '@/components/landing/ProposalCarousel.vue'
+import BidCarousel from '@/components/landing/BidCarousel.vue'
 import { adminLandingAPI } from '@/services/adminApi'
 import { validateFile, getFilePreviewUrl, revokeFilePreviewUrl } from '@/services/uploadService'
 import { useI18n } from '@/composables/useI18n'

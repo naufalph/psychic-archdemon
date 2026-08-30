@@ -68,7 +68,7 @@
                   class="inline-flex items-center gap-1 px-3 py-1 bg-amber-100 text-amber-700 rounded-full text-xs font-bold"
                 >
                   <CheckCircle :size="12" />
-                  {{ t.finalization?.yourProposal }}
+                  {{ t.finalization?.yourBid }}
                 </span>
               </div>
 
@@ -142,7 +142,7 @@
               </p>
             </div>
 
-            <!-- Proposal Images -->
+            <!-- Bid Images -->
             <div class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft">
               <BidImageGallery
                 :images="bid.facadeImages"

@@ -16,7 +16,7 @@
           <div :class="selectAllCheckboxClasses(group.categoryKey)">
             <Check v-if="isAllSelected(group.categoryKey)" :size="14" class="text-white" />
           </div>
-          <span class="font-medium">{{ t.proposalCreate.selectAll }}</span>
+          <span class="font-medium">{{ t.bidCreate.selectAll }}</span>
         </label>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -74,11 +74,11 @@ const deliverableGroups = [
   { categoryKey: 'construction', items: ['SUPERVISION', 'AS_BUILT'] }
 ]
 
-const categoryLabel = key => t.value.proposalCreate?.deliverableCategories?.[key] || key
+const categoryLabel = key => t.value.bidCreate?.deliverableCategories?.[key] || key
 
-const itemLabel = value => t.value.proposalCreate?.deliverableItems?.[value] || value.replace(/_/g, ' ')
+const itemLabel = value => t.value.bidCreate?.deliverableItems?.[value] || value.replace(/_/g, ' ')
 
-const itemDescription = value => t.value.proposalCreate?.deliverableDescriptions?.[value] || ''
+const itemDescription = value => t.value.bidCreate?.deliverableDescriptions?.[value] || ''
 
 const isSelected = value => {
   return props.modelValue.includes(value)

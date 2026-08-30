@@ -13,7 +13,7 @@
           </span>
         </h3>
         <p class="text-white/80 mb-4">
-          Comparing {{ proposalCount }} proposals? Let AI help you identify the best value based on cost, timeline,
+          Comparing {{ bidCount }} bids? Let AI help you identify the best value based on cost, timeline,
           experience, and concept quality.
         </p>
         <button
@@ -32,7 +32,7 @@
 import { Sparkles, Zap } from 'lucide-vue-next'
 
 defineProps({
-  proposalCount: {
+  bidCount: {
     type: Number,
     default: 0
   }

@@ -10,7 +10,7 @@ const transformProjectData = backendProject => ({
   buildingFunction: backendProject.buildingFunction,
   scopeOfWork: backendProject.scopeOfWork,
   estimatedBuildArea: backendProject.estimatedBuildArea,
-  proposalCount: backendProject.bidCount ?? 0
+  bidCount: backendProject.bidCount ?? 0
 })
 
 export const useProjectsStore = defineStore('projects', {

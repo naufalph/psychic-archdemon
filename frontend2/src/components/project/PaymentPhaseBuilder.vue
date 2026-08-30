@@ -22,7 +22,7 @@
           <div v-for="group in deliverableGroups" :key="group.categoryKey">
             <div class="flex items-center justify-between gap-2 mb-2">
               <p class="text-xs font-bold text-gray-500 uppercase">
-                {{ t.proposalCreate.deliverableCategories[group.categoryKey] }}
+                {{ t.bidCreate.deliverableCategories[group.categoryKey] }}
               </p>
               <button
                 type="button"
@@ -230,7 +230,7 @@ const deliverableGroups = [
   }
 ]
 
-const getLabelForValue = value => t.value.proposalCreate?.deliverableItems?.[value] || value.replace(/_/g, ' ')
+const getLabelForValue = value => t.value.bidCreate?.deliverableItems?.[value] || value.replace(/_/g, ' ')
 
 const newPhase = number => ({
   phaseNumber: number,

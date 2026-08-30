@@ -87,8 +87,8 @@ src/
 - **Protected routes** with navigation guards
 
 ### User Roles & Permissions
-- **Client**: Post projects, review architect proposals
-- **Architect**: Browse projects, submit proposals, manage portfolio
+- **Client**: Post projects, review architect bids
+- **Architect**: Browse projects, submit bids, manage portfolio
 - **Admin**: System management and user oversight
 
 ### Responsive Design

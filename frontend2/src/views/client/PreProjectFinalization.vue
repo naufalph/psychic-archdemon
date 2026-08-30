@@ -98,7 +98,7 @@
               </p>
             </div>
 
-            <!-- Proposal Images -->
+            <!-- Bid Images -->
             <div class="bg-white rounded-3xl border border-gray-200 p-6 shadow-soft">
               <BidImageGallery
                 :images="bid.facadeImages"

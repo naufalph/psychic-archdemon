@@ -88,9 +88,9 @@
           :key="project.id"
           :project="project"
           variant="architect"
-          :show-proposal-count="false"
+          :show-bid-count="false"
           :bid-status="project.bidStatus"
-          @submit-proposal="handleSubmitProposal"
+          @submit-bid="handleSubmitBid"
         />
       </div>
     </div>
@@ -134,8 +134,8 @@ const projectsWithBidStatus = computed(() => {
   }))
 })
 
-const handleSubmitProposal = projectId => {
-  router.push({ name: 'ProposalCreate', params: { projectId } })
+const handleSubmitBid = projectId => {
+  router.push({ name: 'BidCreate', params: { projectId } })
 }
 
 onMounted(async () => {

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { analyzeProposals, chatWithData } from '@/services/geminiService'
+import { analyzeBids, chatWithData } from '@/services/geminiService'
 
 export const useGeminiStore = defineStore('gemini', {
   state: () => ({
@@ -11,30 +11,30 @@ export const useGeminiStore = defineStore('gemini', {
 
   getters: {
     hasAnalysis: state => state.analysis !== null,
-    sortedProposals: state => {
+    sortedBids: state => {
       if (!state.analysis?.comparison) return []
       return [...state.analysis.comparison].sort((a, b) => b.overallScore - a.overallScore)
     }
   },
 
   actions: {
-    async analyzeProposals(project, proposals) {
+    async analyzeBids(project, bids) {
       this.loading = true
       this.error = null
       try {
-        const result = await analyzeProposals(project, proposals)
+        const result = await analyzeBids(project, bids)
         this.analysis = result
         return result
       } catch (error) {
-        this.error = error.message || 'Failed to analyze proposals'
-        console.error('Failed to analyze proposals:', error)
+        this.error = error.message || 'Failed to analyze bids'
+        console.error('Failed to analyze bids:', error)
         throw error
       } finally {
         this.loading = false
       }
     },
 
-    async sendChatMessage(message, project, proposals) {
+    async sendChatMessage(message, project, bids) {
       this.loading = true
       this.error = null
       try {
@@ -43,7 +43,7 @@ export const useGeminiStore = defineStore('gemini', {
           text: message
         })
 
-        const response = await chatWithData(this.chatHistory, project, proposals, message)
+        const response = await chatWithData(this.chatHistory, project, bids, message)
 
         this.chatHistory.push({
           role: 'model',

@@ -22,19 +22,19 @@
         <div class="lg:col-span-1 mb-6 lg:mb-0">
           <div class="lg:sticky lg:top-6 bg-white rounded-3xl border border-gray-200 p-6 shadow-soft">
             <h2 class="text-xl font-bold text-black mb-4">
-              {{ t.proposalCreate?.projectSummary || 'Project Summary' }}
+              {{ t.bidCreate?.projectSummary || 'Project Summary' }}
             </h2>
             <div class="space-y-4">
               <div>
                 <p class="text-xs text-gray-500 uppercase font-bold mb-1">
-                  {{ t.proposalCreate?.project || 'Project' }}
+                  {{ t.bidCreate?.project || 'Project' }}
                 </p>
                 <p class="font-bold text-gray-900">{{ currentBid.projectTitle || currentProject?.title }}</p>
               </div>
 
               <div>
                 <p class="text-xs text-gray-500 uppercase font-bold mb-1">
-                  {{ t.proposalCreate?.location || 'Location' }}
+                  {{ t.bidCreate?.location || 'Location' }}
                 </p>
                 <p class="text-gray-900">{{ currentBid.projectLocation || currentProject?.location }}</p>
               </div>
@@ -42,33 +42,33 @@
               <template v-if="currentProject">
                 <div>
                   <p class="text-xs text-gray-500 uppercase font-bold mb-1">
-                    {{ t.proposalCreate?.designBudget || 'Design Budget' }}
+                    {{ t.bidCreate?.designBudget || 'Design Budget' }}
                   </p>
                   <p class="text-gray-900 font-medium">{{ formatCurrency(currentProject.designBudget) }}</p>
                 </div>
 
                 <div v-if="currentProject.estimatedBuildArea">
                   <p class="text-xs text-gray-500 uppercase font-bold mb-1">
-                    {{ t.proposalCreate?.buildArea || 'Lot Size' }}
+                    {{ t.bidCreate?.buildArea || 'Lot Size' }}
                   </p>
                   <p class="text-gray-900">{{ currentProject.estimatedBuildArea }} m²</p>
                 </div>
 
                 <div>
                   <p class="text-xs text-gray-500 uppercase font-bold mb-1">
-                    {{ t.proposalCreate?.buildingType || 'Building Type' }}
+                    {{ t.bidCreate?.buildingType || 'Building Type' }}
                   </p>
                   <p class="text-gray-900">{{ projectTypeLabel(currentProject, locale) }}</p>
                 </div>
 
                 <div v-if="groupedProjectDeliverables.length > 0">
                   <p class="text-xs text-gray-500 uppercase font-bold mb-2">
-                    {{ t.proposalCreate?.deliverables || 'Deliverables' }}
+                    {{ t.bidCreate?.deliverables || 'Deliverables' }}
                   </p>
                   <div class="space-y-2">
                     <div v-for="group in groupedProjectDeliverables" :key="group.categoryKey">
                       <p class="text-xs text-gray-400 font-semibold mb-1">
-                        {{ t.proposalCreate?.deliverableCategories?.[group.categoryKey] }}
+                        {{ t.bidCreate?.deliverableCategories?.[group.categoryKey] }}
                       </p>
                       <div class="flex flex-wrap gap-1">
                         <span
@@ -76,7 +76,7 @@
                           :key="d"
                           class="bg-brand-tan text-brand-brown px-2 py-0.5 rounded-full text-xs font-medium"
                         >
-                          {{ t.proposalCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ') }}
+                          {{ t.bidCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ') }}
                         </span>
                       </div>
                     </div>
@@ -231,7 +231,7 @@
                       isMatchingDeliverable(d) ? t.bidDetail.matchingDeliverable : t.bidDetail.additionalDeliverable
                     "
                   >
-                    {{ t.proposalCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ') }}
+                    {{ t.bidCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ') }}
                   </span>
                 </div>
                 <div class="flex items-center gap-3 mt-1">
@@ -261,7 +261,7 @@
                   class="text-xs px-2 py-0.5 rounded-full border bg-red-50 text-red-400 border-red-200 font-medium"
                   :title="t.bidDetail.missingDeliverable"
                 >
-                  {{ t.proposalCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ') }}
+                  {{ t.bidCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ') }}
                 </span>
               </div>
             </div>
@@ -307,7 +307,7 @@
                 @click="handleAcceptBid"
               >
                 <Check :size="20" />
-                {{ t.bidDetail.acceptProposal }}
+                {{ t.bidDetail.acceptBid }}
               </button>
               <button
                 v-else-if="currentBid.status === 'ACCEPTED'"
@@ -405,13 +405,13 @@ const fetchBid = async () => {
 }
 
 const handleAcceptBid = async () => {
-  if (!confirm('Are you sure you want to accept this proposal?')) return
+  if (!confirm('Are you sure you want to accept this bid?')) return
 
   try {
     await bidsStore.acceptBid(route.params.bidId)
     router.push(`/client/projects/${route.params.projectId}/finalization`)
   } catch (err) {
-    alert(err.response?.data?.message || 'Failed to accept proposal')
+    alert(err.response?.data?.message || 'Failed to accept bid')
   }
 }
 

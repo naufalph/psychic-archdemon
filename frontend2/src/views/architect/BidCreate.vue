@@ -3,7 +3,7 @@
     <div class="max-w-7xl mx-auto px-6">
       <button class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition" @click="saveDraftAndLeave">
         <ArrowLeft :size="20" />
-        {{ t.proposalCreate?.backToOpportunities || 'Back to Opportunities' }}
+        {{ t.bidCreate?.backToOpportunities || 'Back to Opportunities' }}
       </button>
 
       <div v-if="projectLoading" class="bg-white rounded-3xl border border-gray-200 p-12 animate-pulse">
@@ -14,7 +14,7 @@
       <div v-else-if="projectError" class="bg-white rounded-3xl border border-gray-200 p-12 text-center">
         <p class="text-red-600 mb-4">{{ projectError }}</p>
         <button class="text-brand-brown hover:underline" @click="router.push({ name: 'OpportunityList' })">
-          {{ t.proposalCreate?.backToOpportunities || 'Back to Opportunities' }}
+          {{ t.bidCreate?.backToOpportunities || 'Back to Opportunities' }}
         </button>
       </div>
 
@@ -22,27 +22,27 @@
         <div class="lg:col-span-1 mb-6 lg:mb-0">
           <div class="lg:sticky lg:top-6 bg-white rounded-3xl border border-gray-200 p-6 shadow-soft">
             <h2 class="text-xl font-bold text-black mb-4">
-              {{ t.proposalCreate?.projectSummary || 'Project Summary' }}
+              {{ t.bidCreate?.projectSummary || 'Project Summary' }}
             </h2>
 
             <div class="space-y-4">
               <div>
                 <p class="text-xs text-gray-500 uppercase font-bold mb-1">
-                  {{ t.proposalCreate?.project || 'Project' }}
+                  {{ t.bidCreate?.project || 'Project' }}
                 </p>
                 <p class="font-bold text-gray-900">{{ project.title }}</p>
               </div>
 
               <div>
                 <p class="text-xs text-gray-500 uppercase font-bold mb-1">
-                  {{ t.proposalCreate?.location || 'Location' }}
+                  {{ t.bidCreate?.location || 'Location' }}
                 </p>
                 <p class="text-gray-900">{{ project.location }}</p>
               </div>
 
               <div>
                 <p class="text-xs text-gray-500 uppercase font-bold mb-1">
-                  {{ t.proposalCreate?.designBudget || 'Design Budget' }}
+                  {{ t.bidCreate?.designBudget || 'Design Budget' }}
                 </p>
                 <p class="text-gray-900 font-medium">
                   {{ formatCurrency(project.designBudgetMin) }} - {{ formatCurrency(project.designBudgetMax) }}
@@ -58,26 +58,26 @@
 
               <div>
                 <p class="text-xs text-gray-500 uppercase font-bold mb-1">
-                  {{ t.proposalCreate?.buildArea || 'Build Area' }}
+                  {{ t.bidCreate?.buildArea || 'Build Area' }}
                 </p>
                 <p class="text-gray-900">{{ project.estimatedBuildArea ? `${project.estimatedBuildArea} m²` : '—' }}</p>
               </div>
 
               <div>
                 <p class="text-xs text-gray-500 uppercase font-bold mb-1">
-                  {{ t.proposalCreate?.buildingType || 'Building Type' }}
+                  {{ t.bidCreate?.buildingType || 'Building Type' }}
                 </p>
                 <p class="text-gray-900">{{ projectTypeLabel(project, locale) }}</p>
               </div>
 
               <div v-if="project.deliverables && project.deliverables.length > 0">
                 <p class="text-xs text-gray-500 uppercase font-bold mb-2">
-                  {{ t.proposalCreate?.deliverables || 'Deliverables' }}
+                  {{ t.bidCreate?.deliverables || 'Deliverables' }}
                 </p>
                 <div class="space-y-2">
                   <div v-for="group in groupedProjectDeliverables" :key="group.categoryKey">
                     <p class="text-xs text-gray-400 font-semibold mb-1">
-                      {{ t.proposalCreate?.deliverableCategories?.[group.categoryKey] }}
+                      {{ t.bidCreate?.deliverableCategories?.[group.categoryKey] }}
                     </p>
                     <div class="flex flex-wrap gap-1">
                       <span
@@ -85,7 +85,7 @@
                         :key="d"
                         class="bg-brand-tan text-brand-brown px-2 py-0.5 rounded-full text-xs font-medium"
                       >
-                        {{ t.proposalCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ') }}
+                        {{ t.bidCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ') }}
                       </span>
                     </div>
                   </div>
@@ -94,7 +94,7 @@
 
               <div v-if="sidebarImages.length > 0" class="pt-4 border-t border-gray-100">
                 <p class="text-xs text-gray-500 uppercase font-bold mb-2">
-                  {{ t.proposalCreate?.referenceImages || 'Client Reference Images' }}
+                  {{ t.bidCreate?.referenceImages || 'Client Reference Images' }}
                 </p>
                 <div class="grid grid-cols-3 gap-2">
                   <button
@@ -123,15 +123,15 @@
                 <FileText :size="32" />
                 {{
                   existingBidId
-                    ? t.proposalCreate?.updateTitle || 'Update Proposal'
-                    : t.proposalCreate?.title || 'Submit Proposal'
+                    ? t.bidCreate?.updateTitle || 'Update Bid'
+                    : t.bidCreate?.title || 'Submit Bid'
                 }}
               </h1>
               <p class="text-white/80 mt-2">
                 {{
                   existingBidId
-                    ? t.proposalCreate?.updateSubtitle || 'Continue editing your draft proposal'
-                    : t.proposalCreate?.subtitle || 'Showcase your expertise and win the project'
+                    ? t.bidCreate?.updateSubtitle || 'Continue editing your draft bid'
+                    : t.bidCreate?.subtitle || 'Showcase your expertise and win the project'
                 }}
               </p>
             </div>
@@ -155,11 +155,11 @@
               </svg>
               <div class="flex-1">
                 <p class="text-sm font-semibold text-amber-900">
-                  {{ t.proposalCreate?.identityIncompleteTitle || 'Identity verification required to submit' }}
+                  {{ t.bidCreate?.identityIncompleteTitle || 'Identity verification required to submit' }}
                 </p>
                 <p class="text-sm text-amber-800 mt-1">
                   {{
-                    t.proposalCreate?.identityIncompleteDesc ||
+                    t.bidCreate?.identityIncompleteDesc ||
                     'Complete your KTP, NPWP, full name, and phone number before submitting a bid. You can still save a draft.'
                   }}
                 </p>
@@ -171,8 +171,8 @@
                 >
                   {{
                     isSavingDraft
-                      ? t.proposalCreate?.savingDraft || 'Saving draft...'
-                      : (t.proposalCreate?.identityIncompleteAction || 'Complete Profile') + ' →'
+                      ? t.bidCreate?.savingDraft || 'Saving draft...'
+                      : (t.bidCreate?.identityIncompleteAction || 'Complete Profile') + ' →'
                   }}
                 </button>
               </div>
@@ -183,7 +183,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">About your studio</label>
                 <p class="text-xs text-gray-500 mb-3">
                   {{
-                    t.proposalCreate?.studioPhilosophyHelp ||
+                    t.bidCreate?.studioPhilosophyHelp ||
                     "Prefilled from your profile's Design Philosophy — feel free to tailor it for this project."
                   }}
                 </p>
@@ -225,15 +225,15 @@
                 />
                 <p class="text-xs text-gray-400 mt-2">
                   {{
-                    t.proposalCreate?.aspectRatioHint ||
-                    'Recommended aspect ratio: 16:9 for the best display in proposal comparisons'
+                    t.bidCreate?.aspectRatioHint ||
+                    'Recommended aspect ratio: 16:9 for the best display in bid comparisons'
                   }}
                 </p>
                 <textarea
                   v-model="formData.facadeDescription"
                   rows="2"
                   :placeholder="
-                    t.proposalCreate?.facadeDescriptionPlaceholder ||
+                    t.bidCreate?.facadeDescriptionPlaceholder ||
                     'Add context about these facade images (materials, style, site conditions)...'
                   "
                   class="w-full mt-3 px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-sm"
@@ -252,15 +252,15 @@
                 />
                 <p class="text-xs text-gray-400 mt-2">
                   {{
-                    t.proposalCreate?.aspectRatioHint ||
-                    'Recommended aspect ratio: 16:9 for the best display in proposal comparisons'
+                    t.bidCreate?.aspectRatioHint ||
+                    'Recommended aspect ratio: 16:9 for the best display in bid comparisons'
                   }}
                 </p>
                 <textarea
                   v-model="formData.interiorDescription"
                   rows="2"
                   :placeholder="
-                    t.proposalCreate?.interiorDescriptionPlaceholder || 'Add context about these interior images...'
+                    t.bidCreate?.interiorDescriptionPlaceholder || 'Add context about these interior images...'
                   "
                   class="w-full mt-3 px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-sm"
                 />
@@ -278,15 +278,15 @@
                 />
                 <p class="text-xs text-gray-400 mt-2">
                   {{
-                    t.proposalCreate?.aspectRatioHint ||
-                    'Recommended aspect ratio: 16:9 for the best display in proposal comparisons'
+                    t.bidCreate?.aspectRatioHint ||
+                    'Recommended aspect ratio: 16:9 for the best display in bid comparisons'
                   }}
                 </p>
                 <textarea
                   v-model="formData.massingDescription"
                   rows="2"
                   :placeholder="
-                    t.proposalCreate?.massingDescriptionPlaceholder || 'Add context about these massing images...'
+                    t.bidCreate?.massingDescriptionPlaceholder || 'Add context about these massing images...'
                   "
                   class="w-full mt-3 px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-sm"
                 />
@@ -304,15 +304,15 @@
                 />
                 <p class="text-xs text-gray-400 mt-2">
                   {{
-                    t.proposalCreate?.aspectRatioHint ||
-                    'Recommended aspect ratio: 16:9 for the best display in proposal comparisons'
+                    t.bidCreate?.aspectRatioHint ||
+                    'Recommended aspect ratio: 16:9 for the best display in bid comparisons'
                   }}
                 </p>
                 <textarea
                   v-model="formData.zoningDescription"
                   rows="2"
                   :placeholder="
-                    t.proposalCreate?.zoningDescriptionPlaceholder || 'Add context about these zoning images...'
+                    t.bidCreate?.zoningDescriptionPlaceholder || 'Add context about these zoning images...'
                   "
                   class="w-full mt-3 px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-sm"
                 />
@@ -327,7 +327,7 @@
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label class="block text-sm font-medium text-gray-700 mb-2"
-                    >{{ t.proposalCreate?.bidAmount || 'Bid Amount (IDR)' }}<span class="text-red-500">*</span></label
+                    >{{ t.bidCreate?.bidAmount || 'Bid Amount (IDR)' }}<span class="text-red-500">*</span></label
                   >
                   <input
                     v-model="bidAmountDisplay"
@@ -342,11 +342,11 @@
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">{{
-                  t.proposalCreate?.paymentPhases || 'Payment Phases'
+                  t.bidCreate?.paymentPhases || 'Payment Phases'
                 }}</label>
                 <p class="text-xs text-gray-500 mb-3">
                   {{
-                    t.proposalCreate?.paymentPhasesHelp ||
+                    t.bidCreate?.paymentPhasesHelp ||
                     'Define payment phases. Phase 0 is free (pre-project). Phase 1+ must total your bid amount.'
                   }}
                 </p>
@@ -375,8 +375,8 @@
                 >
                   {{
                     isSavingDraft
-                      ? t.proposalCreate?.savingDraft || 'Saving draft...'
-                      : t.proposalCreate?.completeProfileLink || 'Complete your profile →'
+                      ? t.bidCreate?.savingDraft || 'Saving draft...'
+                      : t.bidCreate?.completeProfileLink || 'Complete your profile →'
                   }}
                 </button>
               </div>
@@ -387,7 +387,7 @@
                   class="px-6 py-3 text-gray-700 bg-white border-2 border-gray-300 rounded-full hover:bg-gray-50 transition font-medium"
                   @click="saveDraftAndLeave"
                 >
-                  {{ t.proposalCreate?.cancelBtn || 'Cancel' }}
+                  {{ t.bidCreate?.cancelBtn || 'Cancel' }}
                 </button>
                 <button
                   type="submit"
@@ -398,8 +398,8 @@
                   <Send v-else :size="20" />
                   {{
                     loading && !isSavingDraft
-                      ? t.proposalCreate?.submitting || 'Submitting...'
-                      : t.proposalCreate?.submitBtn || 'Submit Proposal'
+                      ? t.bidCreate?.submitting || 'Submitting...'
+                      : t.bidCreate?.submitBtn || 'Submit Bid'
                   }}
                 </button>
               </div>
@@ -452,18 +452,18 @@
 
                 <div class="px-6 pb-6 pt-4">
                   <h2 class="text-lg font-bold text-gray-900">
-                    {{ t.proposalCreate?.identityIncompleteTitle || 'Identity verification required to submit' }}
+                    {{ t.bidCreate?.identityIncompleteTitle || 'Identity verification required to submit' }}
                   </h2>
                   <p class="text-sm text-gray-600 mt-2 leading-relaxed">
                     {{
-                      t.proposalCreate?.identityIncompleteDesc ||
+                      t.bidCreate?.identityIncompleteDesc ||
                       'Complete your KTP, NPWP, full name, and phone number before submitting a bid. You can still save a draft.'
                     }}
                   </p>
 
                   <div class="mt-4 bg-amber-50 border border-amber-200 rounded-xl p-4">
                     <p class="text-xs font-bold text-amber-800 uppercase tracking-wide mb-2">
-                      {{ t.proposalCreate?.identityIncompleteMissingLabel || 'Missing:' }}
+                      {{ t.bidCreate?.identityIncompleteMissingLabel || 'Missing:' }}
                     </p>
                     <ul class="space-y-1">
                       <li
@@ -485,7 +485,7 @@
                     class="px-5 py-2.5 text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors"
                     @click="showIdentityModal = false"
                   >
-                    {{ t.proposalCreate?.identityIncompleteDismiss || 'Later' }}
+                    {{ t.bidCreate?.identityIncompleteDismiss || 'Later' }}
                   </button>
                   <button
                     :disabled="isSavingDraft"
@@ -495,8 +495,8 @@
                     <Loader v-if="isSavingDraft" :size="16" class="animate-spin" />
                     {{
                       isSavingDraft
-                        ? t.proposalCreate?.savingDraft || 'Saving draft...'
-                        : t.proposalCreate?.identityIncompleteAction || 'Complete Profile'
+                        ? t.bidCreate?.savingDraft || 'Saving draft...'
+                        : t.bidCreate?.identityIncompleteAction || 'Complete Profile'
                     }}
                   </button>
                 </div>
@@ -577,7 +577,7 @@ const router = useRouter()
 const bidsStore = useBidsStore()
 const projectsStore = useProjectsStore()
 const profileStore = useArchitectProfileStore()
-const { t, locale } = useI18n()
+const { t, locale, getT } = useI18n()
 
 const identityMissing = computed(() => {
   const p = profileStore.profile
@@ -814,7 +814,7 @@ const handleSubmit = async () => {
   }
   if (!isIdentityComplete.value) {
     error.value =
-      t.value.proposalCreate?.identityIncompleteError ||
+      t.value.bidCreate?.identityIncompleteError ||
       'Harap lengkapi data identitas berikut di halaman Profil sebelum mengirim penawaran:'
     showIdentityModal.value = true
     await scrollToError()
@@ -822,13 +822,13 @@ const handleSubmit = async () => {
   }
 
   if (wordCount.value > 200) {
-    error.value = t('proposal.wordCountExceeded')
+    error.value = getT('bid.wordCountExceeded')
     return
   }
 
   const phasesTotal = formData.value.phases.reduce((sum, p) => sum + (Number(p.amount) || 0), 0)
   if (formData.value.phases.length > 0 && Math.abs(phasesTotal - Number(formData.value.bidAmount)) >= 1) {
-    error.value = t('proposal.phasesTotalMismatch')
+    error.value = getT('bid.phasesTotalMismatch')
     return
   }
 
@@ -888,8 +888,8 @@ const handleSubmit = async () => {
 
     router.push({ name: 'MyBids' })
   } catch (err) {
-    error.value = err.response?.data?.message || 'Failed to submit proposal. Please try again.'
-    console.error('Failed to submit proposal:', err)
+    error.value = err.response?.data?.message || 'Failed to submit bid. Please try again.'
+    console.error('Failed to submit bid:', err)
   }
 }
 

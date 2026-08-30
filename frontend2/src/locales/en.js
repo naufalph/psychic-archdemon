@@ -17,7 +17,7 @@ export default {
     hero: {
       title: 'Build Your Dream Design, Effortlessly',
       subline:
-        'Compare top architect proposals, manage your project with precision, and build your dream with Rumantra.',
+        'Compare top architect bids, manage your project with precision, and build your dream with Rumantra.',
       cta: 'Start Free Project',
       learnMore: 'Learn how it works',
       microcopy: 'Free for clients · No registration fees'
@@ -47,7 +47,7 @@ export default {
       step1Title: 'Post Your Project Brief',
       step1Desc:
         'Describe your needs — area, budget, design style. Our AI helps you craft a professional brief.',
-      step2Title: 'Receive & Compare Proposals',
+      step2Title: 'Receive & Compare Bids',
       step2Desc:
         'IAI licensed architects submit bids. Compare prices, timelines, and portfolios side by side.',
       step3Title: 'Build with Confidence',
@@ -231,7 +231,7 @@ export default {
         subtitle: "Choose how you'll use Rumantra",
         client: {
           title: 'Hire an Architect',
-          desc: 'Post projects, compare proposals, and manage your architectural designs'
+          desc: 'Post projects, compare bids, and manage your architectural designs'
         },
         architect: {
           title: 'Offer Services',
@@ -487,7 +487,7 @@ export default {
       cancel: 'Cancel'
     }
   },
-  proposal: {
+  bid: {
     aboutStudio: 'About your studio',
     aboutStudioPlaceholder:
       "Tell the client about your studio's expertise, experience, and approach...",
@@ -504,11 +504,11 @@ export default {
     phasesTotalMismatch:
       'Sum of phase amounts must equal the bid amount. Please adjust your phases.'
   },
-  proposalCreate: {
-    title: 'Submit Proposal',
-    updateTitle: 'Update Proposal',
+  bidCreate: {
+    title: 'Submit Bid',
+    updateTitle: 'Update Bid',
     subtitle: 'Showcase your expertise and win the project',
-    updateSubtitle: 'Continue editing your draft proposal',
+    updateSubtitle: 'Continue editing your draft bid',
     projectSummary: 'Project Summary',
     project: 'Project',
     location: 'Location',
@@ -520,7 +520,7 @@ export default {
     timeline: 'Proposed Timeline (days)',
     paymentPhases: 'Payment Phases',
     paymentPhasesHelp: 'Define payment phases. All phases must total your bid amount.',
-    submitBtn: 'Submit Proposal',
+    submitBtn: 'Submit Bid',
     cancelBtn: 'Cancel',
     submitting: 'Submitting...',
     backToOpportunities: 'Back to Opportunities',
@@ -536,7 +536,7 @@ export default {
     completeProfileLink: 'Complete your profile →',
     studioPhilosophyHelp:
       "Prefilled from your profile's Design Philosophy — feel free to tailor it for this project.",
-    aspectRatioHint: 'Recommended aspect ratio: 16:9 for the best display in proposal comparisons',
+    aspectRatioHint: 'Recommended aspect ratio: 16:9 for the best display in bid comparisons',
     referenceImages: 'Client Reference Images',
     facadeDescriptionPlaceholder:
       'Add context about these facade images (materials, style, site conditions)...',
@@ -628,14 +628,14 @@ export default {
     noProjectsYet: 'No projects yet',
     noProjectsMessage: 'Create your first project to get started with finding architects',
     createProject: 'Create Project',
-    proposalSingular: 'Proposal',
-    proposalPlural: 'Proposals',
+    bidSingular: 'Bid',
+    bidPlural: 'Bids',
     backToProjects: 'Back to Projects',
-    receivedProposals: 'Received Proposals',
-    noProposalsYet: 'No proposals yet',
-    noProposalsMessage: 'Architects will submit their proposals soon',
-    acceptProposal: 'Accept Proposal',
-    acceptConfirm: 'Are you sure you want to accept this proposal?',
+    receivedBids: 'Received Bids',
+    noBidsYet: 'No bids yet',
+    noBidsMessage: 'Architects will submit their bids soon',
+    acceptBid: 'Accept Bid',
+    acceptConfirm: 'Are you sure you want to accept this bid?',
     lotSize: 'Lot Size',
     designBudget: 'Design Budget',
     description: 'Description',
@@ -660,13 +660,13 @@ export default {
     subjectA: 'Subject A',
     subjectB: 'Subject B',
     emptyCompareSlot: 'Empty — select from registry',
-    compareHint: 'Select a proposal from the registry below to begin a comparative analysis',
+    compareHint: 'Select a bid from the registry below to begin a comparative analysis',
     bidRegistry: 'Bid Registry',
     welcome: 'Welcome',
     manageProjects: 'Manage your architecture projects',
     newProjectBtn: 'NEW PROJECT',
     activeProjects: 'Active Projects',
-    totalProposals: 'Total Proposals',
+    totalBids: 'Total Bids',
     budgetUsed: 'Budget Used',
     activeVentures: 'ACTIVE VENTURES',
     viewAll: 'VIEW ALL →',
@@ -705,7 +705,7 @@ export default {
     addressResolved: 'Detected:',
     pinLocation: 'Pin the Site on the Map',
     pinLocationHint:
-      'Click the map to drop a pin, then drag it onto the exact site. Architects use this to read the terrain, vegetation and surroundings before pricing their proposal.',
+      'Click the map to drop a pin, then drag it onto the exact site. Architects use this to read the terrain, vegetation and surroundings before pricing their bid.',
     pinLocationNotSet: 'No pin set yet — architects will see the area only.',
     pinLocationClear: 'Clear pin',
     pinLocationUnavailable:
@@ -847,7 +847,7 @@ export default {
     badge: 'Finalization',
     biddingDeadline: 'Bidding Deadline',
     bothConfirmed: 'Both parties have confirmed — project is now In Progress!',
-    yourProposal: 'Your Proposal',
+    yourBid: 'Your Bid',
     proposedPrice: 'Proposed Price',
     timeline: 'Duration',
     days: 'days',
@@ -942,16 +942,16 @@ export default {
   },
   myBids: {
     title: 'My Bids',
-    subtitle: 'Track your submitted proposals',
+    subtitle: 'Track your submitted bids',
     empty: {
       title: 'No bids yet',
-      message: 'Submit your first proposal to get started',
+      message: 'Submit your first bid to get started',
       cta: 'Browse Opportunities'
     }
   },
   opportunityList: {
     title: 'Available Opportunities',
-    subtitle: 'Browse open projects and submit your proposals',
+    subtitle: 'Browse open projects and submit your bids',
     tokensAvailable: 'Bid Tokens Remaining',
     tokensUsedThisMonth: 'Used This Month',
     purchaseTokens: 'Purchase Tokens',
@@ -999,30 +999,30 @@ export default {
     expectedStartDate: 'Expected Start Date',
     immediately: 'Immediately — can start right away',
     designPreferences: 'Design Preferences',
-    proposalAccepted: 'Proposal Accepted',
-    proposalAcceptedDesc: 'Review the terms and confirm to start the project.',
+    bidAccepted: 'Bid Accepted',
+    bidAcceptedDesc: 'Review the terms and confirm to start the project.',
     finalizeAgreement: 'Finalize Agreement',
-    proposalSubmitted: 'Proposal Submitted',
-    proposalSubmittedDesc: 'Your bid is pending review by the client.',
+    bidSubmitted: 'Bid Submitted',
+    bidSubmittedDesc: 'Your bid is pending review by the client.',
     draftSaved: 'Draft Saved',
-    draftSavedDesc: 'Continue editing to complete your proposal.',
+    draftSavedDesc: 'Continue editing to complete your bid.',
     bidRejected: 'Bid Not Selected',
     bidRejectedDesc: 'Your bid was not selected for this project.',
-    noBidYet: 'Create Proposal',
-    noBidYetDesc: 'Submit a proposal to compete for this project.',
+    noBidYet: 'Create Bid',
+    noBidYetDesc: 'Submit a bid to compete for this project.',
     projectClosedBidding: 'Project is Closed',
     projectClosedBiddingDesc: 'Bidding has ended for this project.'
   },
-  proposalComparison: {
-    proposalA: 'Proposal A',
-    proposalB: 'Proposal B',
+  bidComparison: {
+    bidA: 'Bid A',
+    bidB: 'Bid B',
     appointed: '✓ Appointed',
     appointLead: 'Appoint Lead Architect',
     appointModalEyebrow: 'Confirm Appointment',
     appointModalTitle: 'Appoint as Lead Architect?',
     appointModalWarningTitle: 'Please Read Before Confirming',
     appointModalWarningItem1: 'The project moves into negotiation with this architect immediately.',
-    appointModalWarningItem2: 'Other proposals will no longer be available for comparison.',
+    appointModalWarningItem2: 'Other bids will no longer be available for comparison.',
     appointModalWarningItem3: 'This action cannot be undone from here.',
     appointModalCancel: 'Cancel',
     appointModalConfirm: 'Yes, Appoint Now',
@@ -1058,7 +1058,7 @@ export default {
     nextImage: 'Next image',
     matchingDeliverable: 'Matches project requirement',
     additionalDeliverable: 'Additional offering from architect',
-    missingDeliverable: 'Not covered in this proposal',
+    missingDeliverable: 'Not covered in this bid',
     uncoveredTitle: 'Not yet covered from project requirements',
     paymentFlowInfo: 'View payment flow details',
     paymentFlowTitle: 'Payment Flow',
@@ -1104,15 +1104,15 @@ export default {
     noMassing: 'No massing images available',
     zoning: 'Zoning',
     noZoning: 'No zoning images available',
-    acceptProposal: 'Accept This Proposal',
+    acceptBid: 'Accept This Bid',
     accepted: 'Accepted',
     submittedOn: 'Submitted on {date}',
     matchingDeliverable: 'Matches project requirement',
     additionalDeliverable: 'Additional offering from architect',
-    missingDeliverable: 'Not covered in this proposal',
+    missingDeliverable: 'Not covered in this bid',
     uncoveredTitle: 'Not yet covered from project requirements'
   },
-  proposalCard: {
+  bidCard: {
     appointed: 'Appointed',
     concept: 'Concept',
     selectedForCompare: 'Selected for Compare',

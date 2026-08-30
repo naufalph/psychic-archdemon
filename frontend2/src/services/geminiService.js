@@ -3,13 +3,13 @@ import { GoogleGenAI, Type } from '@google/genai'
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY || ''
 const ai = new GoogleGenAI({ apiKey })
 
-const sanitizeProposals = proposals => {
-  return proposals.map(
+const sanitizeBids = bids => {
+  return bids.map(
     ({ pdfUrl, coverImage, facadeImage, interiorImages, layoutImages, ...rest }) => rest
   )
 }
 
-export const analyzeProposals = async (project, proposals) => {
+export const analyzeBids = async (project, bids) => {
   if (!apiKey) {
     throw new Error(
       'Gemini API Key is missing. Please set VITE_GEMINI_API_KEY in your .env.local file'
@@ -17,11 +17,11 @@ export const analyzeProposals = async (project, proposals) => {
   }
 
   const model = 'gemini-2.5-flash'
-  const sanitizedProposals = sanitizeProposals(proposals)
+  const sanitizedBids = sanitizeBids(bids)
 
   const prompt = `
     You are an expert Architectural Consultant for Rumantra, a platform connecting homeowners with architects in Indonesia.
-    Analyze the following proposals for a client's project.
+    Analyze the following bids for a client's project.
 
     Project Details:
     Title: ${project.title}
@@ -34,16 +34,16 @@ export const analyzeProposals = async (project, proposals) => {
     Design Budget (Target): ${project.designBudget || project.budget}
     Requested Deliverables: ${project.deliverables ? project.deliverables.join(', ') : 'Not specified'}
 
-    Proposals:
-    ${JSON.stringify(sanitizedProposals)}
+    Bids:
+    ${JSON.stringify(sanitizedBids)}
 
     Task:
-    1. Compare the proposals based on Cost, Duration, and Design Concept suitability.
+    1. Compare the bids based on Cost, Duration, and Design Concept suitability.
     2. Check if the architect likely covers the requested deliverables (e.g. IMB requirements, DED) based on their description/extracted text.
     3. Assign a score (0-100) for Cost (Higher score means better/cheaper), Time (Higher score means faster), and Design (Higher means fits description better).
     4. Provide a brief summary, pros, and cons for each.
     5. Provide a final recommendation on who to choose and why.
-    6. Provide a "topOptionsSummary" which is a concise, high-level summary comparing the top 2-3 proposals for a quick decision (e.g., "Architect A is the most affordable choice, while Architect B offers a faster timeline...").
+    6. Provide a "topOptionsSummary" which is a concise, high-level summary comparing the top 2-3 bids for a quick decision (e.g., "Architect A is the most affordable choice, while Architect B offers a faster timeline...").
   `
 
   try {
@@ -94,21 +94,21 @@ export const analyzeProposals = async (project, proposals) => {
 
     return JSON.parse(resultText)
   } catch (error) {
-    console.error('Error analyzing proposals:', error)
+    console.error('Error analyzing bids:', error)
     throw error
   }
 }
 
-export const chatWithData = async (history, project, proposals, newMessage) => {
+export const chatWithData = async (history, project, bids, newMessage) => {
   if (!apiKey) throw new Error('Gemini API Key is missing')
 
-  const sanitizedProposals = sanitizeProposals(proposals)
+  const sanitizedBids = sanitizeBids(bids)
 
   const context = `
-    Context: User is a client on Rumantra asking about proposals for project "${project.title}".
+    Context: User is a client on Rumantra asking about bids for project "${project.title}".
     Project Deliverables: ${project.deliverables ? project.deliverables.join(', ') : 'Not specified'}
-    Proposals data: ${JSON.stringify(sanitizedProposals)}.
-    Answer the user's question specifically comparing the available proposals.
+    Bids data: ${JSON.stringify(sanitizedBids)}.
+    Answer the user's question specifically comparing the available bids.
   `
 
   const chat = ai.chats.create({

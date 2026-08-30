@@ -25,9 +25,9 @@
         </div>
         <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
           <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">
-            {{ t.clientDashboard.totalProposals }}
+            {{ t.clientDashboard.totalBids }}
           </p>
-          <p class="text-4xl font-bold text-brand-brown">{{ totalProposalCount }}</p>
+          <p class="text-4xl font-bold text-brand-brown">{{ totalBidCount }}</p>
         </div>
         <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
           <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">
@@ -138,7 +138,7 @@ const activeProjectCount = computed(
   () => projects.value.filter(p => p.status === 'OPEN' || p.status === 'IN_PROGRESS').length
 )
 
-const totalProposalCount = computed(() => projectBids.value?.length || 0)
+const totalBidCount = computed(() => projectBids.value?.length || 0)
 
 const budgetUsed = computed(() => {
   return projects.value

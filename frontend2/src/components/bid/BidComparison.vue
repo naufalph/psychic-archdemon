@@ -7,7 +7,7 @@
         class="group relative bg-white rounded-2xl border border-gray-200 p-6 shadow-soft text-center transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-brand-brown/40 has-[button:focus-visible]:-translate-y-0.5 has-[button:focus-visible]:border-brand-brown/40 motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:has-[button:focus-visible]:translate-y-0"
       >
         <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">
-          {{ idx === 0 ? t.proposalComparison.proposalA : t.proposalComparison.proposalB }}
+          {{ idx === 0 ? t.bidComparison.bidA : t.bidComparison.bidB }}
         </p>
         <h3 class="text-xl font-bold text-black mb-1">{{ bid.architectName || 'Architect' }}</h3>
         <p v-if="bid.architectCompany" class="text-sm text-gray-500 mb-4">{{ bid.architectCompany }}</p>
@@ -22,12 +22,12 @@
             @click="pendingAppointBid = bid"
           >
             <Crown :size="14" aria-hidden="true" />
-            {{ t.proposalComparison.appointLead }}
+            {{ t.bidComparison.appointLead }}
           </button>
         </div>
 
         <span v-else-if="bid.status === 'ACCEPTED'" class="text-green-600 font-bold text-sm">{{
-          t.proposalComparison.appointed
+          t.bidComparison.appointed
         }}</span>
       </div>
     </div>
@@ -36,9 +36,9 @@
       <div class="flex items-center justify-between mb-4">
         <div>
           <p class="text-xs font-bold text-gray-500 uppercase tracking-widest">
-            {{ t.proposalComparison.visualOverlay }}
+            {{ t.bidComparison.visualOverlay }}
           </p>
-          <p class="text-xs text-gray-400 mt-0.5">{{ t.proposalComparison.sideBySize }}</p>
+          <p class="text-xs text-gray-400 mt-0.5">{{ t.bidComparison.sideBySize }}</p>
         </div>
         <div class="flex gap-2">
           <button
@@ -90,18 +90,18 @@
         <div
           class="absolute bottom-3 left-3 bg-black/50 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider"
         >
-          {{ bidA.architectName || 'Proposal A' }}
+          {{ bidA.architectName || 'Bid A' }}
         </div>
         <div
           class="absolute bottom-3 right-3 bg-black/50 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full uppercase tracking-wider"
         >
-          {{ bidB.architectName || 'Proposal B' }}
+          {{ bidB.architectName || 'Bid B' }}
         </div>
 
         <div
           class="absolute top-3 left-1/2 -translate-x-1/2 bg-black/40 backdrop-blur-sm text-white text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-2 whitespace-nowrap"
         >
-          <span class="text-gray-300">{{ t.proposalComparison.reviewing }}</span>
+          <span class="text-gray-300">{{ t.bidComparison.reviewing }}</span>
           <span>{{ imageTypeLabel[activeImageType] }}</span>
         </div>
       </div>
@@ -115,7 +115,7 @@
         <div v-if="imageAImages.length > 1" class="flex items-center gap-2">
           <button
             :disabled="imageIndexA === 0"
-            :title="t.proposalComparison.prevImage"
+            :title="t.bidComparison.prevImage"
             class="w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-30 transition"
             @click="imageIndexA = Math.max(0, imageIndexA - 1)"
           >
@@ -123,12 +123,12 @@
           </button>
           <span class="text-xs text-gray-400">
             {{
-              t.proposalComparison.imageOf.replace('{current}', imageIndexA + 1).replace('{total}', imageAImages.length)
+              t.bidComparison.imageOf.replace('{current}', imageIndexA + 1).replace('{total}', imageAImages.length)
             }}
           </span>
           <button
             :disabled="imageIndexA === imageAImages.length - 1"
-            :title="t.proposalComparison.nextImage"
+            :title="t.bidComparison.nextImage"
             class="w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-30 transition"
             @click="imageIndexA = Math.min(imageAImages.length - 1, imageIndexA + 1)"
           >
@@ -138,13 +138,13 @@
         <div v-else />
 
         <p class="text-xs text-gray-400 uppercase tracking-widest">
-          {{ t.proposalComparison.adjustSlider }}
+          {{ t.bidComparison.adjustSlider }}
         </p>
 
         <div v-if="imageBImages.length > 1" class="flex items-center gap-2">
           <button
             :disabled="imageIndexB === 0"
-            :title="t.proposalComparison.prevImage"
+            :title="t.bidComparison.prevImage"
             class="w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-30 transition"
             @click="imageIndexB = Math.max(0, imageIndexB - 1)"
           >
@@ -152,12 +152,12 @@
           </button>
           <span class="text-xs text-gray-400">
             {{
-              t.proposalComparison.imageOf.replace('{current}', imageIndexB + 1).replace('{total}', imageBImages.length)
+              t.bidComparison.imageOf.replace('{current}', imageIndexB + 1).replace('{total}', imageBImages.length)
             }}
           </span>
           <button
             :disabled="imageIndexB === imageBImages.length - 1"
-            :title="t.proposalComparison.nextImage"
+            :title="t.bidComparison.nextImage"
             class="w-6 h-6 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-30 transition"
             @click="imageIndexB = Math.min(imageBImages.length - 1, imageIndexB + 1)"
           >
@@ -175,23 +175,23 @@
         class="bg-white rounded-2xl border border-gray-200 p-6 shadow-soft"
       >
         <h2 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">
-          {{ idx === 0 ? t.proposalComparison.proposalA : t.proposalComparison.proposalB }} —
-          {{ t.proposalComparison.conceptStatements }}
+          {{ idx === 0 ? t.bidComparison.bidA : t.bidComparison.bidB }} —
+          {{ t.bidComparison.conceptStatements }}
         </h2>
         <div v-if="bid.proposal" class="mb-4">
           <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
-            {{ t.proposalComparison.studioOverview }}
+            {{ t.bidComparison.studioOverview }}
           </p>
           <p class="text-sm text-gray-700 leading-relaxed whitespace-pre-line">{{ bid.proposal }}</p>
         </div>
         <div>
           <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">
-            {{ t.proposalComparison.conceptStatement }}
+            {{ t.bidComparison.conceptStatement }}
           </p>
           <p v-if="bid.details?.conceptStatement" class="text-sm text-gray-700 leading-relaxed whitespace-pre-line">
             {{ bid.details.conceptStatement }}
           </p>
-          <p v-else class="text-sm text-gray-400 italic">{{ t.proposalComparison.noConceptStatement }}</p>
+          <p v-else class="text-sm text-gray-400 italic">{{ t.bidComparison.noConceptStatement }}</p>
         </div>
       </div>
     </div>
@@ -203,8 +203,8 @@
         class="bg-white rounded-2xl border border-gray-200 p-6 shadow-soft"
       >
         <h2 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-4">
-          {{ idx === 0 ? t.proposalComparison.proposalA : t.proposalComparison.proposalB }} —
-          {{ t.proposalComparison.portfolios }}
+          {{ idx === 0 ? t.bidComparison.bidA : t.bidComparison.bidB }} —
+          {{ t.bidComparison.portfolios }}
         </h2>
         <div v-if="portfolios.length" class="grid grid-cols-2 sm:grid-cols-3 gap-3">
           <button
@@ -225,51 +225,51 @@
             <p class="text-xs text-gray-600 truncate">{{ portfolio.title }}</p>
           </button>
         </div>
-        <p v-else class="text-gray-400 text-sm">{{ t.proposalComparison.noPortfolios }}</p>
+        <p v-else class="text-gray-400 text-sm">{{ t.bidComparison.noPortfolios }}</p>
       </div>
     </div>
 
     <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-soft">
       <h2 class="text-sm font-bold text-gray-500 uppercase tracking-widest p-6 border-b border-gray-100">
-        {{ t.proposalComparison.summaryStats }}
+        {{ t.bidComparison.summaryStats }}
       </h2>
       <table class="w-full text-sm">
         <thead class="bg-gray-50">
           <tr>
             <th class="text-center px-6 py-3 text-xs text-brand-brown font-bold uppercase tracking-wider">
-              {{ t.proposalComparison.proposalA }}
+              {{ t.bidComparison.bidA }}
             </th>
             <th class="text-center px-6 py-3 text-xs text-gray-500 font-bold uppercase tracking-wider">
-              {{ t.proposalComparison.metricHeader }}
+              {{ t.bidComparison.metricHeader }}
             </th>
             <th class="text-center px-6 py-3 text-xs font-bold uppercase tracking-wider">
-              {{ t.proposalComparison.proposalB }}
+              {{ t.bidComparison.bidB }}
             </th>
           </tr>
         </thead>
         <tbody>
           <tr class="border-t border-gray-100">
             <td class="px-6 py-4 text-center font-bold text-brand-brown">{{ formatCurrency(bidA.bidAmount) }}</td>
-            <td class="px-6 py-4 text-center text-gray-700 font-medium">{{ t.proposalComparison.costEstimate }}</td>
+            <td class="px-6 py-4 text-center text-gray-700 font-medium">{{ t.bidComparison.costEstimate }}</td>
             <td class="px-6 py-4 text-center font-bold">{{ formatCurrency(bidB.bidAmount) }}</td>
           </tr>
           <tr class="border-t border-gray-100">
             <td class="px-6 py-4 text-center">
-              {{ bidA.proposedTimelineDays || '—' }} {{ t.proposalComparison.days }}
+              {{ bidA.proposedTimelineDays || '—' }} {{ t.bidComparison.days }}
             </td>
-            <td class="px-6 py-4 text-center text-gray-700 font-medium">{{ t.proposalComparison.timeline }}</td>
+            <td class="px-6 py-4 text-center text-gray-700 font-medium">{{ t.bidComparison.timeline }}</td>
             <td class="px-6 py-4 text-center">
-              {{ bidB.proposedTimelineDays || '—' }} {{ t.proposalComparison.days }}
+              {{ bidB.proposedTimelineDays || '—' }} {{ t.bidComparison.days }}
             </td>
           </tr>
           <tr class="border-t border-gray-100">
             <td class="px-6 py-4 text-center">{{ bidA.portfolioReferences?.length || 0 }}</td>
-            <td class="px-6 py-4 text-center text-gray-700 font-medium">{{ t.proposalComparison.portfolios }}</td>
+            <td class="px-6 py-4 text-center text-gray-700 font-medium">{{ t.bidComparison.portfolios }}</td>
             <td class="px-6 py-4 text-center">{{ bidB.portfolioReferences?.length || 0 }}</td>
           </tr>
           <tr class="border-t border-gray-100">
             <td class="px-6 py-4 text-center">{{ Math.round(scopeScore(bidA)) }}%</td>
-            <td class="px-6 py-4 text-center text-gray-700 font-medium">{{ t.proposalComparison.scopeAlignment }}</td>
+            <td class="px-6 py-4 text-center text-gray-700 font-medium">{{ t.bidComparison.scopeAlignment }}</td>
             <td class="px-6 py-4 text-center">{{ Math.round(scopeScore(bidB)) }}%</td>
           </tr>
         </tbody>
@@ -283,8 +283,8 @@
         class="bg-white rounded-2xl border border-gray-200 p-6 shadow-soft"
       >
         <h2 class="text-sm font-bold text-gray-500 uppercase tracking-widest mb-3">
-          {{ idx === 0 ? t.proposalComparison.proposalA : t.proposalComparison.proposalB }} —
-          {{ t.proposalComparison.paymentScheduleTitle }}
+          {{ idx === 0 ? t.bidComparison.bidA : t.bidComparison.bidB }} —
+          {{ t.bidComparison.paymentScheduleTitle }}
         </h2>
 
         <div v-if="bid.details?.phases?.length" class="space-y-3">
@@ -307,11 +307,11 @@
                 <button
                   type="button"
                   class="w-4 h-4 rounded-full flex items-center justify-center text-gray-400 hover:text-brand-brown hover:bg-brand-tan/40 transition"
-                  :title="t.proposalComparison.paymentFlowInfo"
+                  :title="t.bidComparison.paymentFlowInfo"
                   @click="
                     activePhaseInfo = {
                       phase,
-                      proposalLabel: idx === 0 ? t.proposalComparison.proposalA : t.proposalComparison.proposalB
+                      bidLabel: idx === 0 ? t.bidComparison.bidA : t.bidComparison.bidB
                     }
                   "
                 >
@@ -331,11 +331,11 @@
                 ]"
                 :title="
                   isMatchingDeliverable(d)
-                    ? t.proposalComparison.matchingDeliverable
-                    : t.proposalComparison.additionalDeliverable
+                    ? t.bidComparison.matchingDeliverable
+                    : t.bidComparison.additionalDeliverable
                 "
               >
-                {{ t.proposalCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ') }}
+                {{ t.bidCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ') }}
               </span>
             </div>
             <div class="flex items-center gap-3 mt-0.5">
@@ -346,25 +346,25 @@
                 }}
               </p>
               <p v-if="phase.estimatedDays" class="text-xs text-gray-400">
-                {{ phase.estimatedDays }} {{ t.proposalComparison.days }}
+                {{ phase.estimatedDays }} {{ t.bidComparison.days }}
               </p>
             </div>
           </div>
         </div>
-        <p v-else class="text-gray-400 text-sm">{{ t.proposalComparison.noPhases }}</p>
+        <p v-else class="text-gray-400 text-sm">{{ t.bidComparison.noPhases }}</p>
 
         <div v-if="getMissingDeliverables(bid).length" class="mt-4 pt-4 border-t border-dashed border-gray-200">
           <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">
-            {{ t.proposalComparison.uncoveredTitle }}
+            {{ t.bidComparison.uncoveredTitle }}
           </p>
           <div class="flex flex-wrap gap-1">
             <span
               v-for="d in getMissingDeliverables(bid)"
               :key="d"
               class="text-xs px-2 py-0.5 rounded-full border bg-red-50 text-red-400 border-red-200 font-medium"
-              :title="t.proposalComparison.missingDeliverable"
+              :title="t.bidComparison.missingDeliverable"
             >
-              {{ t.proposalCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ') }}
+              {{ t.bidCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ') }}
             </span>
           </div>
         </div>
@@ -374,24 +374,24 @@
     <div class="flex items-center justify-center gap-4 flex-wrap">
       <span
         class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-green-100 text-green-700 border border-green-200 cursor-default"
-        :title="t.proposalComparison.matchingDeliverable"
+        :title="t.bidComparison.matchingDeliverable"
       >
         <span class="w-1.5 h-1.5 rounded-full bg-green-500 inline-block" />
-        {{ t.proposalComparison.matchingDeliverable }}
+        {{ t.bidComparison.matchingDeliverable }}
       </span>
       <span
         class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200 cursor-default"
-        :title="t.proposalComparison.additionalDeliverable"
+        :title="t.bidComparison.additionalDeliverable"
       >
         <span class="w-1.5 h-1.5 rounded-full bg-blue-500 inline-block" />
-        {{ t.proposalComparison.additionalDeliverable }}
+        {{ t.bidComparison.additionalDeliverable }}
       </span>
       <span
         class="inline-flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full bg-red-50 text-red-400 border border-red-200 cursor-default"
-        :title="t.proposalComparison.missingDeliverable"
+        :title="t.bidComparison.missingDeliverable"
       >
         <span class="w-1.5 h-1.5 rounded-full bg-red-300 inline-block" />
-        {{ t.proposalComparison.missingDeliverable }}
+        {{ t.bidComparison.missingDeliverable }}
       </span>
     </div>
 
@@ -415,13 +415,13 @@
             <div class="flex items-start justify-between gap-4 mb-4">
               <div>
                 <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-1">
-                  {{ activePhaseInfo.proposalLabel }}
+                  {{ activePhaseInfo.bidLabel }}
                 </p>
                 <h3 class="text-lg font-bold text-black">
                   {{
                     activePhaseInfo.phase.title || `${t.paymentPhaseBuilder.phase} ${activePhaseInfo.phase.phaseNumber}`
                   }}
-                  — {{ t.proposalComparison.paymentFlowTitle }}
+                  — {{ t.bidComparison.paymentFlowTitle }}
                 </h3>
               </div>
               <button
@@ -463,9 +463,9 @@
                 </div>
                 <div>
                   <p class="text-xs text-brand-tan font-semibold uppercase tracking-wide">
-                    {{ t.proposalComparison.appointModalEyebrow }}
+                    {{ t.bidComparison.appointModalEyebrow }}
                   </p>
-                  <h3 class="text-lg font-bold text-white">{{ t.proposalComparison.appointModalTitle }}</h3>
+                  <h3 class="text-lg font-bold text-white">{{ t.bidComparison.appointModalTitle }}</h3>
                 </div>
               </div>
             </div>
@@ -487,12 +487,12 @@
 
               <div class="p-4 bg-amber-50 border border-amber-200 rounded-xl">
                 <p class="text-sm font-bold text-amber-800 mb-2">
-                  {{ t.proposalComparison.appointModalWarningTitle }}
+                  {{ t.bidComparison.appointModalWarningTitle }}
                 </p>
                 <ul class="text-xs text-amber-700 space-y-1.5 list-disc list-inside">
-                  <li>{{ t.proposalComparison.appointModalWarningItem1 }}</li>
-                  <li>{{ t.proposalComparison.appointModalWarningItem2 }}</li>
-                  <li>{{ t.proposalComparison.appointModalWarningItem3 }}</li>
+                  <li>{{ t.bidComparison.appointModalWarningItem1 }}</li>
+                  <li>{{ t.bidComparison.appointModalWarningItem2 }}</li>
+                  <li>{{ t.bidComparison.appointModalWarningItem3 }}</li>
                 </ul>
               </div>
 
@@ -505,7 +505,7 @@
                   class="flex-1 px-4 py-2.5 border border-gray-200 text-gray-600 text-sm font-semibold rounded-lg hover:bg-gray-50 disabled:opacity-50 transition"
                   @click="closeAppointModal"
                 >
-                  {{ t.proposalComparison.appointModalCancel }}
+                  {{ t.bidComparison.appointModalCancel }}
                 </button>
                 <button
                   type="button"
@@ -513,10 +513,10 @@
                   class="flex-1 px-4 py-2.5 bg-brand-brown text-white text-sm font-bold rounded-lg hover:bg-brand-brown-dark disabled:opacity-50 transition flex items-center justify-center gap-2"
                   @click="confirmAppoint"
                 >
-                  <span v-if="appointLoading">{{ t.proposalComparison.appointModalLoading }}</span>
+                  <span v-if="appointLoading">{{ t.bidComparison.appointModalLoading }}</span>
                   <template v-else>
                     <Crown :size="15" aria-hidden="true" />
-                    {{ t.proposalComparison.appointModalConfirm }}
+                    {{ t.bidComparison.appointModalConfirm }}
                   </template>
                 </button>
               </div>
@@ -573,10 +573,10 @@ const portfoliosB = computed(() => props.bidB?.portfolioReferences || [])
 const IMAGE_TYPES = ['FACADE', 'INTERIOR', 'MASSING', 'ZONING']
 
 const imageTypeLabel = computed(() => ({
-  FACADE: t.value.proposalComparison.facade,
-  INTERIOR: t.value.proposalComparison.interior,
-  MASSING: t.value.proposalComparison.massing,
-  ZONING: t.value.proposalComparison.zoning
+  FACADE: t.value.bidComparison.facade,
+  INTERIOR: t.value.bidComparison.interior,
+  MASSING: t.value.bidComparison.massing,
+  ZONING: t.value.bidComparison.zoning
 }))
 
 const IMAGE_TYPE_FIELD = {
@@ -651,22 +651,22 @@ const formatCurrency = value => {
 
 const buildPaymentFlowText = phase => {
   const deliverableLabels = (phase.deliverables || []).map(
-    d => t.value.proposalCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ')
+    d => t.value.bidCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ')
   )
 
-  const sentences = [t.value.proposalComparison.paymentFlowUpfront.replace('{amount}', formatCurrency(phase.amount))]
+  const sentences = [t.value.bidComparison.paymentFlowUpfront.replace('{amount}', formatCurrency(phase.amount))]
 
   if (phase.estimatedDays) {
     const timelineKey = deliverableLabels.length
-      ? t.value.proposalComparison.paymentFlowTimelineWithDeliverables
+      ? t.value.bidComparison.paymentFlowTimelineWithDeliverables
           .replace('{days}', phase.estimatedDays)
           .replace('{deliverables}', deliverableLabels.join(', '))
-      : t.value.proposalComparison.paymentFlowTimeline.replace('{days}', phase.estimatedDays)
+      : t.value.bidComparison.paymentFlowTimeline.replace('{days}', phase.estimatedDays)
     sentences.push(timelineKey)
   }
 
   if (phase.revisionRounds != null) {
-    sentences.push(t.value.proposalComparison.paymentFlowRevisions.replace('{rounds}', phase.revisionRounds))
+    sentences.push(t.value.bidComparison.paymentFlowRevisions.replace('{rounds}', phase.revisionRounds))
   }
 
   return sentences.join(' ')

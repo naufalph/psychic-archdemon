@@ -43,8 +43,8 @@
               <p class="text-2xl font-bold text-black">{{ formatCurrency(currentProject.designBudget) }}</p>
             </div>
             <div class="bg-gray-50 rounded-2xl p-6">
-              <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.clientDashboard.proposalPlural }}</p>
-              <p class="text-2xl font-bold text-brand-brown">{{ proposalCount }}</p>
+              <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.clientDashboard.bidPlural }}</p>
+              <p class="text-2xl font-bold text-brand-brown">{{ bidCount }}</p>
             </div>
           </div>
 
@@ -78,7 +78,7 @@
             <div class="space-y-3">
               <div v-for="group in groupedDeliverables" :key="group.categoryKey">
                 <p class="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-1.5">
-                  {{ t.proposalCreate?.deliverableCategories?.[group.categoryKey] }}
+                  {{ t.bidCreate?.deliverableCategories?.[group.categoryKey] }}
                 </p>
                 <div class="flex flex-wrap gap-2">
                   <span
@@ -86,7 +86,7 @@
                     :key="d"
                     class="bg-brand-tan text-brand-brown px-4 py-2 rounded-full text-sm font-medium border border-brand-gold/20"
                   >
-                    {{ t.proposalCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ') }}
+                    {{ t.bidCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ') }}
                   </span>
                 </div>
               </div>
@@ -158,7 +158,7 @@
 
         <!-- Bid Registry -->
         <BidComparisonTable
-          v-if="proposalCount > 0"
+          v-if="bidCount > 0"
           :bids="projectBids"
           :compare-ids="compareIds"
           @toggle-compare="toggleCompare"
@@ -167,8 +167,8 @@
 
         <div v-else class="bg-white rounded-3xl border border-gray-200 p-12 text-center shadow-soft">
           <FileText :size="64" class="text-gray-300 mx-auto mb-4" />
-          <h3 class="text-xl font-bold text-gray-900 mb-2">{{ t.clientDashboard.noProposalsYet }}</h3>
-          <p class="text-gray-500">{{ t.clientDashboard.noProposalsMessage }}</p>
+          <h3 class="text-xl font-bold text-gray-900 mb-2">{{ t.clientDashboard.noBidsYet }}</h3>
+          <p class="text-gray-500">{{ t.clientDashboard.noBidsMessage }}</p>
         </div>
 
         <!-- Comparative Analysis Zone (always visible) -->
@@ -220,7 +220,7 @@
           </p>
 
           <div v-if="bidA && bidB" class="mt-6 pt-6 border-t border-gray-100">
-            <ProposalComparison :bid-a="bidA" :bid-b="bidB" :project="currentProject" />
+            <BidComparison :bid-a="bidA" :bid-b="bidB" :project="currentProject" />
           </div>
         </div>
       </div>
@@ -242,7 +242,7 @@ import BidImageGallery from '@/components/bid/BidImageGallery.vue'
 import SiteLocationMap from '@/components/project/SiteLocationMap.vue'
 import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
 import BidComparisonTable from '@/components/bid/BidComparisonTable.vue'
-import ProposalComparison from '@/components/bid/ProposalComparison.vue'
+import BidComparison from '@/components/bid/BidComparison.vue'
 
 const { t, locale } = useI18n()
 const route = useRoute()
@@ -283,7 +283,7 @@ const groupedDeliverables = computed(() => {
   })).filter(g => g.items.length > 0)
 })
 
-const proposalCount = computed(() => projectBids.value?.length || 0)
+const bidCount = computed(() => projectBids.value?.length || 0)
 const bidA = computed(() => projectBids.value?.find(b => b.id === compareIds.value[0]) ?? null)
 const bidB = computed(() => projectBids.value?.find(b => b.id === compareIds.value[1]) ?? null)
 

@@ -75,7 +75,7 @@
                 class="bg-gray-50 rounded-2xl px-4 py-3"
               >
                 <h4 class="font-bold text-xs text-gray-700 uppercase mb-2">
-                  {{ t.proposalCreate.deliverableCategories[group.categoryKey] }}
+                  {{ t.bidCreate.deliverableCategories[group.categoryKey] }}
                 </h4>
                 <div class="flex flex-wrap gap-2">
                   <span
@@ -84,7 +84,7 @@
                     class="bg-white border border-brand-gold/30 px-3 py-1.5 rounded-full text-sm font-medium text-gray-800 flex items-center gap-1.5"
                   >
                     <Check :size="12" class="text-brand-brown" />
-                    {{ t.proposalCreate.deliverableItems[value] || value.replace(/_/g, ' ') }}
+                    {{ t.bidCreate.deliverableItems[value] || value.replace(/_/g, ' ') }}
                   </span>
                 </div>
               </div>
@@ -168,8 +168,8 @@
                 <CheckCircle :size="24" class="text-amber-600" />
               </div>
               <div class="flex-1">
-                <p class="font-bold text-amber-900 mb-1">{{ t.projectDetailArchitect.proposalAccepted }}</p>
-                <p class="text-sm text-amber-700">{{ t.projectDetailArchitect.proposalAcceptedDesc }}</p>
+                <p class="font-bold text-amber-900 mb-1">{{ t.projectDetailArchitect.bidAccepted }}</p>
+                <p class="text-sm text-amber-700">{{ t.projectDetailArchitect.bidAcceptedDesc }}</p>
               </div>
             </div>
 
@@ -190,8 +190,8 @@
                 <Send :size="24" class="text-blue-600" />
               </div>
               <div class="flex-1">
-                <p class="font-bold text-blue-900 mb-1">{{ t.projectDetailArchitect.proposalSubmitted }}</p>
-                <p class="text-sm text-blue-700">{{ t.projectDetailArchitect.proposalSubmittedDesc }}</p>
+                <p class="font-bold text-blue-900 mb-1">{{ t.projectDetailArchitect.bidSubmitted }}</p>
+                <p class="text-sm text-blue-700">{{ t.projectDetailArchitect.bidSubmittedDesc }}</p>
               </div>
             </div>
 
@@ -211,7 +211,7 @@
             <button
               v-if="existingBid.status === 'DRAFT'"
               class="w-full bg-brand-brown text-white py-4 px-6 rounded-2xl hover:bg-brand-brown-hover transition flex items-center justify-center gap-3 text-lg font-bold"
-              @click="goToProposal"
+              @click="goToBid"
             >
               <Send :size="24" />
               {{ t.projectDetailArchitect.draftSaved }}
@@ -223,7 +223,7 @@
               class="w-full bg-gray-300 text-gray-500 py-4 px-6 rounded-2xl cursor-not-allowed flex items-center justify-center gap-3 text-lg font-bold"
             >
               <Send :size="24" />
-              {{ t.projectDetailArchitect.proposalSubmitted }}
+              {{ t.projectDetailArchitect.bidSubmitted }}
             </button>
           </div>
 
@@ -231,7 +231,7 @@
             v-else
             :disabled="project.status !== 'OPEN'"
             class="w-full bg-brand-brown text-white py-4 px-6 rounded-2xl hover:bg-brand-brown-hover transition flex items-center justify-center gap-3 text-lg font-bold disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-500"
-            @click="goToProposal"
+            @click="goToBid"
           >
             <Send :size="24" />
             {{ t.projectDetailArchitect.noBidYet }}
@@ -331,9 +331,9 @@ const formatDate = dateString => {
   return date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
 }
 
-const goToProposal = () => {
+const goToBid = () => {
   router.push({
-    name: 'ProposalCreate',
+    name: 'BidCreate',
     params: { projectId: route.params.projectId }
   })
 }

@@ -4,7 +4,7 @@
     style="height: 600px"
     role="region"
     aria-roledescription="carousel"
-    aria-label="Proposal arsitek"
+    aria-label="Penawaran arsitek"
     @mouseenter="pauseTimer"
     @mouseleave="resumeTimer"
   >
@@ -85,7 +85,7 @@
     <template v-if="slides.length > 1">
       <button
         type="button"
-        aria-label="Proposal sebelumnya"
+        aria-label="Penawaran sebelumnya"
         class="absolute w-9 h-9 rounded-full bg-white border border-ink-200 shadow-soft flex items-center justify-center cursor-pointer hover:bg-surface-muted transition-colors"
         style="left: -4px; top: 260px; z-index: 25"
         @click="goTo(activeIndex - 1)"
@@ -94,7 +94,7 @@
       </button>
       <button
         type="button"
-        aria-label="Proposal berikutnya"
+        aria-label="Penawaran berikutnya"
         class="absolute w-9 h-9 rounded-full bg-white border border-ink-200 shadow-soft flex items-center justify-center cursor-pointer hover:bg-surface-muted transition-colors"
         style="right: -4px; top: 260px; z-index: 25"
         @click="goTo(activeIndex + 1)"
@@ -107,7 +107,7 @@
           v-for="(slide, i) in slides"
           :key="slide.id ?? i"
           type="button"
-          :aria-label="`Ke proposal ${i + 1}`"
+          :aria-label="`Ke penawaran ${i + 1}`"
           :aria-current="i === activeIndex"
           class="rounded-full transition-all duration-300 cursor-pointer border-none p-0 bg-ink-900"
           :style="{ width: i === activeIndex ? '18px' : '8px', height: '8px', opacity: i === activeIndex ? 1 : 0.25 }"
@@ -117,7 +117,7 @@
     </template>
 
     <div v-if="active" aria-live="polite" class="sr-only">
-      Menampilkan proposal {{ activeIndex + 1 }} dari {{ slides.length }}: {{ active.architectName }}
+      Menampilkan penawaran {{ activeIndex + 1 }} dari {{ slides.length }}: {{ active.architectName }}
     </div>
   </div>
 </template>

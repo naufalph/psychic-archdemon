@@ -684,7 +684,7 @@
                 </div>
 
                 <div v-if="acceptedBid.proposal" class="pt-2 border-t border-brand-gold/20">
-                  <p class="text-xs font-semibold text-gray-500 mb-1">Proposal</p>
+                  <p class="text-xs font-semibold text-gray-500 mb-1">Bid</p>
                   <p class="text-sm text-gray-700 leading-relaxed line-clamp-4">{{ acceptedBid.proposal }}</p>
                 </div>
 

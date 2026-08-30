@@ -27,9 +27,9 @@
             <DialogPanel class="w-full max-w-5xl bg-white rounded-3xl shadow-2xl overflow-hidden">
               <div class="bg-brand-brown text-white p-6 flex justify-between items-center">
                 <div>
-                  <h2 class="text-2xl font-bold">{{ proposal.architectName }}'s Proposal</h2>
-                  <p v-if="proposal.architectCompany" class="text-white/80">
-                    {{ proposal.architectCompany }}
+                  <h2 class="text-2xl font-bold">{{ bid.architectName }}'s Bid</h2>
+                  <p v-if="bid.architectCompany" class="text-white/80">
+                    {{ bid.architectCompany }}
                   </p>
                 </div>
                 <button
@@ -77,7 +77,7 @@ const props = defineProps({
     type: Boolean,
     required: true
   },
-  proposal: {
+  bid: {
     type: Object,
     required: true
   }
@@ -86,16 +86,16 @@ const props = defineProps({
 defineEmits(['close'])
 
 const pdfUrl = computed(() => {
-  if (props.proposal.attachments && props.proposal.attachments.length > 0) {
-    return props.proposal.attachments[0].fileUrl
+  if (props.bid.attachments && props.bid.attachments.length > 0) {
+    return props.bid.attachments[0].fileUrl
   }
   return null
 })
 
 const fileName = computed(() => {
-  if (props.proposal.attachments && props.proposal.attachments.length > 0) {
-    return props.proposal.attachments[0].fileName
+  if (props.bid.attachments && props.bid.attachments.length > 0) {
+    return props.bid.attachments[0].fileName
   }
-  return 'proposal.pdf'
+  return 'bid.pdf'
 })
 </script>

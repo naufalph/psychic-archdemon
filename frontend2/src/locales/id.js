@@ -17,7 +17,7 @@ export default {
     hero: {
       title: 'Wujudkan Desain Impian, Tanpa Ribet',
       subline:
-        'Bandingkan proposal arsitek terbaik, kelola proyek dengan cermat, dan bangun impian Anda bersama Rumantra.',
+        'Bandingkan penawaran arsitek terbaik, kelola proyek dengan cermat, dan bangun impian Anda bersama Rumantra.',
       cta: 'Mulai Proyek Gratis',
       learnMore: 'Pelajari cara kerja',
       microcopy: 'Gratis untuk klien · Tanpa biaya pendaftaran'
@@ -47,7 +47,7 @@ export default {
       step1Title: 'Posting Brief Proyek',
       step1Desc:
         'Ceritakan kebutuhan Anda — luas, anggaran, gaya desain. AI kami akan membantu merumuskan brief profesional.',
-      step2Title: 'Terima & Bandingkan Proposal',
+      step2Title: 'Terima & Bandingkan Penawaran',
       step2Desc:
         'Arsitek berlisensi IAI mengajukan penawaran. Bandingkan harga, timeline, dan portofolio secara berdampingan.',
       step3Title: 'Bangun dengan Tenang',
@@ -235,7 +235,7 @@ export default {
         subtitle: 'Pilih cara Anda menggunakan Rumantra',
         client: {
           title: 'Menyewa Arsitek',
-          desc: 'Posting proyek, bandingkan proposal, dan kelola desain arsitektur Anda'
+          desc: 'Posting proyek, bandingkan penawaran, dan kelola desain arsitektur Anda'
         },
         architect: {
           title: 'Menawarkan Layanan',
@@ -490,7 +490,7 @@ export default {
       cancel: 'Batal'
     }
   },
-  proposal: {
+  bid: {
     aboutStudio: 'Tentang studio Anda',
     aboutStudioPlaceholder:
       'Ceritakan kepada klien tentang keahlian, pengalaman, dan pendekatan studio Anda...',
@@ -507,11 +507,11 @@ export default {
     phasesTotalMismatch:
       'Total fase pembayaran harus sama dengan jumlah penawaran. Harap sesuaikan fase Anda.'
   },
-  proposalCreate: {
-    title: 'Kirim Proposal',
-    updateTitle: 'Perbarui Proposal',
+  bidCreate: {
+    title: 'Kirim Penawaran',
+    updateTitle: 'Perbarui Penawaran',
     subtitle: 'Tunjukkan keahlian Anda dan menangkan proyek ini',
-    updateSubtitle: 'Lanjutkan mengedit draft proposal Anda',
+    updateSubtitle: 'Lanjutkan mengedit draft penawaran Anda',
     projectSummary: 'Ringkasan Proyek',
     project: 'Proyek',
     location: 'Lokasi',
@@ -524,7 +524,7 @@ export default {
     paymentPhases: 'Fase Pembayaran',
     paymentPhasesHelp:
       'Tentukan fase pembayaran. Total semua fase harus sama dengan nilai penawaran.',
-    submitBtn: 'Kirim Proposal',
+    submitBtn: 'Kirim Penawaran',
     cancelBtn: 'Batal',
     submitting: 'Mengirim...',
     backToOpportunities: 'Kembali ke Peluang',
@@ -541,7 +541,7 @@ export default {
     studioPhilosophyHelp:
       'Diisi otomatis dari Filosofi Desain di profil Anda — silakan sesuaikan untuk proyek ini.',
     aspectRatioHint:
-      'Rasio aspek yang disarankan: 16:9 agar tampil optimal pada perbandingan proposal',
+      'Rasio aspek yang disarankan: 16:9 agar tampil optimal pada perbandingan penawaran',
     referenceImages: 'Foto Referensi dari Klien',
     facadeDescriptionPlaceholder:
       'Tambahkan konteks tentang foto fasad ini (material, gaya, kondisi lokasi)...',
@@ -633,14 +633,14 @@ export default {
     noProjectsYet: 'Belum ada proyek',
     noProjectsMessage: 'Buat proyek pertama Anda untuk mulai mencari arsitek',
     createProject: 'Buat Proyek',
-    proposalSingular: 'Proposal',
-    proposalPlural: 'Proposal',
+    bidSingular: 'Penawaran',
+    bidPlural: 'Penawaran',
     backToProjects: 'Kembali ke Proyek',
-    receivedProposals: 'Proposal yang Diterima',
-    noProposalsYet: 'Belum ada proposal',
-    noProposalsMessage: 'Arsitek akan mengirimkan proposal mereka segera',
-    acceptProposal: 'Terima Proposal',
-    acceptConfirm: 'Apakah Anda yakin ingin menerima proposal ini?',
+    receivedBids: 'Penawaran yang Diterima',
+    noBidsYet: 'Belum ada penawaran',
+    noBidsMessage: 'Arsitek akan mengirimkan penawaran mereka segera',
+    acceptBid: 'Terima Penawaran',
+    acceptConfirm: 'Apakah Anda yakin ingin menerima penawaran ini?',
     lotSize: 'Luas Lahan',
     designBudget: 'Anggaran Desain',
     description: 'Deskripsi',
@@ -666,13 +666,13 @@ export default {
     subjectA: 'Subjek A',
     subjectB: 'Subjek B',
     emptyCompareSlot: 'Kosong — pilih dari daftar',
-    compareHint: 'Pilih proposal dari daftar di bawah untuk memulai analisis perbandingan',
+    compareHint: 'Pilih penawaran dari daftar di bawah untuk memulai analisis perbandingan',
     bidRegistry: 'Daftar Penawaran',
     welcome: 'Selamat datang',
     manageProjects: 'Kelola proyek arsitektur Anda',
     newProjectBtn: 'PROYEK BARU',
     activeProjects: 'Proyek Aktif',
-    totalProposals: 'Total Proposal',
+    totalBids: 'Total Penawaran',
     budgetUsed: 'Anggaran Terpakai',
     activeVentures: 'PROYEK AKTIF',
     viewAll: 'LIHAT SEMUA →',
@@ -712,7 +712,7 @@ export default {
     addressResolved: 'Terdeteksi:',
     pinLocation: 'Tandai Lokasi di Peta',
     pinLocationHint:
-      'Klik peta untuk menaruh penanda, lalu geser tepat ke lokasi proyek. Arsitek memakai ini untuk membaca kontur, vegetasi, dan lingkungan sekitar sebelum menyusun proposal.',
+      'Klik peta untuk menaruh penanda, lalu geser tepat ke lokasi proyek. Arsitek memakai ini untuk membaca kontur, vegetasi, dan lingkungan sekitar sebelum menyusun penawaran.',
     pinLocationNotSet: 'Penanda belum diatur — arsitek hanya akan melihat areanya.',
     pinLocationClear: 'Hapus penanda',
     pinLocationUnavailable:
@@ -856,7 +856,7 @@ export default {
     badge: 'Finalisasi',
     biddingDeadline: 'Batas Bid',
     bothConfirmed: 'Kedua pihak telah mengkonfirmasi — proyek kini berjalan!',
-    yourProposal: 'Proposal Anda',
+    yourBid: 'Penawaran Anda',
     proposedPrice: 'Harga yang Diajukan',
     timeline: 'Durasi',
     days: 'hari',
@@ -951,16 +951,16 @@ export default {
   },
   myBids: {
     title: 'Penawaran Saya',
-    subtitle: 'Lacak proposal yang telah Anda kirim',
+    subtitle: 'Lacak penawaran yang telah Anda kirim',
     empty: {
       title: 'Belum ada penawaran',
-      message: 'Kirim proposal pertama Anda untuk memulai',
+      message: 'Kirim penawaran pertama Anda untuk memulai',
       cta: 'Lihat Peluang'
     }
   },
   opportunityList: {
     title: 'Peluang Tersedia',
-    subtitle: 'Jelajahi proyek terbuka dan kirim proposal Anda',
+    subtitle: 'Jelajahi proyek terbuka dan kirim penawaran Anda',
     tokensAvailable: 'Token Bid Tersisa',
     tokensUsedThisMonth: 'Digunakan Bulan Ini',
     purchaseTokens: 'Beli Token',
@@ -1008,23 +1008,23 @@ export default {
     expectedStartDate: 'Tanggal Mulai yang Diharapkan',
     immediately: 'Segera — bisa langsung dimulai',
     designPreferences: 'Preferensi Desain',
-    proposalAccepted: 'Proposal Diterima',
-    proposalAcceptedDesc: 'Tinjau ketentuan dan konfirmasi untuk memulai proyek.',
+    bidAccepted: 'Penawaran Diterima',
+    bidAcceptedDesc: 'Tinjau ketentuan dan konfirmasi untuk memulai proyek.',
     finalizeAgreement: 'Finalisasi Perjanjian',
-    proposalSubmitted: 'Proposal Terkirim',
-    proposalSubmittedDesc: 'Penawaran Anda sedang ditinjau oleh klien.',
+    bidSubmitted: 'Penawaran Terkirim',
+    bidSubmittedDesc: 'Penawaran Anda sedang ditinjau oleh klien.',
     draftSaved: 'Draft Tersimpan',
-    draftSavedDesc: 'Lanjutkan mengedit untuk melengkapi proposal Anda.',
+    draftSavedDesc: 'Lanjutkan mengedit untuk melengkapi penawaran Anda.',
     bidRejected: 'Penawaran Tidak Terpilih',
     bidRejectedDesc: 'Penawaran Anda tidak terpilih untuk proyek ini.',
-    noBidYet: 'Buat Proposal',
-    noBidYetDesc: 'Kirim proposal untuk bersaing mendapatkan proyek ini.',
+    noBidYet: 'Buat Penawaran',
+    noBidYetDesc: 'Kirim penawaran untuk bersaing mendapatkan proyek ini.',
     projectClosedBidding: 'Proyek Ditutup',
     projectClosedBiddingDesc: 'Periode bidding untuk proyek ini telah berakhir.'
   },
-  proposalComparison: {
-    proposalA: 'Proposal A',
-    proposalB: 'Proposal B',
+  bidComparison: {
+    bidA: 'Penawaran A',
+    bidB: 'Penawaran B',
     appointed: '✓ Ditunjuk',
     appointLead: 'Tunjuk Arsitek Utama',
     appointModalEyebrow: 'Konfirmasi Penunjukan',
@@ -1032,7 +1032,7 @@ export default {
     appointModalWarningTitle: 'Harap Baca Sebelum Konfirmasi',
     appointModalWarningItem1:
       'Proyek akan langsung berpindah ke tahap negosiasi dengan arsitek ini.',
-    appointModalWarningItem2: 'Proposal arsitek lain tidak akan tersedia lagi untuk dibandingkan.',
+    appointModalWarningItem2: 'Penawaran arsitek lain tidak akan tersedia lagi untuk dibandingkan.',
     appointModalWarningItem3: 'Tindakan ini tidak dapat dibatalkan setelah dikonfirmasi.',
     appointModalCancel: 'Batal',
     appointModalConfirm: 'Ya, Tunjuk Sekarang',
@@ -1068,7 +1068,7 @@ export default {
     nextImage: 'Gambar berikutnya',
     matchingDeliverable: 'Sesuai kebutuhan proyek',
     additionalDeliverable: 'Tambahan dari arsitek',
-    missingDeliverable: 'Belum tercakup dalam proposal',
+    missingDeliverable: 'Belum tercakup dalam penawaran',
     uncoveredTitle: 'Belum tercakup dari kebutuhan proyek',
     paymentFlowInfo: 'Lihat detail alur pembayaran',
     paymentFlowTitle: 'Alur Pembayaran',
@@ -1114,15 +1114,15 @@ export default {
     noMassing: 'Tidak ada gambar massing',
     zoning: 'Zoning',
     noZoning: 'Tidak ada gambar zoning',
-    acceptProposal: 'Terima Proposal Ini',
+    acceptBid: 'Terima Penawaran Ini',
     accepted: 'Diterima',
     submittedOn: 'Dikirim pada {date}',
     matchingDeliverable: 'Sesuai kebutuhan proyek',
     additionalDeliverable: 'Tambahan dari arsitek',
-    missingDeliverable: 'Belum tercakup dalam proposal',
+    missingDeliverable: 'Belum tercakup dalam penawaran',
     uncoveredTitle: 'Belum tercakup dari kebutuhan proyek'
   },
-  proposalCard: {
+  bidCard: {
     appointed: 'Ditunjuk',
     concept: 'Konsep',
     selectedForCompare: 'Dipilih untuk Dibandingkan',

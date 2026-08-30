@@ -64,8 +64,8 @@ export const submitBid = async (page, projectTitle, { bidAmount, phases }) => {
   await card.click()
   await expect(page).toHaveURL(/\/architect\/opportunities\/\d+$/)
 
-  await page.getByRole('button', { name: 'Buat Proposal' }).click()
-  await expect(page).toHaveURL(/\/propose$/)
+  await page.getByRole('button', { name: 'Buat Penawaran' }).click()
+  await expect(page).toHaveURL(/\/bid$/)
 
   const numberInputs = page.locator('input[type="number"]')
   await numberInputs.nth(0).fill(String(bidAmount)) // Bid Amount
@@ -87,7 +87,7 @@ export const submitBid = async (page, projectTitle, { bidAmount, phases }) => {
     await estimatedDaysInput.fill(String(phases[i].estimatedDays))
   }
 
-  await page.getByRole('button', { name: 'Kirim Proposal' }).click()
+  await page.getByRole('button', { name: 'Kirim Penawaran' }).click()
   await expect(page).toHaveURL(/\/architect\/bids/, { timeout: 15000 })
 }
 
@@ -99,7 +99,7 @@ export const acceptBid = async (page, projectId) => {
   await expect(page.getByText('Daftar Penawaran')).toBeVisible({ timeout: 10000 })
 
   page.once('dialog', dialog => dialog.accept())
-  await page.getByRole('button', { name: 'Terima Proposal' }).click()
+  await page.getByRole('button', { name: 'Terima Penawaran' }).click()
 
   await expect(page).toHaveURL(new RegExp(`/client/projects/${projectId}/finalization`), { timeout: 10000 })
 }

@@ -44,8 +44,8 @@
 
       <div class="flex items-center justify-between pt-3 border-t border-gray-100">
         <span class="text-xs text-gray-500 font-medium">
-          {{ proposalCount }}
-          {{ proposalCount === 1 ? t.clientDashboard.proposalSingular : t.clientDashboard.proposalPlural }}
+          {{ bidCount }}
+          {{ bidCount === 1 ? t.clientDashboard.bidSingular : t.clientDashboard.bidPlural }}
         </span>
         <button
           class="bg-black text-white text-xs font-bold px-4 py-2 rounded-full tracking-wider hover:bg-brand-brown transition"
@@ -91,11 +91,11 @@
           {{ project.lotSize }} m²
         </span>
         <span
-          v-if="showProposalCount && proposalCount > 0"
+          v-if="showBidCount && bidCount > 0"
           class="bg-brand-brown text-white px-3 py-1.5 rounded-full text-xs font-bold"
         >
-          {{ proposalCount }}
-          {{ proposalCount === 1 ? t.clientDashboard.proposalSingular : t.clientDashboard.proposalPlural }}
+          {{ bidCount }}
+          {{ bidCount === 1 ? t.clientDashboard.bidSingular : t.clientDashboard.bidPlural }}
         </span>
       </div>
 
@@ -135,7 +135,7 @@ const props = defineProps({
     default: 'client',
     validator: value => ['client', 'architect'].includes(value)
   },
-  showProposalCount: {
+  showBidCount: {
     type: Boolean,
     default: true
   },
@@ -145,11 +145,11 @@ const props = defineProps({
   }
 })
 
-defineEmits(['submit-proposal'])
+defineEmits(['submit-bid'])
 const { t, locale } = useI18n()
 const router = useRouter()
 
-const proposalCount = computed(() => props.project.bids?.length || props.project.proposalCount || 0)
+const bidCount = computed(() => props.project.bids?.length || props.project.bidCount || 0)
 
 const coverImage = computed(() => {
   const files = props.project.files

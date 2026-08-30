@@ -140,7 +140,7 @@
               {{ formatCurrency(bid.bidAmount) }}
             </td>
             <td class="px-6 py-4 text-right text-gray-700 whitespace-nowrap">
-              {{ bid.proposedTimelineDays || '—' }} {{ t.proposalComparison.days }}
+              {{ bid.proposedTimelineDays || '—' }} {{ t.bidComparison.days }}
             </td>
             <td class="px-6 py-4">
               <div class="flex items-center justify-end gap-2">
@@ -160,7 +160,7 @@
                 >
                   <Check v-if="isSelected(bid.id)" :size="14" />
                   <Plus v-else :size="14" />
-                  {{ isSelected(bid.id) ? t.proposalCard.selectedForCompare : t.proposalCard.addToCompare }}
+                  {{ isSelected(bid.id) ? t.bidCard.selectedForCompare : t.bidCard.addToCompare }}
                 </button>
               </div>
             </td>
@@ -199,15 +199,15 @@
         </div>
         <div class="bg-white rounded-2xl p-4 border border-gray-100">
           <p class="text-xs text-gray-500 uppercase font-bold mb-1">{{ t.bidTable.minDuration }}</p>
-          <p class="text-sm font-bold text-black">{{ durationStats.min }} {{ t.proposalComparison.days }}</p>
+          <p class="text-sm font-bold text-black">{{ durationStats.min }} {{ t.bidComparison.days }}</p>
         </div>
         <div class="bg-white rounded-2xl p-4 border border-gray-100">
           <p class="text-xs text-gray-500 uppercase font-bold mb-1">{{ t.bidTable.avgDuration }}</p>
-          <p class="text-sm font-bold text-black">{{ durationStats.avg }} {{ t.proposalComparison.days }}</p>
+          <p class="text-sm font-bold text-black">{{ durationStats.avg }} {{ t.bidComparison.days }}</p>
         </div>
         <div class="bg-white rounded-2xl p-4 border border-gray-100">
           <p class="text-xs text-gray-500 uppercase font-bold mb-1">{{ t.bidTable.maxDuration }}</p>
-          <p class="text-sm font-bold text-black">{{ durationStats.max }} {{ t.proposalComparison.days }}</p>
+          <p class="text-sm font-bold text-black">{{ durationStats.max }} {{ t.bidComparison.days }}</p>
         </div>
       </div>
     </div>
