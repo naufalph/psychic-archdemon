@@ -981,6 +981,12 @@ export default {
     statusProcessing: 'Processing'
   },
   projectDetailArchitect: {
+    bidNotSelected: 'Bid not selected',
+    bidNotSelectedDesc: 'The client chose another architect for this project. Your bid stays here for your records.',
+    bidWithdrawn: 'Bid withdrawn',
+    bidWithdrawnDesc: 'You withdrew this bid. The project is shown here for your records.',
+    projectClosed: 'Project closed',
+    projectClosedDesc: 'This project is no longer active and is not accepting bids.',
     designBudgetRange: 'Design Budget Range',
     lotSize: 'Lot Size',
     buildArea: 'Build Area',

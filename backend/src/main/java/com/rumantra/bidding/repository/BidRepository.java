@@ -25,6 +25,8 @@ public interface BidRepository extends JpaRepository<Bid, Long> {
 
   boolean existsByProjectIdAndArchitectId(Long projectId, Long architectId);
 
+  boolean existsByProjectIdAndArchitectUserId(Long projectId, Long userId);
+
   long countByProjectId(Long projectId);
 
   @Query(

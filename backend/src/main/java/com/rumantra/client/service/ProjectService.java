@@ -412,29 +412,30 @@ public class ProjectService {
             .orElseThrow(
                 () -> new ResourceNotFoundException("Project not found with id: " + projectId));
 
-    if (project.getStatus() == ProjectStatus.OPEN
-        || project.getStatus() == ProjectStatus.NEGOTIATION) {
-      return mapToProjectResponse(project);
+    // Open projects are browsable by any architect so they can decide whether to bid.
+    // Every other status is history: only architects who actually bid may look back at it,
+    // whatever the outcome of their bid was.
+    boolean hasBid = bidRepository.existsByProjectIdAndArchitectUserId(projectId, userId);
+    if (project.getStatus() != ProjectStatus.OPEN && !hasBid) {
+      throw new org.springframework.security.access.AccessDeniedException(
+          "This project is not accessible");
     }
 
-    if (project.getStatus() == ProjectStatus.IN_PROGRESS
-        || project.getStatus() == ProjectStatus.COMPLETED) {
+    ProjectResponse response = mapToProjectResponse(project);
+
+    if (project.getStatus() == ProjectStatus.COMPLETED) {
       List<Bid> acceptedBids =
           bidRepository.findByProjectIdAndStatus(projectId, BidStatus.ACCEPTED);
       boolean isWinningArchitect =
           acceptedBids.stream().anyMatch(b -> b.getArchitect().getUser().getId().equals(userId));
+      // The archived porto belongs to the winning architect, so only they get the link
       if (isWinningArchitect) {
-        ProjectResponse response = mapToProjectResponse(project);
-        if (project.getStatus() == ProjectStatus.COMPLETED) {
-          response.setArchivedPortoId(
-              portoRepository.findBySourceProjectId(projectId).map(Porto::getId).orElse(null));
-        }
-        return response;
+        response.setArchivedPortoId(
+            portoRepository.findBySourceProjectId(projectId).map(Porto::getId).orElse(null));
       }
     }
 
-    throw new org.springframework.security.access.AccessDeniedException(
-        "This project is not accessible");
+    return response;
   }
 
   @Transactional

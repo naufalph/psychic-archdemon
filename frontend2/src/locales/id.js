@@ -990,6 +990,12 @@ export default {
     statusProcessing: 'Diproses'
   },
   projectDetailArchitect: {
+    bidNotSelected: 'Penawaran tidak terpilih',
+    bidNotSelectedDesc: 'Klien memilih arsitek lain untuk proyek ini. Penawaran Anda tetap tersimpan sebagai arsip.',
+    bidWithdrawn: 'Penawaran ditarik',
+    bidWithdrawnDesc: 'Anda menarik penawaran ini. Proyek ditampilkan di sini sebagai arsip.',
+    projectClosed: 'Proyek ditutup',
+    projectClosedDesc: 'Proyek ini sudah tidak aktif dan tidak menerima penawaran.',
     designBudgetRange: 'Rentang Anggaran Desain',
     lotSize: 'Luas Lahan',
     buildArea: 'Luas Bangunan',

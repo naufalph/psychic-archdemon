@@ -161,28 +161,6 @@
 
           <div v-if="existingBid" class="space-y-4">
             <div
-              v-if="existingBid.status === 'ACCEPTED' && project.status === 'NEGOTIATION'"
-              class="bg-amber-50 border border-amber-200 rounded-2xl p-6 flex items-start gap-4"
-            >
-              <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <CheckCircle :size="24" class="text-amber-600" />
-              </div>
-              <div class="flex-1">
-                <p class="font-bold text-amber-900 mb-1">{{ t.projectDetailArchitect.bidAccepted }}</p>
-                <p class="text-sm text-amber-700">{{ t.projectDetailArchitect.bidAcceptedDesc }}</p>
-              </div>
-            </div>
-
-            <button
-              v-if="existingBid.status === 'ACCEPTED' && project.status === 'NEGOTIATION'"
-              class="w-full bg-brand-brown text-white py-4 px-6 rounded-2xl hover:bg-black transition flex items-center justify-center gap-3 text-lg font-bold"
-              @click="router.push({ name: 'ArchitectFinalizationView', params: { projectId: route.params.projectId } })"
-            >
-              <CheckCircle :size="24" />
-              {{ t.projectDetailArchitect.finalizeAgreement }}
-            </button>
-
-            <div
               v-if="existingBid.status === 'PENDING'"
               class="bg-blue-50 border border-blue-200 rounded-2xl p-6 flex items-start gap-4"
             >
@@ -225,6 +203,16 @@
               <Send :size="24" />
               {{ t.projectDetailArchitect.bidSubmitted }}
             </button>
+
+            <div v-if="bidOutcome" class="bg-gray-50 border border-gray-200 rounded-2xl p-6 flex items-start gap-4">
+              <div class="w-12 h-12 bg-gray-200 rounded-full flex items-center justify-center flex-shrink-0">
+                <component :is="bidOutcome.icon" :size="24" class="text-gray-500" />
+              </div>
+              <div class="flex-1">
+                <p class="font-bold text-gray-800 mb-1">{{ bidOutcome.title }}</p>
+                <p class="text-sm text-gray-600">{{ bidOutcome.description }}</p>
+              </div>
+            </div>
           </div>
 
           <button
@@ -246,7 +234,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { projectTypeLabel } from '@/constants/projectTaxonomy'
 import { useRoute, useRouter } from 'vue-router'
-import { ArrowLeft, Send, FileText, AlertCircle, Check, CheckCircle, CalendarDays } from 'lucide-vue-next'
+import { ArrowLeft, Send, FileText, AlertCircle, Check, CalendarDays, XCircle, Archive } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
 import ProjectStatusBadge from '@/components/project/ProjectStatusBadge.vue'
 import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
@@ -305,6 +293,24 @@ const hasLocation = computed(() => !!(project.value?.fullAddress || project.valu
 
 const documentFiles = computed(() => (project.value?.files ?? []).filter(f => !f.fileType?.startsWith('image/')))
 
+// Losing and withdrawn bidders can still open this page, so explain where the project ended up
+const bidOutcome = computed(() => {
+  const status = existingBid.value?.status
+  const projectStatus = project.value?.status
+  const copy = t.value.projectDetailArchitect
+
+  if (status === 'REJECTED') {
+    return { icon: XCircle, title: copy.bidNotSelected, description: copy.bidNotSelectedDesc }
+  }
+  if (status === 'WITHDRAWN') {
+    return { icon: XCircle, title: copy.bidWithdrawn, description: copy.bidWithdrawnDesc }
+  }
+  if (['CANCELLED', 'BIDDING_CLOSED', 'NEGOTIATION_EXPIRED'].includes(projectStatus)) {
+    return { icon: Archive, title: copy.projectClosed, description: copy.projectClosedDesc }
+  }
+  return null
+})
+
 const groupedDeliverables = computed(() => {
   if (!project.value?.deliverables) return []
   return deliverableGroups
@@ -346,6 +352,13 @@ onMounted(async () => {
 
     await bidsStore.fetchMyBids()
     existingBid.value = bidsStore.myBids.find(bid => bid.projectId === parseInt(route.params.projectId))
+
+    // The winning architect negotiates on the finalization page, not here. Redirecting
+    // in the view (rather than only in BidCard) also covers direct URLs and the back button.
+    if (existingBid.value?.status === 'ACCEPTED' && project.value.status === 'NEGOTIATION') {
+      router.replace({ name: 'ArchitectFinalizationView', params: { projectId: route.params.projectId } })
+      return
+    }
   } catch (err) {
     error.value = err.response?.data?.message || 'Failed to load project details'
     console.error('Failed to fetch project:', err)
