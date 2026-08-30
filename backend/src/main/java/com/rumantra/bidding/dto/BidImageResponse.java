@@ -19,4 +19,5 @@ public class BidImageResponse {
   private Integer displayOrder;
   private String fileName;
   private Long fileSize;
+  private boolean archived;
 }

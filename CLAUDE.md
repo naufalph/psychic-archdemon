@@ -454,6 +454,47 @@ SELECT id, email, is_superuser FROM rmtr_user WHERE is_superuser = true;
 
 After updating the database, the user needs to login again (or obtain a new JWT token) for the role to take effect.
 
+### Scheduled Jobs (Batch)
+
+All batch work runs via Spring's `@Scheduled` (enabled by `@EnableScheduling` on
+`RumantraApplication`). There is no Quartz, ShedLock, or job table.
+
+| Job | Schedule | Purpose |
+|---|---|---|
+| `bidding/scheduler/ProjectDeadlineScheduler` | daily 01:00 | Close expired projects, deadline/negotiation reminders, expire negotiations |
+| `bidding/scheduler/BidImageArchiveScheduler` | weekly Sun 03:00 (Asia/Jakarta) | Delete storage blobs of images on long-dead bids |
+
+New jobs belong in a `scheduler/` package inside their domain module, and should
+follow `ProjectDeadlineScheduler`'s shape: per-item `try/catch` + `log.error` so
+one bad row does not abort the batch.
+
+**Pick a distinct hour for each job.** No `spring.task.scheduling.pool.size` is
+configured, so the scheduler pool is Spring's default of **one thread** — two
+jobs on the same cron block each other.
+
+#### Bid image retention
+
+`BidImageArchiveService` deletes the object-storage blob for images whose bid is
+`REJECTED`/`WITHDRAWN` (aged by `submittedAt`) or an abandoned `DRAFT` (aged by
+`updatedAt`) past `bid.image.archive.retention-days` (default 90). The
+`rmtr_bid_image` row is **kept** and stamped with `archived_at`, so bid history
+survives; `BidImageResponse.archived` tells the frontend to render a placeholder
+instead of a dead URL.
+
+Blobs are deleted *before* rows are stamped — if storage deletion throws, the
+rows stay unstamped and the next run retries rather than orphaning the object.
+
+Config (all env-overridable, see `application.properties`):
+`bid.image.archive.enabled`, `.dry-run` (**defaults to `true`**), `.retention-days`, `.cron`.
+Set `BID_IMAGE_ARCHIVE_DRY_RUN=false` in Railway only after the logged
+`[DRY RUN] would archive N images / X MB` counts look right. Superusers can
+trigger a run on demand with `POST /rmtr/admin/bid-images/archive`.
+
+> **Before scaling the backend past one replica**, add a distributed lock
+> (ShedLock or equivalent). `railway.toml` pins no replica count, and every
+> instance would fire the same cron — duplicate emails for the notification
+> jobs, and concurrent double-deletes for the archive job.
+
 ### Environment Setup
 - **Java**: Version 17+ required
 - **Node**: Version 18+ required

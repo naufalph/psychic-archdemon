@@ -1098,6 +1098,7 @@ export default {
     addAllRequired: '+ Tambah semua wajib'
   },
   bidDetail: {
+    imageArchived: 'Gambar tidak lagi tersedia',
     backToProject: 'Kembali ke Proyek',
     proposedCost: 'Biaya yang Diajukan',
     timeline: 'Timeline',

@@ -1088,6 +1088,7 @@ export default {
     addAllRequired: '+ Add all required'
   },
   bidDetail: {
+    imageArchived: 'Image no longer available',
     backToProject: 'Back to Project',
     proposedCost: 'Proposed Cost',
     timeline: 'Timeline',

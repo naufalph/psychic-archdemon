@@ -6,10 +6,16 @@
       <div
         v-for="(image, index) in images"
         :key="index"
-        class="relative aspect-square bg-gray-100 rounded-2xl overflow-hidden cursor-pointer hover:shadow-lg transition group"
-        @click="openLightbox(index)"
+        class="relative aspect-square bg-gray-100 rounded-2xl overflow-hidden transition group"
+        :class="image.archived ? 'cursor-default' : 'cursor-pointer hover:shadow-lg'"
+        @click="!image.archived && openLightbox(index)"
       >
+        <div v-if="image.archived" class="w-full h-full flex flex-col items-center justify-center gap-2 px-3 text-center">
+          <ImageOff :size="24" class="text-gray-400" />
+          <p class="text-xs text-gray-500">{{ t.bidDetail?.imageArchived || 'Image no longer available' }}</p>
+        </div>
         <img
+          v-else
           :src="image.imageUrl"
           :alt="image.fileName || `Image ${index + 1}`"
           class="w-full h-full object-cover group-hover:scale-105 transition"
@@ -92,7 +98,8 @@
 <script setup>
 import { ref } from 'vue'
 import { Dialog, DialogPanel, TransitionRoot, TransitionChild } from '@headlessui/vue'
-import { X } from 'lucide-vue-next'
+import { X, ImageOff } from 'lucide-vue-next'
+import { useI18n } from '@/composables/useI18n'
 
 const props = defineProps({
   images: { type: Array, default: () => [] },
@@ -100,6 +107,8 @@ const props = defineProps({
   description: { type: String, default: '' },
   emptyMessage: { type: String, default: 'No images available' }
 })
+
+const { t } = useI18n()
 
 const isLightboxOpen = ref(false)
 const currentImageIndex = ref(0)

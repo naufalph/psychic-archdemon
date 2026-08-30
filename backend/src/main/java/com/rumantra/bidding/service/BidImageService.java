@@ -115,13 +115,17 @@ public class BidImageService {
   }
 
   private BidImageResponse mapToResponse(BidImage image) {
+    boolean archived = image.getArchivedAt() != null;
+
     return BidImageResponse.builder()
         .id(image.getId())
         .imageType(image.getImageType())
-        .imageUrl(fileStorageService.getPublicUrl(image.getImageUrl()))
+        // An archived blob is gone from storage, so no URL is offered for it
+        .imageUrl(archived ? null : fileStorageService.getPublicUrl(image.getImageUrl()))
         .displayOrder(image.getDisplayOrder())
         .fileName(image.getFileName())
         .fileSize(image.getFileSize())
+        .archived(archived)
         .build();
   }
 }
