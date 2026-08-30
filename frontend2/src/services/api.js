@@ -332,6 +332,8 @@ export const clientAPI = {
   updateProfile: profileData => api.put('/rmtr/clients/profile', profileData)
 }
 
+const BID_IMAGE_UPLOAD_CHUNK_SIZE = 4
+
 export const bidAPI = {
   getMyBids: () => api.get('/rmtr/bids/my-bids'),
   getBid: id => api.get(`/rmtr/bids/${id}`),
@@ -345,15 +347,34 @@ export const bidAPI = {
   getQuota: () => api.get('/rmtr/bids/quota'),
   linkPortfolios: (bidId, portfolioIds) =>
     api.post(`/rmtr/bids/${bidId}/portfolios`, { portfolioIds }),
-  uploadBidImages: (bidId, imageType, files, onProgress) => {
-    const fd = new FormData()
-    files.forEach(f => fd.append('images', f))
-    return api.post(`/rmtr/bids/${bidId}/images/${imageType}`, fd, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      onUploadProgress: e => {
-        if (onProgress && e.total) onProgress(Math.round((e.loaded * 100) / e.total))
-      }
-    })
+  // Chunked so a batch never exceeds the server multipart request cap
+  uploadBidImages: async (bidId, imageType, files, onProgress) => {
+    const chunks = []
+    for (let i = 0; i < files.length; i += BID_IMAGE_UPLOAD_CHUNK_SIZE) {
+      chunks.push(files.slice(i, i + BID_IMAGE_UPLOAD_CHUNK_SIZE))
+    }
+
+    const uploaded = []
+    let completedFiles = 0
+
+    for (const chunk of chunks) {
+      const fd = new FormData()
+      chunk.forEach(f => fd.append('images', f))
+
+      const response = await api.post(`/rmtr/bids/${bidId}/images/${imageType}`, fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+        onUploadProgress: e => {
+          if (!onProgress || !e.total) return
+          const chunkFraction = (e.loaded / e.total) * chunk.length
+          onProgress(Math.round(((completedFiles + chunkFraction) * 100) / files.length))
+        }
+      })
+
+      uploaded.push(...(response.data?.data ?? []))
+      completedFiles += chunk.length
+    }
+
+    return { data: { data: uploaded } }
   },
   deleteImage: imageId => api.delete(`/rmtr/bids/images/${imageId}`)
 }

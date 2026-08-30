@@ -15,10 +15,14 @@ import com.rumantra.bidding.domain.BidImageType;
 import com.rumantra.bidding.domain.BidStatus;
 import com.rumantra.bidding.dto.BidImageResponse;
 import com.rumantra.bidding.repository.BidImageRepository;
+import com.rumantra.shared.RumantraConstants;
 import com.rumantra.shared.exception.BusinessException;
 import com.rumantra.shared.exception.ExceptionConstants;
 import com.rumantra.shared.storage.FileStorageService;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class BidImageService {
 
@@ -36,14 +40,15 @@ public class BidImageService {
 
     long currentCount = bidImageRepository.countByBidIdAndImageType(bid.getId(), imageType);
     long totalAfterUpload = currentCount + images.size();
-    if (totalAfterUpload > 3) {
+    if (totalAfterUpload > RumantraConstants.MAX_BID_IMAGES_PER_TYPE) {
       throw new IllegalArgumentException(
           imageType.name()
               + " image limit exceeded. Current: "
               + currentCount
               + ", Uploading: "
               + images.size()
-              + ", Max: 3");
+              + ", Max: "
+              + RumantraConstants.MAX_BID_IMAGES_PER_TYPE);
     }
 
     List<BidImage> savedImages = new ArrayList<>();
@@ -84,6 +89,7 @@ public class BidImageService {
     try {
       fileStorageService.deleteSingleImage(image.getImageUrl());
     } catch (Exception e) {
+      log.warn("Failed to delete bid image {} from storage: {}", imageId, e.getMessage());
     }
 
     bidImageRepository.delete(image);

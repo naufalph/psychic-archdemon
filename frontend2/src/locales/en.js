@@ -745,6 +745,7 @@ export default {
     imageFormats: 'PNG, JPG, GIF up to 5MB each',
     maxLabel: 'max',
     maxFilesLabel: 'files',
+    maxFilesReached: 'You can upload at most {max} images here.',
     projectScope: 'Project Scope',
     category: 'Category',
     subCategory: 'Sub-Category',

@@ -753,6 +753,7 @@ export default {
     imageFormats: 'PNG, JPG, GIF maks. 5MB per file',
     maxLabel: 'maks.',
     maxFilesLabel: 'file',
+    maxFilesReached: 'Maksimal {max} gambar dapat diunggah di sini.',
     projectScope: 'Lingkup Proyek',
     category: 'Kategori',
     subCategory: 'Sub-Kategori',

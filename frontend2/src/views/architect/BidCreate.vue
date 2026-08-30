@@ -215,11 +215,11 @@
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Facade Images <span class="text-gray-400 font-normal">(exterior views, max 3)</span>
+                  Facade Images <span class="text-gray-400 font-normal">(exterior views, max 12)</span>
                 </label>
                 <MultiImageUploader
                   v-model="facadeImages"
-                  :max-files="3"
+                  :max-files="12"
                   :existing-images="existingFacade"
                   @delete-existing="id => deleteExistingImage(id, 'facade')"
                 />
@@ -242,11 +242,11 @@
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Interior Images <span class="text-gray-400 font-normal">(interior spaces, max 3)</span>
+                  Interior Images <span class="text-gray-400 font-normal">(interior spaces, max 12)</span>
                 </label>
                 <MultiImageUploader
                   v-model="interiorImages"
-                  :max-files="3"
+                  :max-files="12"
                   :existing-images="existingInterior"
                   @delete-existing="id => deleteExistingImage(id, 'interior')"
                 />
@@ -268,11 +268,11 @@
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Massing Images <span class="text-gray-400 font-normal">(3D form studies, max 3)</span>
+                  Massing Images <span class="text-gray-400 font-normal">(3D form studies, max 12)</span>
                 </label>
                 <MultiImageUploader
                   v-model="massingImages"
-                  :max-files="3"
+                  :max-files="12"
                   :existing-images="existingMassing"
                   @delete-existing="id => deleteExistingImage(id, 'massing')"
                 />
@@ -294,11 +294,11 @@
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">
-                  Zoning Images <span class="text-gray-400 font-normal">(site plan diagrams, max 3)</span>
+                  Zoning Images <span class="text-gray-400 font-normal">(site plan diagrams, max 12)</span>
                 </label>
                 <MultiImageUploader
                   v-model="zoningImages"
-                  :max-files="3"
+                  :max-files="12"
                   :existing-images="existingZoning"
                   @delete-existing="id => deleteExistingImage(id, 'zoning')"
                 />

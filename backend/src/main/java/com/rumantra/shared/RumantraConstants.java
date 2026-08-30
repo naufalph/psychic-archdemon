@@ -6,6 +6,8 @@ public class RumantraConstants {
 
   public static final String LOGIN_CONTAINER = "loginContainer";
 
+  public static final int MAX_BID_IMAGES_PER_TYPE = 12;
+
   // Role constants - these are used in both API requests and Spring Security
   // Spring Security will automatically prefix with "ROLE_" internally
   public static final String ARCH_ROLE = "ARCHITECT";

@@ -30,7 +30,7 @@
     <!-- Grid: existing saved images + new file previews + add button -->
     <div
       v-else
-      class="grid grid-cols-3 gap-3"
+      class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-3"
       @dragover="handleDragOver"
       @dragleave="handleDragLeave"
       @drop="handleDrop"
@@ -104,7 +104,7 @@ const props = defineProps({
   }
 })
 
-const { t } = useI18n()
+const { t, getT } = useI18n()
 
 const emit = defineEmits(['update:modelValue', 'delete-existing'])
 
@@ -115,7 +115,6 @@ const {
   error,
   addFiles,
   removeFile: removeFileFromComposable,
-  handleDrop: dropHandler,
   handleDragOver,
   handleDragLeave
 } = useFileUpload({
@@ -134,21 +133,39 @@ const openPicker = () => {
   }
 }
 
-const handleFileSelect = e => {
-  if (e.target.files && e.target.files.length > 0) {
-    const available = props.maxFiles - totalCount.value
-    if (available <= 0) return
+// Both the picker and drag-and-drop go through here so the limit accounts for
+// already-uploaded images, which useFileUpload has no visibility of
+const acceptFiles = incoming => {
+  const selected = Array.from(incoming)
+  if (selected.length === 0) return
+
+  const available = props.maxFiles - totalCount.value
+  const overLimit = selected.length > available
+
+  if (available > 0) {
     try {
-      addFiles(Array.from(e.target.files).slice(0, available))
+      // addFiles() resets error, so the limit warning is set after it
+      addFiles(selected.slice(0, available))
     } catch (err) {
       console.error('File upload error:', err)
+      return
     }
   }
+
+  if (overLimit) {
+    error.value = getT('projectCreate.maxFilesReached').replace('{max}', props.maxFiles)
+  }
+}
+
+const handleFileSelect = e => {
+  acceptFiles(e.target.files ?? [])
   e.target.value = ''
 }
 
 const handleDrop = e => {
-  dropHandler(e)
+  e.preventDefault()
+  isDragging.value = false
+  acceptFiles(e.dataTransfer?.files ?? [])
 }
 
 const removeFile = index => {
