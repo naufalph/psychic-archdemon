@@ -113,3 +113,32 @@ test.describe('Delete Project', () => {
     expect(await listContains()).toBe(false)
   })
 })
+
+test.describe('Delete Project guard', () => {
+  // A project that has reached IN_PROGRESS has an accepted bid and escrowed money behind it,
+  // so it must not be deletable — it has to be cancelled through the proper flow instead.
+  test('rejects deletion of a project past bidding', async ({ page }) => {
+    const token = await loginAsClient(page)
+    const auth = { Authorization: `Bearer ${token}` }
+
+    const res = await page.request.get(`${API_BASE_URL}/rmtr/projects`, { headers: auth })
+    expect(res.ok(), await res.text()).toBeTruthy()
+    const projects = (await res.json()).data ?? []
+
+    const undeletable = projects.find(p =>
+      ['BIDDING_CLOSED', 'NEGOTIATION', 'IN_PROGRESS', 'COMPLETED'].includes(p.status)
+    )
+    test.skip(!undeletable, 'no project past bidding in this environment')
+
+    const attempt = await page.request.delete(
+      `${API_BASE_URL}/rmtr/projects/${undeletable.id}`,
+      { headers: auth }
+    )
+    expect(attempt.status()).toBe(409)
+
+    // And it is still there afterwards.
+    const after = await page.request.get(`${API_BASE_URL}/rmtr/projects`, { headers: auth })
+    const stillThere = ((await after.json()).data ?? []).some(p => p.id === undeletable.id)
+    expect(stillThere).toBe(true)
+  })
+})

@@ -3,6 +3,7 @@ package com.rumantra.client.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.context.ApplicationEventPublisher;
@@ -34,11 +35,15 @@ import com.rumantra.client.repository.ProjectFileRepository;
 import com.rumantra.client.repository.ProjectRepository;
 import com.rumantra.ledger.service.StatusTransitionService;
 import com.rumantra.notification.event.ProjectValidatedEvent;
+import com.rumantra.payment.domain.PhasePaymentStatus;
+import com.rumantra.payment.repository.PhasePaymentRepository;
 import com.rumantra.project.domain.ProjectPhase;
 import com.rumantra.project.repository.ProjectPhaseRepository;
 import com.rumantra.security.SecurityUtils;
 import com.rumantra.shared.constants.ProjectTaxonomy;
 import com.rumantra.shared.domain.ActorType;
+import com.rumantra.shared.exception.BusinessException;
+import com.rumantra.shared.exception.ExceptionConstants;
 import com.rumantra.shared.exception.ResourceNotFoundException;
 import com.rumantra.shared.storage.FileStorageService;
 
@@ -64,6 +69,7 @@ public class ProjectService {
   private final BidPaymentPhaseRepository bidPaymentPhaseRepository;
   private final ProjectPhaseRepository projectPhaseRepository;
   private final PortoRepository portoRepository;
+  private final PhasePaymentRepository phasePaymentRepository;
   private final StatusTransitionService statusTransitionService;
 
   @PersistenceContext private EntityManager entityManager;
@@ -307,6 +313,18 @@ public class ProjectService {
     return projects.stream().map(this::mapToProjectResponse).collect(Collectors.toList());
   }
 
+  /**
+   * Statuses a client may still delete from: the project never got past bidding, so nothing is owed
+   * to anyone. Everything later has an accepted bid, an invoice, or escrowed money behind it and
+   * must be cancelled through the proper flow instead.
+   */
+  private static final Set<ProjectStatus> DELETABLE_STATUSES =
+      Set.of(
+          ProjectStatus.DRAFT,
+          ProjectStatus.PENDING_APPROVAL,
+          ProjectStatus.REJECTED,
+          ProjectStatus.OPEN);
+
   @Transactional
   public void deleteProject(Long projectId) {
     // Verify ownership before deleting
@@ -317,6 +335,23 @@ public class ProjectService {
             .findById(projectId)
             .orElseThrow(
                 () -> new ResourceNotFoundException("Project not found with id: " + projectId));
+
+    if (!DELETABLE_STATUSES.contains(project.getStatus())) {
+      throw new BusinessException(ExceptionConstants.PROJECT_NOT_DELETABLE);
+    }
+
+    // Belt and braces: even in a deletable status, never drop a project that has taken money.
+    boolean hasSettledPayment =
+        phasePaymentRepository.findByProjectIdOrderByCreatedAtAsc(projectId).stream()
+            .anyMatch(p -> p.getStatus() == PhasePaymentStatus.COMPLETED);
+    if (hasSettledPayment) {
+      throw new BusinessException(ExceptionConstants.PROJECT_NOT_DELETABLE);
+    }
+
+    // Architects spent a bid token to bid here; give it back before the project disappears.
+    for (Bid pending : bidRepository.findByProjectIdAndStatus(projectId, BidStatus.PENDING)) {
+      bidService.refundBid(pending, "Project deleted by the client");
+    }
 
     List<String> fileUrls =
         project.getFiles().stream().map(ProjectFile::getFilePath).collect(Collectors.toList());

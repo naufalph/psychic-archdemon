@@ -17,6 +17,7 @@ import com.rumantra.client.dto.ProjectResponse;
 import com.rumantra.client.dto.UpdateValidationRequest;
 import com.rumantra.client.service.ProjectService;
 import com.rumantra.shared.dto.ApiResponse;
+import com.rumantra.shared.exception.BusinessException;
 import com.rumantra.shared.exception.ResourceNotFoundException;
 
 import jakarta.validation.Valid;
@@ -337,6 +338,10 @@ public class ProjectController {
               .timestamp(LocalDateTime.now().toString())
               .build());
 
+    } catch (BusinessException e) {
+      // Carries its own HTTP status (e.g. 409 for a project past bidding); let the global
+      // handler map it instead of flattening it to a 500 below.
+      throw e;
     } catch (Exception e) {
       log.error("Error deleting project {}", projectId, e);
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
