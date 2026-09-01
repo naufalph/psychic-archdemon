@@ -218,6 +218,10 @@ public class SecurityConfig {
                     .hasRole("CLIENT")
                     .requestMatchers(HttpMethod.GET, "/rmtr/projects/*/phases/**")
                     .authenticated()
+                    // Contract tab is read by the client and the winning architect alike;
+                    // ContractService enforces which of the two the caller actually is.
+                    .requestMatchers(HttpMethod.GET, "/rmtr/projects/*/contract")
+                    .authenticated()
                     .requestMatchers("/rmtr/projects/**")
                     .hasRole("CLIENT")
                     .requestMatchers(HttpMethod.POST, "/rmtr/phases/*/bill")

@@ -135,28 +135,28 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
         window.open = () => null
       })
 
-      // --- Client: bill the phase via the BidPaymentPhase payment schedule page.
-      // (ProjectWorkspace.vue's own "Buat Invoice" button is a separate billing
-      // path, covered by phase-invoice-billing.spec.js — this test sticks to the
-      // BidPaymentPhase path it was written against.)
-      await loginAsClient(page)
-      await page.goto(`/client/projects/${projectId}/payments`)
+      // --- Client: bill the phase on the BidPaymentPhase path.
+      // This used to click through /client/projects/:id/payments, which the Contract & Payment
+      // tab replaced. Calling the endpoint that page called keeps the billing path under test
+      // without depending on which screen exposes it.
+      // (ProjectWorkspace.vue's own "Buat Invoice" button is the separate ProjectPhase billing
+      // path, covered by phase-invoice-billing.spec.js.)
+      const clientToken = await loginAsClient(page)
+      const clientAuth = { Authorization: `Bearer ${clientToken}` }
 
-      const phaseRow = page.locator('div.rounded-xl.border-gray-200').filter({ hasText: `Fase ${phaseNumber}` })
-      await expect(phaseRow).toBeVisible({ timeout: 10000 })
+      const summary = await page.request.get(`${API_BASE_URL}/rmtr/payments/projects/${projectId}`, {
+        headers: clientAuth
+      })
+      expect(summary.ok(), await summary.text()).toBeTruthy()
+      const bidPhase = ((await summary.json()).data ?? []).find(p => p.phaseNumber === phaseNumber)
+      expect(bidPhase, `no bid payment phase ${phaseNumber}`).toBeTruthy()
 
-      let invoiceCreated = false
-      for (let attempt = 0; attempt < 3 && !invoiceCreated; attempt++) {
-        await phaseRow.getByRole('button', { name: 'Bayar Sekarang' }).click()
-        await page.waitForTimeout(500)
-        try {
-          getPhasePaymentReferenceId(projectId, phaseNumber)
-          invoiceCreated = true
-        } catch {
-          // retry — the click may have been swallowed (see expandPhase note above)
-        }
-      }
-      if (!invoiceCreated) throw new Error(`Could not create invoice for phase ${phaseNumber}`)
+      const invoice = await page.request.post(
+        `${API_BASE_URL}/rmtr/payments/phases/${bidPhase.phaseId}`,
+        { headers: clientAuth }
+      )
+      expect(invoice.ok(), await invoice.text()).toBeTruthy()
+      getPhasePaymentReferenceId(projectId, phaseNumber)
 
       // --- Simulate Xendit "PAID" webhook directly (no real checkout) ---
       await simulatePhasePaymentWebhook(page.request, API_BASE_URL, projectId, phaseNumber, amount)

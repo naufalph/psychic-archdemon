@@ -26,7 +26,7 @@ test('per-deliverable approval flips the phase only on the last one', async ({ p
   })
 
   const clientAuth = { Authorization: `Bearer ${await loginAsClient(page)}` }
-  let phases = await (await page.request.get(`${API_BASE_URL}/rmtr/projects/${projectId}/phases`, { headers: clientAuth })).json()
+  const phases = await (await page.request.get(`${API_BASE_URL}/rmtr/projects/${projectId}/phases`, { headers: clientAuth })).json()
   const phaseId = phases.data[0].id
 
   setPhaseStatus(phaseId, 'IN_PROGRESS')

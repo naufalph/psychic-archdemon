@@ -165,7 +165,7 @@ public class PaymentService {
             .currency("IDR")
             .invoiceDuration(86400)
             .successRedirectUrl(frontendUrl + "/client/projects/" + project.getId() + "/workspace")
-            .failureRedirectUrl(frontendUrl + "/client/projects/" + project.getId() + "/active")
+            .failureRedirectUrl(frontendUrl + "/client/projects/" + project.getId() + "/workspace")
             .customer(customer)
             .customerNotificationPreference(notificationPref)
             .items(Arrays.asList(item))
@@ -202,6 +202,17 @@ public class PaymentService {
                   .paymentLink(xenditResponse.getInvoiceUrl())
                   .expiresAt(expiryDate)
                   .build());
+
+      // Record the invoice itself, not just later status changes -- otherwise the first event
+      // in a payment's life is missing from the ledger entirely.
+      phasePayment =
+          statusTransitionService.transitionPhasePayment(
+              phasePayment,
+              PhasePaymentStatus.PENDING,
+              null,
+              ActorType.CLIENT,
+              "INVOICE_CREATED",
+              null);
     }
 
     log.info(

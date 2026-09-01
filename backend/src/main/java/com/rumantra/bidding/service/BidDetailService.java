@@ -116,7 +116,17 @@ public class BidDetailService {
                   .zoningDescription(detail.getZoningDescription())
                   .build();
             })
-        .orElse(null);
+        .orElseGet(
+            () -> {
+              // Phases live in their own table and can exist without a BidDetail row -- a bid
+              // submitted with a payment schedule but no concept statement. Returning null here
+              // silently dropped that schedule from every consumer.
+              List<BidPaymentPhaseResponse> phases = getPhaseResponses(bidId);
+              if (phases.isEmpty()) {
+                return null;
+              }
+              return BidDetailResponse.builder().phases(phases).build();
+            });
   }
 
   private void validateConceptStatement(String conceptStatement) {

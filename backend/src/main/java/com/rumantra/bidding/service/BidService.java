@@ -44,11 +44,13 @@ import com.rumantra.security.SecurityUtils;
 import com.rumantra.shared.domain.ActorType;
 import com.rumantra.shared.exception.BusinessException;
 import com.rumantra.shared.exception.ExceptionConstants;
+import com.rumantra.shared.storage.FileStorageService;
 
 @Service
 public class BidService {
 
   @Autowired private BidRepository bidRepository;
+  @Autowired private FileStorageService fileStorageService;
 
   @Autowired private ProjectRepository projectRepository;
   @Autowired private StatusTransitionService statusTransitionService;
@@ -356,6 +358,10 @@ public class BidService {
                 + " "
                 + bid.getArchitect().getUser().getLastName())
         .architectCompany(bid.getArchitect().getCompanyName())
+        .architectPhotoUrl(
+            bid.getArchitect().getPhotoUrl() == null
+                ? null
+                : fileStorageService.getPublicUrl(bid.getArchitect().getPhotoUrl()))
         .architectCity(bid.getArchitect().getCity())
         .architectEducation(bid.getArchitect().getEducation())
         .bidAmount(bid.getBidAmount())

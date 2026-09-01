@@ -184,7 +184,7 @@ public class PhasePaymentService {
             .currency("IDR")
             .invoiceDuration(86400)
             .successRedirectUrl(frontendUrl + "/client/projects/" + project.getId() + "/workspace")
-            .failureRedirectUrl(frontendUrl + "/client/projects/" + project.getId() + "/active")
+            .failureRedirectUrl(frontendUrl + "/client/projects/" + project.getId() + "/workspace")
             .customer(customer)
             .customerNotificationPreference(notifPref)
             .items(Arrays.asList(item))
@@ -220,19 +220,30 @@ public class PhasePaymentService {
                   Architect architect =
                       acceptedBids.isEmpty() ? null : acceptedBids.get(0).getArchitect();
 
-                  return phasePaymentRepository.save(
-                      PhasePayment.builder()
-                          .projectPhase(phase)
-                          .project(project)
-                          .client(client)
-                          .architect(architect)
-                          .amount(phase.getAmount())
-                          .status(PhasePaymentStatus.PENDING)
-                          .xenditInvoiceId(xenditResp.getId())
-                          .xenditReferenceId(externalId)
-                          .paymentLink(xenditResp.getInvoiceUrl())
-                          .expiresAt(expiresAt)
-                          .build());
+                  PhasePayment created =
+                      phasePaymentRepository.save(
+                          PhasePayment.builder()
+                              .projectPhase(phase)
+                              .project(project)
+                              .client(client)
+                              .architect(architect)
+                              .amount(phase.getAmount())
+                              .status(PhasePaymentStatus.PENDING)
+                              .xenditInvoiceId(xenditResp.getId())
+                              .xenditReferenceId(externalId)
+                              .paymentLink(xenditResp.getInvoiceUrl())
+                              .expiresAt(expiresAt)
+                              .build());
+
+                  // Record the invoice itself, not just later status changes -- otherwise the
+                  // first event in a payment's life is missing from the ledger entirely.
+                  return statusTransitionService.transitionPhasePayment(
+                      created,
+                      PhasePaymentStatus.PENDING,
+                      statusTransitionService.actorRef(clientUserId),
+                      ActorType.CLIENT,
+                      "INVOICE_CREATED",
+                      null);
                 });
 
     phase.setStatus(PhaseStatus.BILLED);

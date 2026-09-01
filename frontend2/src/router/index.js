@@ -57,11 +57,6 @@ const routes = [
         component: () => import('@/views/client/ClientMessages.vue')
       },
       {
-        path: 'payments',
-        name: 'ClientPayments',
-        component: () => import('@/views/client/ClientPaymentsPage.vue')
-      },
-      {
         path: 'settings',
         name: 'ClientSettings',
         component: () => import('@/views/client/ClientSettings.vue')
@@ -82,19 +77,9 @@ const routes = [
         component: () => import('@/views/client/PreProjectFinalization.vue')
       },
       {
-        path: 'projects/:id/active',
-        name: 'ActiveProjectDashboard',
-        component: () => import('@/views/client/ActiveProjectDashboard.vue')
-      },
-      {
         path: 'projects/:id/workspace',
         name: 'ClientProjectWorkspace',
         component: () => import('@/views/client/ProjectWorkspace.vue')
-      },
-      {
-        path: 'projects/:projectId/payments',
-        name: 'ProjectPhasePayments',
-        component: () => import('@/views/client/ProjectPhasePayments.vue')
       },
       {
         path: 'projects/:id',

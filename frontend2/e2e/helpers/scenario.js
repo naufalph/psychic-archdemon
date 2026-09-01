@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test'
-import { ROUTES, API_BASE_URL } from './fixtures.js'
+import { API_BASE_URL } from './fixtures.js'
 import { loginAsClient, loginAsArchitect, loginAsSuperuser } from './auth.js'
 
 /**

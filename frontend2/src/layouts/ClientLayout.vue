@@ -72,7 +72,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { LayoutDashboard, FolderOpen, MessageSquare, CreditCard, Settings, LogOut } from 'lucide-vue-next'
+import { LayoutDashboard, FolderOpen, MessageSquare, Settings, LogOut } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 import { useI18n } from '@/composables/useI18n'
 import NotificationDropdown from '@/components/notifications/NotificationDropdown.vue'
@@ -102,15 +102,11 @@ const navItems = computed(() => [
     icon: LayoutDashboard
   },
   { name: 'projects', label: t.value?.clientNav?.projects || 'Projects', to: '/client/projects', icon: FolderOpen },
-  { name: 'messages', label: t.value?.clientNav?.messages || 'Messages', to: '/client/messages', icon: MessageSquare },
-  { name: 'payments', label: t.value?.clientNav?.payments || 'Payments', to: '/client/payments', icon: CreditCard }
+  { name: 'messages', label: t.value?.clientNav?.messages || 'Messages', to: '/client/messages', icon: MessageSquare }
 ])
 
 const isActive = item => {
   if (item.name === 'dashboard') return route.path === '/client/dashboard'
-  if (item.name === 'payments') {
-    return route.path.startsWith('/client/payments') || route.path.endsWith('/active')
-  }
   return route.path.startsWith(item.to)
 }
 

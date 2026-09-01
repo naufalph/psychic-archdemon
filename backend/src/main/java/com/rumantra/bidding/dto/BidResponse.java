@@ -28,6 +28,7 @@ public class BidResponse {
   private Long architectId;
   private String architectName;
   private String architectCompany;
+  private String architectPhotoUrl;
   private String architectCity;
   private List<EducationEntry> architectEducation;
   private BigDecimal bidAmount;
