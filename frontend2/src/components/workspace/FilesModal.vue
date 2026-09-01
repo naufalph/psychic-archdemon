@@ -3,7 +3,11 @@
     class="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4"
     @click.self="$emit('close')"
   >
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-[560px] flex flex-col max-h-[85vh]">
+    <div
+      role="dialog"
+      aria-modal="true"
+      :aria-label="t.projectWorkspace?.filesModalEyebrow"
+      class="bg-white rounded-2xl shadow-2xl w-full max-w-[560px] flex flex-col max-h-[85vh]">
       <div class="px-6 py-5 border-b border-gray-100 flex items-start justify-between gap-4">
         <div class="min-w-0">
           <p class="text-xs font-bold uppercase tracking-wider text-gray-400">

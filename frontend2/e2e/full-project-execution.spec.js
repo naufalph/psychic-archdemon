@@ -76,23 +76,33 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
     expect(body.data.status).toBe('IN_PROGRESS')
   })
 
-  // Only one phase is ever expanded at a time in ProjectWorkspace (single
-  // `expandedPhaseId` ref), so once a phase is expanded its action buttons are
-  // unambiguous at the page level — no need to scope into a specific card div.
-  // The very first click on this page after an SPA navigation is sometimes
-  // swallowed (a stale click-outside listener left over from the previous
-  // route, verified empirically) — retry until the chevron actually rotates.
+  // The workspace opens on the Summary tab, so the phase accordion only exists once the
+  // Phases & Deliverables tab is selected.
+  const goToPhasesTab = async page => {
+    const tab = page.getByRole('button', { name: 'Tahap & Deliverable' })
+    await tab.waitFor({ state: 'visible', timeout: 15000 })
+    await tab.click()
+  }
+
+  // Expansion is detected by the phase body actually rendering (its Deliverables section),
+  // not by a class on the chevron -- the icon is swapped rather than rotated, and asserting
+  // on visible content survives restyling.
+  const phaseCard = (page, phaseNumber) =>
+    page
+      .locator('[id^="phase-"]')
+      .filter({ has: page.getByRole('button', { name: new RegExp(`Fase ${phaseNumber}\\b`) }) })
+
   const expandPhase = async (page, phaseNumber) => {
+    await goToPhasesTab(page)
     const toggle = page.getByRole('button', { name: new RegExp(`Fase ${phaseNumber}\\b`) })
+    await toggle.waitFor({ state: 'visible', timeout: 15000 })
+    // Several phases can be open at once, so the check has to be scoped to this phase's own
+    // card -- a page-level lookup would see a sibling's body and skip the click.
+    const card = page.locator('[id^="phase-"]').filter({ has: toggle })
     for (let attempt = 0; attempt < 3; attempt++) {
+      if (await card.getByText('Deliverable', { exact: true }).first().isVisible().catch(() => false)) return
       await toggle.click()
       await page.waitForTimeout(300)
-      const expanded = await toggle
-        .locator('svg')
-        .last()
-        .evaluate(el => el.getAttribute('class')?.includes('rotate-180'))
-        .catch(() => false)
-      if (expanded) return
     }
     throw new Error(`Could not expand phase ${phaseNumber} card after 3 attempts`)
   }
@@ -110,13 +120,14 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
   }
 
   const uploadAndSubmitForReview = async page => {
+    // Files are tagged to a named deliverable now, so the upload starts from that row's
+    // button and completes inside the modal it opens.
+    await page.getByRole('button', { name: /^Unggah Deliverable:/ }).first().click()
+    const uploadModal = page.getByRole('dialog')
     await page.locator('input[type="file"]').setInputFiles(DELIVERABLE_FIXTURE)
-    await clickUntil(page.getByRole('button', { name: 'Unggah' }), () =>
+    await clickUntil(uploadModal.getByRole('button', { name: 'Unggah', exact: true }), async () =>
       page.getByRole('button', { name: 'Kirim untuk Review' }).isVisible()
     )
-    // "Sedang Direview · Under Client Review" is the architect-side DELIVERED
-    // banner (the client-side equivalent text, "Pekerjaan Dikirimkan", only
-    // ever renders on the client's own workspace view).
     await clickUntil(page.getByRole('button', { name: 'Kirim untuk Review' }), () =>
       page.getByText('Sedang Direview').isVisible()
     )
@@ -163,7 +174,9 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
 
       await page.goto(`/client/projects/${projectId}/workspace`)
       await expandPhase(page, phaseNumber)
-      await expect(page.getByText('Pekerjaan Berlangsung')).toBeVisible({ timeout: 10000 })
+      await expect(phaseCard(page, phaseNumber).getByText('Pekerjaan Berlangsung').first()).toBeVisible({
+        timeout: 10000
+      })
 
       // --- Architect: upload deliverable and submit for review ---
       await loginAsArchitect(page)
@@ -176,10 +189,7 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
         await loginAsClient(page)
         await page.goto(`/client/projects/${projectId}/workspace`)
         await expandPhase(page, phaseNumber)
-        // .first() (the outermost modal backdrop) is used rather than .last()
-        // since it's guaranteed to contain every descendant matching the same
-        // text, regardless of how deeply the heading/buttons are nested inside.
-        const revisionModal = page.locator('div').filter({ hasText: 'Catatan Revisi' }).first()
+        const revisionModal = page.getByRole('dialog')
         await clickUntil(page.getByRole('button', { name: 'Minta Revisi' }), () => revisionModal.isVisible())
 
         await revisionModal.getByPlaceholder(/Mohon sesuaikan/).fill('Please adjust the floor plan slightly.')
@@ -196,11 +206,15 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
       await loginAsClient(page)
       await page.goto(`/client/projects/${projectId}/workspace`)
       await expandPhase(page, phaseNumber)
-      const approveModal = page.locator('div').filter({ hasText: 'Setujui Pekerjaan Fase Ini?' }).first()
-      await clickUntil(page.getByRole('button', { name: 'Setujui · Approve' }), () => approveModal.isVisible())
+      const approveModal = page.getByRole('dialog')
+      const card = phaseCard(page, phaseNumber)
+      await clickUntil(card.getByRole('button', { name: 'Setujui', exact: true }), () =>
+        approveModal.isVisible()
+      )
 
+      // Every approved phase shows this banner, so scope the check to this phase's card.
       await clickUntil(approveModal.getByRole('button', { name: 'Ya, Setujui Sekarang' }), () =>
-        page.getByText('Pekerjaan Disetujui').isVisible()
+        card.getByText('Pekerjaan Disetujui').first().isVisible()
       )
     })
   }

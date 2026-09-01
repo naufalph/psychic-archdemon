@@ -1552,7 +1552,9 @@ export default {
     noTransactions: 'No transactions yet',
     closedLabel: 'Closed',
     showLabel: 'Show',
-    hideLabel: 'Hide'
+    hideLabel: 'Hide',
+    toastPhaseApproved: 'All deliverables approved \u00b7 phase approved',
+    toastItemApproved: 'Approved \u00b7 {name}'
   },
   architectDashboard: {
     welcome: 'Welcome',

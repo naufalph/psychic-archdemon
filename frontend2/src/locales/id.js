@@ -1566,7 +1566,9 @@ export default {
     noTransactions: 'Belum ada transaksi',
     closedLabel: 'Ditutup',
     showLabel: 'Tampilkan',
-    hideLabel: 'Sembunyikan'
+    hideLabel: 'Sembunyikan',
+    toastPhaseApproved: 'Semua deliverable disetujui \u00b7 fase disetujui',
+    toastItemApproved: 'Disetujui \u00b7 {name}'
   },
   architectDashboard: {
     welcome: 'Selamat datang',

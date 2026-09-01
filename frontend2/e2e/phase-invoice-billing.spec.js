@@ -49,15 +49,22 @@ test('client bills a phase via the workspace "Buat Invoice" button', async ({ pa
 
   await page.goto(`/client/projects/${projectId}/workspace`)
 
-  const toggle = page.getByRole('button', { name: /Fase 1\b/ })
+  // The workspace opens on Summary, which also lists the phases; the accordion with the
+  // billing action lives on the Phases & Deliverables tab.
+  await page.getByRole('button', { name: 'Tahap & Deliverable' }).click()
+
+  const card = page
+    .locator('[id^="phase-"]')
+    .filter({ has: page.getByRole('button', { name: /Fase 1\b/ }) })
+  const toggle = card.getByRole('button', { name: /Fase 1\b/ })
   for (let attempt = 0; attempt < 3; attempt++) {
+    if (await card.getByRole('button', { name: 'Buat Invoice' }).isVisible().catch(() => false)) break
     await toggle.click()
     await page.waitForTimeout(300)
-    if (await page.getByRole('button', { name: 'Buat Invoice' }).isVisible().catch(() => false)) break
   }
 
-  await page.getByRole('button', { name: 'Buat Invoice' }).click()
-  await expect(page.getByText('Invoice Terkirim · Invoice Sent')).toBeVisible({ timeout: 10000 })
+  await card.getByRole('button', { name: 'Buat Invoice' }).click()
+  await expect(card.getByText('Invoice Terkirim').first()).toBeVisible({ timeout: 10000 })
 
   expect(dialogMessage).toBeNull()
 })

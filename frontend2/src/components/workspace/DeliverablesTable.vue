@@ -47,6 +47,7 @@
             v-if="isClient && effectiveStatus(item) === 'PENDING'"
             class="px-3.5 py-1.5 rounded-full bg-green-600 hover:bg-green-700 text-white text-xs font-semibold disabled:opacity-50"
             :disabled="busy"
+            :aria-label="`${t.projectWorkspace?.approveBtn} ${t.projectWorkspace?.colDeliverable}: ${item.name}`"
             @click="$emit('approve', item)"
           >
             {{ t.projectWorkspace?.approveBtn }}
@@ -54,6 +55,7 @@
           <button
             v-else-if="!isClient && canUpload && ['PENDING', 'MISSING'].includes(effectiveStatus(item))"
             class="px-3.5 py-1.5 rounded-full bg-white border border-gray-300 hover:border-gray-900 text-xs font-semibold"
+            :aria-label="`${t.projectWorkspace?.uploadCta} ${t.projectWorkspace?.colDeliverable}: ${item.name}`"
             @click="$emit('upload', item)"
           >
             {{ t.projectWorkspace?.uploadCta }}
@@ -65,6 +67,7 @@
           <button
             v-if="item.files?.length"
             class="px-3 py-1.5 rounded-full bg-gray-50 border border-border-gray hover:border-brand-gold hover:bg-white text-xs font-semibold text-gray-700"
+            :aria-label="`${t.projectWorkspace?.colFiles}: ${item.name}`"
             @click="$emit('open-files', item)"
           >
             {{ (t.projectWorkspace?.filesCountLabel || '{n} files').replace('{n}', item.files.length) }}

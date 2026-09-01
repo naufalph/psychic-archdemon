@@ -3,7 +3,11 @@
     class="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4"
     @click.self="$emit('close')"
   >
-    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-[448px] p-6">
+    <div
+      role="dialog"
+      aria-modal="true"
+      :aria-label="t.projectWorkspace?.revisionModalTitle"
+      class="bg-white rounded-2xl shadow-2xl w-full max-w-[448px] p-6">
       <h3 class="text-base font-bold text-gray-900">
         {{ t.projectWorkspace?.revisionModalTitle }}
       </h3>

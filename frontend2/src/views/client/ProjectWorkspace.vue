@@ -285,7 +285,11 @@ const confirmApprove = async () => {
   const remaining = deliverableItems(
     sortedPhases.value.find(p => p.id === phase.id) || phase
   ).filter(d => d.status !== 'APPROVED').length
-  showToast(item && remaining > 0 ? `${w.approveBtn} · ${item.name}` : w.workApprovedTitle)
+  showToast(
+    item && remaining > 0
+      ? (w.toastItemApproved || 'Approved · {name}').replace('{name}', item.name)
+      : w.toastPhaseApproved
+  )
 }
 
 const submitRevision = async notes => {
