@@ -237,6 +237,41 @@ if (!resource.getOwner().getUser().getId().equals(userId)) {
 - Create Flyway migration files in `backend/src/main/resources/db/migration/`
 - Follow naming pattern: `V{version}__{description}.sql`
 - Update JPA entities and DTOs accordingly
+- Migrations sort **lexically**, so `ls` puts V9 last — use `ls | sort -V` to find the
+  real latest version
+
+### Status ledger (money-touching streams)
+
+Status changes on the five money-touching entities are recorded in append-only log
+tables, one per stream, each with a real FK to its subject:
+
+| Stream | Log table |
+|---|---|
+| `Project` | `rmtr_project_status_log` |
+| `PhasePayment` | `rmtr_phase_payment_status_log` |
+| `PhaseDisbursement` | `rmtr_phase_disbursement_status_log` |
+| `TokenPurchase` | `rmtr_token_purchase_status_log` |
+| `Subscription` | `rmtr_subscription_status_log` |
+| `ProjectPhase` | `rmtr_project_phase_log` (pre-existing; also carries business events) |
+
+**The log is the source of truth; the entity's `status` column is a projection of it.**
+Authorization reads the column because it is a single row that can be locked and
+constrained. Both are written in the same transaction by
+`ledger/service/StatusTransitionService` — **never call `setStatus` on these entities
+directly.** If the two ever diverge, the log wins and the column is rebuilt from it.
+
+All six tables reject `UPDATE`, `DELETE` and `TRUNCATE` via triggers calling
+`rmtr_reject_mutation()` (V15). Row-level triggers do not fire on `TRUNCATE`, hence the
+separate statement-level trigger. **Any future migration that alters these tables must
+drop and recreate both triggers.**
+
+Two consequences worth knowing:
+
+- **A project can no longer be hard-deleted** — its ledger rows reference it and cannot be
+  removed. `deleteProject` transitions to `ProjectStatus.DELETED` and purges file blobs;
+  queries that do not already filter by status exclude `DELETED`. Association loads
+  (`bid.getProject()`) are deliberately *not* filtered.
+- The same applies to any entity above, so prefer a terminal status over a hard delete.
 
 ### Testing
 - **Backend**: JUnit tests for controllers, services, and repositories
