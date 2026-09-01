@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url'
 import { TEST_USERS, API_BASE_URL } from './helpers/fixtures.js'
 import { loginAsClient, loginAsArchitect } from './helpers/auth.js'
 import { resetArchitectQuota, ensureArchitectIdentityComplete, getPhasePaymentReferenceId } from './helpers/db.js'
-import { createApprovedOpenProject, submitBid, acceptBid } from './helpers/scenario.js'
+import { createApprovedOpenProject, submitBid, acceptBid , confirmThroughModal } from './helpers/scenario.js'
 import { simulatePhasePaymentWebhook } from './helpers/xendit.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -35,7 +35,7 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
 
   test('setup: create project, bid with 2 phases, accept -> NEGOTIATION', async ({ page }) => {
     projectId = await createApprovedOpenProject(page, projectTitle)
-    await submitBid(page, projectTitle, {
+    await submitBid(page, projectId, {
       bidAmount,
       phases: [
         { amount: phase1Amount, estimatedDays: 10 },
@@ -63,14 +63,12 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
   test('both parties confirm negotiation terms -> IN_PROGRESS', async ({ page }) => {
     await loginAsClient(page)
     await page.goto(`/client/projects/${projectId}/finalization`)
-    page.once('dialog', dialog => dialog.accept())
-    await page.getByRole('button', { name: 'Konfirmasi & Lanjut ke Pembayaran' }).click()
+    await confirmThroughModal(page, 'Konfirmasi & Lanjut ke Pembayaran')
     await expect(page.getByText('awaiting').or(page.getByText('Menunggu'))).toBeVisible({ timeout: 10000 })
 
     await loginAsArchitect(page)
     await page.goto(`/architect/projects/${projectId}/finalization`)
-    page.once('dialog', dialog => dialog.accept())
-    await page.getByRole('button', { name: 'Konfirmasi & Mulai Proyek' }).click()
+    await confirmThroughModal(page, 'Konfirmasi & Mulai Proyek')
     await expect(page).toHaveURL(new RegExp(`/architect/projects/${projectId}/workspace`), { timeout: 10000 })
 
     await loginAsClient(page)

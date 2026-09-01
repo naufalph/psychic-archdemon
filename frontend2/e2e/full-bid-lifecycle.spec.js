@@ -21,7 +21,7 @@ test.describe.serial('Full bid lifecycle: create -> approve -> bid -> accept', (
   })
 
   test('architect submits a bid', async ({ page }) => {
-    await submitBid(page, projectTitle, { bidAmount, phases: [{ amount: bidAmount, estimatedDays: 14 }] })
+    await submitBid(page, projectId, { bidAmount, phases: [{ amount: bidAmount, estimatedDays: 14 }] })
   })
 
   test('client accepts the bid and project moves to negotiation', async ({ page }) => {

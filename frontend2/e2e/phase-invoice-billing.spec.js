@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 import { TEST_USERS } from './helpers/fixtures.js'
 import { loginAsClient, loginAsArchitect } from './helpers/auth.js'
 import { resetArchitectQuota, ensureArchitectIdentityComplete } from './helpers/db.js'
-import { createApprovedOpenProject, submitBid, acceptBid } from './helpers/scenario.js'
+import { createApprovedOpenProject, submitBid, acceptBid , confirmThroughModal } from './helpers/scenario.js'
 
 // Regression test for a backend bug where PhasePaymentService.createInvoiceForPhase()
 // never set rmtr_phase_payment.phase_id, violating its NOT NULL constraint — every
@@ -17,7 +17,7 @@ test('client bills a phase via the workspace "Buat Invoice" button', async ({ pa
   ensureArchitectIdentityComplete(TEST_USERS.architect.email)
 
   const projectId = await createApprovedOpenProject(page, projectTitle)
-  await submitBid(page, projectTitle, {
+  await submitBid(page, projectId, {
     bidAmount: phaseAmount,
     phases: [{ amount: phaseAmount, estimatedDays: 10 }]
   })
@@ -25,14 +25,12 @@ test('client bills a phase via the workspace "Buat Invoice" button', async ({ pa
 
   await loginAsClient(page)
   await page.goto(`/client/projects/${projectId}/finalization`)
-  page.once('dialog', dialog => dialog.accept())
-  await page.getByRole('button', { name: 'Konfirmasi & Lanjut ke Pembayaran' }).click()
+  await confirmThroughModal(page, 'Konfirmasi & Lanjut ke Pembayaran')
   await expect(page.getByText('awaiting').or(page.getByText('Menunggu'))).toBeVisible({ timeout: 10000 })
 
   await loginAsArchitect(page)
   await page.goto(`/architect/projects/${projectId}/finalization`)
-  page.once('dialog', dialog => dialog.accept())
-  await page.getByRole('button', { name: 'Konfirmasi & Mulai Proyek' }).click()
+  await confirmThroughModal(page, 'Konfirmasi & Mulai Proyek')
   await expect(page).toHaveURL(new RegExp(`/architect/projects/${projectId}/workspace`), { timeout: 10000 })
 
   await loginAsClient(page)

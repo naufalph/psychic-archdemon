@@ -1,5 +1,5 @@
 import { expect } from '@playwright/test'
-import { ROUTES } from './fixtures.js'
+import { ROUTES, API_BASE_URL } from './fixtures.js'
 import { loginAsClient, loginAsArchitect, loginAsSuperuser } from './auth.js'
 
 /**
@@ -8,98 +8,125 @@ import { loginAsClient, loginAsArchitect, loginAsSuperuser } from './auth.js'
  * Returns the new project's id.
  */
 export const createApprovedOpenProject = async (page, title) => {
-  await loginAsClient(page)
-  await page.goto(ROUTES.clientProjectCreate)
+  const clientToken = await loginAsClient(page)
+  const clientAuth = { Authorization: `Bearer ${clientToken}` }
 
-  await page.locator('input[placeholder="e.g., Modern Student Housing in Depok"]').fill(title)
+  // Setup goes through the API rather than the create form on purpose. The form's Location is
+  // derived from city/province, which only the Google Places callback populates — so a
+  // UI-driven setup depends on a live Maps API and breaks whenever a field is added.
+  // The create form itself is covered by client-projects.spec.js.
+  const draft = await page.request.post(`${API_BASE_URL}/rmtr/projects`, {
+    headers: clientAuth,
+    data: {
+      title,
+      location: 'Depok, Jawa Barat',
+      fullAddress: 'Jl. Margonda Raya No. 1, Depok',
+      city: 'Depok',
+      province: 'Jawa Barat',
+      projectScope: 'NEW_BUILD',
+      projectCategory: 'RESIDENTIAL',
+      buildingFunction: 'RESIDENTIAL',
+      subCategory: 'HOUSE',
+      lotSize: 200,
+      estimatedBuildArea: 120,
+      numberOfFloors: 2,
+      scopeOfWork: '3 bedroom modern house, industrial style, e2e test project.',
+      designBudgetMin: 300000000,
+      designBudgetMax: 500000000
+    }
+  })
+  expect(draft.ok(), await draft.text()).toBeTruthy()
+  const projectId = (await draft.json()).data.id
 
-  // Address is a Google Places autocomplete, which needs a live API key and can't be driven
-  // deterministically in CI. Without a key it degrades to a plain text input, which is the
-  // path this helper targets; city/province/coordinates are then legitimately left empty.
-  await page
-    .locator('input[placeholder^="Search an address"], input[placeholder^="Cari alamat"]')
-    .fill('Jl. Test No. 1, Jakarta Selatan')
+  // submitProject is multipart with an optional files part; send it empty.
+  const submitted = await page.request.post(
+    `${API_BASE_URL}/rmtr/projects/${projectId}/submit`,
+    { headers: clientAuth, multipart: {} }
+  )
+  expect(submitted.ok(), await submitted.text()).toBeTruthy()
 
-  await page.locator('input[type="number"][placeholder="e.g., 200"]').fill('200')
-  // Build area is optional, but filling it keeps the fixture representative of a real brief.
-  await page.locator('input[type="number"][placeholder="e.g., 120"]').fill('120')
-  await page.locator('form select').nth(1).selectOption('RESIDENTIAL')
-  await page
-    .locator('textarea[placeholder^="Describe number of rooms"]')
-    .fill('3 bedroom modern house, industrial style, e2e test project.')
-  await page.locator('input[placeholder="e.g., 2.000.000.000"]').fill('300000000')
+  const superToken = await loginAsSuperuser(page)
+  const validated = await page.request.put(
+    `${API_BASE_URL}/rmtr/projects/${projectId}/validate`,
+    { headers: { Authorization: `Bearer ${superToken}` }, data: { isValid: true } }
+  )
+  expect(validated.ok(), await validated.text()).toBeTruthy()
 
-  await page.getByRole('button', { name: 'Post Project' }).click()
-  await expect(page).toHaveURL(/\/client\/dashboard/)
-
-  await page.goto(ROUTES.clientProjects)
-  const card = page.locator('div').filter({ hasText: title }).last()
-  await expect(card).toBeVisible({ timeout: 10000 })
-  await card.click()
-  await expect(page).toHaveURL(/\/client\/projects\/(\d+)/)
-  const projectId = page.url().match(/\/client\/projects\/(\d+)/)[1]
-  await expect(page.getByText('Pending Validation')).toBeVisible()
-
-  await loginAsSuperuser(page)
-  await page.goto(ROUTES.superuserProjectQueue)
-
-  const row = page.locator('div.rounded-xl.border-gray-100').filter({ hasText: title })
-  await expect(row).toBeVisible({ timeout: 10000 })
-  await row.getByRole('button', { name: 'Setujui' }).click()
-  await expect(row).toHaveCount(0, { timeout: 10000 })
-
-  return projectId
+  return String(projectId)
 }
 
-/**
- * Architect submits a bid with one or more payment phases.
- * `phases` is an array of { amount, estimatedDays }, must sum to bidAmount.
- */
-export const submitBid = async (page, projectTitle, { bidAmount, phases }) => {
-  await loginAsArchitect(page)
-  await page.goto(ROUTES.architectOpportunities)
+export const submitBid = async (page, projectId, { bidAmount, phases }) => {
+  const token = await loginAsArchitect(page)
+  const auth = { Authorization: `Bearer ${token}` }
 
-  const card = page.locator('div').filter({ hasText: projectTitle }).last()
-  await expect(card).toBeVisible({ timeout: 10000 })
-  await card.click()
-  await expect(page).toHaveURL(/\/architect\/opportunities\/\d+$/)
+  // Driven through the API for the same reason as project setup: this is arrangement, not the
+  // thing under test. The bid form's own UI flow is covered by full-bid-lifecycle.spec.js.
+  const draft = await page.request.post(`${API_BASE_URL}/rmtr/bids`, {
+    headers: auth,
+    data: {
+      projectId: Number(projectId),
+      bidAmount,
+      proposal:
+        'A modern, industrial-style residential design optimized for the site and client requirements.'
+    }
+  })
+  expect(draft.ok(), await draft.text()).toBeTruthy()
+  const bidId = (await draft.json()).data.id
 
-  await page.getByRole('button', { name: 'Buat Penawaran' }).click()
-  await expect(page).toHaveURL(/\/bid$/)
+  const details = await page.request.put(`${API_BASE_URL}/rmtr/bids/${bidId}/details`, {
+    headers: auth,
+    data: {
+      conceptStatement: 'Industrial-tropical hybrid, oriented for cross ventilation.',
+      phases: phases.map((phase, i) => ({
+        phaseNumber: i + 1,
+        title: `Fase ${i + 1}`,
+        // Real deliverable names: the workspace tags uploaded files to their index in this list.
+        deliverables: phase.deliverables ?? ['Site Plan', 'Floor Plan'],
+        amount: phase.amount,
+        revisionRounds: phase.revisionRounds ?? 2,
+        estimatedDays: phase.estimatedDays
+      }))
+    }
+  })
+  expect(details.ok(), await details.text()).toBeTruthy()
 
-  const numberInputs = page.locator('input[type="number"]')
-  await numberInputs.nth(0).fill(String(bidAmount)) // Bid Amount
-  await page
-    .locator(
-      'textarea[placeholder="Explain your design concept, key features, and how you\'ll address the client\'s needs..."]'
-    )
-    .fill('A modern, industrial-style residential design optimized for the site and client requirements.')
+  const submitted = await page.request.post(`${API_BASE_URL}/rmtr/bids/${bidId}/submit`, {
+    headers: auth
+  })
+  expect(submitted.ok(), await submitted.text()).toBeTruthy()
 
-  // PaymentPhaseBuilder seeds one phase by default; add more via "+ Tambah Fase".
-  for (let i = 1; i < phases.length; i++) {
-    await page.getByRole('button', { name: '+ Tambah Fase' }).click()
-  }
-
-  for (let i = 0; i < phases.length; i++) {
-    const amountInput = numberInputs.nth(1 + i * 3)
-    const estimatedDaysInput = numberInputs.nth(1 + i * 3 + 2)
-    await amountInput.fill(String(phases[i].amount))
-    await estimatedDaysInput.fill(String(phases[i].estimatedDays))
-  }
-
-  await page.getByRole('button', { name: 'Kirim Penawaran' }).click()
-  await expect(page).toHaveURL(/\/architect\/bids/, { timeout: 15000 })
+  return bidId
 }
 
 /** Client accepts the submitted bid for the given project (project -> NEGOTIATION). */
 export const acceptBid = async (page, projectId) => {
-  await loginAsClient(page)
-  await page.goto(`/client/projects/${projectId}`)
+  const token = await loginAsClient(page)
+  const auth = { Authorization: `Bearer ${token}` }
 
-  await expect(page.getByText('Daftar Penawaran')).toBeVisible({ timeout: 10000 })
+  const list = await page.request.get(`${API_BASE_URL}/rmtr/projects/${projectId}/bids`, {
+    headers: auth
+  })
+  expect(list.ok(), await list.text()).toBeTruthy()
+  const bids = (await list.json()).data ?? []
+  const pending = bids.find(b => b.status === 'PENDING') ?? bids[0]
+  expect(pending, `no bid to accept on project ${projectId}`).toBeTruthy()
 
-  page.once('dialog', dialog => dialog.accept())
-  await page.getByRole('button', { name: 'Terima Penawaran' }).click()
+  const accepted = await page.request.post(`${API_BASE_URL}/rmtr/bids/${pending.id}/accept`, {
+    headers: auth
+  })
+  expect(accepted.ok(), await accepted.text()).toBeTruthy()
+}
 
-  await expect(page).toHaveURL(new RegExp(`/client/projects/${projectId}/finalization`), { timeout: 10000 })
+/**
+ * Confirmation moved from a native dialog to an in-page modal, so the page button and the
+ * modal's confirm button share a label. Click the page one, then the modal one if it appears.
+ */
+export const confirmThroughModal = async (page, name) => {
+  const buttons = page.getByRole('button', { name })
+  await buttons.first().click()
+  const modalButton = buttons.last()
+  if (await modalButton.isVisible().catch(() => false)) {
+    const count = await buttons.count()
+    if (count > 1) await modalButton.click()
+  }
 }
