@@ -36,22 +36,14 @@
               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap"
               :class="isCompleted ? 'bg-green-100 text-green-700' : 'bg-blue-50 text-blue-700'"
             >
-              <span
-                class="w-1.5 h-1.5 rounded-full"
-                :class="isCompleted ? 'bg-green-600' : 'bg-blue-500'"
-              />
+              <span class="w-1.5 h-1.5 rounded-full" :class="isCompleted ? 'bg-green-600' : 'bg-blue-500'" />
               {{ isCompleted ? t.projectWorkspace?.completedBadge : t.projectWorkspace?.inProgressBadge }}
             </span>
           </div>
         </div>
       </div>
 
-      <WorkspaceTabs
-        v-model="tab"
-        :chat-open="chatOpen"
-        :t="t"
-        @toggle-chat="chatOpen = !chatOpen"
-      />
+      <WorkspaceTabs v-model="tab" :chat-open="chatOpen" :t="t" @toggle-chat="chatOpen = !chatOpen" />
 
       <div class="max-w-7xl mx-auto p-6 flex justify-center gap-6 items-start">
         <div class="flex-1 max-w-[860px] min-w-0">
@@ -143,11 +135,7 @@
                 </p>
               </div>
             </div>
-            <ChatPanel
-              v-if="conversationId"
-              :conversation-id="conversationId"
-              class="flex-1 min-h-0"
-            />
+            <ChatPanel v-if="conversationId" :conversation-id="conversationId" class="flex-1 min-h-0" />
             <p v-else class="p-4 text-xs text-gray-400">
               {{ t.projectWorkspace?.chatUnavailableHint }}
             </p>
@@ -158,7 +146,9 @@
 
     <ApproveModal
       v-if="approveModal"
-      :target-name="approveModal.item?.name || phaseFallbackTitle(approveModal.phase)"
+      :target-name="
+        approveModal.item ? deliverableLabel(approveModal.item.name, t) : phaseFallbackTitle(approveModal.phase)
+      "
       :busy="actionLoading === approveModal.phase.id"
       :t="t"
       @close="approveModal = null"
@@ -213,7 +203,7 @@ import RevisionModal from '@/components/workspace/RevisionModal.vue'
 import FilesModal from '@/components/workspace/FilesModal.vue'
 import ImageLightbox from '@/components/workspace/ImageLightbox.vue'
 import { useProjectWorkspace } from '@/components/workspace/useProjectWorkspace'
-import { isImage } from '@/components/workspace/workspaceMaps'
+import { isImage, deliverableLabel } from '@/components/workspace/workspaceMaps'
 
 const route = useRoute()
 const router = useRouter()
@@ -221,14 +211,49 @@ const projectId = route.params.id || route.params.projectId
 
 const ws = useProjectWorkspace(projectId, 'client')
 const {
-  t, tab, chatOpen, phases, sortedPhases, contract, loading, error,
-  openPhases, openLogs, phaseLogs, logsLoading, actionLoading, toast, showToast,
-  project, conversationId, architectName, architectInitials, coverImage,
-  disbursedCount, totalAmount, paidAmount, remainingAmount, progressPercent,
-  statusKey, revisionsLeft, showRevisionBadge, deadlineLabel, needsAction,
-  deliverableItems, filesByRound, formatAmount, formatDate, formatDateTime,
-  formatLogAction, phaseFallbackTitle, fetchLogs, loadAll, togglePhase,
-  goToPhase, goToContract, run
+  t,
+  tab,
+  chatOpen,
+  phases,
+  sortedPhases,
+  contract,
+  loading,
+  error,
+  openPhases,
+  openLogs,
+  phaseLogs,
+  logsLoading,
+  actionLoading,
+  toast,
+  showToast,
+  project,
+  conversationId,
+  architectName,
+  architectInitials,
+  coverImage,
+  disbursedCount,
+  totalAmount,
+  paidAmount,
+  remainingAmount,
+  progressPercent,
+  statusKey,
+  revisionsLeft,
+  showRevisionBadge,
+  deadlineLabel,
+  needsAction,
+  deliverableItems,
+  filesByRound,
+  formatAmount,
+  formatDate,
+  formatDateTime,
+  formatLogAction,
+  phaseFallbackTitle,
+  fetchLogs,
+  loadAll,
+  togglePhase,
+  goToPhase,
+  goToContract,
+  run
 } = ws
 
 const approveModal = ref(null)
@@ -282,12 +307,12 @@ const confirmApprove = async () => {
     'approveError'
   )
   approveModal.value = null
-  const remaining = deliverableItems(
-    sortedPhases.value.find(p => p.id === phase.id) || phase
-  ).filter(d => d.status !== 'APPROVED').length
+  const remaining = deliverableItems(sortedPhases.value.find(p => p.id === phase.id) || phase).filter(
+    d => d.status !== 'APPROVED'
+  ).length
   showToast(
     item && remaining > 0
-      ? (w.toastItemApproved || 'Approved · {name}').replace('{name}', item.name)
+      ? (w.toastItemApproved || 'Approved · {name}').replace('{name}', deliverableLabel(item.name, t.value))
       : w.toastPhaseApproved
   )
 }
@@ -305,17 +330,16 @@ const cancelDispute = () => {
 
 const submitDispute = async phase => {
   if (!disputeReason.value.trim()) return
-  await run(
-    phase.id,
-    () => phaseAPI.disputeDeliverable(phase.id, { reason: disputeReason.value }),
-    'disputeError'
-  )
+  await run(phase.id, () => phaseAPI.disputeDeliverable(phase.id, { reason: disputeReason.value }), 'disputeError')
   cancelDispute()
 }
 
 const openLightbox = file => {
   const images = (filesModal.value?.item?.files || []).filter(f => isImage(f.fileType))
-  const index = Math.max(0, images.findIndex(f => f.id === file.id))
+  const index = Math.max(
+    0,
+    images.findIndex(f => f.id === file.id)
+  )
   lightbox.value = { files: images, index }
 }
 

@@ -41,40 +41,27 @@
           {{ statusLabels[statusKey(phase, index)] }}
         </span>
 
-        <component
-          :is="openPhases[phase.id] ? ChevronUp : ChevronDown"
-          class="w-4 h-4 text-gray-400 shrink-0"
-        />
+        <component :is="openPhases[phase.id] ? ChevronUp : ChevronDown" class="w-4 h-4 text-gray-400 shrink-0" />
       </button>
 
       <div v-if="openPhases[phase.id]">
-        <div v-if="phase.description" class="px-5 py-4 border-b border-gray-100">
+        <div v-if="phaseDescription(phase)" class="px-5 py-4 border-b border-gray-100">
           <p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">
             {{ t.projectWorkspace?.descriptionLabel }}
           </p>
-          <p class="text-sm text-gray-600 leading-relaxed">{{ phase.description }}</p>
+          <p class="text-sm text-gray-600 leading-relaxed">{{ phaseDescription(phase) }}</p>
         </div>
 
         <div
           v-if="showRevisionBadge(phase)"
           class="px-5 py-3 border-b flex items-center gap-2"
-          :class="
-            revisionsLeft(phase) > 0
-              ? 'bg-purple-50 border-purple-100'
-              : 'bg-red-50 border-red-100'
-          "
+          :class="revisionsLeft(phase) > 0 ? 'bg-purple-50 border-purple-100' : 'bg-red-50 border-red-100'"
         >
-          <RotateCcw
-            class="w-4 h-4 shrink-0"
-            :class="revisionsLeft(phase) > 0 ? 'text-purple-600' : 'text-red-500'"
-          />
-          <span
-            class="text-xs font-semibold"
-            :class="revisionsLeft(phase) > 0 ? 'text-purple-800' : 'text-red-800'"
-          >
+          <RotateCcw class="w-4 h-4 shrink-0" :class="revisionsLeft(phase) > 0 ? 'text-purple-600' : 'text-red-500'" />
+          <span class="text-xs font-semibold" :class="revisionsLeft(phase) > 0 ? 'text-purple-800' : 'text-red-800'">
             <template v-if="revisionsLeft(phase) > 0">
-              {{ t.projectWorkspace?.revisionsLeftLabel }}: {{ revisionsLeft(phase) }}
-              {{ t.projectWorkspace?.of }} {{ phase.maxRevisions }}
+              {{ t.projectWorkspace?.revisionsLeftLabel }}: {{ revisionsLeft(phase) }} {{ t.projectWorkspace?.of }}
+              {{ phase.maxRevisions }}
             </template>
             <template v-else>
               {{ t.projectWorkspace?.revisionsExhausted }} &middot; 0 {{ t.projectWorkspace?.of }}
@@ -172,7 +159,7 @@ import { computed } from 'vue'
 import { ChevronUp, ChevronDown, CheckCircle, Lock, RotateCcw } from 'lucide-vue-next'
 import PhaseActions from './PhaseActions.vue'
 import DeliverablesTable from './DeliverablesTable.vue'
-import { statusStyles, logIconClass } from './workspaceMaps'
+import { statusStyles, logIconClass, deliverableLabel } from './workspaceMaps'
 
 const props = defineProps({
   t: { type: Object, required: true },
@@ -215,4 +202,12 @@ defineEmits([
 ])
 
 const statusLabels = computed(() => props.t.projectWorkspace?.statusLabels || {})
+
+// phase.description is a comma-joined snapshot of the same taxonomy codes the deliverable rows
+// carry, frozen at phase creation. Rebuild it from those rows so it reads in the user's language
+// rather than splitting the stored string, which a free-text deliverable name could contain.
+const phaseDescription = phase => {
+  const named = props.deliverableItems(phase).filter(item => item.name)
+  return named.length ? named.map(item => deliverableLabel(item.name, props.t)).join(', ') : phase.description
+}
 </script>

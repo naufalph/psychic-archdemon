@@ -1516,6 +1516,7 @@ export default {
     unlocksWithPhase: 'Unlocks with this phase',
     filesUpdated: '{n} files \u00b7 updated {at}',
     noFilesLabel: 'No files',
+    untaggedFilesLabel: 'Other files',
     filesCountLabel: '{n} files',
     deliverableApproved: 'Approved',
     deliverableAwaiting: 'Awaiting approval',

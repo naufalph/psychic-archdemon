@@ -3,14 +3,54 @@
  * Previously duplicated verbatim in client/ and architect/ ProjectWorkspace.vue.
  */
 export const statusStyles = {
-  NOT_STARTED: { bg: 'bg-gray-100', text: 'text-gray-500', dot: 'bg-gray-400', icon: 'bg-gray-100 text-gray-400' },
-  PENDING: { bg: 'bg-amber-50', text: 'text-amber-700', dot: 'bg-amber-500', icon: 'bg-amber-100 text-amber-700' },
-  BILLED: { bg: 'bg-blue-50', text: 'text-blue-700', dot: 'bg-blue-500', icon: 'bg-blue-100 text-blue-700' },
-  IN_PROGRESS: { bg: 'bg-sky-50', text: 'text-sky-700', dot: 'bg-sky-500', icon: 'bg-sky-100 text-sky-700' },
-  DELIVERED: { bg: 'bg-purple-50', text: 'text-purple-700', dot: 'bg-purple-500', icon: 'bg-purple-100 text-purple-700' },
-  APPROVED: { bg: 'bg-green-50', text: 'text-green-700', dot: 'bg-green-500', icon: 'bg-green-100 text-green-700' },
-  DISBURSED: { bg: 'bg-gray-50', text: 'text-gray-500', dot: 'bg-gray-400', icon: 'bg-gray-100 text-gray-400' },
-  DISPUTED: { bg: 'bg-red-50', text: 'text-red-700', dot: 'bg-red-500', icon: 'bg-red-100 text-red-700' }
+  NOT_STARTED: {
+    bg: 'bg-gray-100',
+    text: 'text-gray-500',
+    dot: 'bg-gray-400',
+    icon: 'bg-gray-100 text-gray-400'
+  },
+  PENDING: {
+    bg: 'bg-amber-50',
+    text: 'text-amber-700',
+    dot: 'bg-amber-500',
+    icon: 'bg-amber-100 text-amber-700'
+  },
+  BILLED: {
+    bg: 'bg-blue-50',
+    text: 'text-blue-700',
+    dot: 'bg-blue-500',
+    icon: 'bg-blue-100 text-blue-700'
+  },
+  IN_PROGRESS: {
+    bg: 'bg-sky-50',
+    text: 'text-sky-700',
+    dot: 'bg-sky-500',
+    icon: 'bg-sky-100 text-sky-700'
+  },
+  DELIVERED: {
+    bg: 'bg-purple-50',
+    text: 'text-purple-700',
+    dot: 'bg-purple-500',
+    icon: 'bg-purple-100 text-purple-700'
+  },
+  APPROVED: {
+    bg: 'bg-green-50',
+    text: 'text-green-700',
+    dot: 'bg-green-500',
+    icon: 'bg-green-100 text-green-700'
+  },
+  DISBURSED: {
+    bg: 'bg-gray-50',
+    text: 'text-gray-500',
+    dot: 'bg-gray-400',
+    icon: 'bg-gray-100 text-gray-400'
+  },
+  DISPUTED: {
+    bg: 'bg-red-50',
+    text: 'text-red-700',
+    dot: 'bg-red-500',
+    icon: 'bg-red-100 text-red-700'
+  }
 }
 
 /** Per-deliverable status, distinct from phase status. */
@@ -36,5 +76,20 @@ export const fileNameFromPath = path => path?.split('/').pop()?.split('?')[0] ||
 export const fileExtension = path => {
   const name = fileNameFromPath(path) || ''
   const dot = name.lastIndexOf('.')
-  return dot > -1 ? name.slice(dot + 1).toUpperCase().slice(0, 4) : 'FILE'
+  return dot > -1
+    ? name
+        .slice(dot + 1)
+        .toUpperCase()
+        .slice(0, 4)
+    : 'FILE'
+}
+
+/**
+ * Display text for a deliverable named in the accepted bid. The stored value is a taxonomy code
+ * (SITE_ANALYSIS), so it has to go through the same i18n map the brief and bid forms use; bids
+ * predating the taxonomy carry free text, which passes through unchanged.
+ */
+export const deliverableLabel = (name, t) => {
+  if (!name) return t?.projectWorkspace?.untaggedFilesLabel || 'Other files'
+  return t?.bidCreate?.deliverableItems?.[name] || name.replace(/_/g, ' ')
 }

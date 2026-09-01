@@ -1,17 +1,15 @@
 <template>
-  <div
-    class="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4"
-    @click.self="$emit('close')"
-  >
+  <div class="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4" @click.self="$emit('close')">
     <div
       role="dialog"
       aria-modal="true"
       :aria-label="t.projectWorkspace?.uploadFileLabel"
-      class="bg-white rounded-2xl shadow-2xl w-full max-w-[448px] p-6">
+      class="bg-white rounded-2xl shadow-2xl w-full max-w-[448px] p-6"
+    >
       <p class="text-xs font-bold uppercase tracking-wider text-gray-400">
         {{ t.projectWorkspace?.uploadFileLabel }}
       </p>
-      <h3 class="text-base font-bold text-gray-900 truncate">{{ item?.name }}</h3>
+      <h3 class="text-base font-bold text-gray-900 truncate">{{ deliverableLabel(item?.name, t) }}</h3>
 
       <label
         class="mt-4 flex items-center gap-2 border border-border-gray rounded-lg px-3 py-2.5 cursor-pointer hover:border-brand-gold"
@@ -48,6 +46,7 @@
 <script setup>
 import { ref } from 'vue'
 import { Paperclip } from 'lucide-vue-next'
+import { deliverableLabel } from './workspaceMaps'
 
 defineProps({
   item: { type: Object, default: null },

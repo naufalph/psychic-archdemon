@@ -1530,6 +1530,7 @@ export default {
     unlocksWithPhase: 'Terbuka bersama tahap ini',
     filesUpdated: '{n} berkas \u00b7 diperbarui {at}',
     noFilesLabel: 'Tidak ada berkas',
+    untaggedFilesLabel: 'Berkas lainnya',
     filesCountLabel: '{n} berkas',
     deliverableApproved: 'Disetujui',
     deliverableAwaiting: 'Menunggu persetujuan',

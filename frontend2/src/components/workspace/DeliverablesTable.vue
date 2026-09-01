@@ -31,7 +31,7 @@
         :style="gridStyle"
       >
         <div class="min-w-0">
-          <p class="text-sm font-medium text-gray-900 truncate">{{ item.name }}</p>
+          <p class="text-sm font-medium text-gray-900 truncate">{{ deliverableLabel(item.name, t) }}</p>
           <p class="text-xs text-gray-400 truncate">{{ subLine(item) }}</p>
         </div>
 
@@ -47,7 +47,7 @@
             v-if="isClient && effectiveStatus(item) === 'PENDING'"
             class="px-3.5 py-1.5 rounded-full bg-green-600 hover:bg-green-700 text-white text-xs font-semibold disabled:opacity-50"
             :disabled="busy"
-            :aria-label="`${t.projectWorkspace?.approveBtn} ${t.projectWorkspace?.colDeliverable}: ${item.name}`"
+            :aria-label="`${t.projectWorkspace?.approveBtn} ${t.projectWorkspace?.colDeliverable}: ${deliverableLabel(item.name, t)}`"
             @click="$emit('approve', item)"
           >
             {{ t.projectWorkspace?.approveBtn }}
@@ -55,7 +55,7 @@
           <button
             v-else-if="!isClient && canUpload && ['PENDING', 'MISSING'].includes(effectiveStatus(item))"
             class="px-3.5 py-1.5 rounded-full bg-white border border-gray-300 hover:border-gray-900 text-xs font-semibold"
-            :aria-label="`${t.projectWorkspace?.uploadCta} ${t.projectWorkspace?.colDeliverable}: ${item.name}`"
+            :aria-label="`${t.projectWorkspace?.uploadCta} ${t.projectWorkspace?.colDeliverable}: ${deliverableLabel(item.name, t)}`"
             @click="$emit('upload', item)"
           >
             {{ t.projectWorkspace?.uploadCta }}
@@ -67,7 +67,7 @@
           <button
             v-if="item.files?.length"
             class="px-3 py-1.5 rounded-full bg-gray-50 border border-border-gray hover:border-brand-gold hover:bg-white text-xs font-semibold text-gray-700"
-            :aria-label="`${t.projectWorkspace?.colFiles}: ${item.name}`"
+            :aria-label="`${t.projectWorkspace?.colFiles}: ${deliverableLabel(item.name, t)}`"
             @click="$emit('open-files', item)"
           >
             {{ (t.projectWorkspace?.filesCountLabel || '{n} files').replace('{n}', item.files.length) }}
@@ -77,10 +77,7 @@
       </div>
     </div>
 
-    <div
-      v-else
-      class="border-2 border-dashed border-border-gray rounded-lg py-6 text-center text-sm text-gray-400"
-    >
+    <div v-else class="border-2 border-dashed border-border-gray rounded-lg py-6 text-center text-sm text-gray-400">
       {{ t.projectWorkspace?.noDeliverablesUploaded }}
     </div>
   </div>
@@ -88,7 +85,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { deliverableStyles } from './workspaceMaps'
+import { deliverableStyles, deliverableLabel } from './workspaceMaps'
 
 const props = defineProps({
   items: { type: Array, default: () => [] },
@@ -129,10 +126,7 @@ const subLine = item => {
   const w = props.t.projectWorkspace || {}
   if (effectiveStatus(item) === 'LOCKED') return w.unlocksWithPhase
   if (!item.files?.length) return w.awaitingUpload
-  const latest = item.files.reduce(
-    (a, f) => (!a || new Date(f.uploadedAt) > new Date(a) ? f.uploadedAt : a),
-    null
-  )
+  const latest = item.files.reduce((a, f) => (!a || new Date(f.uploadedAt) > new Date(a) ? f.uploadedAt : a), null)
   return (w.filesUpdated || '{n} files · updated {at}')
     .replace('{n}', item.files.length)
     .replace('{at}', props.formatDateTime(latest))
