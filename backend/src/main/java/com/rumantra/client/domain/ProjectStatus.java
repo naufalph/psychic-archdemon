@@ -11,5 +11,6 @@ public enum ProjectStatus {
   // awaiting superuser fault review
   IN_PROGRESS, // Terms confirmed, work started
   COMPLETED, // Project done
-  CANCELLED // Project cancelled by client
+  CANCELLED, // Project cancelled by client
+  DELETED // Removed by the client; retained because its status ledger cannot be erased
 }

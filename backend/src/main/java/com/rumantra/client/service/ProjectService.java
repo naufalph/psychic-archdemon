@@ -31,11 +31,13 @@ import com.rumantra.client.dto.ProjectResponse;
 import com.rumantra.client.repository.ClientRepository;
 import com.rumantra.client.repository.ProjectFileRepository;
 import com.rumantra.client.repository.ProjectRepository;
+import com.rumantra.ledger.service.StatusTransitionService;
 import com.rumantra.notification.event.ProjectValidatedEvent;
 import com.rumantra.project.domain.ProjectPhase;
 import com.rumantra.project.repository.ProjectPhaseRepository;
 import com.rumantra.security.SecurityUtils;
 import com.rumantra.shared.constants.ProjectTaxonomy;
+import com.rumantra.shared.domain.ActorType;
 import com.rumantra.shared.exception.ResourceNotFoundException;
 import com.rumantra.shared.storage.FileStorageService;
 
@@ -61,6 +63,7 @@ public class ProjectService {
   private final BidPaymentPhaseRepository bidPaymentPhaseRepository;
   private final ProjectPhaseRepository projectPhaseRepository;
   private final PortoRepository portoRepository;
+  private final StatusTransitionService statusTransitionService;
 
   @PersistenceContext private EntityManager entityManager;
 
@@ -314,7 +317,16 @@ public class ProjectService {
       fileStorageService.deleteImages(fileUrls);
     }
 
-    projectRepository.delete(project);
+    // Soft delete: the project's status ledger is append-only and references this row, so the
+    // record cannot be removed. Blobs are still purged above.
+    Long userId = SecurityUtils.getCurrentUserId();
+    statusTransitionService.transitionProject(
+        project,
+        ProjectStatus.DELETED,
+        statusTransitionService.actorRef(userId),
+        ActorType.CLIENT,
+        "PROJECT_DELETED",
+        null);
   }
 
   /**
@@ -370,7 +382,7 @@ public class ProjectService {
    */
   @Transactional(readOnly = true)
   public List<ProjectResponse> getAllProjects() {
-    List<Project> projects = projectRepository.findAll();
+    List<Project> projects = projectRepository.findAllNotDeleted();
     return projects.stream().map(this::mapToProjectResponse).collect(Collectors.toList());
   }
 

@@ -17,15 +17,23 @@ import com.rumantra.client.domain.ProjectStatus;
 @Repository
 public interface ProjectRepository extends JpaRepository<Project, Long> {
 
-  List<Project> findByClientIdOrderByCreatedAtDesc(Long clientId);
+  @Query(
+      "SELECT p FROM Project p WHERE p.client.id = :clientId"
+          + " AND p.status <> com.rumantra.client.domain.ProjectStatus.DELETED"
+          + " ORDER BY p.createdAt DESC")
+  List<Project> findByClientIdOrderByCreatedAtDesc(@Param("clientId") Long clientId);
 
   List<Project> findByStatus(ProjectStatus status);
 
-  @Query("SELECT p FROM Project p LEFT JOIN FETCH p.files WHERE p.id = :projectId")
+  @Query(
+      "SELECT p FROM Project p LEFT JOIN FETCH p.files WHERE p.id = :projectId"
+          + " AND p.status <> com.rumantra.client.domain.ProjectStatus.DELETED")
   Optional<Project> findByIdWithFiles(@Param("projectId") Long projectId);
 
   @Query(
-      "SELECT p FROM Project p LEFT JOIN FETCH p.files WHERE p.client.id = :clientId ORDER BY p.createdAt DESC")
+      "SELECT p FROM Project p LEFT JOIN FETCH p.files WHERE p.client.id = :clientId"
+          + " AND p.status <> com.rumantra.client.domain.ProjectStatus.DELETED"
+          + " ORDER BY p.createdAt DESC")
   List<Project> findByClientIdWithFiles(@Param("clientId") Long clientId);
 
   @Query("SELECT p FROM Project p LEFT JOIN FETCH p.files WHERE p.status = :status")
@@ -36,6 +44,11 @@ public interface ProjectRepository extends JpaRepository<Project, Long> {
           + " WHERE p.status IN :statuses"
           + " ORDER BY p.createdAt DESC")
   List<Project> findPublicProjects(@Param("statuses") Collection<ProjectStatus> statuses);
+
+  @Query(
+      "SELECT p FROM Project p"
+          + " WHERE p.status <> com.rumantra.client.domain.ProjectStatus.DELETED")
+  List<Project> findAllNotDeleted();
 
   @Query(
       "SELECT p FROM Project p JOIN FETCH p.client c JOIN FETCH c.user"
