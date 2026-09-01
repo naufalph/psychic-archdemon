@@ -73,7 +73,7 @@
             <p class="text-gray-700 leading-relaxed">{{ currentProject.description }}</p>
           </div>
 
-          <div v-if="currentProject.deliverables && currentProject.deliverables.length > 0">
+          <div v-if="groupedDeliverables.length > 0">
             <h2 class="text-lg font-bold text-black mb-3">{{ t.clientDashboard.deliverables }}</h2>
             <div class="space-y-3">
               <div v-for="group in groupedDeliverables" :key="group.categoryKey">
@@ -243,6 +243,7 @@ import SiteLocationMap from '@/components/project/SiteLocationMap.vue'
 import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
 import BidComparisonTable from '@/components/bid/BidComparisonTable.vue'
 import BidComparison from '@/components/bid/BidComparison.vue'
+import { DELIVERABLE_GROUPS } from '@/constants/projectDeliverables'
 
 const { t, locale } = useI18n()
 const route = useRoute()
@@ -264,20 +265,9 @@ const hasLocation = computed(
   () => !!(currentProject.value?.fullAddress || currentProject.value?.city || currentProject.value?.location)
 )
 
-const DELIVERABLE_CATEGORIES = [
-  { categoryKey: 'siteAnalysis', items: ['SITE_ANALYSIS', 'ZONING_STUDY'] },
-  {
-    categoryKey: 'designPhases',
-    items: ['CONCEPT_DESIGN', 'SCHEMATIC_DESIGN', 'DESIGN_DEVELOPMENT', 'CONSTRUCTION_DOCS']
-  },
-  { categoryKey: 'permits', items: ['IMB_PERMIT', 'SLF_CERT', 'ENVIRONMENTAL_PERMIT'] },
-  { categoryKey: 'specialized', items: ['INTERIOR_DESIGN', 'LANDSCAPE_DESIGN', 'MEP_DESIGN', 'STRUCTURAL_DESIGN'] },
-  { categoryKey: 'construction', items: ['SUPERVISION', 'AS_BUILT'] }
-]
-
 const groupedDeliverables = computed(() => {
   const deliverables = currentProject.value?.deliverables || []
-  return DELIVERABLE_CATEGORIES.map(g => ({
+  return DELIVERABLE_GROUPS.map(g => ({
     categoryKey: g.categoryKey,
     items: g.items.filter(d => deliverables.includes(d))
   })).filter(g => g.items.length > 0)

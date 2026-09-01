@@ -66,7 +66,7 @@
             <p class="text-gray-700 leading-relaxed">{{ project.scopeOfWork }}</p>
           </div>
 
-          <div v-if="project.deliverables && project.deliverables.length > 0" class="mb-8">
+          <div v-if="groupedDeliverables.length > 0" class="mb-8">
             <h2 class="text-lg font-bold text-black mb-3">{{ t.projectDetailArchitect.deliverables }}</h2>
             <div class="flex flex-wrap gap-3">
               <div
@@ -243,35 +243,13 @@ import SiteLocationMap from '@/components/project/SiteLocationMap.vue'
 import { displayProvince } from '@/constants/regions'
 import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
+import { DELIVERABLE_GROUPS } from '@/constants/projectDeliverables'
 
 const { t, locale } = useI18n()
 const route = useRoute()
 const router = useRouter()
 const projectsStore = useProjectsStore()
 const bidsStore = useBidsStore()
-
-const deliverableGroups = [
-  {
-    categoryKey: 'siteAnalysis',
-    items: ['SITE_ANALYSIS', 'ZONING_STUDY']
-  },
-  {
-    categoryKey: 'designPhases',
-    items: ['CONCEPT_DESIGN', 'SCHEMATIC_DESIGN', 'DESIGN_DEVELOPMENT', 'CONSTRUCTION_DOCS']
-  },
-  {
-    categoryKey: 'permits',
-    items: ['IMB_PERMIT', 'SLF_CERT', 'ENVIRONMENTAL_PERMIT']
-  },
-  {
-    categoryKey: 'specialized',
-    items: ['INTERIOR_DESIGN', 'LANDSCAPE_DESIGN', 'MEP_DESIGN', 'STRUCTURAL_DESIGN']
-  },
-  {
-    categoryKey: 'construction',
-    items: ['SUPERVISION', 'AS_BUILT']
-  }
-]
 
 const project = ref(null)
 const loading = ref(false)
@@ -313,12 +291,10 @@ const bidOutcome = computed(() => {
 
 const groupedDeliverables = computed(() => {
   if (!project.value?.deliverables) return []
-  return deliverableGroups
-    .map(group => ({
-      ...group,
-      matched: group.items.filter(value => project.value.deliverables.includes(value))
-    }))
-    .filter(group => group.matched.length > 0)
+  return DELIVERABLE_GROUPS.map(group => ({
+    ...group,
+    matched: group.items.filter(value => project.value.deliverables.includes(value))
+  })).filter(group => group.matched.length > 0)
 })
 
 const formatCurrency = value => {

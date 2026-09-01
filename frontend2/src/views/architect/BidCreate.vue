@@ -70,7 +70,7 @@
                 <p class="text-gray-900">{{ projectTypeLabel(project, locale) }}</p>
               </div>
 
-              <div v-if="project.deliverables && project.deliverables.length > 0">
+              <div v-if="groupedProjectDeliverables.length > 0">
                 <p class="text-xs text-gray-500 uppercase font-bold mb-2">
                   {{ t.bidCreate?.deliverables || 'Deliverables' }}
                 </p>
@@ -121,11 +121,7 @@
             <div class="bg-brand-brown p-8 text-white">
               <h1 class="text-3xl font-bold flex items-center gap-3">
                 <FileText :size="32" />
-                {{
-                  existingBidId
-                    ? t.bidCreate?.updateTitle || 'Update Bid'
-                    : t.bidCreate?.title || 'Submit Bid'
-                }}
+                {{ existingBidId ? t.bidCreate?.updateTitle || 'Update Bid' : t.bidCreate?.title || 'Submit Bid' }}
               </h1>
               <p class="text-white/80 mt-2">
                 {{
@@ -311,9 +307,7 @@
                 <textarea
                   v-model="formData.zoningDescription"
                   rows="2"
-                  :placeholder="
-                    t.bidCreate?.zoningDescriptionPlaceholder || 'Add context about these zoning images...'
-                  "
+                  :placeholder="t.bidCreate?.zoningDescriptionPlaceholder || 'Add context about these zoning images...'"
                   class="w-full mt-3 px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-sm"
                 />
               </div>
@@ -571,6 +565,7 @@ import UploadProgress from '@/components/upload/UploadProgress.vue'
 import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
 import PaymentPhaseBuilder from '@/components/project/PaymentPhaseBuilder.vue'
 import PortfolioSelector from '@/components/architect/PortfolioSelector.vue'
+import { DELIVERABLE_GROUPS } from '@/constants/projectDeliverables'
 
 const route = useRoute()
 const router = useRouter()
@@ -593,17 +588,6 @@ const identityMissing = computed(() => {
 const isIdentityComplete = computed(() => identityMissing.value.length === 0)
 
 const showIdentityModal = ref(false)
-
-const DELIVERABLE_CATEGORIES = [
-  { categoryKey: 'siteAnalysis', items: ['SITE_ANALYSIS', 'ZONING_STUDY'] },
-  {
-    categoryKey: 'designPhases',
-    items: ['CONCEPT_DESIGN', 'SCHEMATIC_DESIGN', 'DESIGN_DEVELOPMENT', 'CONSTRUCTION_DOCS']
-  },
-  { categoryKey: 'permits', items: ['IMB_PERMIT', 'SLF_CERT', 'ENVIRONMENTAL_PERMIT'] },
-  { categoryKey: 'specialized', items: ['INTERIOR_DESIGN', 'LANDSCAPE_DESIGN', 'MEP_DESIGN', 'STRUCTURAL_DESIGN'] },
-  { categoryKey: 'construction', items: ['SUPERVISION', 'AS_BUILT'] }
-]
 
 const { loading, uploadProgress } = storeToRefs(bidsStore)
 
@@ -683,7 +667,7 @@ const formatCurrency = value => {
 
 const groupedProjectDeliverables = computed(() => {
   const deliverables = project.value?.deliverables || []
-  return DELIVERABLE_CATEGORIES.map(group => ({
+  return DELIVERABLE_GROUPS.map(group => ({
     categoryKey: group.categoryKey,
     items: group.items.filter(d => deliverables.includes(d))
   })).filter(group => group.items.length > 0)

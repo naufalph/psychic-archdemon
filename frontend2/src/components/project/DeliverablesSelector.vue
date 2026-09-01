@@ -1,6 +1,6 @@
 <template>
   <div class="space-y-6">
-    <div v-for="group in deliverableGroups" :key="group.categoryKey" class="bg-gray-50 rounded-2xl p-6">
+    <div v-for="group in DELIVERABLE_GROUPS" :key="group.categoryKey" class="bg-gray-50 rounded-2xl p-6">
       <div class="flex items-center justify-between mb-4">
         <h4 class="font-bold text-lg text-gray-900">{{ categoryLabel(group.categoryKey) }}</h4>
         <label
@@ -48,6 +48,7 @@
 <script setup>
 import { Check } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
+import { DELIVERABLE_GROUPS } from '@/constants/projectDeliverables'
 
 const props = defineProps({
   modelValue: {
@@ -59,20 +60,6 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 
 const { t } = useI18n()
-
-const deliverableGroups = [
-  { categoryKey: 'siteAnalysis', items: ['SITE_ANALYSIS', 'ZONING_STUDY'] },
-  {
-    categoryKey: 'designPhases',
-    items: ['CONCEPT_DESIGN', 'SCHEMATIC_DESIGN', 'DESIGN_DEVELOPMENT', 'CONSTRUCTION_DOCS']
-  },
-  { categoryKey: 'permits', items: ['IMB_PERMIT', 'SLF_CERT', 'ENVIRONMENTAL_PERMIT'] },
-  {
-    categoryKey: 'specialized',
-    items: ['INTERIOR_DESIGN', 'LANDSCAPE_DESIGN', 'MEP_DESIGN', 'STRUCTURAL_DESIGN']
-  },
-  { categoryKey: 'construction', items: ['SUPERVISION', 'AS_BUILT'] }
-]
 
 const categoryLabel = key => t.value.bidCreate?.deliverableCategories?.[key] || key
 
@@ -107,13 +94,13 @@ const checkboxClasses = value => {
 }
 
 const isAllSelected = category => {
-  const group = deliverableGroups.find(g => g.categoryKey === category)
+  const group = DELIVERABLE_GROUPS.find(g => g.categoryKey === category)
   if (!group) return false
   return group.items.every(item => isSelected(item))
 }
 
 const toggleAllInGroup = category => {
-  const group = deliverableGroups.find(g => g.categoryKey === category)
+  const group = DELIVERABLE_GROUPS.find(g => g.categoryKey === category)
   if (!group) return
 
   const allSelected = isAllSelected(category)

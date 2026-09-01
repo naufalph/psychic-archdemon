@@ -39,7 +39,7 @@ export const analyzeBids = async (project, bids) => {
 
     Task:
     1. Compare the bids based on Cost, Duration, and Design Concept suitability.
-    2. Check if the architect likely covers the requested deliverables (e.g. IMB requirements, DED) based on their description/extracted text.
+    2. Check if the architect likely covers the requested deliverables (e.g. structural drawings, MEP calculations, cost estimation) based on their description/extracted text.
     3. Assign a score (0-100) for Cost (Higher score means better/cheaper), Time (Higher score means faster), and Design (Higher means fits description better).
     4. Provide a brief summary, pros, and cons for each.
     5. Provide a final recommendation on who to choose and why.

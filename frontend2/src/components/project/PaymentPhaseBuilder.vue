@@ -6,7 +6,7 @@
         <div class="flex items-center justify-between gap-2 mb-3">
           <h4 class="font-bold text-gray-900">{{ t.paymentPhaseBuilder.availableDeliverables }}</h4>
           <button
-            v-if="requiredDeliverables.length > 0"
+            v-if="knownRequired.length > 0"
             type="button"
             :disabled="remainingRequired.length === 0"
             :class="bulkButtonClasses"
@@ -19,7 +19,7 @@
           {{ t.paymentPhaseBuilder.availableDeliverablesHelp }}
         </p>
         <div class="space-y-4">
-          <div v-for="group in deliverableGroups" :key="group.categoryKey">
+          <div v-for="group in DELIVERABLE_GROUPS" :key="group.categoryKey">
             <div class="flex items-center justify-between gap-2 mb-2">
               <p class="text-xs font-bold text-gray-500 uppercase">
                 {{ t.bidCreate.deliverableCategories[group.categoryKey] }}
@@ -187,6 +187,7 @@
 import { ref, computed, watch } from 'vue'
 import { useI18n } from '@/composables/useI18n'
 import { formatIDRDisplay } from '@/utils/currencyFormat'
+import { DELIVERABLE_GROUPS, DELIVERABLE_VALUES } from '@/constants/projectDeliverables'
 
 const props = defineProps({
   modelValue: {
@@ -206,29 +207,6 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 
 const { t } = useI18n()
-
-const deliverableGroups = [
-  {
-    categoryKey: 'siteAnalysis',
-    items: ['SITE_ANALYSIS', 'ZONING_STUDY']
-  },
-  {
-    categoryKey: 'designPhases',
-    items: ['CONCEPT_DESIGN', 'SCHEMATIC_DESIGN', 'DESIGN_DEVELOPMENT', 'CONSTRUCTION_DOCS']
-  },
-  {
-    categoryKey: 'permits',
-    items: ['IMB_PERMIT', 'SLF_CERT', 'ENVIRONMENTAL_PERMIT']
-  },
-  {
-    categoryKey: 'specialized',
-    items: ['INTERIOR_DESIGN', 'LANDSCAPE_DESIGN', 'MEP_DESIGN', 'STRUCTURAL_DESIGN']
-  },
-  {
-    categoryKey: 'construction',
-    items: ['SUPERVISION', 'AS_BUILT']
-  }
-]
 
 const getLabelForValue = value => t.value.bidCreate?.deliverableItems?.[value] || value.replace(/_/g, ' ')
 
@@ -303,7 +281,11 @@ const assignToActivePhase = value => {
 
 const unassignedIn = items => items.filter(value => !isAssigned(value))
 
-const remainingRequired = computed(() => unassignedIn(props.requiredDeliverables))
+// Projects briefed under an older deliverable taxonomy still carry retired codes; assigning
+// them would carry dead values into a brand-new bid, so only offer what the selector can render.
+const knownRequired = computed(() => props.requiredDeliverables.filter(value => DELIVERABLE_VALUES.includes(value)))
+
+const remainingRequired = computed(() => unassignedIn(knownRequired.value))
 
 const assignMany = values => {
   if (values.length === 0) return

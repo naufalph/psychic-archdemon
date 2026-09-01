@@ -337,6 +337,7 @@ import { useProjectsStore } from '@/stores/projects'
 import BidImageGallery from '@/components/bid/BidImageGallery.vue'
 import BidStatusBadge from '@/components/project/BidStatusBadge.vue'
 import PortfolioDetailPopup from '@/components/bid/PortfolioDetailPopup.vue'
+import { DELIVERABLE_GROUPS } from '@/constants/projectDeliverables'
 
 const { t, locale } = useI18n()
 const route = useRoute()
@@ -349,20 +350,9 @@ const { currentProject } = storeToRefs(projectsStore)
 
 const viewingPortfolio = ref(null)
 
-const DELIVERABLE_CATEGORIES = [
-  { categoryKey: 'siteAnalysis', items: ['SITE_ANALYSIS', 'ZONING_STUDY'] },
-  {
-    categoryKey: 'designPhases',
-    items: ['CONCEPT_DESIGN', 'SCHEMATIC_DESIGN', 'DESIGN_DEVELOPMENT', 'CONSTRUCTION_DOCS']
-  },
-  { categoryKey: 'permits', items: ['IMB_PERMIT', 'SLF_CERT', 'ENVIRONMENTAL_PERMIT'] },
-  { categoryKey: 'specialized', items: ['INTERIOR_DESIGN', 'LANDSCAPE_DESIGN', 'MEP_DESIGN', 'STRUCTURAL_DESIGN'] },
-  { categoryKey: 'construction', items: ['SUPERVISION', 'AS_BUILT'] }
-]
-
 const groupedProjectDeliverables = computed(() => {
   const deliverables = currentProject.value?.deliverables || []
-  return DELIVERABLE_CATEGORIES.map(g => ({
+  return DELIVERABLE_GROUPS.map(g => ({
     categoryKey: g.categoryKey,
     items: g.items.filter(d => deliverables.includes(d))
   })).filter(g => g.items.length > 0)
