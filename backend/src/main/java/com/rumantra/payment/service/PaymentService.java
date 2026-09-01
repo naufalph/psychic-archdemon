@@ -29,6 +29,7 @@ import com.rumantra.integration.xendit.XenditService;
 import com.rumantra.integration.xendit.dto.XenditInvoiceRequest;
 import com.rumantra.integration.xendit.dto.XenditInvoiceResponse;
 import com.rumantra.integration.xendit.dto.XenditInvoiceWebhook;
+import com.rumantra.ledger.service.StatusTransitionService;
 import com.rumantra.payment.domain.PhasePayment;
 import com.rumantra.payment.domain.PhasePaymentStatus;
 import com.rumantra.payment.dto.PhasePaymentInitiateResponse;
@@ -36,6 +37,7 @@ import com.rumantra.payment.dto.PhasePaymentResponse;
 import com.rumantra.payment.repository.PhasePaymentRepository;
 import com.rumantra.project.domain.PhaseStatus;
 import com.rumantra.project.repository.ProjectPhaseRepository;
+import com.rumantra.shared.domain.ActorType;
 import com.rumantra.shared.exception.BusinessException;
 import com.rumantra.shared.exception.ExceptionConstants;
 
@@ -46,6 +48,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PaymentService {
 
   @Autowired private PhasePaymentRepository phasePaymentRepository;
+  @Autowired private StatusTransitionService statusTransitionService;
 
   @Autowired private BidPaymentPhaseRepository bidPaymentPhaseRepository;
 
@@ -177,7 +180,8 @@ public class PaymentService {
     PhasePayment phasePayment;
     if (existingPayment.isPresent()) {
       PhasePayment existing = existingPayment.get();
-      existing.setStatus(PhasePaymentStatus.PENDING);
+      statusTransitionService.transitionPhasePayment(
+          existing, PhasePaymentStatus.PENDING, null, ActorType.CLIENT, "INVOICE_REISSUED", null);
       existing.setXenditInvoiceId(xenditResponse.getId());
       existing.setXenditReferenceId(referenceId);
       existing.setPaymentLink(xenditResponse.getInvoiceUrl());
@@ -228,7 +232,6 @@ public class PaymentService {
       return;
     }
 
-    payment.setStatus(PhasePaymentStatus.COMPLETED);
     payment.setXenditInvoiceId(webhook.getId());
     payment.setPaymentMethod(webhook.getPaymentMethod());
     payment.setPaymentChannel(webhook.getPaymentChannel());
@@ -241,7 +244,8 @@ public class PaymentService {
       payment.setCompletedAt(LocalDateTime.now());
     }
 
-    phasePaymentRepository.save(payment);
+    statusTransitionService.transitionPhasePayment(
+        payment, PhasePaymentStatus.COMPLETED, null, ActorType.XENDIT, "PAYMENT_RECEIVED", null);
     log.info(
         "Phase payment completed: phaseId={}, projectId={}",
         payment.getPhase().getId(),
@@ -279,8 +283,13 @@ public class PaymentService {
         .findByXenditReferenceId(externalId)
         .ifPresent(
             payment -> {
-              payment.setStatus(PhasePaymentStatus.EXPIRED);
-              phasePaymentRepository.save(payment);
+              statusTransitionService.transitionPhasePayment(
+                  payment,
+                  PhasePaymentStatus.EXPIRED,
+                  null,
+                  ActorType.XENDIT,
+                  "INVOICE_EXPIRED",
+                  null);
               log.info("Phase payment expired: phaseId={}", payment.getPhase().getId());
             });
   }

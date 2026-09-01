@@ -3,6 +3,7 @@ package com.rumantra.admin.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.context.ApplicationEventPublisher;
@@ -26,8 +27,11 @@ import com.rumantra.client.dto.ProjectResponse;
 import com.rumantra.client.repository.ClientRepository;
 import com.rumantra.client.repository.ProjectRepository;
 import com.rumantra.client.service.ProjectService;
+import com.rumantra.ledger.service.StatusTransitionService;
 import com.rumantra.project.domain.ProjectPhase;
 import com.rumantra.project.repository.ProjectPhaseRepository;
+import com.rumantra.security.SecurityUtils;
+import com.rumantra.shared.domain.ActorType;
 import com.rumantra.shared.exception.ResourceNotFoundException;
 
 import lombok.RequiredArgsConstructor;
@@ -46,6 +50,7 @@ public class AdminProjectService {
   private final ProjectPhaseRepository projectPhaseRepository;
   private final BidService bidService;
   private final ApplicationEventPublisher eventPublisher;
+  private final StatusTransitionService statusTransitionService;
 
   @Transactional(readOnly = true)
   public List<ProjectResponse> getProjects(ProjectStatus status) {
@@ -91,8 +96,13 @@ public class AdminProjectService {
             .findById(projectId)
             .orElseThrow(() -> new ResourceNotFoundException("Project not found: " + projectId));
 
-    project.setStatus(ProjectStatus.CANCELLED);
-    projectRepository.save(project);
+    statusTransitionService.transitionProject(
+        project,
+        ProjectStatus.CANCELLED,
+        statusTransitionService.actorRef(SecurityUtils.getCurrentUserId()),
+        ActorType.SUPERUSER,
+        "PROJECT_FORCE_CANCELLED",
+        null);
 
     log.info("Admin force-cancelled project {}", projectId);
     return projectService.getAllProjects().stream()
@@ -115,8 +125,14 @@ public class AdminProjectService {
 
     project.setClientConfirmedAt(LocalDateTime.now());
     project.setArchitectConfirmedAt(LocalDateTime.now());
-    project.setStatus(ProjectStatus.IN_PROGRESS);
-    project = projectRepository.save(project);
+    project =
+        statusTransitionService.transitionProject(
+            project,
+            ProjectStatus.IN_PROGRESS,
+            statusTransitionService.actorRef(SecurityUtils.getCurrentUserId()),
+            ActorType.SUPERUSER,
+            "NEGOTIATION_OVERRIDDEN",
+            null);
 
     initializeProjectPhasesFromBid(project);
 
@@ -188,8 +204,14 @@ public class AdminProjectService {
       }
     }
 
-    project.setStatus(ProjectStatus.CANCELLED);
-    project = projectRepository.save(project);
+    project =
+        statusTransitionService.transitionProject(
+            project,
+            ProjectStatus.CANCELLED,
+            statusTransitionService.actorRef(superuserUserId),
+            ActorType.SUPERUSER,
+            "NEGOTIATION_DISPUTE_RESOLVED",
+            Map.of("reason", reason == null ? "" : reason));
 
     log.info(
         "Superuser {} resolved negotiation dispute for project {}: decision={}",

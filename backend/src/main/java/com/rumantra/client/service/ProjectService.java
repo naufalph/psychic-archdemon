@@ -2,6 +2,7 @@ package com.rumantra.client.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.context.ApplicationEventPublisher;
@@ -179,8 +180,14 @@ public class ProjectService {
       }
     }
 
-    project.setStatus(ProjectStatus.PENDING_APPROVAL);
-    project = projectRepository.save(project);
+    project =
+        statusTransitionService.transitionProject(
+            project,
+            ProjectStatus.PENDING_APPROVAL,
+            statusTransitionService.actorRef(SecurityUtils.getCurrentUserId()),
+            ActorType.CLIENT,
+            "PROJECT_SUBMITTED",
+            null);
 
     if (files != null && !files.isEmpty()) {
       addFilesToProject(project, files);
@@ -345,15 +352,16 @@ public class ProjectService {
             .orElseThrow(
                 () -> new ResourceNotFoundException("Project not found with id: " + projectId));
 
-    if (isValid) {
-      project.setStatus(ProjectStatus.OPEN);
-      project.setBiddingDeadline(java.time.LocalDateTime.now().plusWeeks(2));
-    } else {
-      project.setStatus(ProjectStatus.REJECTED);
-      project.setBiddingDeadline(null);
-    }
+    project.setBiddingDeadline(isValid ? java.time.LocalDateTime.now().plusWeeks(2) : null);
     project.setValidationNotes(validationNotes);
-    project = projectRepository.save(project);
+    project =
+        statusTransitionService.transitionProject(
+            project,
+            isValid ? ProjectStatus.OPEN : ProjectStatus.REJECTED,
+            statusTransitionService.actorRef(SecurityUtils.getCurrentUserId()),
+            ActorType.SUPERUSER,
+            isValid ? "PROJECT_VALIDATED" : "PROJECT_REJECTED",
+            validationNotes == null ? null : Map.of("validationNotes", validationNotes));
 
     log.info("Project {} validation status updated to {} by superuser", projectId, isValid);
 
@@ -467,8 +475,14 @@ public class ProjectService {
 
     project.setClientConfirmedAt(java.time.LocalDateTime.now());
     if (project.getArchitectConfirmedAt() != null) {
-      project.setStatus(ProjectStatus.IN_PROGRESS);
-      project = projectRepository.save(project);
+      project =
+          statusTransitionService.transitionProject(
+              project,
+              ProjectStatus.IN_PROGRESS,
+              statusTransitionService.actorRef(SecurityUtils.getCurrentUserId()),
+              ActorType.CLIENT,
+              "NEGOTIATION_CONFIRMED",
+              null);
       initializeProjectPhasesFromBid(project);
     } else {
       project = projectRepository.save(project);
@@ -502,8 +516,14 @@ public class ProjectService {
 
     project.setArchitectConfirmedAt(java.time.LocalDateTime.now());
     if (project.getClientConfirmedAt() != null) {
-      project.setStatus(ProjectStatus.IN_PROGRESS);
-      project = projectRepository.save(project);
+      project =
+          statusTransitionService.transitionProject(
+              project,
+              ProjectStatus.IN_PROGRESS,
+              statusTransitionService.actorRef(SecurityUtils.getCurrentUserId()),
+              ActorType.ARCHITECT,
+              "NEGOTIATION_CONFIRMED",
+              null);
       initializeProjectPhasesFromBid(project);
     } else {
       project = projectRepository.save(project);
@@ -599,8 +619,14 @@ public class ProjectService {
               conversationService.archiveConversation(conversation.getId());
             });
 
-    project.setStatus(ProjectStatus.OPEN);
-    project = projectRepository.save(project);
+    project =
+        statusTransitionService.transitionProject(
+            project,
+            ProjectStatus.OPEN,
+            statusTransitionService.actorRef(SecurityUtils.getCurrentUserId()),
+            ActorType.CLIENT,
+            "NEGOTIATION_REJECTED",
+            null);
 
     return mapToProjectResponse(project);
   }
@@ -815,8 +841,8 @@ public class ProjectService {
       return;
     }
 
-    project.setStatus(ProjectStatus.BIDDING_CLOSED);
-    projectRepository.save(project);
+    statusTransitionService.transitionProject(
+        project, ProjectStatus.BIDDING_CLOSED, null, ActorType.SYSTEM, "BIDDING_CLOSED", null);
 
     List<Bid> pendingBids = bidRepository.findByProjectIdAndStatus(projectId, BidStatus.PENDING);
     for (Bid bid : pendingBids) {

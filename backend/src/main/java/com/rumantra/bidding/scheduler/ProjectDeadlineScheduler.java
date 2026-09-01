@@ -14,8 +14,10 @@ import com.rumantra.client.domain.Project;
 import com.rumantra.client.domain.ProjectStatus;
 import com.rumantra.client.repository.ProjectRepository;
 import com.rumantra.client.service.ProjectService;
+import com.rumantra.ledger.service.StatusTransitionService;
 import com.rumantra.notification.domain.NotificationType;
 import com.rumantra.notification.service.DashboardNotificationService;
+import com.rumantra.shared.domain.ActorType;
 import com.rumantra.user.service.EmailService;
 
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ProjectDeadlineScheduler {
 
   private final ProjectRepository projectRepository;
+  private final StatusTransitionService statusTransitionService;
   private final BidRepository bidRepository;
   private final ProjectService projectService;
   private final DashboardNotificationService notificationService;
@@ -214,8 +217,13 @@ public class ProjectDeadlineScheduler {
     for (Bid bid : expiredBids) {
       try {
         Project project = bid.getProject();
-        project.setStatus(ProjectStatus.NEGOTIATION_EXPIRED);
-        projectRepository.save(project);
+        statusTransitionService.transitionProject(
+            project,
+            ProjectStatus.NEGOTIATION_EXPIRED,
+            null,
+            ActorType.SYSTEM,
+            "NEGOTIATION_EXPIRED",
+            null);
 
         Long clientUserId = project.getClient().getUser().getId();
         String clientEmail = project.getClient().getUser().getEmail();

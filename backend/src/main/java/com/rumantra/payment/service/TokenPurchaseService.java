@@ -25,9 +25,11 @@ import com.rumantra.integration.xendit.dto.XenditInvoiceResponse;
 import com.rumantra.integration.xendit.dto.XenditInvoiceWebhook;
 import com.rumantra.integration.xendit.dto.XenditPaymentResponse;
 import com.rumantra.integration.xendit.dto.XenditPaymentWebhook;
+import com.rumantra.ledger.service.StatusTransitionService;
 import com.rumantra.payment.domain.PurchaseStatus;
 import com.rumantra.payment.domain.TokenPurchase;
 import com.rumantra.payment.repository.TokenPurchaseRepository;
+import com.rumantra.shared.domain.ActorType;
 import com.rumantra.shared.exception.BusinessException;
 import com.rumantra.shared.exception.ExceptionConstants;
 import com.rumantra.subscription.domain.SubscriptionTier;
@@ -40,6 +42,7 @@ import lombok.extern.slf4j.Slf4j;
 public class TokenPurchaseService {
 
   @Autowired private TokenPurchaseRepository tokenPurchaseRepository;
+  @Autowired private StatusTransitionService statusTransitionService;
 
   @Autowired private BidQuotaService bidQuotaService;
 
@@ -150,7 +153,6 @@ public class TokenPurchaseService {
       return;
     }
 
-    purchase.setStatus(PurchaseStatus.COMPLETED);
     purchase.setXenditPaymentRequestId(webhook.getData().getId());
     purchase.setCompletedAt(LocalDateTime.now());
 
@@ -159,7 +161,8 @@ public class TokenPurchaseService {
       purchase.setPaymentChannel(extractPaymentChannel(webhook.getData().getPaymentMethod()));
     }
 
-    tokenPurchaseRepository.save(purchase);
+    statusTransitionService.transitionTokenPurchase(
+        purchase, PurchaseStatus.COMPLETED, null, ActorType.XENDIT, "PAYMENT_RECEIVED", null);
 
     bidQuotaService.allocateTokens(purchase.getArchitect().getId(), purchase.getQuantity());
 
@@ -180,9 +183,9 @@ public class TokenPurchaseService {
             .findByXenditReferenceId(referenceId)
             .orElseThrow(() -> new RuntimeException("Purchase not found: " + referenceId));
 
-    purchase.setStatus(PurchaseStatus.FAILED);
     purchase.setFailureReason(webhook.getData().getStatus());
-    tokenPurchaseRepository.save(purchase);
+    statusTransitionService.transitionTokenPurchase(
+        purchase, PurchaseStatus.FAILED, null, ActorType.XENDIT, "PAYMENT_FAILED", null);
 
     log.warn("Payment failed for purchase {}", purchase.getId());
   }
@@ -195,8 +198,8 @@ public class TokenPurchaseService {
             .findByXenditReferenceId(referenceId)
             .orElseThrow(() -> new RuntimeException("Purchase not found: " + referenceId));
 
-    purchase.setStatus(PurchaseStatus.EXPIRED);
-    tokenPurchaseRepository.save(purchase);
+    statusTransitionService.transitionTokenPurchase(
+        purchase, PurchaseStatus.EXPIRED, null, ActorType.XENDIT, "PAYMENT_EXPIRED", null);
 
     log.info("Payment expired for purchase {}", purchase.getId());
   }
@@ -214,7 +217,6 @@ public class TokenPurchaseService {
       return;
     }
 
-    purchase.setStatus(PurchaseStatus.COMPLETED);
     purchase.setXenditPaymentRequestId(webhook.getId());
 
     LocalDateTime completedAt =
@@ -224,7 +226,8 @@ public class TokenPurchaseService {
     purchase.setPaymentMethod(webhook.getPaymentMethod());
     purchase.setPaymentChannel(webhook.getPaymentChannel());
 
-    tokenPurchaseRepository.save(purchase);
+    statusTransitionService.transitionTokenPurchase(
+        purchase, PurchaseStatus.COMPLETED, null, ActorType.XENDIT, "PAYMENT_RECEIVED", null);
 
     bidQuotaService.allocateTokens(purchase.getArchitect().getId(), purchase.getQuantity());
     bidUsageLogService.logTokenPurchase(
@@ -244,8 +247,8 @@ public class TokenPurchaseService {
             .findByXenditReferenceId(externalId)
             .orElseThrow(() -> new RuntimeException("Purchase not found: " + externalId));
 
-    purchase.setStatus(PurchaseStatus.EXPIRED);
-    tokenPurchaseRepository.save(purchase);
+    statusTransitionService.transitionTokenPurchase(
+        purchase, PurchaseStatus.EXPIRED, null, ActorType.XENDIT, "PAYMENT_EXPIRED", null);
 
     log.info("Invoice expired for purchase {}", purchase.getId());
   }

@@ -18,6 +18,9 @@ import com.rumantra.integration.xendit.dto.XenditCreatePlanRequest;
 import com.rumantra.integration.xendit.dto.XenditCreatePlanResponse;
 import com.rumantra.integration.xendit.dto.XenditSchedule;
 import com.rumantra.integration.xendit.dto.XenditWebhookEvent;
+import com.rumantra.ledger.service.StatusTransitionService;
+import com.rumantra.security.SecurityUtils;
+import com.rumantra.shared.domain.ActorType;
 import com.rumantra.shared.exception.BusinessException;
 import com.rumantra.shared.exception.ExceptionConstants;
 import com.rumantra.subscription.domain.Subscription;
@@ -32,6 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SubscriptionService {
 
   @Autowired private SubscriptionRepository subscriptionRepository;
+  @Autowired private StatusTransitionService statusTransitionService;
 
   @Autowired private BidQuotaService bidQuotaService;
 
@@ -154,7 +158,13 @@ public class SubscriptionService {
                 subscriptionRepository.save(oldSub);
               });
 
-      subscription.setStatus(SubscriptionStatus.ACTIVE);
+      statusTransitionService.transitionSubscription(
+          subscription,
+          SubscriptionStatus.ACTIVE,
+          null,
+          ActorType.XENDIT,
+          "SUBSCRIPTION_ACTIVATED",
+          null);
       subscription.setIsActive(true);
       subscription.setStartDate(LocalDate.now());
       subscription.setEndDate(LocalDate.now().plusYears(1));
@@ -185,8 +195,13 @@ public class SubscriptionService {
             .findByXenditReferenceId(event.getReferenceId())
             .orElseThrow(() -> new RuntimeException("Subscription not found"));
 
-    subscription.setStatus(SubscriptionStatus.EXPIRED);
-    subscriptionRepository.save(subscription);
+    statusTransitionService.transitionSubscription(
+        subscription,
+        SubscriptionStatus.EXPIRED,
+        null,
+        ActorType.XENDIT,
+        "SUBSCRIPTION_PAYMENT_FAILED",
+        null);
 
     log.warn("Payment failed for subscription {}", subscription.getId());
   }
@@ -198,9 +213,14 @@ public class SubscriptionService {
             .findByXenditReferenceId(event.getReferenceId())
             .orElseThrow(() -> new RuntimeException("Subscription not found"));
 
-    subscription.setStatus(SubscriptionStatus.CANCELLED);
     subscription.setIsActive(false);
-    subscriptionRepository.save(subscription);
+    statusTransitionService.transitionSubscription(
+        subscription,
+        SubscriptionStatus.CANCELLED,
+        null,
+        ActorType.XENDIT,
+        "SUBSCRIPTION_CANCELLED",
+        null);
 
     initializeFreeTier(subscription.getArchitect());
 
@@ -217,8 +237,13 @@ public class SubscriptionService {
       xenditService.stopRecurringPlan(subscription.getXenditPlanId());
     }
 
-    subscription.setStatus(SubscriptionStatus.CANCELLED);
-    subscriptionRepository.save(subscription);
+    statusTransitionService.transitionSubscription(
+        subscription,
+        SubscriptionStatus.CANCELLED,
+        statusTransitionService.actorRef(SecurityUtils.getCurrentUserId()),
+        ActorType.ARCHITECT,
+        "SUBSCRIPTION_CANCELLED",
+        null);
   }
 
   public Subscription getActiveSubscription(Long architectId) {

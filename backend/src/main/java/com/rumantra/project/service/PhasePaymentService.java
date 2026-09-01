@@ -31,6 +31,7 @@ import com.rumantra.integration.xendit.dto.XenditInvoiceWebhook;
 import com.rumantra.integration.xendit.dto.XenditPayoutCallback;
 import com.rumantra.integration.xendit.dto.XenditPayoutRequest;
 import com.rumantra.integration.xendit.dto.XenditPayoutResponse;
+import com.rumantra.ledger.service.StatusTransitionService;
 import com.rumantra.payment.domain.PhasePayment;
 import com.rumantra.payment.domain.PhasePaymentStatus;
 import com.rumantra.payment.repository.PhasePaymentRepository;
@@ -53,6 +54,7 @@ import com.rumantra.project.repository.PhaseDeliverableRepository;
 import com.rumantra.project.repository.PhaseDisbursementRepository;
 import com.rumantra.project.repository.PhaseProcessLogRepository;
 import com.rumantra.project.repository.ProjectPhaseRepository;
+import com.rumantra.shared.domain.ActorType;
 import com.rumantra.shared.exception.BusinessException;
 import com.rumantra.shared.exception.ExceptionConstants;
 import com.rumantra.user.domain.User;
@@ -65,6 +67,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PhasePaymentService {
 
   @Autowired private ProjectPhaseRepository projectPhaseRepository;
+  @Autowired private StatusTransitionService statusTransitionService;
   @Autowired private PhaseDisbursementRepository phaseDisbursementRepository;
   @Autowired private PhaseDeliverableRepository phaseDeliverableRepository;
   @Autowired private PhaseProcessLogRepository phaseProcessLogRepository;
@@ -194,8 +197,13 @@ public class PhasePaymentService {
                   existing.setXenditReferenceId(externalId);
                   existing.setPaymentLink(xenditResp.getInvoiceUrl());
                   existing.setExpiresAt(expiresAt);
-                  existing.setStatus(PhasePaymentStatus.PENDING);
-                  return phasePaymentRepository.save(existing);
+                  return statusTransitionService.transitionPhasePayment(
+                      existing,
+                      PhasePaymentStatus.PENDING,
+                      statusTransitionService.actorRef(clientUserId),
+                      ActorType.CLIENT,
+                      "INVOICE_REISSUED",
+                      null);
                 })
             .orElseGet(
                 () -> {
@@ -254,12 +262,12 @@ public class PhasePaymentService {
       return;
     }
 
-    payment.setStatus(PhasePaymentStatus.COMPLETED);
     payment.setXenditInvoiceId(webhook.getId());
     payment.setPaymentMethod(webhook.getPaymentMethod());
     payment.setPaymentChannel(webhook.getPaymentChannel());
     payment.setCompletedAt(LocalDateTime.now());
-    phasePaymentRepository.save(payment);
+    statusTransitionService.transitionPhasePayment(
+        payment, PhasePaymentStatus.COMPLETED, null, ActorType.XENDIT, "PAYMENT_RECEIVED", null);
 
     ProjectPhase phase = payment.getProjectPhase();
     PhaseStatus prev = phase.getStatus();
@@ -298,8 +306,8 @@ public class PhasePaymentService {
       return;
     }
 
-    payment.setStatus(PhasePaymentStatus.EXPIRED);
-    phasePaymentRepository.save(payment);
+    statusTransitionService.transitionPhasePayment(
+        payment, PhasePaymentStatus.EXPIRED, null, ActorType.XENDIT, "INVOICE_EXPIRED", null);
 
     ProjectPhase phase = payment.getProjectPhase();
     PhaseStatus prev = phase.getStatus();
@@ -550,15 +558,27 @@ public class PhasePaymentService {
   @Transactional
   public DisbursementResponse initiateDisbursement(
       Long phaseId, Long architectUserId, DisbursementRequest req) {
+    // Lock the phase for this transaction: initiating a payout deliberately leaves the phase
+    // APPROVED until the webhook lands, so the status guard below stays open in the meantime and
+    // cannot by itself stop a second request creating a second Xendit payout.
     ProjectPhase phase =
         projectPhaseRepository
-            .findById(phaseId)
+            .findWithLockById(phaseId)
             .orElseThrow(() -> new BusinessException(ExceptionConstants.PROJECT_PHASE_NOT_FOUND));
 
     verifyArchitectOwnsProject(architectUserId, phase.getProject().getId());
 
     if (phase.getStatus() != PhaseStatus.APPROVED) {
       throw new BusinessException(ExceptionConstants.PHASE_WRONG_STATUS);
+    }
+
+    // A payout that already exists and has not failed is still live; only FAILED/REVERSED may be
+    // retried. The partial unique index on rmtr_project_phase_disbursement backs this up.
+    if (!phaseDisbursementRepository
+        .findByPhaseIdAndStatusNotIn(
+            phaseId, List.of(DisbursementStatus.FAILED, DisbursementStatus.REVERSED))
+        .isEmpty()) {
+      throw new BusinessException(ExceptionConstants.PAYOUT_ALREADY_REQUESTED);
     }
 
     Architect architect =
@@ -603,10 +623,18 @@ public class PhasePaymentService {
             .accountNumber(req.getAccountNumber())
             .accountHolderName(req.getAccountHolderName())
             .amount(phase.getAmount())
-            .status(DisbursementStatus.ACCEPTED)
+            .status(DisbursementStatus.PENDING)
             .initiatedAt(LocalDateTime.now())
             .build();
     disbursement = phaseDisbursementRepository.save(disbursement);
+    disbursement =
+        statusTransitionService.transitionDisbursement(
+            disbursement,
+            DisbursementStatus.ACCEPTED,
+            statusTransitionService.actorRef(architectUserId),
+            ActorType.ARCHITECT,
+            "PAYOUT_INITIATED",
+            null);
 
     log(
         phase,
@@ -645,9 +673,14 @@ public class PhasePaymentService {
     ProjectPhase phase = disbursement.getPhase();
 
     if ("payout.succeeded".equals(event)) {
-      disbursement.setStatus(DisbursementStatus.SUCCEEDED);
       disbursement.setCompletedAt(LocalDateTime.now());
-      phaseDisbursementRepository.save(disbursement);
+      statusTransitionService.transitionDisbursement(
+          disbursement,
+          DisbursementStatus.SUCCEEDED,
+          null,
+          ActorType.XENDIT,
+          "PAYOUT_COMPLETED",
+          null);
 
       phase.setStatus(PhaseStatus.DISBURSED);
       projectPhaseRepository.save(phase);
@@ -666,9 +699,16 @@ public class PhasePaymentService {
     } else if ("payout.failed".equals(event) || "payout.reversed".equals(event)) {
       DisbursementStatus newStatus =
           "payout.reversed".equals(event) ? DisbursementStatus.REVERSED : DisbursementStatus.FAILED;
-      disbursement.setStatus(newStatus);
       disbursement.setFailureCode(payload.getFailureCode());
-      phaseDisbursementRepository.save(disbursement);
+      statusTransitionService.transitionDisbursement(
+          disbursement,
+          newStatus,
+          null,
+          ActorType.XENDIT,
+          "PAYOUT_FAILED",
+          payload.getFailureCode() == null
+              ? null
+              : Map.of("failureCode", payload.getFailureCode()));
 
       log(
           phase,
@@ -750,8 +790,13 @@ public class PhasePaymentService {
                       .findById(projectId)
                       .orElseThrow(
                           () -> new BusinessException(ExceptionConstants.PROJECT_NOT_FOUND));
-              project.setStatus(ProjectStatus.COMPLETED);
-              projectRepository.save(project);
+              statusTransitionService.transitionProject(
+                  project,
+                  ProjectStatus.COMPLETED,
+                  null,
+                  ActorType.SYSTEM,
+                  "PROJECT_COMPLETED",
+                  null);
               log.info("Project {} completed — all phases disbursed", projectId);
             });
   }

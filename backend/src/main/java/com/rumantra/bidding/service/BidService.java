@@ -3,6 +3,7 @@ package com.rumantra.bidding.service;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +39,9 @@ import com.rumantra.client.domain.Project;
 import com.rumantra.client.domain.ProjectFile;
 import com.rumantra.client.domain.ProjectStatus;
 import com.rumantra.client.repository.ProjectRepository;
+import com.rumantra.ledger.service.StatusTransitionService;
 import com.rumantra.security.SecurityUtils;
+import com.rumantra.shared.domain.ActorType;
 import com.rumantra.shared.exception.BusinessException;
 import com.rumantra.shared.exception.ExceptionConstants;
 
@@ -48,6 +51,7 @@ public class BidService {
   @Autowired private BidRepository bidRepository;
 
   @Autowired private ProjectRepository projectRepository;
+  @Autowired private StatusTransitionService statusTransitionService;
 
   @Autowired private ArchitectRepository architectRepository;
 
@@ -438,8 +442,13 @@ public class BidService {
     bid.setAcceptedAt(LocalDateTime.now());
     bid = bidRepository.save(bid);
 
-    project.setStatus(ProjectStatus.NEGOTIATION);
-    projectRepository.save(project);
+    statusTransitionService.transitionProject(
+        project,
+        ProjectStatus.NEGOTIATION,
+        statusTransitionService.actorRef(SecurityUtils.getCurrentUserId()),
+        ActorType.CLIENT,
+        "BID_ACCEPTED",
+        Map.of("bidId", bid.getId()));
 
     conversationService.createConversation(
         bid.getId(), project.getId(), bid.getArchitect().getId(), project.getClient().getId());
