@@ -30,6 +30,7 @@ public class PhaseResponse {
   private Integer revisionsUsed;
   private String disbursementStatus;
   private List<DeliverableResponse> deliverables;
+  private List<DeliverableItemResponse> deliverableItems;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 }

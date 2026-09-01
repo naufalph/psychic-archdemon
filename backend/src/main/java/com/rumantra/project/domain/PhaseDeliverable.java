@@ -39,6 +39,10 @@ public class PhaseDeliverable {
   @Column(name = "description", columnDefinition = "TEXT")
   private String description;
 
+  /** Position in the accepted bid phase's deliverables array; null for untagged legacy files. */
+  @Column(name = "deliverable_index")
+  private Integer deliverableIndex;
+
   @Column(name = "revision_round", nullable = false)
   @Builder.Default
   private Integer revisionRound = 0;

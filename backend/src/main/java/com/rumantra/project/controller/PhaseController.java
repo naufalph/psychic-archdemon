@@ -111,11 +111,22 @@ public class PhaseController {
   public ResponseEntity<ApiResponse<DeliverableResponse>> uploadDeliverableFile(
       @PathVariable Long phaseId,
       @RequestParam("file") MultipartFile file,
-      @RequestParam(value = "description", required = false) String description) {
+      @RequestParam(value = "description", required = false) String description,
+      @RequestParam(value = "deliverableIndex", required = false) Integer deliverableIndex) {
     Long userId = SecurityUtils.getCurrentUserId();
     DeliverableResponse deliverable =
-        phasePaymentService.uploadDeliverableFile(phaseId, userId, file, description);
+        phasePaymentService.uploadDeliverableFile(
+            phaseId, userId, file, description, deliverableIndex);
     return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(deliverable));
+  }
+
+  @Operation(summary = "Client approves one deliverable of a phase")
+  @PostMapping("/rmtr/phases/{phaseId}/deliverables/{index}/approve")
+  public ResponseEntity<ApiResponse<PhaseResponse>> approveDeliverableItem(
+      @PathVariable Long phaseId, @PathVariable Integer index) {
+    Long userId = SecurityUtils.getCurrentUserId();
+    return ResponseEntity.ok(
+        ApiResponse.success(phasePaymentService.approveDeliverableItem(phaseId, index, userId)));
   }
 
   @Operation(summary = "Architect submits phase for client review")

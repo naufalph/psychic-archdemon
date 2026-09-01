@@ -21,7 +21,7 @@ const runSql = sql => {
   }
 }
 
-const querySql = sql => {
+export const querySql = sql => {
   try {
     const out = execFileSync(
       'psql',
@@ -93,3 +93,10 @@ export const getPhasePaymentReferenceId = (projectId, phaseNumber) => {
   if (!id) throw new Error(`No rmtr_phase_payment row found for project_id=${projectId} phase_number=${phaseNumber}`)
   return id
 }
+
+/**
+ * Advances a phase past the Xendit payment step. Real payment needs a webhook from Xendit,
+ * which a local test cannot receive, so the paid state is set directly.
+ */
+export const setPhaseStatus = (phaseId, status) =>
+  runSql(`UPDATE rmtr_project_phase SET status = '${status}' WHERE id = ${phaseId};`)

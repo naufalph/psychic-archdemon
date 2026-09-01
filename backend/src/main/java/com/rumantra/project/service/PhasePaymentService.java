@@ -7,6 +7,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import com.rumantra.architect.domain.Architect;
 import com.rumantra.architect.repository.ArchitectRepository;
 import com.rumantra.bidding.domain.Bid;
 import com.rumantra.bidding.domain.BidStatus;
+import com.rumantra.bidding.repository.BidPaymentPhaseRepository;
 import com.rumantra.bidding.repository.BidRepository;
 import com.rumantra.client.domain.Client;
 import com.rumantra.client.domain.Project;
@@ -38,10 +41,12 @@ import com.rumantra.payment.repository.PhasePaymentRepository;
 import com.rumantra.project.domain.DisbursementStatus;
 import com.rumantra.project.domain.PhaseActorType;
 import com.rumantra.project.domain.PhaseDeliverable;
+import com.rumantra.project.domain.PhaseDeliverableApproval;
 import com.rumantra.project.domain.PhaseDisbursement;
 import com.rumantra.project.domain.PhaseProcessLog;
 import com.rumantra.project.domain.PhaseStatus;
 import com.rumantra.project.domain.ProjectPhase;
+import com.rumantra.project.dto.DeliverableItemResponse;
 import com.rumantra.project.dto.DeliverableResponse;
 import com.rumantra.project.dto.DeliverableUploadRequest;
 import com.rumantra.project.dto.DisbursementRequest;
@@ -50,6 +55,7 @@ import com.rumantra.project.dto.PhaseCreateRequest;
 import com.rumantra.project.dto.PhaseLogResponse;
 import com.rumantra.project.dto.PhaseResponse;
 import com.rumantra.project.event.RevisionRequestedEvent;
+import com.rumantra.project.repository.PhaseDeliverableApprovalRepository;
 import com.rumantra.project.repository.PhaseDeliverableRepository;
 import com.rumantra.project.repository.PhaseDisbursementRepository;
 import com.rumantra.project.repository.PhaseProcessLogRepository;
@@ -76,6 +82,8 @@ public class PhasePaymentService {
   @Autowired private ClientRepository clientRepository;
   @Autowired private ArchitectRepository architectRepository;
   @Autowired private BidRepository bidRepository;
+  @Autowired private BidPaymentPhaseRepository bidPaymentPhaseRepository;
+  @Autowired private PhaseDeliverableApprovalRepository phaseDeliverableApprovalRepository;
   @Autowired private UserRepository userRepository;
   @Autowired private XenditService xenditService;
   @Autowired private com.rumantra.shared.storage.FileStorageService fileStorageService;
@@ -349,6 +357,8 @@ public class PhasePaymentService {
             .filePath(req.getFilePath())
             .fileType(req.getFileType())
             .description(req.getDescription())
+            .deliverableIndex(req.getDeliverableIndex())
+            .revisionRound(phase.getRevisionsUsed())
             .build();
     deliverable = phaseDeliverableRepository.save(deliverable);
 
@@ -362,7 +372,8 @@ public class PhasePaymentService {
       Long phaseId,
       Long architectUserId,
       org.springframework.web.multipart.MultipartFile file,
-      String description) {
+      String description,
+      Integer deliverableIndex) {
     ProjectPhase phase =
         projectPhaseRepository
             .findById(phaseId)
@@ -389,6 +400,7 @@ public class PhasePaymentService {
             .filePath(storedPath)
             .fileType(fileType)
             .description(description)
+            .deliverableIndex(deliverableIndex)
             .revisionRound(phase.getRevisionsUsed())
             .build();
     deliverable = phaseDeliverableRepository.save(deliverable);
@@ -451,6 +463,10 @@ public class PhasePaymentService {
     }
 
     phase.setRevisionsUsed(phase.getRevisionsUsed() + 1);
+    // Approvals are a projection of DELIVERABLE_APPROVED events; clearing them makes the
+    // re-delivered work require fresh approval. The events themselves stay in the phase log.
+    phaseDeliverableApprovalRepository.deleteByPhaseId(phaseId);
+
     phase.setStatus(PhaseStatus.IN_PROGRESS);
     projectPhaseRepository.save(phase);
 
@@ -494,6 +510,75 @@ public class PhasePaymentService {
   }
 
   @Transactional
+  /**
+   * The deliverable names for a phase, read from the accepted bid rather than copied onto the phase
+   * — the bid remains the single source of truth for what was contracted.
+   */
+  public List<String> deliverableNamesForPhase(ProjectPhase phase) {
+    List<Bid> accepted =
+        bidRepository.findByProjectIdAndStatus(phase.getProject().getId(), BidStatus.ACCEPTED);
+    if (accepted.isEmpty()) {
+      return List.of();
+    }
+    return bidPaymentPhaseRepository.findByBidIdOrderByPhaseNumber(accepted.get(0).getId()).stream()
+        .filter(bp -> Objects.equals(bp.getPhaseNumber(), phase.getPhaseNumber()))
+        .findFirst()
+        .map(bp -> bp.getDeliverables() == null ? List.<String>of() : bp.getDeliverables())
+        .orElseGet(List::of);
+  }
+
+  /**
+   * Approves a single deliverable. When every deliverable named in the bid has been approved the
+   * phase itself is approved, which is what makes the architect's payout available.
+   */
+  @Transactional
+  public PhaseResponse approveDeliverableItem(Long phaseId, Integer index, Long clientUserId) {
+    ProjectPhase phase =
+        projectPhaseRepository
+            .findById(phaseId)
+            .orElseThrow(() -> new BusinessException(ExceptionConstants.PROJECT_PHASE_NOT_FOUND));
+
+    verifyClientOwnsProject(clientUserId, phase.getProject().getId());
+
+    if (phase.getStatus() != PhaseStatus.DELIVERED) {
+      throw new BusinessException(ExceptionConstants.PHASE_WRONG_STATUS);
+    }
+
+    List<String> names = deliverableNamesForPhase(phase);
+    if (index == null || index < 0 || index >= names.size()) {
+      throw new BusinessException(ExceptionConstants.PROJECT_PHASE_NOT_FOUND);
+    }
+
+    // The unique constraint carries the concurrency guarantee, so a repeat approval is simply a
+    // no-op rather than a second row or an error the client has to handle.
+    if (!phaseDeliverableApprovalRepository.existsByPhaseIdAndDeliverableIndex(phaseId, index)) {
+      phaseDeliverableApprovalRepository.save(
+          PhaseDeliverableApproval.builder()
+              .phase(phase)
+              .deliverableIndex(index)
+              .approvedBy(userRepository.getReferenceById(clientUserId))
+              .build());
+
+      log(
+          phase,
+          clientUserId,
+          PhaseActorType.CLIENT,
+          "DELIVERABLE_APPROVED",
+          phase.getStatus(),
+          phase.getStatus(),
+          Map.of("deliverableIndex", String.valueOf(index), "deliverableName", names.get(index)));
+    }
+
+    if (phaseDeliverableApprovalRepository.countByPhaseId(phaseId) >= names.size()) {
+      return approveDeliverable(phaseId, clientUserId);
+    }
+
+    PhasePayment payment = phasePaymentRepository.findByProjectPhaseId(phaseId).orElse(null);
+    List<PhaseDeliverable> deliverables =
+        phaseDeliverableRepository.findByPhaseIdOrderByUploadedAtAsc(phaseId);
+    return toPhaseResponse(phase, payment, deliverables);
+  }
+
   public PhaseResponse approveDeliverable(Long phaseId, Long clientUserId) {
     ProjectPhase phase =
         projectPhaseRepository
@@ -883,9 +968,72 @@ public class PhasePaymentService {
         .disbursementStatus(disbursement != null ? disbursement.getStatus().name() : null)
         .deliverables(
             deliverables.stream().map(this::toDeliverableResponse).collect(Collectors.toList()))
+        .deliverableItems(toDeliverableItems(phase, deliverables))
         .createdAt(phase.getCreatedAt())
         .updatedAt(phase.getUpdatedAt())
         .build();
+  }
+
+  /**
+   * Groups a phase's files under the deliverables named in the accepted bid. Files uploaded before
+   * tagging existed carry a null index and are collected under a trailing "Other files" entry so
+   * nothing disappears from history.
+   */
+  private List<DeliverableItemResponse> toDeliverableItems(
+      ProjectPhase phase, List<PhaseDeliverable> files) {
+    List<String> names = deliverableNamesForPhase(phase);
+    Set<Integer> approved =
+        phaseDeliverableApprovalRepository.findByPhaseId(phase.getId()).stream()
+            .map(PhaseDeliverableApproval::getDeliverableIndex)
+            .collect(Collectors.toSet());
+
+    boolean phaseNotOpen =
+        phase.getStatus() == PhaseStatus.PENDING || phase.getStatus() == PhaseStatus.BILLED;
+
+    List<DeliverableItemResponse> items = new ArrayList<>();
+    for (int i = 0; i < names.size(); i++) {
+      final int index = i;
+      List<DeliverableResponse> tagged =
+          files.stream()
+              .filter(f -> Objects.equals(f.getDeliverableIndex(), index))
+              .map(this::toDeliverableResponse)
+              .collect(Collectors.toList());
+
+      String status;
+      if (approved.contains(index)) {
+        status = "APPROVED";
+      } else if (phaseNotOpen) {
+        status = "LOCKED";
+      } else if (tagged.isEmpty()) {
+        status = "MISSING";
+      } else {
+        status = "PENDING";
+      }
+
+      items.add(
+          DeliverableItemResponse.builder()
+              .index(index)
+              .name(names.get(index))
+              .status(status)
+              .files(tagged)
+              .build());
+    }
+
+    List<DeliverableResponse> untagged =
+        files.stream()
+            .filter(f -> f.getDeliverableIndex() == null)
+            .map(this::toDeliverableResponse)
+            .collect(Collectors.toList());
+    if (!untagged.isEmpty()) {
+      items.add(
+          DeliverableItemResponse.builder()
+              .index(null)
+              .name(null)
+              .status("PENDING")
+              .files(untagged)
+              .build());
+    }
+    return items;
   }
 
   private DeliverableResponse toDeliverableResponse(PhaseDeliverable d) {
@@ -894,6 +1042,7 @@ public class PhasePaymentService {
         .filePath(fileStorageService.getPublicUrl(d.getFilePath()))
         .fileType(d.getFileType())
         .description(d.getDescription())
+        .deliverableIndex(d.getDeliverableIndex())
         .revisionRound(d.getRevisionRound())
         .uploadedAt(d.getUploadedAt())
         .build();

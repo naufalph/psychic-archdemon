@@ -17,4 +17,5 @@ public class DeliverableUploadRequest {
   private String fileType;
 
   private String description;
+  private Integer deliverableIndex;
 }
