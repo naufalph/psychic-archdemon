@@ -6,7 +6,7 @@ import { createApprovedOpenProject, submitBid, acceptBid , confirmThroughModal }
 
 // Regression test for a backend bug where PhasePaymentService.createInvoiceForPhase()
 // never set rmtr_phase_payment.phase_id, violating its NOT NULL constraint — every
-// click of ProjectWorkspace.vue's "Buat Invoice" button failed. Unlike
+// click of the workspace's "Buat Invoice" button failed. Unlike
 // full-project-execution.spec.js (which deliberately avoids this button and bills via
 // the separate /payments BidPaymentPhase path), this test exercises the button itself.
 test('client bills a phase via the workspace "Buat Invoice" button', async ({ page }) => {
@@ -49,22 +49,18 @@ test('client bills a phase via the workspace "Buat Invoice" button', async ({ pa
 
   await page.goto(`/client/projects/${projectId}/workspace`)
 
-  // The workspace opens on Summary, which also lists the phases; the accordion with the
-  // billing action lives on the Phases & Deliverables tab.
-  await page.getByRole('button', { name: 'Tahap & Deliverable' }).click()
+  // Invoicing lives on the Contract & Payment tab, which owns every money action; the
+  // phase accordion only links across to it.
+  await page.getByRole('button', { name: 'Kontrak & Pembayaran' }).click()
 
-  const card = page
-    .locator('[id^="phase-"]')
-    .filter({ has: page.getByRole('button', { name: /Fase 1\b/ }) })
-  const toggle = card.getByRole('button', { name: /Fase 1\b/ })
-  for (let attempt = 0; attempt < 3; attempt++) {
-    if (await card.getByRole('button', { name: 'Buat Invoice' }).isVisible().catch(() => false)) break
-    await toggle.click()
-    await page.waitForTimeout(300)
-  }
+  const invoiceBtn = page.getByRole('button', { name: /^Buat Invoice/ }).first()
+  await expect(invoiceBtn).toBeVisible({ timeout: 10000 })
+  // The schedule is the first card on the tab; scrolling to the top keeps the row clear of
+  // the sticky header, which would otherwise intercept the click.
+  await page.evaluate(() => window.scrollTo(0, 0))
+  await invoiceBtn.click()
 
-  await card.getByRole('button', { name: 'Buat Invoice' }).click()
-  await expect(card.getByText('Invoice Terkirim').first()).toBeVisible({ timeout: 10000 })
+  await expect(page.getByText('Invoice Terkirim').first()).toBeVisible({ timeout: 10000 })
 
   expect(dialogMessage).toBeNull()
 })

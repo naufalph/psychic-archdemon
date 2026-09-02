@@ -137,13 +137,13 @@ public class PhaseController {
     return ResponseEntity.ok(ApiResponse.success(phase));
   }
 
-  @Operation(summary = "Client requests a revision on a delivered phase")
+  @Operation(summary = "Client requests a revision on selected deliverables of a phase")
   @PostMapping("/rmtr/phases/{phaseId}/request-revision")
   public ResponseEntity<ApiResponse<PhaseResponse>> requestRevision(
-      @PathVariable Long phaseId, @RequestBody(required = false) RevisionRequest body) {
+      @PathVariable Long phaseId, @RequestBody RevisionRequest body) {
     Long userId = SecurityUtils.getCurrentUserId();
-    String notes = body != null ? body.getNotes() : null;
-    PhaseResponse phase = phasePaymentService.requestRevision(phaseId, userId, notes);
+    PhaseResponse phase =
+        phasePaymentService.requestRevision(phaseId, userId, body != null ? body.getItems() : null);
     return ResponseEntity.ok(ApiResponse.success(phase));
   }
 

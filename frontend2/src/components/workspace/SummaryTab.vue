@@ -36,23 +36,21 @@
       </div>
 
       <div class="mt-4">
-        <div class="flex justify-between text-xs text-gray-500 mb-1">
-          <span>{{ formatAmount(paidAmount) }} {{ t.projectWorkspace?.paidLabel }}</span>
-          <span>{{ Math.round(progressPercent) }}%</span>
-        </div>
-        <div class="h-1.5 rounded-full bg-gray-100 overflow-hidden">
-          <div
-            class="h-full bg-green-500 rounded-full transition-[width] duration-500"
-            :style="{ width: `${animatedPercent}%` }"
-          />
-        </div>
-        <div class="flex justify-between text-xs text-gray-400 mt-1">
+        <div class="flex justify-between text-xs text-gray-500 mb-1.5">
           <span>
             {{ disbursedCount }} {{ t.projectWorkspace?.of }} {{ phases.length }}
             {{ t.projectWorkspace?.phasesDone }}
           </span>
-          <span>{{ formatAmount(remainingAmount) }} {{ t.projectWorkspace?.remaining }}</span>
+          <span>{{ Math.round(progressPercent) }}%</span>
         </div>
+        <PaymentProgress
+          :t="t"
+          :total="totalAmount"
+          :paid="paidAmount"
+          :disbursed="disbursedAmount"
+          :is-client="isClient"
+          :format-amount="formatAmount"
+        />
       </div>
     </button>
 
@@ -66,7 +64,7 @@
           v-for="row in needsAction"
           :key="row.phase.id"
           class="w-full p-3 rounded-lg bg-gray-50 border border-border-gray hover:border-brand-gold hover:bg-white transition-colors flex items-center gap-3 text-left"
-          @click="$emit('go-phase', row.phase.id)"
+          @click="$emit(row.target === 'contract' ? 'go-contract' : 'go-phase', row.phase.id)"
         >
           <span
             class="w-8 h-8 rounded-lg bg-white border border-border-gray shrink-0 flex items-center justify-center text-xs font-bold text-gray-600"
@@ -80,10 +78,7 @@
           <span class="text-xs font-semibold text-brand-brown shrink-0">{{ row.cta }} &rarr;</span>
         </button>
       </div>
-      <div
-        v-else
-        class="border-2 border-dashed border-border-gray rounded-lg py-6 text-center text-sm text-gray-400"
-      >
+      <div v-else class="border-2 border-dashed border-border-gray rounded-lg py-6 text-center text-sm text-gray-400">
         {{ t.projectWorkspace?.nothingWaiting }}
       </div>
     </div>
@@ -126,12 +121,14 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { computed } from 'vue'
 import { MapPin, Tag } from 'lucide-vue-next'
 import { statusStyles } from './workspaceMaps'
+import PaymentProgress from './PaymentProgress.vue'
 
 const props = defineProps({
   t: { type: Object, required: true },
+  isClient: { type: Boolean, default: true },
   project: { type: Object, default: null },
   coverImage: { type: String, default: null },
   phases: { type: Array, default: () => [] },
@@ -139,7 +136,7 @@ const props = defineProps({
   needsAction: { type: Array, default: () => [] },
   totalAmount: { type: Number, default: 0 },
   paidAmount: { type: Number, default: 0 },
-  remainingAmount: { type: Number, default: 0 },
+  disbursedAmount: { type: Number, default: 0 },
   progressPercent: { type: Number, default: 0 },
   disbursedCount: { type: Number, default: 0 },
   statusKey: { type: Function, required: true },
@@ -150,8 +147,4 @@ const props = defineProps({
 defineEmits(['go-contract', 'go-phases', 'go-phase'])
 
 const statusLabels = computed(() => props.t.projectWorkspace?.statusLabels || {})
-
-// Start at zero so the fill animates in on mount rather than appearing already full.
-const animatedPercent = ref(0)
-onMounted(() => requestAnimationFrame(() => (animatedPercent.value = props.progressPercent)))
 </script>

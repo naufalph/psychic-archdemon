@@ -18,4 +18,10 @@ public interface PhaseDeliverableApprovalRepository
   long countByPhaseId(Long phaseId);
 
   void deleteByPhaseId(Long phaseId);
+
+  /**
+   * Only the deliverables actually sent back lose their approval — one that the client already
+   * accepted and did not ask to change stays accepted through the round.
+   */
+  void deleteByPhaseIdAndDeliverableIndexIn(Long phaseId, List<Integer> deliverableIndexes);
 }

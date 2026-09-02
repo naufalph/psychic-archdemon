@@ -74,21 +74,19 @@
           <PhaseActions
             :status-key="statusKey(phase, index)"
             :is-client="isClient"
+            :deliverables="deliverableItems(phase)"
             :revisions-left="revisionsLeft(phase)"
             :busy="actionLoading === phase.id"
             :dispute-open="disputeOpenFor === phase.id"
             :dispute-reason="disputeReason"
             :t="t"
             @approve-phase="$emit('approve-phase', phase)"
-            @request-revision="$emit('request-revision', phase)"
             @open-dispute="$emit('open-dispute', phase)"
             @cancel-dispute="$emit('cancel-dispute')"
             @submit-dispute="$emit('submit-dispute', phase)"
             @update:dispute-reason="$emit('update:disputeReason', $event)"
-            @create-invoice="$emit('create-invoice', phase)"
-            @pay-now="$emit('pay-now', phase)"
             @submit-review="$emit('submit-review', phase)"
-            @request-payout="$emit('request-payout', phase)"
+            @go-contract="$emit('go-contract')"
           />
         </div>
 
@@ -98,11 +96,13 @@
             :phase-status-key="statusKey(phase, index)"
             :is-client="isClient"
             :busy="actionLoading === phase.id"
+            :revisions-left="revisionsLeft(phase)"
             :t="t"
             :format-date-time="formatDateTime"
             @approve="$emit('approve-item', phase, $event)"
             @upload="$emit('upload-to-item', phase, $event)"
             @open-files="$emit('open-files', phase, $event)"
+            @request-revision="$emit('request-revision', phase, $event)"
           />
         </div>
 
@@ -192,10 +192,8 @@ defineEmits([
   'cancel-dispute',
   'submit-dispute',
   'update:disputeReason',
-  'create-invoice',
-  'pay-now',
   'submit-review',
-  'request-payout',
+  'go-contract',
   'approve-item',
   'upload-to-item',
   'open-files'

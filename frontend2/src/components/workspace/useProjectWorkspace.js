@@ -64,13 +64,29 @@ export function useProjectWorkspace(projectId, role) {
 
   const sortedPhases = computed(() => [...phases.value].sort((a, b) => a.phaseNumber - b.phaseNumber))
   const disbursedCount = computed(() => phases.value.filter(p => p.status === 'DISBURSED').length)
-  const totalAmount = computed(() => phases.value.reduce((sum, p) => sum + Number(p.amount || 0), 0))
-  const paidAmount = computed(() =>
-    phases.value
-      .filter(p => ['APPROVED', 'DISBURSED'].includes(p.status))
-      .reduce((sum, p) => sum + Number(p.amount || 0), 0)
+
+  /**
+   * The client's money leaves at BILLED -> IN_PROGRESS, so every status from there on is paid --
+   * approval and disbursement are what happens to it afterwards, not when it was paid. The
+   * contract read model is authoritative because it reads PhasePayment rather than inferring
+   * from phase status; the phase sums are only a fallback for a contract that failed to load.
+   */
+  const PAID_STATUSES = ['IN_PROGRESS', 'DELIVERED', 'DISPUTED', 'APPROVED', 'DISBURSED']
+  const sumPhases = predicate =>
+    phases.value.filter(predicate).reduce((sum, p) => sum + Number(p.amount || 0), 0)
+  const fromContract = (field, fallback) =>
+    contract.value?.[field] != null ? Number(contract.value[field]) : fallback()
+
+  const totalAmount = computed(() =>
+    fromContract('totalValue', () => sumPhases(() => true))
   )
-  const remainingAmount = computed(() => totalAmount.value - paidAmount.value)
+  const paidAmount = computed(() =>
+    fromContract('paidValue', () => sumPhases(p => PAID_STATUSES.includes(p.status)))
+  )
+  const disbursedAmount = computed(() =>
+    fromContract('disbursedValue', () => sumPhases(p => p.status === 'DISBURSED'))
+  )
+  const remainingAmount = computed(() => Math.max(0, totalAmount.value - paidAmount.value))
   const progressPercent = computed(() =>
     totalAmount.value > 0 ? (paidAmount.value / totalAmount.value) * 100 : 0
   )
@@ -109,27 +125,45 @@ export function useProjectWorkspace(projectId, role) {
     return (w.daysLeftCount || '{d} days left').replace('{d}', n)
   }
 
-  /** Rows for the Summary tab's "needs your action" card. Derived, never hand-authored. */
+  const deliverableItems = phase => phase.deliverableItems || []
+  const approvedCount = phase => deliverableItems(phase).filter(d => d.status === 'APPROVED').length
+  /** Uploaded but not yet approved -- the rows the client still has to decide on. */
+  const awaitingReviewCount = phase =>
+    deliverableItems(phase).filter(d => d.status === 'PENDING' && d.files?.length).length
+  const uploadedCount = phase => deliverableItems(phase).filter(d => d.files?.length).length
+
+  /**
+   * Rows for the Summary tab's "needs your action" card. Derived, never hand-authored.
+   * `target` says which tab the row hands off to: invoicing and payouts live on the contract
+   * tab, so a row about money must not drop the reader on the phase accordion.
+   */
   const needsAction = computed(() => {
     const w = t.value.projectWorkspace || {}
+    const fill = (tpl, n) => (tpl || '{n}').replace('{n}', n)
     const rows = []
     sortedPhases.value.forEach((phase, index) => {
       if (isNotStarted(phase, index)) return
-      const push = (title, cta) => rows.push({ phase, title, cta })
+      const push = (title, cta, target = 'phase') => rows.push({ phase, title, cta, target })
       if (isClient) {
         if (phase.status === 'DELIVERED') push(w.workSubmittedTitle, w.approveBtn)
-        else if (phase.status === 'PENDING') push(w.paymentRequiredTitle, w.createInvoice)
-        else if (phase.status === 'BILLED') push(w.invoiceSentTitle, w.payNow)
+        else if (phase.status === 'PENDING')
+          push(w.paymentRequiredTitle, w.createInvoice, 'contract')
+        else if (phase.status === 'BILLED') push(w.invoiceSentTitle, w.payNow, 'contract')
+        // An architect who uploads without submitting still leaves work waiting on the client,
+        // so the deliverable rows are surfaced here rather than only inside the phase.
+        else if (phase.status === 'IN_PROGRESS' && awaitingReviewCount(phase) > 0)
+          push(
+            fill(w.deliverablesAwaitingTitle, awaitingReviewCount(phase)),
+            w.reviewDeliverablesCta
+          )
       } else {
         if (phase.status === 'IN_PROGRESS') push(w.workPhaseActiveTitle, w.uploadBtn)
-        else if (phase.status === 'APPROVED') push(w.workApprovedExclaim, w.requestPayout)
+        else if (phase.status === 'APPROVED')
+          push(w.workApprovedExclaim, w.requestPayout, 'contract')
       }
     })
     return rows
   })
-
-  const deliverableItems = phase => phase.deliverableItems || []
-  const approvedCount = phase => deliverableItems(phase).filter(d => d.status === 'APPROVED').length
 
   /** Files of one deliverable, grouped by revision round for the files modal. */
   const filesByRound = item => {
@@ -328,6 +362,7 @@ export function useProjectWorkspace(projectId, role) {
     disbursedCount,
     totalAmount,
     paidAmount,
+    disbursedAmount,
     remainingAmount,
     progressPercent,
     isNotStarted,
@@ -338,6 +373,8 @@ export function useProjectWorkspace(projectId, role) {
     needsAction,
     deliverableItems,
     approvedCount,
+    awaitingReviewCount,
+    uploadedCount,
     filesByRound,
     formatAmount,
     formatDate,

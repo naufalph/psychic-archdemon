@@ -189,11 +189,21 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
         await loginAsClient(page)
         await page.goto(`/client/projects/${projectId}/workspace`)
         await expandPhase(page, phaseNumber)
-        const revisionModal = page.getByRole('dialog')
-        await clickUntil(page.getByRole('button', { name: 'Minta Revisi' }), () => revisionModal.isVisible())
+        // A revision is now composed from the deliverable rows: mark what needs redoing, write
+        // the comment in the basket below the table, then confirm the round it will consume.
+        const card = phaseCard(page, phaseNumber)
+        await card.getByRole('button', { name: /^Revisi Deliverable:/ }).first().click()
 
-        await revisionModal.getByPlaceholder(/Mohon sesuaikan/).fill('Please adjust the floor plan slightly.')
-        await clickUntil(revisionModal.getByRole('button', { name: 'Minta Revisi' }), async () => !(await revisionModal.isVisible()))
+        // Each marked deliverable carries its own instruction; the round is pooled, not the note.
+        const basketComment = card.getByPlaceholder(/Mohon sesuaikan/).first()
+        await expect(basketComment).toBeVisible()
+        await basketComment.fill('Please adjust the floor plan slightly.')
+
+        const revisionModal = page.getByRole('dialog')
+        await clickUntil(card.getByRole('button', { name: 'Kirim permintaan revisi' }), () =>
+          revisionModal.isVisible()
+        )
+        await clickUntil(revisionModal.getByRole('button', { name: 'Ya, minta revisi' }), async () => !(await revisionModal.isVisible()))
 
         // --- Architect: re-upload and resubmit ---
         await loginAsArchitect(page)

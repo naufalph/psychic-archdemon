@@ -58,6 +58,7 @@
           <SummaryTab
             v-if="tab === 'summary'"
             :t="t"
+            :is-client="false"
             :project="project"
             :cover-image="coverImage"
             :phases="phases"
@@ -65,7 +66,7 @@
             :needs-action="needsAction"
             :total-amount="totalAmount"
             :paid-amount="paidAmount"
-            :remaining-amount="remainingAmount"
+            :disbursed-amount="disbursedAmount"
             :progress-percent="progressPercent"
             :disbursed-count="disbursedCount"
             :status-key="statusKey"
@@ -100,7 +101,7 @@
             @toggle="togglePhase"
             @toggle-log="toggleLog"
             @submit-review="submitForReview"
-            @request-payout="p => (payoutModal = p)"
+            @go-contract="goToContract"
             @upload-to-item="(p, i) => (uploadModal = { phase: p, item: i })"
             @open-files="(p, i) => (filesModal = { phase: p, item: i })"
           />
@@ -108,11 +109,14 @@
           <ContractTab
             v-else
             :t="t"
+            :is-client="false"
+            :busy="actionLoading"
             :contract="contract"
             :architect-initials="architectInitials"
             :format-amount="formatAmount"
             :format-date="formatDate"
             :format-log-action="formatLogAction"
+            @request-payout="row => (payoutModal = phaseFor(row) || null)"
           />
         </div>
 
@@ -209,7 +213,7 @@ const {
   t, tab, chatOpen, phases, sortedPhases, contract, loading, error,
   openPhases, openLogs, phaseLogs, logsLoading, actionLoading, uploadLoading,
   toast, showToast, project, conversationId, architectInitials, coverImage,
-  disbursedCount, totalAmount, paidAmount, remainingAmount, progressPercent,
+  disbursedCount, totalAmount, paidAmount, disbursedAmount, progressPercent,
   statusKey, revisionsLeft, showRevisionBadge, deadlineLabel, needsAction,
   deliverableItems, filesByRound, formatAmount, formatDate, formatDateTime,
   formatLogAction, phaseFallbackTitle, fetchLogs, refreshPhases, refreshContract,
@@ -220,6 +224,9 @@ const uploadModal = ref(null)
 const payoutModal = ref(null)
 const filesModal = ref(null)
 const lightbox = ref(null)
+
+/** Contract rows carry only the phase id; the actions need the phase itself. */
+const phaseFor = row => sortedPhases.value.find(p => p.id === row.phaseId) || null
 
 const isCompleted = computed(() => project.value?.status === 'COMPLETED')
 

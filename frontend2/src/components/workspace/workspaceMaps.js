@@ -58,6 +58,7 @@ export const deliverableStyles = {
   APPROVED: { text: 'text-green-700', dot: 'bg-green-500' },
   PENDING: { text: 'text-purple-700', dot: 'bg-purple-500' },
   MISSING: { text: 'text-red-700', dot: 'bg-red-500' },
+  REVISION_REQUESTED: { text: 'text-amber-700', dot: 'bg-amber-500' },
   LOCKED: { text: 'text-gray-400', dot: 'bg-gray-300' }
 }
 

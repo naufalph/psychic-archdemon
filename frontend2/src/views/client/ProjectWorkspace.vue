@@ -50,6 +50,7 @@
           <SummaryTab
             v-if="tab === 'summary'"
             :t="t"
+            :is-client="true"
             :project="project"
             :cover-image="coverImage"
             :phases="phases"
@@ -57,7 +58,7 @@
             :needs-action="needsAction"
             :total-amount="totalAmount"
             :paid-amount="paidAmount"
-            :remaining-amount="remainingAmount"
+            :disbursed-amount="disbursedAmount"
             :progress-percent="progressPercent"
             :disbursed-count="disbursedCount"
             :status-key="statusKey"
@@ -93,11 +94,10 @@
             :format-log-action="formatLogAction"
             @toggle="togglePhase"
             @toggle-log="toggleLog"
-            @create-invoice="billPhase"
-            @pay-now="payNow"
+            @go-contract="goToContract"
             @approve-phase="p => (approveModal = { phase: p, item: null })"
             @approve-item="(p, i) => (approveModal = { phase: p, item: i })"
-            @request-revision="p => (revisionModal = p)"
+            @request-revision="(p, payload) => (revisionModal = { phase: p, ...payload })"
             @open-dispute="p => (disputeOpenFor = p.id)"
             @cancel-dispute="cancelDispute"
             @submit-dispute="submitDispute"
@@ -108,11 +108,15 @@
           <ContractTab
             v-else
             :t="t"
+            :is-client="true"
+            :busy="actionLoading"
             :contract="contract"
             :architect-initials="architectInitials"
             :format-amount="formatAmount"
             :format-date="formatDate"
             :format-log-action="formatLogAction"
+            @create-invoice="row => phaseFor(row) && billPhase(phaseFor(row))"
+            @pay-now="row => phaseFor(row) && payNow(phaseFor(row))"
           />
         </div>
 
@@ -157,7 +161,10 @@
 
     <RevisionModal
       v-if="revisionModal"
-      :busy="actionLoading === revisionModal.id"
+      :busy="actionLoading === revisionModal.phase.id"
+      :items="revisionModal.items"
+      :revisions-left="revisionsLeft(revisionModal.phase)"
+      :max-revisions="revisionModal.phase.maxRevisions || 0"
       :t="t"
       @close="revisionModal = null"
       @submit="submitRevision"
@@ -234,7 +241,7 @@ const {
   disbursedCount,
   totalAmount,
   paidAmount,
-  remainingAmount,
+  disbursedAmount,
   progressPercent,
   statusKey,
   revisionsLeft,
@@ -262,6 +269,9 @@ const filesModal = ref(null)
 const lightbox = ref(null)
 const disputeOpenFor = ref(null)
 const disputeReason = ref('')
+
+/** Contract rows carry only the phase id; the actions need the phase itself. */
+const phaseFor = row => sortedPhases.value.find(p => p.id === row.phaseId) || null
 
 const isCompleted = computed(() => project.value?.status === 'COMPLETED')
 
@@ -317,9 +327,10 @@ const confirmApprove = async () => {
   )
 }
 
-const submitRevision = async notes => {
-  const phase = revisionModal.value
-  await run(phase.id, () => phaseAPI.requestRevision(phase.id, { notes }), 'revisionError')
+const submitRevision = async () => {
+  const { phase, items } = revisionModal.value
+  const payload = { items: items.map(i => ({ index: i.index, notes: i.notes })) }
+  await run(phase.id, () => phaseAPI.requestRevision(phase.id, payload), 'revisionError')
   revisionModal.value = null
 }
 

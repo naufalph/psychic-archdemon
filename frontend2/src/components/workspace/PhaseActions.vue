@@ -10,24 +10,18 @@
 
     <!-- Client, work delivered: approve / revise / dispute -->
     <div v-if="showDeliveredActions && !disputeOpen" class="mt-3">
-      <div class="flex flex-wrap gap-2">
-        <button
-          class="flex-1 min-w-[140px] px-4 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
-          :disabled="busy"
-          @click="$emit('approve-phase')"
-        >
-          <ThumbsUp class="w-4 h-4" />
-          {{ t.projectWorkspace?.approveBtn }}
-        </button>
-        <button
-          v-if="revisionsLeft > 0"
-          class="flex-1 min-w-[140px] px-4 py-2.5 rounded-lg bg-white border-2 border-amber-300 text-amber-700 hover:bg-amber-50 text-sm font-semibold flex items-center justify-center gap-2"
-          @click="$emit('request-revision')"
-        >
-          <RotateCcw class="w-4 h-4" />
-          {{ t.projectWorkspace?.requestRevisionBtn }}
-        </button>
-      </div>
+      <button
+        class="w-full px-4 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
+        :disabled="busy"
+        @click="$emit('approve-phase')"
+      >
+        <ThumbsUp class="w-4 h-4" />
+        {{ t.projectWorkspace?.approveBtn }}
+      </button>
+      <!-- Revisions are composed per deliverable in the table below, not from a phase-level button. -->
+      <p v-if="revisionsLeft > 0" class="text-xs text-gray-500 mt-2 text-center">
+        {{ t.projectWorkspace?.reviseFromTableHint }}
+      </p>
       <button
         class="w-full mt-2 px-3 py-1.5 rounded-lg border border-red-200 text-red-500 hover:bg-red-50 text-xs flex items-center justify-center gap-1.5"
         @click="$emit('open-dispute')"
@@ -63,26 +57,61 @@
       </div>
     </div>
 
+    <!-- Deliverable readiness: uploading a file is not a submission, so say what is still missing -->
+    <div v-if="showReadiness" class="mt-3">
+      <div class="flex items-center justify-between text-xs mb-1">
+        <span class="font-semibold text-gray-600">
+          {{
+            (t.projectWorkspace?.deliverablesUploadedCount || '{done} of {total} uploaded')
+              .replace('{done}', uploadedCount)
+              .replace('{total}', deliverables.length)
+          }}
+        </span>
+      </div>
+      <div class="h-1.5 rounded-full bg-gray-100 overflow-hidden">
+        <div
+          class="h-full rounded-full transition-[width] duration-500"
+          :class="allUploaded ? 'bg-green-500' : 'bg-brand-gold'"
+          :style="{ width: `${(uploadedCount / deliverables.length) * 100}%` }"
+        />
+      </div>
+      <p class="text-xs text-amber-700 font-semibold mt-2 flex items-center gap-1.5">
+        <AlertTriangle class="w-3.5 h-3.5 shrink-0" />
+        {{ readinessHint }}
+      </p>
+    </div>
+
     <!-- Single-button states -->
     <button
       v-if="panel.button"
-      class="mt-3 px-4 py-2.5 rounded-lg text-sm font-semibold text-white disabled:opacity-50"
+      class="mt-3 px-4 py-2.5 rounded-lg text-sm font-semibold text-white disabled:opacity-50 disabled:cursor-not-allowed"
       :class="panel.button.class"
-      :disabled="busy"
+      :disabled="busy || submitBlocked"
       @click="$emit(panel.button.event)"
     >
       {{ busy ? t.projectWorkspace?.submitting : panel.button.label }}
+    </button>
+
+    <!-- Money states hand off to the contract tab, which owns invoicing and disbursement -->
+    <button
+      v-if="panel.link"
+      class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-brown hover:underline"
+      @click="$emit('go-contract')"
+    >
+      {{ panel.link }}
+      <ArrowRight class="w-3.5 h-3.5" />
     </button>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import { Lock, CheckCircle, ThumbsUp, RotateCcw, AlertTriangle } from 'lucide-vue-next'
+import { Lock, CheckCircle, ThumbsUp, AlertTriangle, ArrowRight } from 'lucide-vue-next'
 
 const props = defineProps({
   statusKey: { type: String, required: true },
   isClient: { type: Boolean, default: true },
+  deliverables: { type: Array, default: () => [] },
   revisionsLeft: { type: Number, default: 0 },
   busy: { type: Boolean, default: false },
   disputeOpen: { type: Boolean, default: false },
@@ -91,7 +120,6 @@ const props = defineProps({
 })
 defineEmits([
   'approve-phase',
-  'request-revision',
   'open-dispute',
   'cancel-dispute',
   'submit-dispute',
@@ -99,10 +127,34 @@ defineEmits([
   'create-invoice',
   'pay-now',
   'submit-review',
-  'request-payout'
+  'request-payout',
+  'go-contract'
 ])
 
 const showDeliveredActions = computed(() => props.isClient && props.statusKey === 'DELIVERED')
+
+const uploadedCount = computed(() => props.deliverables.filter(d => d.files?.length).length)
+const allUploaded = computed(() => props.deliverables.length > 0 && uploadedCount.value === props.deliverables.length)
+const showReadiness = computed(
+  () => !props.isClient && props.statusKey === 'IN_PROGRESS' && props.deliverables.length > 0
+)
+/**
+ * An empty phase has nothing to review, so submitting it is blocked outright. Submitting
+ * part of the work is a judgement call the architect is allowed to make -- it is warned
+ * about, not prevented.
+ */
+const submitBlocked = computed(() => showReadiness.value && uploadedCount.value === 0)
+
+const readinessHint = computed(() => {
+  const w = props.t.projectWorkspace || {}
+  if (uploadedCount.value === 0) return w.uploadAtLeastOne
+  if (!allUploaded.value)
+    return (w.deliverablesMissingCount || '{n} not uploaded').replace(
+      '{n}',
+      props.deliverables.length - uploadedCount.value
+    )
+  return w.notSubmittedYet
+})
 
 /** One panel per (status x role); the handoff's action matrix expressed once. */
 const panel = computed(() => {
@@ -123,9 +175,7 @@ const panel = computed(() => {
       text: 'text-amber-700',
       title: c ? w.paymentRequiredTitle : w.awaitingClientPaymentTitle || w.paymentRequiredTitle,
       desc: c ? w.paymentRequiredDesc : w.awaitingClientPaymentDesc || w.paymentRequiredDesc,
-      button: c
-        ? { label: w.createInvoice, class: 'bg-ink-700 hover:bg-ink-500', event: 'create-invoice' }
-        : null
+      link: c ? w.createInvoiceInContract : null
     },
     BILLED: {
       bg: 'bg-blue-50',
@@ -133,9 +183,7 @@ const panel = computed(() => {
       text: 'text-blue-700',
       title: w.invoiceSentTitle,
       desc: w.invoiceSentDesc,
-      button: c
-        ? { label: w.payNow, class: 'bg-blue-700 hover:bg-blue-900', event: 'pay-now' }
-        : null
+      link: c ? w.payInContract : null
     },
     IN_PROGRESS: {
       bg: 'bg-sky-50',
@@ -143,9 +191,7 @@ const panel = computed(() => {
       text: 'text-sky-700',
       title: c ? w.workInProgressTitle : w.workPhaseActiveTitle,
       desc: c ? w.workInProgressDesc : w.markCompleteDesc || w.workInProgressDesc,
-      button: c
-        ? null
-        : { label: w.submitForReviewBtn, class: 'bg-ink-700 hover:bg-ink-500', event: 'submit-review' }
+      button: c ? null : { label: w.submitForReviewBtn, class: 'bg-ink-700 hover:bg-ink-500', event: 'submit-review' }
     },
     DELIVERED: {
       bg: 'bg-purple-50',
@@ -160,9 +206,7 @@ const panel = computed(() => {
       text: 'text-green-700',
       title: c ? w.workApprovedTitle : w.workApprovedExclaim,
       desc: c ? w.workApprovedDesc : w.workApprovedArchitectDesc || w.workApprovedDesc,
-      button: c
-        ? null
-        : { label: w.requestPayout, class: 'bg-green-600 hover:bg-green-700', event: 'request-payout' }
+      link: c ? null : w.payoutInContract
     },
     DISPUTED: {
       bg: 'bg-red-50',
