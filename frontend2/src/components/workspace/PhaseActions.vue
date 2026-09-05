@@ -66,12 +66,9 @@
       <span class="text-sm font-bold" :class="overdue ? 'text-red-600' : 'text-gray-800'">
         {{ deadlineLabel }}
       </span>
-      <span class="text-xs text-gray-500 truncate">
-        {{
-          dueDate
-            ? (t.projectWorkspace?.dueOnLabel || 'due {date}').replace('{date}', formatDate(dueDate))
-            : t.projectWorkspace?.noDueDate
-        }}
+      <!-- With no date the label already says so; repeating it as a hint reads as a stutter. -->
+      <span v-if="dueDate" class="text-xs text-gray-500 truncate">
+        {{ (t.projectWorkspace?.dueOnLabel || 'due {date}').replace('{date}', formatDate(dueDate)) }}
       </span>
     </div>
 
