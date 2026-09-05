@@ -44,8 +44,8 @@ test('per-deliverable approval flips the phase only on the last one', async ({ p
     })
     expect(up.ok(), await up.text()).toBeTruthy()
   }
-  const review = await page.request.post(`${API_BASE_URL}/rmtr/phases/${phaseId}/submit-for-review`, { headers: archAuth })
-  expect(review.ok(), await review.text()).toBeTruthy()
+  // No submit-for-review call: filling the last named deliverable *is* the submission, so the
+  // phase is already with the client by the time the loop above ends.
 
   const cAuth = { Authorization: `Bearer ${await loginAsClient(page)}` }
   const readPhase = async () => {
@@ -54,6 +54,7 @@ test('per-deliverable approval flips the phase only on the last one', async ({ p
   }
 
   let p = await readPhase()
+  expect(p.status).toBe('DELIVERED')
   expect(p.deliverableItems.every(i => i.status === 'PENDING')).toBe(true)
   // Each file landed under its own deliverable rather than loose on the phase.
   expect(p.deliverableItems.map(i => i.files.length)).toEqual([1, 1])

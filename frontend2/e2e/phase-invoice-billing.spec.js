@@ -1,7 +1,8 @@
 import { test, expect } from '@playwright/test'
-import { TEST_USERS } from './helpers/fixtures.js'
+import { TEST_USERS, API_BASE_URL } from './helpers/fixtures.js'
+import { simulateInvoicePaidWebhook } from './helpers/xendit.js'
 import { loginAsClient, loginAsArchitect } from './helpers/auth.js'
-import { resetArchitectQuota, ensureArchitectIdentityComplete } from './helpers/db.js'
+import { resetArchitectQuota, ensureArchitectIdentityComplete, querySql } from './helpers/db.js'
 import { createApprovedOpenProject, submitBid, acceptBid , confirmThroughModal } from './helpers/scenario.js'
 
 // Regression test for a backend bug where PhasePaymentService.createInvoiceForPhase()
@@ -63,4 +64,31 @@ test('client bills a phase via the workspace "Buat Invoice" button', async ({ pa
   await expect(page.getByText('Invoice Terkirim').first()).toBeVisible({ timeout: 10000 })
 
   expect(dialogMessage).toBeNull()
+
+  // Paying the invoice is what starts the delivery clock: the phase's due date is stamped from
+  // the bid's estimatedDays at that moment, never earlier -- the architect is not on the hook
+  // for a phase the client has not funded.
+  const externalId = querySql(
+    `SELECT xendit_reference_id FROM rmtr_phase_payment WHERE project_id = ${projectId}`
+  )
+  expect(externalId).toMatch(/^proj_phase_/)
+
+  await simulateInvoicePaidWebhook(page.request, API_BASE_URL, externalId, phaseAmount)
+
+  const dueDate = querySql(
+    `SELECT due_date FROM rmtr_project_phase WHERE project_id = ${projectId} AND phase_number = 1`
+  )
+  expect(dueDate).toBe(new Date(Date.now() + 10 * 86400000).toISOString().slice(0, 10))
+
+  // The bid promised 10 days, so the workspace counts down from there instead of reading "Closed".
+  // The phase header truncates hard at the default viewport width, which reads as "hidden";
+  // the countdown is a desktop-width element.
+  await page.setViewportSize({ width: 1440, height: 900 })
+  await page.goto(`/client/projects/${projectId}/workspace`)
+  const phasesTab = page.getByRole('button', { name: 'Tahap & Deliverable' })
+  await phasesTab.waitFor({ state: 'visible', timeout: 15000 })
+  await phasesTab.click()
+  await expect(page.locator('[id^="phase-"]').getByText('10 hari tersisa').first()).toBeVisible({
+    timeout: 10000
+  })
 })

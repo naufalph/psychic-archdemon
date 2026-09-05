@@ -1437,6 +1437,12 @@ export default {
     dueToday: 'Due today!',
     oneDayLeft: '1 day left',
     daysLeftCount: '{d} days left',
+    noDueDate: 'No deadline set yet',
+    dueOnLabel: 'due {date}',
+    autoDeliverDesc:
+      'This phase is sent to the client for review automatically, as soon as every deliverable has been uploaded.',
+    clientCountdownDesc:
+      'The architect has until this deadline to upload every deliverable. It goes to your review automatically once they do.',
     totalProjectValue: 'Total Project Value',
     disbursedLabel: 'disbursed',
     percentCompleteSuffix: 'complete',

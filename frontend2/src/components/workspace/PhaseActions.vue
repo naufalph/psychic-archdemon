@@ -57,6 +57,24 @@
       </div>
     </div>
 
+    <!--
+      The delivery window: it runs from the day the client funded the phase until every
+      deliverable is uploaded, so it belongs next to the upload progress rather than in the header.
+    -->
+    <div v-if="showCountdown" class="mt-3 flex items-baseline gap-2">
+      <Clock class="w-4 h-4 self-center shrink-0" :class="overdue ? 'text-red-600' : 'text-gray-500'" />
+      <span class="text-sm font-bold" :class="overdue ? 'text-red-600' : 'text-gray-800'">
+        {{ deadlineLabel }}
+      </span>
+      <span class="text-xs text-gray-500 truncate">
+        {{
+          dueDate
+            ? (t.projectWorkspace?.dueOnLabel || 'due {date}').replace('{date}', formatDate(dueDate))
+            : t.projectWorkspace?.noDueDate
+        }}
+      </span>
+    </div>
+
     <!-- Deliverable readiness: uploading a file is not a submission, so say what is still missing -->
     <div v-if="showReadiness" class="mt-3">
       <div class="flex items-center justify-between text-xs mb-1">
@@ -106,7 +124,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { Lock, CheckCircle, ThumbsUp, AlertTriangle, ArrowRight } from 'lucide-vue-next'
+import { Lock, CheckCircle, ThumbsUp, AlertTriangle, ArrowRight, Clock } from 'lucide-vue-next'
 
 const props = defineProps({
   statusKey: { type: String, required: true },
@@ -116,6 +134,9 @@ const props = defineProps({
   busy: { type: Boolean, default: false },
   disputeOpen: { type: Boolean, default: false },
   disputeReason: { type: String, default: '' },
+  dueDate: { type: String, default: null },
+  deadlineLabel: { type: String, default: '' },
+  formatDate: { type: Function, required: true },
   t: { type: Object, required: true }
 })
 defineEmits([
@@ -138,11 +159,22 @@ const allUploaded = computed(() => props.deliverables.length > 0 && uploadedCoun
 const showReadiness = computed(
   () => !props.isClient && props.statusKey === 'IN_PROGRESS' && props.deliverables.length > 0
 )
+
+const showCountdown = computed(() => props.statusKey === 'IN_PROGRESS')
+const overdue = computed(() => {
+  if (!props.dueDate) return false
+  const due = new Date(props.dueDate)
+  due.setHours(0, 0, 0, 0)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  return due < today
+})
+
 /**
- * An empty phase has nothing to review, so submitting it is blocked outright. Submitting
- * part of the work is a judgement call the architect is allowed to make -- it is warned
- * about, not prevented.
+ * A phase whose bid named its deliverables delivers itself when the last one is uploaded, so
+ * there is no button to press. Only a phase with no named list still needs a manual submission.
  */
+const hasNamedDeliverables = computed(() => props.deliverables.some(d => d.index !== null))
 const submitBlocked = computed(() => showReadiness.value && uploadedCount.value === 0)
 
 const readinessHint = computed(() => {
@@ -190,8 +222,15 @@ const panel = computed(() => {
       border: 'border-sky-200',
       text: 'text-sky-700',
       title: c ? w.workInProgressTitle : w.workPhaseActiveTitle,
-      desc: c ? w.workInProgressDesc : w.markCompleteDesc || w.workInProgressDesc,
-      button: c ? null : { label: w.submitForReviewBtn, class: 'bg-ink-700 hover:bg-ink-500', event: 'submit-review' }
+      desc: c
+        ? w.clientCountdownDesc || w.workInProgressDesc
+        : hasNamedDeliverables.value
+          ? w.autoDeliverDesc
+          : w.markCompleteDesc || w.workInProgressDesc,
+      button:
+        c || hasNamedDeliverables.value
+          ? null
+          : { label: w.submitForReviewBtn, class: 'bg-ink-700 hover:bg-ink-500', event: 'submit-review' }
     },
     DELIVERED: {
       bg: 'bg-purple-50',

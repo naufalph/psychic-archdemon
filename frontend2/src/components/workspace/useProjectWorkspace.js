@@ -118,7 +118,8 @@ export function useProjectWorkspace(projectId, role) {
   const deadlineLabel = phase => {
     const w = t.value.projectWorkspace || {}
     const n = daysLeft(phase)
-    if (n === null) return w.closedLabel || 'Closed'
+    // No due date means the phase has not been funded yet, not that it is closed.
+    if (n === null) return w.noDueDate || 'No deadline set'
     if (n < 0) return (w.overdueDays || '{d} days overdue').replace('{d}', Math.abs(n))
     if (n === 0) return w.dueToday || 'Due today!'
     if (n === 1) return w.oneDayLeft || '1 day left'

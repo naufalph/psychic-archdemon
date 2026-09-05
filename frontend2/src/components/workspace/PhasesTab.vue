@@ -28,8 +28,11 @@
         <div class="flex-1 min-w-0">
           <p class="text-sm font-semibold text-gray-900 truncate">{{ phaseFallbackTitle(phase) }}</p>
           <p class="text-xs text-gray-500 truncate">
-            {{ formatAmount(phase.amount) }} &middot; {{ t.projectWorkspace?.deadline }}
-            {{ formatDate(phase.dueDate) }} &middot; {{ deadlineLabel(phase) }}
+            {{ formatAmount(phase.amount) }} &middot;
+            <template v-if="phase.dueDate">
+              {{ t.projectWorkspace?.deadline }} {{ formatDate(phase.dueDate) }} &middot;
+            </template>
+            {{ deadlineLabel(phase) }}
           </p>
         </div>
 
@@ -79,6 +82,9 @@
             :busy="actionLoading === phase.id"
             :dispute-open="disputeOpenFor === phase.id"
             :dispute-reason="disputeReason"
+            :due-date="phase.dueDate"
+            :deadline-label="deadlineLabel(phase)"
+            :format-date="formatDate"
             :t="t"
             @approve-phase="$emit('approve-phase', phase)"
             @open-dispute="$emit('open-dispute', phase)"

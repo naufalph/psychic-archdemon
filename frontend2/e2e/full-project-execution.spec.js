@@ -119,18 +119,31 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
     throw new Error(`Click on "${await locator.innerText().catch(() => '?')}" had no visible effect after ${attempts} attempts`)
   }
 
-  const uploadAndSubmitForReview = async page => {
-    // Files are tagged to a named deliverable now, so the upload starts from that row's
-    // button and completes inside the modal it opens.
-    await page.getByRole('button', { name: /^Unggah Deliverable:/ }).first().click()
-    const uploadModal = page.getByRole('dialog')
-    await page.locator('input[type="file"]').setInputFiles(DELIVERABLE_FIXTURE)
-    await clickUntil(uploadModal.getByRole('button', { name: 'Unggah', exact: true }), async () =>
-      page.getByRole('button', { name: 'Kirim untuk Review' }).isVisible()
-    )
-    await clickUntil(page.getByRole('button', { name: 'Kirim untuk Review' }), () =>
-      page.getByText('Sedang Direview').isVisible()
-    )
+  // The deliverable names the scenario helper puts on the bid; each one is a row of its own.
+  const DELIVERABLE_NAMES = ['Site Plan', 'Floor Plan']
+
+  // There is no "submit for review" button any more: completing the deliverable list *is* the
+  // submission, so the phase flips to review on its own once the last row is answered. A row can
+  // lose its upload button mid-loop for exactly that reason, which is not a failure.
+  const uploadUntilDelivered = async (page, phaseNumber) => {
+    const card = phaseCard(page, phaseNumber)
+    for (const name of DELIVERABLE_NAMES) {
+      // Answering the last outstanding row delivers the phase immediately, which closes the
+      // upload path for the rows after it -- after a revision that can be the very first one.
+      if (await card.getByText('Sedang Direview').first().isVisible().catch(() => false)) break
+      const uploadBtn = card
+        .getByRole('button', { name: new RegExp(`Deliverable: ${name}$`) })
+        .first()
+      if (!(await uploadBtn.isVisible().catch(() => false))) continue
+      await uploadBtn.click()
+      const uploadModal = page.getByRole('dialog')
+      await page.locator('input[type="file"]').setInputFiles(DELIVERABLE_FIXTURE)
+      await clickUntil(
+        uploadModal.getByRole('button', { name: 'Unggah', exact: true }),
+        async () => !(await uploadModal.isVisible())
+      )
+    }
+    await expect(card.getByText('Sedang Direview').first()).toBeVisible({ timeout: 15000 })
   }
 
   for (const phaseNumber of [1, 2]) {
@@ -182,7 +195,7 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
       await loginAsArchitect(page)
       await page.goto(`/architect/projects/${projectId}/workspace`)
       await expandPhase(page, phaseNumber)
-      await uploadAndSubmitForReview(page)
+      await uploadUntilDelivered(page, phaseNumber)
 
       if (phaseNumber === 1) {
         // --- Client: request a revision (exercises the "or do revision" branch) ---
@@ -209,7 +222,7 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
         await loginAsArchitect(page)
         await page.goto(`/architect/projects/${projectId}/workspace`)
         await expandPhase(page, phaseNumber)
-        await uploadAndSubmitForReview(page)
+        await uploadUntilDelivered(page, phaseNumber)
       }
 
       // --- Client: approve ---

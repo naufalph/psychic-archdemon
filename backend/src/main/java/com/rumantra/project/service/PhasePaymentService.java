@@ -1,5 +1,6 @@
 package com.rumantra.project.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -9,6 +10,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.rumantra.architect.domain.Architect;
 import com.rumantra.architect.repository.ArchitectRepository;
 import com.rumantra.bidding.domain.Bid;
+import com.rumantra.bidding.domain.BidPaymentPhase;
 import com.rumantra.bidding.domain.BidStatus;
 import com.rumantra.bidding.repository.BidPaymentPhaseRepository;
 import com.rumantra.bidding.repository.BidRepository;
@@ -297,6 +300,12 @@ public class PhasePaymentService {
     ProjectPhase phase = payment.getProjectPhase();
     PhaseStatus prev = phase.getStatus();
     phase.setStatus(PhaseStatus.IN_PROGRESS);
+    // The delivery window opens on payment, not on contract signing: the architect cannot be held
+    // to a deadline for work the client has not funded yet.
+    bidPhaseFor(phase)
+        .map(BidPaymentPhase::getEstimatedDays)
+        .filter(days -> days != null && days > 0)
+        .ifPresent(days -> phase.setDueDate(LocalDate.now().plusDays(days)));
     projectPhaseRepository.save(phase);
 
     log(
@@ -381,6 +390,8 @@ public class PhasePaymentService {
 
     log(phase, architectUserId, PhaseActorType.ARCHITECT, "DELIVERABLE_UPLOADED", null, null, null);
 
+    maybeAutoDeliver(phase, architectUserId);
+
     return toDeliverableResponse(deliverable);
   }
 
@@ -424,6 +435,8 @@ public class PhasePaymentService {
 
     log(phase, architectUserId, PhaseActorType.ARCHITECT, "DELIVERABLE_UPLOADED", null, null, null);
 
+    maybeAutoDeliver(phase, architectUserId);
+
     return toDeliverableResponse(deliverable);
   }
 
@@ -446,6 +459,13 @@ public class PhasePaymentService {
       throw new BusinessException(ExceptionConstants.NO_DELIVERABLES_YET);
     }
 
+    deliverPhase(phase, architectUserId);
+
+    PhasePayment payment = phasePaymentRepository.findByProjectPhaseId(phaseId).orElse(null);
+    return toPhaseResponse(phase, payment, deliverables);
+  }
+
+  private void deliverPhase(ProjectPhase phase, Long architectUserId) {
     phase.setStatus(PhaseStatus.DELIVERED);
     projectPhaseRepository.save(phase);
 
@@ -457,9 +477,32 @@ public class PhasePaymentService {
         PhaseStatus.IN_PROGRESS,
         PhaseStatus.DELIVERED,
         null);
+  }
 
-    PhasePayment payment = phasePaymentRepository.findByProjectPhaseId(phaseId).orElse(null);
-    return toPhaseResponse(phase, payment, deliverables);
+  /**
+   * Delivery is the act of completing the deliverable list, not a separate button: once every
+   * deliverable named in the bid is either approved or answered for the current revision round, the
+   * phase goes to the client for review on its own.
+   *
+   * <p>A phase whose bid named no deliverables has no list to complete, so it keeps the explicit
+   * submit-for-review path instead.
+   */
+  private void maybeAutoDeliver(ProjectPhase phase, Long architectUserId) {
+    if (deliverableNamesForPhase(phase).isEmpty()) {
+      return;
+    }
+    List<PhaseDeliverable> files =
+        phaseDeliverableRepository.findByPhaseIdOrderByUploadedAtAsc(phase.getId());
+    boolean outstanding =
+        toDeliverableItems(phase, files).stream()
+            .filter(item -> item.getIndex() != null)
+            .anyMatch(
+                item ->
+                    "MISSING".equals(item.getStatus())
+                        || "REVISION_REQUESTED".equals(item.getStatus()));
+    if (!outstanding) {
+      deliverPhase(phase, architectUserId);
+    }
   }
 
   /**
@@ -577,16 +620,21 @@ public class PhasePaymentService {
    * — the bid remains the single source of truth for what was contracted.
    */
   public List<String> deliverableNamesForPhase(ProjectPhase phase) {
+    return bidPhaseFor(phase)
+        .map(bp -> bp.getDeliverables() == null ? List.<String>of() : bp.getDeliverables())
+        .orElseGet(List::of);
+  }
+
+  /** The bid phase a project phase was created from, matched on phase number. */
+  private Optional<BidPaymentPhase> bidPhaseFor(ProjectPhase phase) {
     List<Bid> accepted =
         bidRepository.findByProjectIdAndStatus(phase.getProject().getId(), BidStatus.ACCEPTED);
     if (accepted.isEmpty()) {
-      return List.of();
+      return Optional.empty();
     }
     return bidPaymentPhaseRepository.findByBidIdOrderByPhaseNumber(accepted.get(0).getId()).stream()
         .filter(bp -> Objects.equals(bp.getPhaseNumber(), phase.getPhaseNumber()))
-        .findFirst()
-        .map(bp -> bp.getDeliverables() == null ? List.<String>of() : bp.getDeliverables())
-        .orElseGet(List::of);
+        .findFirst();
   }
 
   /**

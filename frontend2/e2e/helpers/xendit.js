@@ -27,9 +27,19 @@ const WEBHOOK_TOKEN = readWebhookTokenFromBackendEnv()
  * a synthetic webhook is enough to simulate a paid invoice in dev — no real
  * Xendit checkout needed.
  */
-export const simulatePhasePaymentWebhook = async (request, apiBaseUrl, projectId, phaseNumber, amount) => {
-  const externalId = getPhasePaymentReferenceId(projectId, phaseNumber)
+export const simulatePhasePaymentWebhook = async (request, apiBaseUrl, projectId, phaseNumber, amount) =>
+  simulateInvoicePaidWebhook(
+    request,
+    apiBaseUrl,
+    getPhasePaymentReferenceId(projectId, phaseNumber),
+    amount
+  )
 
+/**
+ * The same webhook by raw external id, for the project-phase invoice path — its reference is
+ * generated with a timestamp, so it can only be read back from the row itself.
+ */
+export const simulateInvoicePaidWebhook = async (request, apiBaseUrl, externalId, amount) => {
   const response = await request.post(`${apiBaseUrl}/rmtr/xendit/webhook/invoice`, {
     headers: { 'X-CALLBACK-TOKEN': WEBHOOK_TOKEN },
     data: {
@@ -42,7 +52,7 @@ export const simulatePhasePaymentWebhook = async (request, apiBaseUrl, projectId
       payment_channel: 'BCA',
       payment_method: 'BANK_TRANSFER',
       currency: 'IDR',
-      description: `E2E simulated payment for project ${projectId} phase ${phaseNumber}`
+      description: `E2E simulated payment for ${externalId}`
     }
   })
 

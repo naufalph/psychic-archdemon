@@ -1450,6 +1450,12 @@ export default {
     dueToday: 'Tenggat hari ini!',
     oneDayLeft: '1 hari tersisa',
     daysLeftCount: '{d} hari tersisa',
+    noDueDate: 'Tenggat belum ditentukan',
+    dueOnLabel: 'tenggat {date}',
+    autoDeliverDesc:
+      'Fase ini otomatis dikirim ke klien untuk direview begitu semua deliverable selesai diunggah.',
+    clientCountdownDesc:
+      'Arsitek punya waktu sampai tenggat ini untuk mengunggah semua deliverable. Setelah lengkap, fase otomatis masuk ke review Anda.',
     totalProjectValue: 'Total Nilai Proyek',
     disbursedLabel: 'dicairkan',
     percentCompleteSuffix: 'selesai',
