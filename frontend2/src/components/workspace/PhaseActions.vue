@@ -10,7 +10,13 @@
 
     <!-- Client, work delivered: approve / revise / dispute -->
     <div v-if="showDeliveredActions && !disputeOpen" class="mt-3">
+      <!--
+        Approval and revision are both composed per deliverable in the table below. The phase
+        approves itself on the last outstanding row, so a phase-level button would only be a
+        second, blunter way to do the same thing.
+      -->
       <button
+        v-if="!hasNamedDeliverables"
         class="w-full px-4 py-2.5 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
         :disabled="busy"
         @click="$emit('approve-phase')"
@@ -18,8 +24,7 @@
         <ThumbsUp class="w-4 h-4" />
         {{ t.projectWorkspace?.approveBtn }}
       </button>
-      <!-- Revisions are composed per deliverable in the table below, not from a phase-level button. -->
-      <p v-if="revisionsLeft > 0" class="text-xs text-gray-500 mt-2 text-center">
+      <p v-if="revisionsLeft > 0" class="text-xs text-gray-500 text-center" :class="{ 'mt-2': !hasNamedDeliverables }">
         {{ t.projectWorkspace?.reviseFromTableHint }}
       </p>
       <button
@@ -234,7 +239,11 @@ const panel = computed(() => {
       border: 'border-purple-200',
       text: 'text-purple-700',
       title: c ? w.workSubmittedTitle : w.underClientReviewTitle,
-      desc: c ? w.workSubmittedDesc : w.underClientReviewDesc
+      desc: c
+        ? hasNamedDeliverables.value
+          ? w.approveEachDesc || w.workSubmittedDesc
+          : w.workSubmittedDesc
+        : w.underClientReviewDesc
     },
     APPROVED: {
       bg: 'bg-green-50',

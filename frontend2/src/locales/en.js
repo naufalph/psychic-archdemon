@@ -1438,6 +1438,8 @@ export default {
     oneDayLeft: '1 day left',
     daysLeftCount: '{d} days left',
     noDueDate: 'No deadline set yet',
+    approveEachDesc:
+      'Review each deliverable below and approve it. The phase completes on its own once every one is approved.',
     dueOnLabel: 'due {date}',
     autoDeliverDesc:
       'This phase is sent to the client for review automatically, as soon as every deliverable has been uploaded.',

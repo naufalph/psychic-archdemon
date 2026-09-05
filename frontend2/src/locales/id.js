@@ -1451,6 +1451,8 @@ export default {
     oneDayLeft: '1 hari tersisa',
     daysLeftCount: '{d} hari tersisa',
     noDueDate: 'Tenggat belum ditentukan',
+    approveEachDesc:
+      'Tinjau dan setujui tiap deliverable di bawah. Fase otomatis selesai begitu semuanya disetujui.',
     dueOnLabel: 'tenggat {date}',
     autoDeliverDesc:
       'Fase ini otomatis dikirim ke klien untuk direview begitu semua deliverable selesai diunggah.',

@@ -231,14 +231,21 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
       await expandPhase(page, phaseNumber)
       const approveModal = page.getByRole('dialog')
       const card = phaseCard(page, phaseNumber)
-      await clickUntil(card.getByRole('button', { name: 'Setujui', exact: true }), () =>
-        approveModal.isVisible()
-      )
+
+      // Approval is per deliverable now, and the phase approves itself on the last row -- there
+      // is no phase-level button to press, just as there is no submit-for-review one.
+      for (const name of DELIVERABLE_NAMES) {
+        const approveBtn = card.getByRole('button', { name: `Setujui Deliverable: ${name}` })
+        if (!(await approveBtn.isVisible().catch(() => false))) continue
+        await clickUntil(approveBtn, () => approveModal.isVisible())
+        await clickUntil(
+          approveModal.getByRole('button', { name: 'Ya, Setujui Sekarang' }),
+          async () => !(await approveModal.isVisible())
+        )
+      }
 
       // Every approved phase shows this banner, so scope the check to this phase's card.
-      await clickUntil(approveModal.getByRole('button', { name: 'Ya, Setujui Sekarang' }), () =>
-        card.getByText('Pekerjaan Disetujui').first().isVisible()
-      )
+      await expect(card.getByText('Pekerjaan Disetujui').first()).toBeVisible({ timeout: 15000 })
     })
   }
 
