@@ -34,25 +34,47 @@
           </div>
         </div>
       </div>
-
-      <div class="mt-4">
-        <div class="flex justify-between text-xs text-gray-500 mb-1.5">
-          <span>
-            {{ disbursedCount }} {{ t.projectWorkspace?.of }} {{ phases.length }}
-            {{ t.projectWorkspace?.phasesDone }}
-          </span>
-          <span>{{ Math.round(progressPercent) }}%</span>
-        </div>
-        <PaymentProgress
-          :t="t"
-          :total="totalAmount"
-          :paid="paidAmount"
-          :disbursed="disbursedAmount"
-          :is-client="isClient"
-          :format-amount="formatAmount"
-        />
-      </div>
     </button>
+
+    <PhaseProgressChart
+      :t="t"
+      :is-client="isClient"
+      :sorted-phases="sortedPhases"
+      :total-amount="totalAmount"
+      :progress-percent="progressPercent"
+      :disbursed-count="disbursedCount"
+      :status-key="statusKey"
+      :format-amount="formatAmount"
+      :format-date="formatDate"
+    />
+
+    <!-- The phase actually in play; the deliverable table for it lives on the phases tab -->
+    <CurrentPhaseCard
+      v-if="focusPhase"
+      :t="t"
+      :is-client="isClient"
+      :phase="focusPhase.phase"
+      :title="phaseFallbackTitle(focusPhase.phase)"
+      :description="phaseDescription(focusPhase.phase)"
+      :status-key-value="statusKey(focusPhase.phase, focusPhase.index)"
+      :deliverables="deliverableItems(focusPhase.phase)"
+      :revisions-left="revisionsLeft(focusPhase.phase)"
+      :show-badge="showRevisionBadge(focusPhase.phase)"
+      :deadline-label="deadlineLabel(focusPhase.phase)"
+      :busy="actionLoading === focusPhase.phase.id"
+      :dispute-open="disputeOpenFor === focusPhase.phase.id"
+      :dispute-reason="disputeReason"
+      :format-amount="formatAmount"
+      :format-date="formatDate"
+      @approve-phase="$emit('approve-phase', $event)"
+      @open-dispute="$emit('open-dispute', $event)"
+      @cancel-dispute="$emit('cancel-dispute')"
+      @submit-dispute="$emit('submit-dispute', $event)"
+      @update:dispute-reason="$emit('update:disputeReason', $event)"
+      @submit-review="$emit('submit-review', $event)"
+      @go-contract="$emit('go-contract')"
+      @go-phase="$emit('go-phase', $event)"
+    />
 
     <!-- Needs your action -->
     <div class="bg-white border border-border-gray rounded-xl p-5">
@@ -124,7 +146,8 @@
 import { computed } from 'vue'
 import { MapPin, Tag } from 'lucide-vue-next'
 import { statusStyles } from './workspaceMaps'
-import PaymentProgress from './PaymentProgress.vue'
+import CurrentPhaseCard from './CurrentPhaseCard.vue'
+import PhaseProgressChart from './PhaseProgressChart.vue'
 
 const props = defineProps({
   t: { type: Object, required: true },
@@ -135,16 +158,33 @@ const props = defineProps({
   sortedPhases: { type: Array, default: () => [] },
   needsAction: { type: Array, default: () => [] },
   totalAmount: { type: Number, default: 0 },
-  paidAmount: { type: Number, default: 0 },
-  disbursedAmount: { type: Number, default: 0 },
   progressPercent: { type: Number, default: 0 },
   disbursedCount: { type: Number, default: 0 },
+  focusPhase: { type: Object, default: null },
+  actionLoading: { type: [Number, String], default: null },
+  disputeOpenFor: { type: [Number, String], default: null },
+  disputeReason: { type: String, default: '' },
   statusKey: { type: Function, required: true },
+  revisionsLeft: { type: Function, required: true },
+  showRevisionBadge: { type: Function, required: true },
+  deadlineLabel: { type: Function, required: true },
+  deliverableItems: { type: Function, required: true },
+  phaseDescription: { type: Function, required: true },
   phaseFallbackTitle: { type: Function, required: true },
   formatAmount: { type: Function, required: true },
   formatDate: { type: Function, required: true }
 })
-defineEmits(['go-contract', 'go-phases', 'go-phase'])
+defineEmits([
+  'go-contract',
+  'go-phases',
+  'go-phase',
+  'approve-phase',
+  'open-dispute',
+  'cancel-dispute',
+  'submit-dispute',
+  'update:disputeReason',
+  'submit-review'
+])
 
 const statusLabels = computed(() => props.t.projectWorkspace?.statusLabels || {})
 </script>

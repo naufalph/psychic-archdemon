@@ -1058,6 +1058,79 @@ public class PhasePaymentService {
     }
   }
 
+  private static final List<String> MILESTONE_ACTIONS =
+      List.of("PAYMENT_RECEIVED", "PHASE_SUBMITTED_FOR_REVIEW", "DELIVERABLE_APPROVED");
+
+  private List<PhaseProcessLog> milestoneLogs(ProjectPhase phase) {
+    return phaseProcessLogRepository.findByPhaseIdAndActionInOrderByCreatedAtAsc(
+        phase.getId(), MILESTONE_ACTIONS);
+  }
+
+  /**
+   * When the delivery window opened. The first payment wins: a revision sends the phase back to
+   * work but does not re-fund it, so the project's start date never moves.
+   *
+   * <p>Phases funded before the bid-schedule path started logging have neither a log row nor a
+   * completed payment on this side, so the date is reconstructed from the due date, which both
+   * payment paths stamp as {@code paymentDate + estimatedDays}.
+   */
+  private LocalDateTime startedAt(ProjectPhase phase, PhasePayment payment) {
+    LocalDateTime fromLog =
+        milestoneLogs(phase).stream()
+            .filter(l -> "PAYMENT_RECEIVED".equals(l.getAction()))
+            .map(PhaseProcessLog::getCreatedAt)
+            .findFirst()
+            .orElse(null);
+    if (fromLog != null) {
+      return fromLog;
+    }
+    if (payment != null && payment.getCompletedAt() != null) {
+      return payment.getCompletedAt();
+    }
+    if (phase.getStatus() == PhaseStatus.PENDING
+        || phase.getStatus() == PhaseStatus.BILLED
+        || phase.getDueDate() == null) {
+      return null;
+    }
+    return bidPhaseFor(phase)
+        .map(BidPaymentPhase::getEstimatedDays)
+        .filter(days -> days != null && days > 0)
+        .map(days -> phase.getDueDate().minusDays(days).atStartOfDay())
+        .orElse(null);
+  }
+
+  /**
+   * When the client signed the phase off. Approving a single deliverable logs the same action
+   * without moving the phase, so only the row that carried it into APPROVED is the sign-off.
+   */
+  private LocalDateTime approvedAt(ProjectPhase phase) {
+    return milestoneLogs(phase).stream()
+        .filter(
+            l ->
+                "DELIVERABLE_APPROVED".equals(l.getAction())
+                    && PhaseStatus.APPROVED.name().equals(l.getToStatus()))
+        .map(PhaseProcessLog::getCreatedAt)
+        .reduce((first, second) -> second)
+        .orElse(null);
+  }
+
+  /**
+   * When the architect last handed the phase over. A revision reopens the work, so the previous
+   * hand-over is no longer a finish line — the phase has to reach DELIVERED again to have one.
+   */
+  private LocalDateTime deliveredAt(ProjectPhase phase) {
+    if (phase.getStatus() == PhaseStatus.PENDING
+        || phase.getStatus() == PhaseStatus.BILLED
+        || phase.getStatus() == PhaseStatus.IN_PROGRESS) {
+      return null;
+    }
+    return milestoneLogs(phase).stream()
+        .filter(l -> "PHASE_SUBMITTED_FOR_REVIEW".equals(l.getAction()))
+        .map(PhaseProcessLog::getCreatedAt)
+        .reduce((first, second) -> second)
+        .orElse(null);
+  }
+
   private PhaseResponse toPhaseResponse(
       ProjectPhase phase, PhasePayment payment, List<PhaseDeliverable> deliverables) {
     PhaseDisbursement disbursement =
@@ -1079,6 +1152,9 @@ public class PhasePaymentService {
         .deliverables(
             deliverables.stream().map(this::toDeliverableResponse).collect(Collectors.toList()))
         .deliverableItems(toDeliverableItems(phase, deliverables))
+        .startedAt(startedAt(phase, payment))
+        .deliveredAt(deliveredAt(phase))
+        .approvedAt(approvedAt(phase))
         .createdAt(phase.getCreatedAt())
         .updatedAt(phase.getUpdatedAt())
         .build();

@@ -65,10 +65,15 @@
             :sorted-phases="sortedPhases"
             :needs-action="needsAction"
             :total-amount="totalAmount"
-            :paid-amount="paidAmount"
-            :disbursed-amount="disbursedAmount"
             :progress-percent="progressPercent"
             :disbursed-count="disbursedCount"
+            :focus-phase="focusPhase"
+            :action-loading="actionLoading"
+            :revisions-left="revisionsLeft"
+            :show-revision-badge="showRevisionBadge"
+            :deadline-label="deadlineLabel"
+            :deliverable-items="deliverableItems"
+            :phase-description="phaseDescription"
             :status-key="statusKey"
             :phase-fallback-title="phaseFallbackTitle"
             :format-amount="formatAmount"
@@ -76,6 +81,7 @@
             @go-contract="goToContract"
             @go-phases="tab = 'phases'"
             @go-phase="goToPhase"
+            @submit-review="submitForReview"
           />
 
           <PhasesTab
@@ -213,9 +219,9 @@ const {
   t, tab, chatOpen, phases, sortedPhases, contract, loading, error,
   openPhases, openLogs, phaseLogs, logsLoading, actionLoading, uploadLoading,
   toast, showToast, project, conversationId, architectInitials, coverImage,
-  disbursedCount, totalAmount, paidAmount, disbursedAmount, progressPercent,
+  disbursedCount, totalAmount, progressPercent,
   statusKey, revisionsLeft, showRevisionBadge, deadlineLabel, needsAction,
-  deliverableItems, filesByRound, formatAmount, formatDate, formatDateTime,
+  deliverableItems, phaseDescription, focusPhase, filesByRound, formatAmount, formatDate, formatDateTime,
   formatLogAction, phaseFallbackTitle, fetchLogs, refreshPhases, refreshContract,
   loadAll, togglePhase, goToPhase, goToContract, run
 } = ws

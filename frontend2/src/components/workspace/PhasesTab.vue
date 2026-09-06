@@ -48,13 +48,6 @@
       </button>
 
       <div v-if="openPhases[phase.id]">
-        <div v-if="phaseDescription(phase)" class="px-5 py-4 border-b border-gray-100">
-          <p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-1">
-            {{ t.projectWorkspace?.descriptionLabel }}
-          </p>
-          <p class="text-sm text-gray-600 leading-relaxed">{{ phaseDescription(phase) }}</p>
-        </div>
-
         <div
           v-if="showRevisionBadge(phase)"
           class="px-5 py-3 border-b flex items-center gap-2"
@@ -165,7 +158,7 @@ import { computed } from 'vue'
 import { ChevronUp, ChevronDown, CheckCircle, Lock, RotateCcw } from 'lucide-vue-next'
 import PhaseActions from './PhaseActions.vue'
 import DeliverablesTable from './DeliverablesTable.vue'
-import { statusStyles, logIconClass, deliverableLabel } from './workspaceMaps'
+import { statusStyles, logIconClass } from './workspaceMaps'
 
 const props = defineProps({
   t: { type: Object, required: true },
@@ -206,12 +199,4 @@ defineEmits([
 ])
 
 const statusLabels = computed(() => props.t.projectWorkspace?.statusLabels || {})
-
-// phase.description is a comma-joined snapshot of the same taxonomy codes the deliverable rows
-// carry, frozen at phase creation. Rebuild it from those rows so it reads in the user's language
-// rather than splitting the stored string, which a free-text deliverable name could contain.
-const phaseDescription = phase => {
-  const named = props.deliverableItems(phase).filter(item => item.name)
-  return named.length ? named.map(item => deliverableLabel(item.name, props.t)).join(', ') : phase.description
-}
 </script>

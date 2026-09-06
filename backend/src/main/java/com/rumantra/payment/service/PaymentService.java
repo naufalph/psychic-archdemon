@@ -35,7 +35,10 @@ import com.rumantra.payment.domain.PhasePaymentStatus;
 import com.rumantra.payment.dto.PhasePaymentInitiateResponse;
 import com.rumantra.payment.dto.PhasePaymentResponse;
 import com.rumantra.payment.repository.PhasePaymentRepository;
+import com.rumantra.project.domain.PhaseActorType;
+import com.rumantra.project.domain.PhaseProcessLog;
 import com.rumantra.project.domain.PhaseStatus;
+import com.rumantra.project.repository.PhaseProcessLogRepository;
 import com.rumantra.project.repository.ProjectPhaseRepository;
 import com.rumantra.shared.domain.ActorType;
 import com.rumantra.shared.exception.BusinessException;
@@ -48,6 +51,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PaymentService {
 
   @Autowired private PhasePaymentRepository phasePaymentRepository;
+  @Autowired private PhaseProcessLogRepository phaseProcessLogRepository;
   @Autowired private StatusTransitionService statusTransitionService;
 
   @Autowired private BidPaymentPhaseRepository bidPaymentPhaseRepository;
@@ -274,12 +278,28 @@ public class PaymentService {
             phase -> {
               if (phase.getStatus() == PhaseStatus.PENDING
                   || phase.getStatus() == PhaseStatus.BILLED) {
+                PhaseStatus previous = phase.getStatus();
                 phase.setStatus(PhaseStatus.IN_PROGRESS);
                 Integer estimatedDays = payment.getPhase().getEstimatedDays();
                 if (estimatedDays != null && estimatedDays > 0) {
                   phase.setDueDate(LocalDate.now().plusDays(estimatedDays));
                 }
                 projectPhaseRepository.save(phase);
+
+                // A payment made through the bid schedule funds this project phase just as the
+                // phase's own invoice would; without the link and the log entry the phase's
+                // history has no record of ever being paid for.
+                payment.setProjectPhase(phase);
+                phasePaymentRepository.save(payment);
+                phaseProcessLogRepository.save(
+                    PhaseProcessLog.builder()
+                        .phase(phase)
+                        .actorType(PhaseActorType.XENDIT)
+                        .action("PAYMENT_RECEIVED")
+                        .fromStatus(previous.name())
+                        .toStatus(PhaseStatus.IN_PROGRESS.name())
+                        .build());
+
                 log.info(
                     "ProjectPhase {} advanced to IN_PROGRESS after BidPaymentPhase payment",
                     phase.getId());

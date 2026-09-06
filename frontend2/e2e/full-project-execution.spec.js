@@ -79,7 +79,7 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
   // The workspace opens on the Summary tab, so the phase accordion only exists once the
   // Phases & Deliverables tab is selected.
   const goToPhasesTab = async page => {
-    const tab = page.getByRole('button', { name: 'Tahap & Deliverable' })
+    const tab = page.getByRole('button', { name: 'Tahap & Deliverable', exact: true })
     await tab.waitFor({ state: 'visible', timeout: 15000 })
     await tab.click()
   }
@@ -185,7 +185,12 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
       // --- Simulate Xendit "PAID" webhook directly (no real checkout) ---
       await simulatePhasePaymentWebhook(page.request, API_BASE_URL, projectId, phaseNumber, amount)
 
+      // The summary's key-date rail is fed by a PAYMENT_RECEIVED log row, which this billing
+      // route (the bid payment schedule) did not used to write at all -- so a missing start date
+      // here means that path stopped recording that the phase was ever paid for.
       await page.goto(`/client/projects/${projectId}/workspace`)
+      await expect(page.getByText(`Fase ${phaseNumber} dimulai`)).toBeVisible({ timeout: 10000 })
+
       await expandPhase(page, phaseNumber)
       await expect(phaseCard(page, phaseNumber).getByText('Pekerjaan Berlangsung').first()).toBeVisible({
         timeout: 10000

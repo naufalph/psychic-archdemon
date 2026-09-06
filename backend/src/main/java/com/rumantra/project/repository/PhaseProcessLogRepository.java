@@ -11,4 +11,7 @@ import com.rumantra.project.domain.PhaseProcessLog;
 public interface PhaseProcessLogRepository extends JpaRepository<PhaseProcessLog, Long> {
 
   List<PhaseProcessLog> findByPhaseIdOrderByCreatedAtAsc(Long phaseId);
+
+  List<PhaseProcessLog> findByPhaseIdAndActionInOrderByCreatedAtAsc(
+      Long phaseId, List<String> actions);
 }

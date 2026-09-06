@@ -57,10 +57,17 @@
             :sorted-phases="sortedPhases"
             :needs-action="needsAction"
             :total-amount="totalAmount"
-            :paid-amount="paidAmount"
-            :disbursed-amount="disbursedAmount"
             :progress-percent="progressPercent"
             :disbursed-count="disbursedCount"
+            :focus-phase="focusPhase"
+            :action-loading="actionLoading"
+            :dispute-open-for="disputeOpenFor"
+            :dispute-reason="disputeReason"
+            :revisions-left="revisionsLeft"
+            :show-revision-badge="showRevisionBadge"
+            :deadline-label="deadlineLabel"
+            :deliverable-items="deliverableItems"
+            :phase-description="phaseDescription"
             :status-key="statusKey"
             :phase-fallback-title="phaseFallbackTitle"
             :format-amount="formatAmount"
@@ -68,6 +75,11 @@
             @go-contract="goToContract"
             @go-phases="tab = 'phases'"
             @go-phase="goToPhase"
+            @approve-phase="p => (approveModal = { phase: p, item: null })"
+            @open-dispute="p => (disputeOpenFor = p.id)"
+            @cancel-dispute="cancelDispute"
+            @submit-dispute="submitDispute"
+            @update:dispute-reason="v => (disputeReason = v)"
           />
 
           <PhasesTab
@@ -240,8 +252,6 @@ const {
   coverImage,
   disbursedCount,
   totalAmount,
-  paidAmount,
-  disbursedAmount,
   progressPercent,
   statusKey,
   revisionsLeft,
@@ -249,6 +259,8 @@ const {
   deadlineLabel,
   needsAction,
   deliverableItems,
+  phaseDescription,
+  focusPhase,
   filesByRound,
   formatAmount,
   formatDate,

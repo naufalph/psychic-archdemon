@@ -51,8 +51,8 @@ test('client bills a phase via the workspace "Buat Invoice" button', async ({ pa
   await page.goto(`/client/projects/${projectId}/workspace`)
 
   // Invoicing lives on the Contract & Payment tab, which owns every money action; the
-  // phase accordion only links across to it.
-  await page.getByRole('button', { name: 'Kontrak & Pembayaran' }).click()
+  // phase accordion only links across to it. The summary links across by the same name, hence exact.
+  await page.getByRole('button', { name: 'Kontrak & Pembayaran', exact: true }).click()
 
   const invoiceBtn = page.getByRole('button', { name: /^Buat Invoice/ }).first()
   await expect(invoiceBtn).toBeVisible({ timeout: 10000 })
@@ -78,14 +78,21 @@ test('client bills a phase via the workspace "Buat Invoice" button', async ({ pa
   const dueDate = querySql(
     `SELECT due_date FROM rmtr_project_phase WHERE project_id = ${projectId} AND phase_number = 1`
   )
-  expect(dueDate).toBe(new Date(Date.now() + 10 * 86400000).toISOString().slice(0, 10))
+  // The backend stamps LocalDate.now().plusDays(10) in the server's zone, so the expectation has
+  // to be built in local time too -- toISOString() would shift it a day back after 17:00 Jakarta.
+  const expected = new Date()
+  expected.setDate(expected.getDate() + 10)
+  const pad = n => String(n).padStart(2, '0')
+  expect(dueDate).toBe(
+    `${expected.getFullYear()}-${pad(expected.getMonth() + 1)}-${pad(expected.getDate())}`
+  )
 
   // The bid promised 10 days, so the workspace counts down from there instead of reading "Closed".
   // The phase header truncates hard at the default viewport width, which reads as "hidden";
   // the countdown is a desktop-width element.
   await page.setViewportSize({ width: 1440, height: 900 })
   await page.goto(`/client/projects/${projectId}/workspace`)
-  const phasesTab = page.getByRole('button', { name: 'Tahap & Deliverable' })
+  const phasesTab = page.getByRole('button', { name: 'Tahap & Deliverable', exact: true })
   await phasesTab.waitFor({ state: 'visible', timeout: 15000 })
   await phasesTab.click()
   await expect(page.locator('[id^="phase-"]').getByText('10 hari tersisa').first()).toBeVisible({

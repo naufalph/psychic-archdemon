@@ -3,6 +3,7 @@ import { phaseAPI, projectAPI, bidAPI, chatAPI } from '@/services/api'
 import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
 import { useI18n } from '@/composables/useI18n'
+import { deliverableLabel } from './workspaceMaps'
 
 const SCROLL_OFFSET = 90
 
@@ -127,6 +128,25 @@ export function useProjectWorkspace(projectId, role) {
   }
 
   const deliverableItems = phase => phase.deliverableItems || []
+
+  // phase.description is a comma-joined snapshot of the same taxonomy codes the deliverable rows
+  // carry, frozen at phase creation. Rebuild it from those rows so it reads in the user's language
+  // rather than splitting the stored string, which a free-text deliverable name could contain.
+  const phaseDescription = phase => {
+    const named = deliverableItems(phase).filter(item => item.name)
+    return named.length
+      ? named.map(item => deliverableLabel(item.name, t.value)).join(', ')
+      : phase.description
+  }
+
+  /**
+   * The one phase worth putting on the summary: whatever is being worked on, or -- when nothing
+   * is -- the next one waiting to be funded. Everything before it is already paid out.
+   */
+  const focusPhase = computed(() => {
+    const index = sortedPhases.value.findIndex(p => p.status !== 'DISBURSED')
+    return index === -1 ? null : { phase: sortedPhases.value[index], index }
+  })
   const approvedCount = phase => deliverableItems(phase).filter(d => d.status === 'APPROVED').length
   /** Uploaded but not yet approved -- the rows the client still has to decide on. */
   const awaitingReviewCount = phase =>
@@ -138,6 +158,9 @@ export function useProjectWorkspace(projectId, role) {
    * `target` says which tab the row hands off to: invoicing and payouts live on the contract
    * tab, so a row about money must not drop the reader on the phase accordion.
    */
+  const PAYOUT_IN_FLIGHT = ['PENDING', 'ACCEPTED']
+  const PAYOUT_RETRYABLE = ['FAILED', 'REVERSED']
+
   const needsAction = computed(() => {
     const w = t.value.projectWorkspace || {}
     const fill = (tpl, n) => (tpl || '{n}').replace('{n}', n)
@@ -159,8 +182,13 @@ export function useProjectWorkspace(projectId, role) {
           )
       } else {
         if (phase.status === 'IN_PROGRESS') push(w.workPhaseActiveTitle, w.uploadBtn)
-        else if (phase.status === 'APPROVED')
-          push(w.workApprovedExclaim, w.requestPayout, 'contract')
+        else if (phase.status === 'APPROVED') {
+          // The phase stays APPROVED while Xendit settles, so a payout in flight is not an action.
+          if (PAYOUT_IN_FLIGHT.includes(phase.disbursementStatus)) return
+          if (PAYOUT_RETRYABLE.includes(phase.disbursementStatus))
+            push(w.payoutFailed, w.retryPayout, 'contract')
+          else push(w.workApprovedExclaim, w.requestPayout, 'contract')
+        }
       }
     })
     return rows
@@ -373,6 +401,8 @@ export function useProjectWorkspace(projectId, role) {
     deadlineLabel,
     needsAction,
     deliverableItems,
+    phaseDescription,
+    focusPhase,
     approvedCount,
     awaitingReviewCount,
     uploadedCount,

@@ -31,6 +31,9 @@ public class PhaseResponse {
   private String disbursementStatus;
   private List<DeliverableResponse> deliverables;
   private List<DeliverableItemResponse> deliverableItems;
+  private LocalDateTime startedAt;
+  private LocalDateTime deliveredAt;
+  private LocalDateTime approvedAt;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 }
