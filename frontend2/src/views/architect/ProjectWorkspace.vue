@@ -36,22 +36,14 @@
               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold whitespace-nowrap"
               :class="isCompleted ? 'bg-green-100 text-green-700' : 'bg-blue-50 text-blue-700'"
             >
-              <span
-                class="w-1.5 h-1.5 rounded-full"
-                :class="isCompleted ? 'bg-green-600' : 'bg-blue-500'"
-              />
+              <span class="w-1.5 h-1.5 rounded-full" :class="isCompleted ? 'bg-green-600' : 'bg-blue-500'" />
               {{ isCompleted ? t.projectWorkspace?.completedBadge : t.projectWorkspace?.inProgressBadge }}
             </span>
           </div>
         </div>
       </div>
 
-      <WorkspaceTabs
-        v-model="tab"
-        :chat-open="chatOpen"
-        :t="t"
-        @toggle-chat="chatOpen = !chatOpen"
-      />
+      <WorkspaceTabs v-model="tab" :chat-open="chatOpen" :t="t" @toggle-chat="chatOpen = !chatOpen" />
 
       <div class="max-w-7xl mx-auto p-6 flex justify-center gap-6 items-start">
         <div class="flex-1 max-w-[860px] min-w-0">
@@ -118,11 +110,13 @@
             :is-client="false"
             :busy="actionLoading"
             :contract="contract"
+            :contract-document="contractDocument"
             :architect-initials="architectInitials"
             :format-amount="formatAmount"
             :format-date="formatDate"
             :format-log-action="formatLogAction"
             @request-payout="row => (payoutModal = phaseFor(row) || null)"
+            @view-contract="showContractModal = true"
           />
         </div>
 
@@ -136,11 +130,7 @@
                 {{ t.projectWorkspace?.chatTitle }}
               </p>
             </div>
-            <ChatPanel
-              v-if="conversationId"
-              :conversation-id="conversationId"
-              class="flex-1 min-h-0"
-            />
+            <ChatPanel v-if="conversationId" :conversation-id="conversationId" class="flex-1 min-h-0" />
             <p v-else class="p-4 text-xs text-gray-400">
               {{ t.projectWorkspace?.chatUnavailableHint }}
             </p>
@@ -189,6 +179,13 @@
     />
 
     <WorkspaceToast :message="toast" />
+
+    <ContractAgreementModal
+      :open="showContractModal"
+      :project-id="projectId"
+      read-only
+      @close="showContractModal = false"
+    />
   </div>
 </template>
 
@@ -207,6 +204,7 @@ import UploadModal from '@/components/workspace/UploadModal.vue'
 import PayoutModal from '@/components/workspace/PayoutModal.vue'
 import FilesModal from '@/components/workspace/FilesModal.vue'
 import ImageLightbox from '@/components/workspace/ImageLightbox.vue'
+import ContractAgreementModal from '@/components/contract/ContractAgreementModal.vue'
 import { useProjectWorkspace } from '@/components/workspace/useProjectWorkspace'
 import { isImage } from '@/components/workspace/workspaceMaps'
 
@@ -216,20 +214,59 @@ const projectId = route.params.id || route.params.projectId
 
 const ws = useProjectWorkspace(projectId, 'architect')
 const {
-  t, tab, chatOpen, phases, sortedPhases, contract, loading, error,
-  openPhases, openLogs, phaseLogs, logsLoading, actionLoading, uploadLoading,
-  toast, showToast, project, conversationId, architectInitials, coverImage,
-  disbursedCount, totalAmount, progressPercent,
-  statusKey, revisionsLeft, showRevisionBadge, deadlineLabel, needsAction,
-  deliverableItems, phaseDescription, focusPhase, filesByRound, formatAmount, formatDate, formatDateTime,
-  formatLogAction, phaseFallbackTitle, fetchLogs, refreshPhases, refreshContract,
-  loadAll, togglePhase, goToPhase, goToContract, run
+  t,
+  tab,
+  chatOpen,
+  phases,
+  sortedPhases,
+  contract,
+  contractDocument,
+  loading,
+  error,
+  openPhases,
+  openLogs,
+  phaseLogs,
+  logsLoading,
+  actionLoading,
+  uploadLoading,
+  toast,
+  showToast,
+  project,
+  conversationId,
+  architectInitials,
+  coverImage,
+  disbursedCount,
+  totalAmount,
+  progressPercent,
+  statusKey,
+  revisionsLeft,
+  showRevisionBadge,
+  deadlineLabel,
+  needsAction,
+  deliverableItems,
+  phaseDescription,
+  focusPhase,
+  filesByRound,
+  formatAmount,
+  formatDate,
+  formatDateTime,
+  formatLogAction,
+  phaseFallbackTitle,
+  fetchLogs,
+  refreshPhases,
+  refreshContract,
+  loadAll,
+  togglePhase,
+  goToPhase,
+  goToContract,
+  run
 } = ws
 
 const uploadModal = ref(null)
 const payoutModal = ref(null)
 const filesModal = ref(null)
 const lightbox = ref(null)
+const showContractModal = ref(false)
 
 /** Contract rows carry only the phase id; the actions need the phase itself. */
 const phaseFor = row => sortedPhases.value.find(p => p.id === row.phaseId) || null
@@ -248,8 +285,7 @@ const toggleLog = phase => {
   if (openLogs[phase.id]) fetchLogs(phase.id)
 }
 
-const submitForReview = phase =>
-  run(phase.id, () => phaseAPI.submitForReview(phase.id), 'submitReviewError')
+const submitForReview = phase => run(phase.id, () => phaseAPI.submitForReview(phase.id), 'submitReviewError')
 
 /** Files are tagged to the deliverable they belong to, not left loose on the phase. */
 const doUpload = async ({ file, description }) => {
@@ -281,7 +317,10 @@ const doPayout = async form => {
 
 const openLightbox = file => {
   const images = (filesModal.value?.item?.files || []).filter(f => isImage(f.fileType))
-  const index = Math.max(0, images.findIndex(f => f.id === file.id))
+  const index = Math.max(
+    0,
+    images.findIndex(f => f.id === file.id)
+  )
   lightbox.value = { files: images, index }
 }
 

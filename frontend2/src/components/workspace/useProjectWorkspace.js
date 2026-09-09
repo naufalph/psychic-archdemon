@@ -1,5 +1,5 @@
 import { ref, reactive, computed, nextTick } from 'vue'
-import { phaseAPI, projectAPI, bidAPI, chatAPI } from '@/services/api'
+import { phaseAPI, projectAPI, bidAPI, chatAPI, contractAPI } from '@/services/api'
 import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
 import { useI18n } from '@/composables/useI18n'
@@ -22,6 +22,7 @@ export function useProjectWorkspace(projectId, role) {
   const chatOpen = ref(true)
   const phases = ref([])
   const contract = ref(null)
+  const contractDocument = ref(null)
   const loading = ref(true)
   const error = ref(null)
   const openPhases = reactive({})
@@ -63,7 +64,9 @@ export function useProjectWorkspace(projectId, role) {
     () => project.value?.files?.find(f => f.fileType?.startsWith('image/'))?.filePath || null
   )
 
-  const sortedPhases = computed(() => [...phases.value].sort((a, b) => a.phaseNumber - b.phaseNumber))
+  const sortedPhases = computed(() =>
+    [...phases.value].sort((a, b) => a.phaseNumber - b.phaseNumber)
+  )
   const disbursedCount = computed(() => phases.value.filter(p => p.status === 'DISBURSED').length)
 
   /**
@@ -78,9 +81,7 @@ export function useProjectWorkspace(projectId, role) {
   const fromContract = (field, fallback) =>
     contract.value?.[field] != null ? Number(contract.value[field]) : fallback()
 
-  const totalAmount = computed(() =>
-    fromContract('totalValue', () => sumPhases(() => true))
-  )
+  const totalAmount = computed(() => fromContract('totalValue', () => sumPhases(() => true)))
   const paidAmount = computed(() =>
     fromContract('paidValue', () => sumPhases(p => PAID_STATUSES.includes(p.status)))
   )
@@ -267,10 +268,20 @@ export function useProjectWorkspace(projectId, role) {
 
   const refreshContract = async () => {
     try {
-      const res = await phaseAPI.getContract(projectId)
+      const res = await contractAPI.getContract(projectId)
       contract.value = res.data.data || res.data || null
     } catch {
       contract.value = null
+    }
+  }
+
+  // Absent until an accepted bid exists, so a failure here is a normal state, not an error.
+  const refreshContractDocument = async () => {
+    try {
+      const res = await contractAPI.getDocument(projectId)
+      contractDocument.value = res.data.data || res.data || null
+    } catch {
+      contractDocument.value = null
     }
   }
 
@@ -298,10 +309,11 @@ export function useProjectWorkspace(projectId, role) {
         if (conv) architectConversationId.value = conv.id
         const bids = bidsRes.data.data || bidsRes.data || []
         myBid.value =
-          bids.find(b => String(b.projectId) === String(projectId) && b.status === 'ACCEPTED') || null
+          bids.find(b => String(b.projectId) === String(projectId) && b.status === 'ACCEPTED') ||
+          null
       }
 
-      await refreshContract()
+      await Promise.all([refreshContract(), refreshContractDocument()])
 
       const active = sortedPhases.value.find(p => p.status !== 'DISBURSED')
       if (active) {
@@ -372,6 +384,7 @@ export function useProjectWorkspace(projectId, role) {
     phases,
     sortedPhases,
     contract,
+    contractDocument,
     loading,
     error,
     openPhases,
@@ -415,6 +428,7 @@ export function useProjectWorkspace(projectId, role) {
     fetchLogs,
     refreshPhases,
     refreshContract,
+    refreshContractDocument,
     loadAll,
     togglePhase,
     goToPhase,

@@ -37,8 +37,10 @@ import com.rumantra.ledger.service.StatusTransitionService;
 import com.rumantra.notification.event.ProjectValidatedEvent;
 import com.rumantra.payment.domain.PhasePaymentStatus;
 import com.rumantra.payment.repository.PhasePaymentRepository;
+import com.rumantra.project.domain.ContractParty;
 import com.rumantra.project.domain.ProjectPhase;
 import com.rumantra.project.repository.ProjectPhaseRepository;
+import com.rumantra.project.service.ContractDocumentService;
 import com.rumantra.security.SecurityUtils;
 import com.rumantra.shared.constants.ProjectTaxonomy;
 import com.rumantra.shared.domain.ActorType;
@@ -71,6 +73,7 @@ public class ProjectService {
   private final PortoRepository portoRepository;
   private final PhasePaymentRepository phasePaymentRepository;
   private final StatusTransitionService statusTransitionService;
+  private final ContractDocumentService contractDocumentService;
 
   @PersistenceContext private EntityManager entityManager;
 
@@ -508,6 +511,8 @@ public class ProjectService {
           "Project is not in negotiation phase. Current status: " + project.getStatus());
     }
 
+    contractDocumentService.verifyAccepted(projectId, ContractParty.CLIENT);
+
     project.setClientConfirmedAt(java.time.LocalDateTime.now());
     if (project.getArchitectConfirmedAt() != null) {
       project =
@@ -548,6 +553,8 @@ public class ProjectService {
       throw new org.springframework.security.access.AccessDeniedException(
           "You are not the architect for this project");
     }
+
+    contractDocumentService.verifyAccepted(projectId, ContractParty.ARCHITECT);
 
     project.setArchitectConfirmedAt(java.time.LocalDateTime.now());
     if (project.getClientConfirmedAt() != null) {

@@ -81,15 +81,46 @@
       </div>
     </div>
 
-    <!-- Agreement terms -->
-    <div class="bg-white border border-border-gray rounded-xl p-5">
-      <p class="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3">
-        {{ t.projectWorkspace?.agreementTermsLabel }}
-      </p>
+    <!-- Signed agreement -->
+    <div
+      v-if="contractDocument"
+      id="contract-agreement"
+      class="bg-white border border-border-gray rounded-xl p-5 scroll-mt-24"
+    >
+      <div class="flex items-center justify-between gap-3 mb-4">
+        <div class="min-w-0">
+          <p class="text-xs font-bold uppercase tracking-wider text-gray-400">
+            {{ c.title }}
+          </p>
+          <p class="text-sm text-gray-500 mt-0.5">{{ c.workspaceLede }}</p>
+        </div>
+        <button
+          type="button"
+          class="shrink-0 px-4 py-2 border border-border-gray rounded-lg text-xs font-bold text-gray-700 hover:bg-gray-50 transition flex items-center gap-1.5"
+          @click="$emit('view-contract')"
+        >
+          <FileText :size="14" />
+          {{ c.viewButton }}
+        </button>
+      </div>
+
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div v-for="term in terms" :key="term.label" class="bg-gray-50 rounded-lg px-4 py-3">
-          <p class="text-xs text-gray-400">{{ term.label }}</p>
-          <p class="text-sm font-semibold text-gray-800">{{ term.value }}</p>
+        <div
+          v-for="block in signatureBlocks"
+          :key="block.party"
+          class="rounded-xl border px-4 py-3"
+          :class="block.acceptance ? 'border-green-200 bg-green-50/40' : 'border-gray-100 bg-gray-50'"
+        >
+          <p class="text-[10px] font-bold uppercase tracking-wide text-gray-400">
+            {{ block.label }}
+          </p>
+          <template v-if="block.acceptance">
+            <p class="signature-preview text-lg text-black leading-tight truncate">
+              {{ block.acceptance.signatureName }}
+            </p>
+            <p class="text-[10px] text-gray-400">{{ formatDate(block.acceptance.acceptedAt) }}</p>
+          </template>
+          <p v-else class="text-xs text-gray-400 italic mt-1.5">{{ c.notSigned }}</p>
         </div>
       </div>
 
@@ -161,7 +192,7 @@
 
 <script setup>
 import { computed } from 'vue'
-import { Clock } from 'lucide-vue-next'
+import { Clock, FileText } from 'lucide-vue-next'
 import PaymentProgress from './PaymentProgress.vue'
 
 const props = defineProps({
@@ -169,15 +200,25 @@ const props = defineProps({
   isClient: { type: Boolean, default: true },
   busy: { type: [Number, String], default: null },
   contract: { type: Object, default: null },
+  contractDocument: { type: Object, default: null },
   architectInitials: { type: String, default: '?' },
   formatAmount: { type: Function, required: true },
   formatDate: { type: Function, required: true },
   formatLogAction: { type: Function, required: true }
 })
 
-defineEmits(['create-invoice', 'pay-now', 'request-payout'])
+defineEmits(['create-invoice', 'pay-now', 'request-payout', 'view-contract'])
 
 const gridStyle = 'grid-template-columns: 1.7fr 0.9fr 1fr 0.9fr 1.1fr'
+
+const c = computed(() => props.t.contractAgreement || {})
+
+const acceptanceFor = party => (props.contractDocument?.acceptances || []).find(a => a.party === party) || null
+
+const signatureBlocks = computed(() => [
+  { party: 'CLIENT', label: c.value.clientSignature, acceptance: acceptanceFor('CLIENT') },
+  { party: 'ARCHITECT', label: c.value.architectSignature, acceptance: acceptanceFor('ARCHITECT') }
+])
 
 const schedule = computed(() => props.contract?.paymentSchedule || [])
 const transactions = computed(() => props.contract?.transactions || [])
@@ -187,21 +228,6 @@ const disbursedValue = computed(() => Number(props.contract?.disbursedValue || 0
 const paidValue = computed(() => Number(props.contract?.paidValue || 0))
 const percentPaid = computed(() => (totalValue.value > 0 ? Math.round((paidValue.value / totalValue.value) * 100) : 0))
 const statusLabels = computed(() => props.t.projectWorkspace?.statusLabels || {})
-
-const terms = computed(() => {
-  const w = props.t.projectWorkspace || {}
-  const a = props.contract?.agreementTerms
-  if (!a) return []
-  const fmt = (tpl, n) => (tpl || '{n}').replace('{n}', n)
-  return [
-    { label: w.termScope, value: a.scopeOfWork || '-' },
-    { label: w.termFee, value: w.termFeeValue },
-    { label: w.termRevisions, value: fmt(w.termRevisionsValue, a.revisionsPerPhase) },
-    { label: w.termTimeline, value: fmt(w.termTimelineValue, a.timelineDays) },
-    { label: w.termIp, value: w.termIpValue },
-    { label: w.termDispute, value: w.termDisputeValue }
-  ]
-})
 
 /**
  * Phases are billed in order, so a PENDING row whose predecessors are still open is not
@@ -230,3 +256,9 @@ const actionFor = (row, index) => {
   return null
 }
 </script>
+
+<style scoped>
+.signature-preview {
+  font-family: 'Brush Script MT', 'Segoe Script', 'Snell Roundhand', cursive;
+}
+</style>

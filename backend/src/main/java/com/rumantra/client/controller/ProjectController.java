@@ -526,6 +526,11 @@ public class ProjectController {
               .timestamp(LocalDateTime.now().toString())
               .build());
 
+    } catch (BusinessException e) {
+      // Let the global handler emit the errorCode; the generic catch below flattens it to a
+      // bare 400 the frontend cannot translate.
+      throw e;
+
     } catch (Exception e) {
       log.error("Error confirming negotiation for project {}", projectId, e);
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -562,6 +567,11 @@ public class ProjectController {
                   .message(e.getMessage())
                   .timestamp(LocalDateTime.now().toString())
                   .build());
+
+    } catch (BusinessException e) {
+      // Let the global handler emit the errorCode; the generic catch below flattens it to a
+      // bare 400 the frontend cannot translate.
+      throw e;
 
     } catch (Exception e) {
       log.error("Error confirming negotiation as architect for project {}", projectId, e);

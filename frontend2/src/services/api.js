@@ -415,8 +415,14 @@ export const phaseAPI = {
     api.post(`/rmtr/phases/${phaseId}/request-revision`, data),
   disputeDeliverable: (phaseId, data) => api.post(`/rmtr/phases/${phaseId}/dispute`, data),
   disburse: (phaseId, data) => api.post(`/rmtr/phases/${phaseId}/disburse`, data),
-  getLogs: phaseId => api.get(`/rmtr/phases/${phaseId}/logs`),
-  getContract: projectId => api.get(`/rmtr/projects/${projectId}/contract`)
+  getLogs: phaseId => api.get(`/rmtr/phases/${phaseId}/logs`)
+}
+
+export const contractAPI = {
+  getContract: projectId => api.get(`/rmtr/projects/${projectId}/contract`),
+  getDocument: projectId => api.get(`/rmtr/projects/${projectId}/contract/document`),
+  getAcceptances: projectId => api.get(`/rmtr/projects/${projectId}/contract/acceptances`),
+  accept: (projectId, payload) => api.post(`/rmtr/projects/${projectId}/contract/accept`, payload)
 }
 
 export const legalAPI = {

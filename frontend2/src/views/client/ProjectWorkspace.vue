@@ -123,12 +123,14 @@
             :is-client="true"
             :busy="actionLoading"
             :contract="contract"
+            :contract-document="contractDocument"
             :architect-initials="architectInitials"
             :format-amount="formatAmount"
             :format-date="formatDate"
             :format-log-action="formatLogAction"
             @create-invoice="row => phaseFor(row) && billPhase(phaseFor(row))"
             @pay-now="row => phaseFor(row) && payNow(phaseFor(row))"
+            @view-contract="showContractModal = true"
           />
         </div>
 
@@ -203,6 +205,13 @@
     />
 
     <WorkspaceToast :message="toast" />
+
+    <ContractAgreementModal
+      :open="showContractModal"
+      :project-id="projectId"
+      read-only
+      @close="showContractModal = false"
+    />
   </div>
 </template>
 
@@ -221,6 +230,7 @@ import ApproveModal from '@/components/workspace/ApproveModal.vue'
 import RevisionModal from '@/components/workspace/RevisionModal.vue'
 import FilesModal from '@/components/workspace/FilesModal.vue'
 import ImageLightbox from '@/components/workspace/ImageLightbox.vue'
+import ContractAgreementModal from '@/components/contract/ContractAgreementModal.vue'
 import { useProjectWorkspace } from '@/components/workspace/useProjectWorkspace'
 import { isImage, deliverableLabel } from '@/components/workspace/workspaceMaps'
 
@@ -236,6 +246,7 @@ const {
   phases,
   sortedPhases,
   contract,
+  contractDocument,
   loading,
   error,
   openPhases,
@@ -279,6 +290,7 @@ const approveModal = ref(null)
 const revisionModal = ref(null)
 const filesModal = ref(null)
 const lightbox = ref(null)
+const showContractModal = ref(false)
 const disputeOpenFor = ref(null)
 const disputeReason = ref('')
 

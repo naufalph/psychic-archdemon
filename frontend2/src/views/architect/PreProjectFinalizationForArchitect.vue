@@ -268,8 +268,15 @@
                   {{ t.finalization?.clientConfirmedStatus }}
                 </p>
                 <p v-else class="text-xs text-gray-400 mb-3">{{ t.finalization?.awaitingClientStatus }}</p>
+                <ContractGate
+                  :accepted="myContractAccepted"
+                  :acceptance="contractStatus?.myAcceptance"
+                  :t="t"
+                  :format-date="formatDate"
+                  @open="showContractModal = true"
+                />
                 <button
-                  :disabled="actionLoading"
+                  :disabled="actionLoading || !myContractAccepted"
                   class="w-full px-5 py-3.5 bg-brand-brown text-white rounded-full font-bold hover:bg-black transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   @click="openConfirmModal"
                 >
@@ -346,18 +353,27 @@
         </div>
       </Transition>
     </Teleport>
+
+    <ContractAgreementModal
+      :open="showContractModal"
+      :project-id="route.params.projectId"
+      @close="showContractModal = false"
+      @accepted="onContractAccepted"
+    />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Clock, CheckCircle } from 'lucide-vue-next'
 import { useBidsStore } from '@/stores/bids'
-import { projectAPI, supportAPI } from '@/services/api'
+import { projectAPI, supportAPI, contractAPI } from '@/services/api'
 import { useI18n } from '@/composables/useI18n'
 import ChatPanel from '@/components/chat/ChatPanel.vue'
 import BidImageGallery from '@/components/bid/BidImageGallery.vue'
+import ContractAgreementModal from '@/components/contract/ContractAgreementModal.vue'
+import ContractGate from '@/components/contract/ContractGate.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -374,6 +390,25 @@ const supportLoading = ref(false)
 const supportError = ref(null)
 const showConfirmModal = ref(false)
 const confirmModalError = ref(null)
+const contractStatus = ref(null)
+const showContractModal = ref(false)
+
+// Neither side may confirm terms they have not signed; the backend enforces the same rule.
+const myContractAccepted = computed(() => !!contractStatus.value?.myAcceptance)
+
+const loadContractStatus = async () => {
+  try {
+    const res = await contractAPI.getAcceptances(route.params.projectId)
+    contractStatus.value = res.data.data || res.data || null
+  } catch {
+    contractStatus.value = null
+  }
+}
+
+const onContractAccepted = status => {
+  contractStatus.value = status || contractStatus.value
+  loadContractStatus()
+}
 
 const formatCurrency = value => {
   if (!value) return 'N/A'
@@ -412,6 +447,7 @@ const loadData = async () => {
 
     const response = await projectAPI.getProjectForArchitect(projectId)
     project.value = response.data.data
+    await loadContractStatus()
   } catch (err) {
     error.value = err.response?.data?.message || getT('finalization.loadError')
     console.error('Failed to load negotiation data:', err)
@@ -463,7 +499,9 @@ const openSupportChat = async () => {
 }
 
 const handleEscapeKeydown = e => {
-  if (e.key === 'Escape') closeConfirmModal()
+  if (e.key !== 'Escape') return
+  showContractModal.value = false
+  closeConfirmModal()
 }
 
 onMounted(() => {

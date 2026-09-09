@@ -222,6 +222,10 @@ public class SecurityConfig {
                     // ContractService enforces which of the two the caller actually is.
                     .requestMatchers(HttpMethod.GET, "/rmtr/projects/*/contract")
                     .authenticated()
+                    // Same for the agreement document: both parties read it and both sign it,
+                    // and ContractDocumentService resolves which of the two is calling.
+                    .requestMatchers("/rmtr/projects/*/contract/**")
+                    .authenticated()
                     .requestMatchers("/rmtr/projects/**")
                     .hasRole("CLIENT")
                     .requestMatchers(HttpMethod.POST, "/rmtr/phases/*/bill")
