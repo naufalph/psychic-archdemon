@@ -62,15 +62,10 @@
       :show-badge="showRevisionBadge(focusPhase.phase)"
       :deadline-label="deadlineLabel(focusPhase.phase)"
       :busy="actionLoading === focusPhase.phase.id"
-      :dispute-open="disputeOpenFor === focusPhase.phase.id"
-      :dispute-reason="disputeReason"
       :format-amount="formatAmount"
       :format-date="formatDate"
       @approve-phase="$emit('approve-phase', $event)"
       @open-dispute="$emit('open-dispute', $event)"
-      @cancel-dispute="$emit('cancel-dispute')"
-      @submit-dispute="$emit('submit-dispute', $event)"
-      @update:dispute-reason="$emit('update:disputeReason', $event)"
       @submit-review="$emit('submit-review', $event)"
       @go-contract="$emit('go-contract')"
       @go-phase="$emit('go-phase', $event)"
@@ -162,8 +157,6 @@ const props = defineProps({
   disbursedCount: { type: Number, default: 0 },
   focusPhase: { type: Object, default: null },
   actionLoading: { type: [Number, String], default: null },
-  disputeOpenFor: { type: [Number, String], default: null },
-  disputeReason: { type: String, default: '' },
   statusKey: { type: Function, required: true },
   revisionsLeft: { type: Function, required: true },
   showRevisionBadge: { type: Function, required: true },
@@ -174,17 +167,7 @@ const props = defineProps({
   formatAmount: { type: Function, required: true },
   formatDate: { type: Function, required: true }
 })
-defineEmits([
-  'go-contract',
-  'go-phases',
-  'go-phase',
-  'approve-phase',
-  'open-dispute',
-  'cancel-dispute',
-  'submit-dispute',
-  'update:disputeReason',
-  'submit-review'
-])
+defineEmits(['go-contract', 'go-phases', 'go-phase', 'approve-phase', 'open-dispute', 'submit-review'])
 
 const statusLabels = computed(() => props.t.projectWorkspace?.statusLabels || {})
 </script>

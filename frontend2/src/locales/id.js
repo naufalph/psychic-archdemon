@@ -1388,19 +1388,22 @@ export default {
       'Arsitek sedang mengerjakan fase ini. Deliverable akan muncul di bawah ketika dikirimkan.',
     workSubmittedTitle: 'Pekerjaan Dikirimkan',
     workSubmittedDesc:
-      'Tinjau deliverable di bawah, lalu setujui, minta revisi, atau ajukan sengketa.',
+      'Tinjau deliverable di bawah, lalu setujui, minta revisi, atau laporkan kendala.',
     approveBtn: 'Setujui',
     requestRevisionBtn: 'Minta Revisi',
-    disputeBtn: 'Ajukan Sengketa',
-    disputeReasonLabel: 'Alasan Sengketa',
+    disputeBtn: 'Laporkan Kendala',
+    disputeLinkBtn: 'Atau laporkan kendala',
+    disputeModalTitle: 'Laporkan Kendala',
+    disputeModalDesc: 'Tim dukungan kami akan meninjau fase ini dan menghubungi kedua pihak.',
+    disputeReasonLabel: 'Rincian Kendala',
     disputeReasonPlaceholder:
       'Jelaskan apa yang tidak sesuai dengan spesifikasi yang disepakati...',
     submitting: 'Mengirimkan...',
-    submitDispute: 'Kirim Sengketa',
+    submitDispute: 'Kirim Laporan',
     cancel: 'Batal',
     workApprovedTitle: 'Pekerjaan Disetujui',
     workApprovedDesc: 'Anda menyetujui fase ini. Arsitek sedang memproses pencairan dana.',
-    underDisputeTitle: 'Dalam Sengketa',
+    underDisputeTitle: 'Dalam Peninjauan',
     underDisputeDesc:
       'Fase ini sedang ditinjau oleh tim dukungan kami. Kedua pihak akan dihubungi.',
     phaseCompleteDisbursed: 'Fase selesai. Dana telah dicairkan ke arsitek.',
@@ -1418,7 +1421,7 @@ export default {
       PHASE_SUBMITTED_FOR_REVIEW: 'Fase dikirim untuk review',
       DELIVERABLE_APPROVED: 'Deliverable disetujui',
       REVISION_REQUESTED: 'Revisi diminta',
-      DELIVERABLE_DISPUTED: 'Sengketa diajukan',
+      DELIVERABLE_DISPUTED: 'Kendala dilaporkan',
       PAYOUT_INITIATED: 'Pencairan diajukan arsitek',
       PAYOUT_COMPLETED: 'Pencairan berhasil',
       PAYOUT_FAILED: 'Pencairan gagal'
@@ -1467,13 +1470,13 @@ export default {
       DELIVERED: 'Dikirimkan',
       APPROVED: 'Disetujui',
       DISBURSED: 'Selesai',
-      DISPUTED: 'Disengketakan'
+      DISPUTED: 'Ditinjau'
     },
     architectFallback: 'Arsitek',
     billError: 'Gagal membuat invoice',
     approveError: 'Gagal menyetujui fase',
     revisionError: 'Gagal meminta revisi',
-    disputeError: 'Gagal mengajukan sengketa',
+    disputeError: 'Gagal mengirim laporan',
     initError: 'Gagal menginisialisasi fase',
     overdueDays: '{d} hari terlambat',
     dueToday: 'Tenggat hari ini!',
@@ -1537,9 +1540,6 @@ export default {
     processing: 'Memproses...',
     confirmPayoutBtn: 'Konfirmasi Pencairan',
     payoutDisbursedSuccess: 'Dana berhasil dicairkan.',
-    clientDisputeTitle: 'Klien Mengajukan Sengketa',
-    clientDisputeDesc:
-      'Klien mengajukan sengketa untuk deliverable ini. Tim dukungan kami akan menghubungi kedua pihak.',
     confirmPayoutEyebrow: 'Konfirmasi Pencairan',
     confirmPayoutWarning:
       'Periksa kembali detail berikut sebelum dana dicairkan melalui Xendit. Tindakan ini tidak dapat dibatalkan.',
@@ -1558,7 +1558,7 @@ export default {
       DELIVERED: 'Dikirimkan',
       APPROVED: 'Disetujui',
       DISBURSED: 'Dicairkan',
-      DISPUTED: 'Disengketakan'
+      DISPUTED: 'Ditinjau'
     },
     logActionsArchitect: {
       PHASE_CREATED: 'Fase dibuat',
@@ -1568,7 +1568,7 @@ export default {
       PHASE_SUBMITTED_FOR_REVIEW: 'Fase dikirim untuk review',
       DELIVERABLE_APPROVED: 'Deliverable disetujui klien',
       REVISION_REQUESTED: 'Revisi diminta klien',
-      DELIVERABLE_DISPUTED: 'Sengketa diajukan klien',
+      DELIVERABLE_DISPUTED: 'Kendala dilaporkan klien',
       PAYOUT_INITIATED: 'Pencairan diajukan',
       PAYOUT_COMPLETED: 'Pencairan berhasil',
       PAYOUT_FAILED: 'Pencairan gagal'

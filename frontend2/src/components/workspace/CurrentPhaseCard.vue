@@ -59,17 +59,12 @@
         :deliverables="deliverables"
         :revisions-left="revisionsLeft"
         :busy="busy"
-        :dispute-open="disputeOpen"
-        :dispute-reason="disputeReason"
         :due-date="phase.dueDate"
         :deadline-label="deadlineLabel"
         :format-date="formatDate"
         :t="t"
         @approve-phase="$emit('approve-phase', phase)"
         @open-dispute="$emit('open-dispute', phase)"
-        @cancel-dispute="$emit('cancel-dispute')"
-        @submit-dispute="$emit('submit-dispute', phase)"
-        @update:dispute-reason="$emit('update:disputeReason', $event)"
         @submit-review="$emit('submit-review', phase)"
         @go-contract="$emit('go-contract')"
       />
@@ -113,21 +108,10 @@ const props = defineProps({
   showBadge: { type: Boolean, default: false },
   deadlineLabel: { type: String, default: '' },
   busy: { type: Boolean, default: false },
-  disputeOpen: { type: Boolean, default: false },
-  disputeReason: { type: String, default: '' },
   formatAmount: { type: Function, required: true },
   formatDate: { type: Function, required: true }
 })
-defineEmits([
-  'approve-phase',
-  'open-dispute',
-  'cancel-dispute',
-  'submit-dispute',
-  'update:disputeReason',
-  'submit-review',
-  'go-contract',
-  'go-phase'
-])
+defineEmits(['approve-phase', 'open-dispute', 'submit-review', 'go-contract', 'go-phase'])
 
 const statusLabels = computed(() => props.t.projectWorkspace?.statusLabels || {})
 </script>

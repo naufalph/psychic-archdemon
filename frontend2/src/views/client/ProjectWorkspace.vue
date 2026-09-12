@@ -61,8 +61,6 @@
             :disbursed-count="disbursedCount"
             :focus-phase="focusPhase"
             :action-loading="actionLoading"
-            :dispute-open-for="disputeOpenFor"
-            :dispute-reason="disputeReason"
             :revisions-left="revisionsLeft"
             :show-revision-badge="showRevisionBadge"
             :deadline-label="deadlineLabel"
@@ -76,10 +74,7 @@
             @go-phases="tab = 'phases'"
             @go-phase="goToPhase"
             @approve-phase="p => (approveModal = { phase: p, item: null })"
-            @open-dispute="p => (disputeOpenFor = p.id)"
-            @cancel-dispute="cancelDispute"
-            @submit-dispute="submitDispute"
-            @update:dispute-reason="v => (disputeReason = v)"
+            @open-dispute="p => (disputeOpenFor = p)"
           />
 
           <PhasesTab
@@ -92,8 +87,6 @@
             :phase-logs="phaseLogs"
             :logs-loading="logsLoading"
             :action-loading="actionLoading"
-            :dispute-open-for="disputeOpenFor"
-            :dispute-reason="disputeReason"
             :status-key="statusKey"
             :revisions-left="revisionsLeft"
             :show-revision-badge="showRevisionBadge"
@@ -110,10 +103,7 @@
             @approve-phase="p => (approveModal = { phase: p, item: null })"
             @approve-item="(p, i) => (approveModal = { phase: p, item: i })"
             @request-revision="(p, payload) => (revisionModal = { phase: p, ...payload })"
-            @open-dispute="p => (disputeOpenFor = p.id)"
-            @cancel-dispute="cancelDispute"
-            @submit-dispute="submitDispute"
-            @update:dispute-reason="v => (disputeReason = v)"
+            @open-dispute="p => (disputeOpenFor = p)"
             @open-files="(p, i) => (filesModal = { phase: p, item: i })"
           />
 
@@ -184,6 +174,17 @@
       @submit="submitRevision"
     />
 
+    <DisputeModal
+      v-if="disputeOpenFor"
+      :target-name="phaseFallbackTitle(disputeOpenFor)"
+      :reason="disputeReason"
+      :busy="actionLoading === disputeOpenFor.id"
+      :t="t"
+      @close="cancelDispute"
+      @update:reason="v => (disputeReason = v)"
+      @submit="submitDispute(disputeOpenFor)"
+    />
+
     <FilesModal
       v-if="filesModal"
       :item="filesModal.item"
@@ -228,6 +229,7 @@ import PhasesTab from '@/components/workspace/PhasesTab.vue'
 import ContractTab from '@/components/workspace/ContractTab.vue'
 import ApproveModal from '@/components/workspace/ApproveModal.vue'
 import RevisionModal from '@/components/workspace/RevisionModal.vue'
+import DisputeModal from '@/components/workspace/DisputeModal.vue'
 import FilesModal from '@/components/workspace/FilesModal.vue'
 import ImageLightbox from '@/components/workspace/ImageLightbox.vue'
 import ContractAgreementModal from '@/components/contract/ContractAgreementModal.vue'

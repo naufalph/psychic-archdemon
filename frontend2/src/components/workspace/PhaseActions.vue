@@ -9,7 +9,7 @@
     </div>
 
     <!-- Client, work delivered: approve / revise / dispute -->
-    <div v-if="showDeliveredActions && !disputeOpen" class="mt-3">
+    <div v-if="showDeliveredActions" class="mt-3">
       <!--
         Approval and revision are both composed per deliverable in the table below. The phase
         approves itself on the last outstanding row, so a phase-level button would only be a
@@ -24,40 +24,19 @@
         <ThumbsUp class="w-4 h-4" />
         {{ t.projectWorkspace?.approveBtn }}
       </button>
-      <p v-if="revisionsLeft > 0" class="text-xs text-gray-500 text-center" :class="{ 'mt-2': !hasNamedDeliverables }">
-        {{ t.projectWorkspace?.reviseFromTableHint }}
-      </p>
-      <button
-        class="w-full mt-2 px-3 py-1.5 rounded-lg border border-red-200 text-red-500 hover:bg-red-50 text-xs flex items-center justify-center gap-1.5"
-        @click="$emit('open-dispute')"
-      >
-        <AlertTriangle class="w-3 h-3" />
-        {{ t.projectWorkspace?.disputeBtn }}
-      </button>
-    </div>
-
-    <!-- Inline dispute form, not a modal -->
-    <div v-if="showDeliveredActions && disputeOpen" class="mt-3">
-      <label class="text-xs font-bold uppercase tracking-wider text-gray-500">
-        {{ t.projectWorkspace?.disputeReasonLabel }}
-      </label>
-      <textarea
-        :value="disputeReason"
-        rows="3"
-        class="w-full mt-1 rounded-lg border border-border-gray p-2 text-sm"
-        :placeholder="t.projectWorkspace?.disputeReasonPlaceholder"
-        @input="$emit('update:disputeReason', $event.target.value)"
-      />
-      <div class="flex gap-2 mt-2">
+      <!--
+        Filing is the escape hatch, not the expected move, so it reads as a quiet link beside the
+        revise hint. It stays available once revisions run out, which is when it is needed most.
+      -->
+      <div class="flex items-baseline justify-center gap-1.5 flex-wrap" :class="{ 'mt-2': !hasNamedDeliverables }">
+        <span v-if="revisionsLeft > 0" class="text-xs text-gray-500">
+          {{ t.projectWorkspace?.reviseFromTableHint }}
+        </span>
         <button
-          class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700 text-white text-sm font-semibold disabled:opacity-50"
-          :disabled="busy"
-          @click="$emit('submit-dispute')"
+          class="text-xs text-gray-400 underline underline-offset-2 hover:text-red-600"
+          @click="$emit('open-dispute')"
         >
-          {{ busy ? t.projectWorkspace?.submitting : t.projectWorkspace?.submitDispute }}
-        </button>
-        <button class="px-4 py-2 text-sm text-gray-500" @click="$emit('cancel-dispute')">
-          {{ t.projectWorkspace?.cancel }}
+          {{ t.projectWorkspace?.disputeLinkBtn }}
         </button>
       </div>
     </div>
@@ -134,8 +113,6 @@ const props = defineProps({
   deliverables: { type: Array, default: () => [] },
   revisionsLeft: { type: Number, default: 0 },
   busy: { type: Boolean, default: false },
-  disputeOpen: { type: Boolean, default: false },
-  disputeReason: { type: String, default: '' },
   dueDate: { type: String, default: null },
   deadlineLabel: { type: String, default: '' },
   formatDate: { type: Function, required: true },
@@ -144,9 +121,6 @@ const props = defineProps({
 defineEmits([
   'approve-phase',
   'open-dispute',
-  'cancel-dispute',
-  'submit-dispute',
-  'update:disputeReason',
   'create-invoice',
   'pay-now',
   'submit-review',

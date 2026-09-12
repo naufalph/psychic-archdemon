@@ -73,17 +73,12 @@
             :deliverables="deliverableItems(phase)"
             :revisions-left="revisionsLeft(phase)"
             :busy="actionLoading === phase.id"
-            :dispute-open="disputeOpenFor === phase.id"
-            :dispute-reason="disputeReason"
             :due-date="phase.dueDate"
             :deadline-label="deadlineLabel(phase)"
             :format-date="formatDate"
             :t="t"
             @approve-phase="$emit('approve-phase', phase)"
             @open-dispute="$emit('open-dispute', phase)"
-            @cancel-dispute="$emit('cancel-dispute')"
-            @submit-dispute="$emit('submit-dispute', phase)"
-            @update:dispute-reason="$emit('update:disputeReason', $event)"
             @submit-review="$emit('submit-review', phase)"
             @go-contract="$emit('go-contract')"
           />
@@ -169,8 +164,6 @@ const props = defineProps({
   phaseLogs: { type: Object, required: true },
   logsLoading: { type: Object, required: true },
   actionLoading: { type: [Number, String], default: null },
-  disputeOpenFor: { type: [Number, String], default: null },
-  disputeReason: { type: String, default: '' },
   statusKey: { type: Function, required: true },
   revisionsLeft: { type: Function, required: true },
   showRevisionBadge: { type: Function, required: true },
@@ -188,9 +181,6 @@ defineEmits([
   'approve-phase',
   'request-revision',
   'open-dispute',
-  'cancel-dispute',
-  'submit-dispute',
-  'update:disputeReason',
   'submit-review',
   'go-contract',
   'approve-item',

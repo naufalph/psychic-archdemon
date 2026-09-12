@@ -1380,6 +1380,9 @@ export default {
     approveBtn: 'Approve',
     requestRevisionBtn: 'Request Revision',
     disputeBtn: 'Dispute',
+    disputeLinkBtn: 'Or file a dispute',
+    disputeModalTitle: 'File a dispute',
+    disputeModalDesc: 'Our support team reviews the phase and contacts both parties.',
     disputeReasonLabel: 'Dispute Reason',
     disputeReasonPlaceholder: "Describe what doesn't match the agreed specification...",
     submitting: 'Submitting...',
@@ -1524,9 +1527,6 @@ export default {
     processing: 'Processing...',
     confirmPayoutBtn: 'Confirm Payout',
     payoutDisbursedSuccess: 'Payout disbursed successfully.',
-    clientDisputeTitle: 'Client Raised a Dispute',
-    clientDisputeDesc:
-      'The client has raised a dispute for this deliverable. Our support team will contact both parties.',
     confirmPayoutEyebrow: 'Confirm Payout',
     confirmPayoutWarning:
       'Double-check the details below before funds are disbursed via Xendit. This action cannot be undone.',
