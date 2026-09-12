@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rumantra Payment Simulator</title>
+<style>
+  :root {
+    --bg: #f6f7f9; --card: #fff; --ink: #14181f; --muted: #667085;
+    --line: #e3e6ea; --accent: #1f6feb; --ok: #067647; --warn: #b54708; --err: #b42318;
+    --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg:#0f1216; --card:#171b21; --ink:#e8eaed; --muted:#9aa4b2;
+            --line:#272d36; --accent:#4d9dff; --ok:#4ade80; --warn:#fbbf24; --err:#f87171; }
+  }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink);
+         font:14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 1040px; margin:0 auto; padding:24px 16px 64px; }
+  h1 { font-size:20px; margin:0 0 4px; }
+  .sub { color:var(--muted); margin:0 0 20px; }
+  .bar { background:var(--card); border:1px solid var(--line); border-radius:10px;
+         padding:12px 14px; margin-bottom:20px; display:flex; flex-wrap:wrap;
+         gap:8px 20px; align-items:center; font-size:13px; }
+  .bar b { font-weight:600; } .bar code { font-family:var(--mono); color:var(--muted); }
+  button { font:inherit; border-radius:7px; border:1px solid var(--line);
+           background:var(--card); color:var(--ink); padding:5px 12px; cursor:pointer; }
+  button:hover:not(:disabled) { border-color:var(--accent); color:var(--accent); }
+  button:disabled { opacity:.4; cursor:not-allowed; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+  button.primary:hover:not(:disabled) { opacity:.9; color:#fff; }
+  #refresh { margin-left:auto; }
+  section { margin-bottom:28px; }
+  h2 { font-size:15px; margin:0 0 2px; }
+  .hint { color:var(--muted); font-size:12.5px; margin:0 0 10px; }
+  .hint code { font-family:var(--mono); }
+  .row { background:var(--card); border:1px solid var(--line); border-radius:10px;
+         padding:12px 14px; margin-bottom:8px; display:flex; flex-wrap:wrap;
+         gap:10px; align-items:center; }
+  .row .main { flex:1 1 320px; min-width:0; }
+  .row .title { font-weight:600; }
+  .row .ref { font-family:var(--mono); font-size:11.5px; color:var(--muted);
+              overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .acts { display:flex; gap:6px; flex-wrap:wrap; }
+  .pill { font-size:11px; font-weight:600; padding:2px 8px; border-radius:99px;
+          border:1px solid var(--line); color:var(--muted); }
+  .pill.ok { color:var(--ok); border-color:currentColor; }
+  .pill.warn { color:var(--warn); border-color:currentColor; }
+  .pill.err { color:var(--err); border-color:currentColor; }
+  .empty { color:var(--muted); font-style:italic; padding:12px 2px; }
+  .result { margin-top:10px; border-top:1px dashed var(--line); padding-top:10px;
+            font-family:var(--mono); font-size:11.5px; white-space:pre-wrap;
+            word-break:break-all; flex-basis:100%; }
+  .banner { border-radius:10px; padding:12px 14px; margin-bottom:20px;
+            border:1px solid var(--err); color:var(--err); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Rumantra Payment Simulator</h1>
+  <p class="sub">Fires the Xendit webhooks that cannot reach <code>localhost</code>, so payments complete through the real handlers instead of manual SQL.</p>
+
+  <div class="bar" id="meta"><span>Loading…</span></div>
+  <div id="error"></div>
+  <div id="flows"></div>
+</div>
+
+<script>
+const FLOWS = [
+  { key:'tokenPurchase', title:'Bid Token Purchases',
+    hint:'Architect buys bid tokens. Paying allocates tokens into <code>rmtr_bid_quota</code> and writes a <code>rmtr_bid_usage_log</code> row.',
+    label: r => `${r.email} — ${r.quantity} token(s)`,
+    amount: r => r.total_amount,
+    actions: [ {o:'pay', t:'Pay', primary:true}, {o:'expire', t:'Expire'} ] },
+
+  { key:'workspacePhase', title:'Phase Payments — Workspace',
+    hint:'Invoices from <code>ProjectWorkspace.vue</code> ("Buat Invoice", <code>POST /rmtr/phases/{id}/bill</code>). Paying advances the ProjectPhase to IN_PROGRESS and sets its due date.',
+    label: r => `Project ${r.project_id} · Phase ${r.phase_number}` + (r.phase_status ? ` · phase ${r.phase_status}` : ''),
+    amount: r => r.amount,
+    actions: [ {o:'pay', t:'Pay', primary:true}, {o:'expire', t:'Expire'} ] },
+
+  { key:'dashboardPhase', title:'Phase Payments — Dashboard',
+    hint:'Invoices from <code>ActiveProjectDashboard.vue</code> (<code>POST /rmtr/payments/phases/{id}</code>). Separate path from the workspace one, same table.',
+    label: r => `Project ${r.project_id} · Phase ${r.phase_number ?? '?'}`,
+    amount: r => r.amount,
+    actions: [ {o:'pay', t:'Pay', primary:true}, {o:'expire', t:'Expire'} ] },
+
+  { key:'disbursement', title:'Disbursements (Payouts)',
+    hint:'Architect payout requests. Succeeding marks the phase DISBURSED and auto-closes the project once every phase is done.',
+    label: r => `Project ${r.project_id} · Phase ${r.phase_number}`,
+    amount: r => r.amount,
+    actions: [ {o:'succeed', t:'Succeed', primary:true}, {o:'fail', t:'Fail'}, {o:'reverse', t:'Reverse'} ] }
+]
+
+// The handlers are idempotent and silently no-op on rows that are already
+// settled, which reads as a broken button. Disable them and say why instead.
+const disabledReason = (flowKey, status, outcome) => {
+  if (flowKey === 'disbursement') {
+    return status === 'SUCCEEDED' ? 'already SUCCEEDED — the handler no-ops' : null
+  }
+  if (outcome === 'pay') {
+    return status === 'COMPLETED' ? 'already COMPLETED — the handler no-ops' : null
+  }
+  return status === 'PENDING' ? null : `only a PENDING invoice can expire (this is ${status})`
+}
+
+const pillClass = s =>
+  ['COMPLETED','SUCCEEDED'].includes(s) ? 'ok'
+  : ['FAILED','EXPIRED','REVERSED'].includes(s) ? 'err' : 'warn'
+
+const money = v => 'IDR ' + Number(v || 0).toLocaleString('id-ID')
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))
+
+let data = {}
+
+async function load () {
+  const err = document.getElementById('error')
+  err.innerHTML = ''
+  try {
+    const res = await fetch('/api/items')
+    const body = await res.json()
+    if (!res.ok) throw new Error(body.error || res.statusText)
+    data = body.items
+    const m = body.meta
+    document.getElementById('meta').innerHTML =
+      `<span><b>Backend</b> <code>${esc(m.backendUrl)}</code></span>` +
+      `<span><b>Database</b> <code>${esc(m.database)}</code></span>` +
+      `<span><b>Token</b> <code>${m.tokenLoaded ? 'loaded from backend/.env' : 'MISSING'}</code></span>` +
+      `<button id="refresh">Refresh</button>`
+    document.getElementById('refresh').onclick = load
+    render()
+  } catch (e) {
+    err.innerHTML = `<div class="banner"><b>Could not load.</b> ${esc(e.message)}</div>`
+  }
+}
+
+function render () {
+  document.getElementById('flows').innerHTML = FLOWS.map(f => {
+    const rows = data[f.key] || []
+    const list = rows.length
+      ? rows.map(r => {
+          const acts = f.actions.map(a => {
+            const why = disabledReason(f.key, r.status, a.o)
+            return `<button class="${a.primary && !why ? 'primary' : ''}" ${why ? `disabled title="${esc(why)}"` : ''}
+              data-flow="${f.key}" data-ref="${esc(r.xendit_reference_id)}" data-outcome="${a.o}">${a.t}</button>`
+          }).join('')
+          return `<div class="row" id="row-${f.key}-${r.id}">
+            <div class="main">
+              <div class="title">#${r.id} · ${esc(f.label(r))}</div>
+              <div class="ref" title="${esc(r.xendit_reference_id)}">${esc(r.xendit_reference_id)}</div>
+            </div>
+            <span class="pill ${pillClass(r.status)}">${esc(r.status)}</span>
+            <span>${money(f.amount(r))}</span>
+            <div class="acts">${acts}</div>
+          </div>`
+        }).join('')
+      : `<div class="empty">Nothing yet — perform the action in the app first, then refresh.</div>`
+    return `<section><h2>${f.title}</h2><p class="hint">${f.hint}</p>${list}</section>`
+  }).join('')
+
+  document.querySelectorAll('button[data-flow]').forEach(b => { b.onclick = () => simulate(b) })
+}
+
+async function simulate (btn) {
+  const { flow, ref, outcome } = btn.dataset
+  const row = btn.closest('.row')
+  const buttons = row.querySelectorAll('button')
+  buttons.forEach(b => (b.disabled = true))
+
+  let out = row.querySelector('.result')
+  if (!out) { out = document.createElement('div'); out.className = 'result'; row.appendChild(out) }
+  out.textContent = 'Sending…'
+
+  try {
+    const res = await fetch('/api/simulate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ flow, referenceId: ref, outcome })
+    })
+    const body = await res.json()
+    if (!res.ok) throw new Error(body.error || res.statusText)
+    out.textContent =
+      `${body.ok ? 'OK' : 'REJECTED'}  HTTP ${body.httpStatus}  ${body.url}\n` +
+      `sent: ${JSON.stringify(body.payloadSent, null, 2)}` +
+      (body.body ? `\nresponse: ${body.body}` : '')
+    await load()
+  } catch (e) {
+    out.textContent = `Failed: ${e.message}`
+    buttons.forEach(b => (b.disabled = false))
+  }
+}
+
+load()
+</script>
+</body>
+</html>
