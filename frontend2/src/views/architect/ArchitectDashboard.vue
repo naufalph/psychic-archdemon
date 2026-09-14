@@ -84,7 +84,7 @@
                 class="ml-4 flex-shrink-0 text-xs font-bold px-3 py-1 rounded-full"
                 :class="statusClass(bid.status)"
               >
-                {{ bid.status }}
+                {{ t.bidStatus?.[bid.status] || bid.status }}
               </span>
             </router-link>
           </div>

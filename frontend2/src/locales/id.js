@@ -1259,7 +1259,11 @@ export default {
   },
   projectCard: {
     manage: 'Kelola →',
-    continueDraft: 'Lanjutkan Draf →'
+    continueDraft: 'Lanjutkan Draf →',
+    minutesAgo: '{n} mnt lalu',
+    hoursAgo: '{n} jam lalu',
+    daysAgo: '{n} hari lalu',
+    monthsAgo: '{n} bulan lalu'
   },
   clientFinalization: {
     itSupportInvited: 'Dukungan IT diundang',
@@ -1536,6 +1540,7 @@ export default {
       NOT_STARTED: 'Belum Dimulai',
       PENDING: 'Menunggu Bayar',
       BILLED: 'Invoice Terkirim',
+      PAID: 'Sudah Dibayar',
       IN_PROGRESS: 'Sedang Berjalan',
       DELIVERED: 'Dikirimkan',
       APPROVED: 'Disetujui',
@@ -1624,6 +1629,7 @@ export default {
       NOT_STARTED: 'Belum Dimulai',
       PENDING: 'Menunggu',
       BILLED: 'Ditagihkan',
+      PAID: 'Sudah Dibayar',
       IN_PROGRESS: 'Sedang Berjalan',
       DELIVERED: 'Dikirimkan',
       APPROVED: 'Disetujui',
@@ -1929,6 +1935,7 @@ export default {
     typeMessage: 'Ketik pesan...'
   },
   projectStatus: {
+    DRAFT: 'Draf',
     PENDING_APPROVAL: 'Menunggu Validasi',
     OPEN: 'Terbuka',
     BIDDING_CLOSED: 'Penawaran Ditutup',
@@ -1939,7 +1946,9 @@ export default {
     REJECTED: 'Ditolak',
     CLOSED: 'Ditutup',
     AWARDED: 'Dimenangkan',
-    PENDING: 'Menunggu Validasi'
+    PENDING: 'Menunggu Validasi',
+    NEGOTIATION_EXPIRED: 'Finalisasi Kedaluwarsa',
+    DELETED: 'Dihapus'
   },
   bidStatus: {
     DRAFT: 'Draft',

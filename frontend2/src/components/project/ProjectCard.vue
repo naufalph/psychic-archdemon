@@ -20,7 +20,7 @@
         class="absolute bottom-3 left-3 px-2.5 py-1 rounded-full text-xs font-bold tracking-wider"
         :class="statusBadgeClass"
       >
-        {{ project.status }}
+        {{ t.projectStatus?.[project.status] || project.status }}
       </span>
     </div>
 
@@ -194,14 +194,14 @@ const formatCurrency = value => {
 const timeAgo = dateString => {
   if (!dateString) return ''
   const diff = Date.now() - new Date(dateString).getTime()
+  const label = (key, n) => t.value.projectCard[key].replace('{n}', n)
   const minutes = Math.floor(diff / 60000)
-  if (minutes < 60) return `${minutes}m ago`
+  if (minutes < 60) return label('minutesAgo', minutes)
   const hours = Math.floor(minutes / 60)
-  if (hours < 24) return `${hours}h ago`
+  if (hours < 24) return label('hoursAgo', hours)
   const days = Math.floor(hours / 24)
-  if (days < 30) return `${days} day${days === 1 ? '' : 's'} ago`
-  const months = Math.floor(days / 30)
-  return `${months} month${months === 1 ? '' : 's'} ago`
+  if (days < 30) return label('daysAgo', days)
+  return label('monthsAgo', Math.floor(days / 30))
 }
 
 const handleClick = () => {

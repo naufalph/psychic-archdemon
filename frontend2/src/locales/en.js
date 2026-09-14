@@ -1245,7 +1245,11 @@ export default {
   },
   projectCard: {
     manage: 'Manage →',
-    continueDraft: 'Continue Draft →'
+    continueDraft: 'Continue Draft →',
+    minutesAgo: '{n}m ago',
+    hoursAgo: '{n}h ago',
+    daysAgo: '{n}d ago',
+    monthsAgo: '{n}mo ago'
   },
   clientFinalization: {
     itSupportInvited: 'IT Support invited',
@@ -1519,6 +1523,7 @@ export default {
       NOT_STARTED: 'Not Started',
       PENDING: 'Payment Pending',
       BILLED: 'Invoice Sent',
+      PAID: 'Paid',
       IN_PROGRESS: 'In Progress',
       DELIVERED: 'Delivered',
       APPROVED: 'Approved',
@@ -1607,6 +1612,7 @@ export default {
       NOT_STARTED: 'Not Started',
       PENDING: 'Pending',
       BILLED: 'Billed',
+      PAID: 'Paid',
       IN_PROGRESS: 'In Progress',
       DELIVERED: 'Delivered',
       APPROVED: 'Approved',
@@ -1906,6 +1912,7 @@ export default {
     typeMessage: 'Type a message...'
   },
   projectStatus: {
+    DRAFT: 'Draft',
     PENDING_APPROVAL: 'Pending Validation',
     OPEN: 'Open',
     BIDDING_CLOSED: 'Bidding Closed',
@@ -1916,7 +1923,9 @@ export default {
     REJECTED: 'Rejected',
     CLOSED: 'Closed',
     AWARDED: 'Awarded',
-    PENDING: 'Pending Validation'
+    PENDING: 'Pending Validation',
+    NEGOTIATION_EXPIRED: 'Finalization Expired',
+    DELETED: 'Deleted'
   },
   bidStatus: {
     DRAFT: 'Draft',

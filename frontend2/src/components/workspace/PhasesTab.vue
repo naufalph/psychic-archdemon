@@ -137,7 +137,8 @@
                 {{ formatLogAction(log.action) }}
               </span>
               <span v-if="log.fromStatus && log.toStatus" class="text-xs text-gray-400 shrink-0 hidden sm:inline">
-                {{ log.fromStatus }} &rarr; {{ log.toStatus }}
+                {{ statusLabels[log.fromStatus] || log.fromStatus }} &rarr;
+                {{ statusLabels[log.toStatus] || log.toStatus }}
               </span>
               <span class="text-xs text-gray-400 shrink-0">{{ formatDateTime(log.createdAt) }}</span>
             </div>
