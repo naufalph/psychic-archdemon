@@ -115,3 +115,10 @@ flyway-*.sql
 
 # JRebel
 rebel.xml
+
+# Dev script runtime artifacts
+.backend.pid
+.frontend.pid
+
+# Design briefs and other archives shared outside git
+*.zip
