@@ -549,39 +549,95 @@ export default {
       architecturalDesign: 'Architectural Design',
       technicalDesign: 'Technical Design',
       interiorLandscape: 'Interior & Landscape',
-      calculationEstimation: 'Calculations & Estimates'
+      calculationEstimation: 'Calculations & Estimates',
+      other: 'Other'
     },
     deliverableItems: {
       SITE_ANALYSIS: 'Site Analysis',
       ZONING_STUDY: 'Zoning & Regulatory Analysis',
-      ARCHITECTURAL_DRAWINGS: 'Architectural Drawings',
-      DESIGN_VISUALIZATION_3D: '3D Visualization & Design Presentation',
+      SITE_BLOCK_PLAN: 'Site Plan & Block Plan',
+      FLOOR_PLAN: 'Floor Plans',
+      ELEVATION_SECTION: 'Elevations & Sections',
+      DETAIL_DRAWINGS:
+        'Plans & Details (Roof, Ceiling, Floor, Bathroom, Frames, Doors & Windows, etc.)',
+      RENDER_3D_EXTERIOR: '3D Exterior Renders',
+      RENDER_3D_INTERIOR: '3D Interior Renders',
+      RENDER_3D_VIDEO: '3D Walkthrough / Animation Video',
       MATERIAL_FINISHING_SPEC: 'Material & Finishing Specifications',
       STRUCTURAL_DRAWINGS: 'Structural Drawings',
-      MEP_DRAWINGS: 'Mechanical, Electrical & Plumbing (MEP) Drawings',
+      MECHANICAL_DRAWINGS: 'Mechanical Drawings',
+      ELECTRICAL_DRAWINGS: 'Electrical Drawings',
+      PLUMBING_DRAWINGS: 'Plumbing Drawings',
       FIRE_PROTECTION_DRAWINGS: 'Fire Protection Drawings',
+      STRUCTURAL_CALCULATION: 'Structural Calculations',
+      MEP_CALCULATION: 'Mechanical, Electrical & Plumbing (MEP) Calculations',
       INTERIOR_DESIGN: 'Interior Design',
       LANDSCAPE_DESIGN: 'Landscape Design',
-      STRUCTURAL_CALCULATION: 'Structural Calculations',
-      MEP_CALCULATION: 'MEP Calculations',
-      COST_ESTIMATION: 'Cost Estimates'
+      COST_ESTIMATION: 'Cost Estimates',
+      ARCHITECTURAL_DRAWINGS: 'Architectural Drawings',
+      DESIGN_VISUALIZATION_3D: '3D Visualization & Design Presentation',
+      MEP_DRAWINGS: 'Mechanical, Electrical & Plumbing (MEP) Drawings'
     },
     deliverableDescriptions: {
-      SITE_ANALYSIS: 'Land survey and site condition assessment',
-      ZONING_STUDY: 'Zoning rules, KDB/KLB and building regulations',
-      ARCHITECTURAL_DRAWINGS: 'Floor plans, elevations and sections',
-      DESIGN_VISUALIZATION_3D: '3D renders and design presentation material',
-      MATERIAL_FINISHING_SPEC: 'Material schedule and finishing specifications',
-      STRUCTURAL_DRAWINGS: 'Foundation, column, beam and slab drawings',
-      MEP_DRAWINGS: 'Mechanical, electrical and plumbing layouts',
-      FIRE_PROTECTION_DRAWINGS: 'Fire detection, sprinkler and evacuation routes',
-      INTERIOR_DESIGN: 'Interior layout and finishes',
-      LANDSCAPE_DESIGN: 'Garden, hardscape and outdoor spaces',
-      STRUCTURAL_CALCULATION: 'Structural analysis and load calculations',
-      MEP_CALCULATION: 'Load, capacity and MEP system sizing',
-      COST_ESTIMATION: 'Bill of quantities and budget estimate'
+      SITE_ANALYSIS: [
+        'The architect studies your land before designing anything — sun and wind direction, access routes and existing trees. This way your building is designed around the real conditions of the site.'
+      ],
+      ZONING_STUDY: [
+        'A check against local government spatial planning rules: whether your land may be built on, the maximum number of floors allowed, and technical limits such as the minimum setback from the road, maximum built-up area, maximum total floor area and minimum green area on your plot. This protects you from a rejected permit or a building that has to be demolished later.'
+      ],
+      SITE_BLOCK_PLAN: [
+        'A Site Plan shows where your building sits within the plot, e.g. the carport, garden and fence.',
+        'A Block Plan shows where your plot sits within a wider area, usually used for townhouse projects.'
+      ],
+      FLOOR_PLAN: [
+        'Drawings of the layout and dimensions of every room in the building, seen from above.'
+      ],
+      ELEVATION_SECTION: [
+        'Elevations show the building from all four sides, together with its materials.',
+        'Sections show the building "sliced" vertically to reveal details such as ceiling height, floor thickness and roof pitch.'
+      ],
+      DETAIL_DRAWINGS: [
+        "Detailed drawings of the dimensions of your building's components. Useful during construction and as a reference when you buy or design components such as doors, windows and frames."
+      ],
+      RENDER_3D_EXTERIOR: [
+        'Realistic images of how the outside of the building will look, before it is actually built.'
+      ],
+      RENDER_3D_INTERIOR: [
+        'Visualisations of the interior atmosphere, such as lighting, room size, colours and furniture arrangement.'
+      ],
+      RENDER_3D_VIDEO: ['A video simulation that walks you through the building design.'],
+      MATERIAL_FINISHING_SPEC: [
+        'A detailed list of the type, brand and quality of materials used in every part of the building. It usually serves as the written reference for checking that installed materials match the agreed quality.'
+      ],
+      STRUCTURAL_DRAWINGS: [
+        'Technical drawings of components such as foundations, columns and beams, with their sizes and strength. This is essential before your design can move into construction.'
+      ],
+      MECHANICAL_DRAWINGS: [
+        'Technical drawings for the air handling system, such as air conditioning and ventilation, throughout the building.'
+      ],
+      ELECTRICAL_DRAWINGS: [
+        'Technical drawings for the electrical routing, including light points, switches and sockets in every room.'
+      ],
+      PLUMBING_DRAWINGS: ['Technical drawings for clean water, wastewater and rainwater piping.'],
+      FIRE_PROTECTION_DRAWINGS: [
+        'Technical drawings for fire detection and suppression systems, such as sprinklers and alarms. Usually required for commercial or multi-storey buildings.'
+      ],
+      STRUCTURAL_CALCULATION: [
+        "Technical calculations proving the building's structural strength meets safety standards. Required for the building permit (PBG), and your assurance that the structure is designed on proper calculations rather than guesswork."
+      ],
+      MEP_CALCULATION: [
+        "Calculations of electrical load, water pump capacity and other supporting systems for the building's needs."
+      ],
+      INTERIOR_DESIGN: [
+        'Further design work after the floor plan, choosing colours, furniture and lighting inside each room. It gives your home character and comfort, rather than just finished empty space.'
+      ],
+      LANDSCAPE_DESIGN: [
+        'Detailed design of open areas such as gardens and walkways, covering the number, type and size of elements like trees, stones and lighting.'
+      ],
+      COST_ESTIMATION: ['An estimate of the total cost needed to build your design.']
     },
-    selectAll: 'Select All'
+    selectAll: 'Select All',
+    deselectAll: 'Deselect All'
   },
   identityDocs: {
     title: 'Identity Verification',
@@ -687,8 +743,16 @@ export default {
     designBudgetRangeError: 'Maximum price must be equal to or greater than the minimum price.',
     part: 'Part',
     partImages: 'Project Images',
-    partGeneral: 'General Information',
-    partDeliverables: 'Required Deliverables',
+    partGeneral: 'About Your Project',
+    partDeliverables: 'Deliverables',
+    stepOf: 'Step {step} of {total}',
+    nextStepHint: 'Next step: deliverables & project images',
+    next: 'Continue',
+    back: 'Back',
+    saveDraftAndExit: 'Save Draft & Exit',
+    selectCategoryFirst: 'Select a category first',
+    deliverablesHint:
+      'Choose the documents and drawings you need from the architect. Hover over the info icon to see what each deliverable covers.',
     partBudget: 'Budgeting',
     partStartDate: 'Expected Start Date',
     partDeadline: 'Bid Deadline',

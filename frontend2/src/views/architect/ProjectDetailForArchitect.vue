@@ -79,7 +79,7 @@
                 </h4>
                 <div class="flex flex-wrap gap-2">
                   <span
-                    v-for="value in group.matched"
+                    v-for="value in group.items"
                     :key="value"
                     class="bg-white border border-brand-gold/30 px-3 py-1.5 rounded-full text-sm font-medium text-gray-800 flex items-center gap-1.5"
                   >
@@ -243,7 +243,7 @@ import SiteLocationMap from '@/components/project/SiteLocationMap.vue'
 import { displayProvince } from '@/constants/regions'
 import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
-import { DELIVERABLE_GROUPS } from '@/constants/projectDeliverables'
+import { groupDeliverables } from '@/constants/projectDeliverables'
 
 const { t, locale } = useI18n()
 const route = useRoute()
@@ -289,13 +289,7 @@ const bidOutcome = computed(() => {
   return null
 })
 
-const groupedDeliverables = computed(() => {
-  if (!project.value?.deliverables) return []
-  return DELIVERABLE_GROUPS.map(group => ({
-    ...group,
-    matched: group.items.filter(value => project.value.deliverables.includes(value))
-  })).filter(group => group.matched.length > 0)
-})
+const groupedDeliverables = computed(() => groupDeliverables(project.value?.deliverables))
 
 const formatCurrency = value => {
   if (!value) return 'N/A'

@@ -337,7 +337,7 @@ import { useProjectsStore } from '@/stores/projects'
 import BidImageGallery from '@/components/bid/BidImageGallery.vue'
 import BidStatusBadge from '@/components/project/BidStatusBadge.vue'
 import PortfolioDetailPopup from '@/components/bid/PortfolioDetailPopup.vue'
-import { DELIVERABLE_GROUPS } from '@/constants/projectDeliverables'
+import { groupDeliverables } from '@/constants/projectDeliverables'
 
 const { t, locale } = useI18n()
 const route = useRoute()
@@ -350,13 +350,7 @@ const { currentProject } = storeToRefs(projectsStore)
 
 const viewingPortfolio = ref(null)
 
-const groupedProjectDeliverables = computed(() => {
-  const deliverables = currentProject.value?.deliverables || []
-  return DELIVERABLE_GROUPS.map(g => ({
-    categoryKey: g.categoryKey,
-    items: g.items.filter(d => deliverables.includes(d))
-  })).filter(g => g.items.length > 0)
-})
+const groupedProjectDeliverables = computed(() => groupDeliverables(currentProject.value?.deliverables))
 
 const isMatchingDeliverable = d => (currentProject.value?.deliverables || []).includes(d)
 

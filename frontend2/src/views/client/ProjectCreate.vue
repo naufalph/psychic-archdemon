@@ -8,401 +8,448 @@
             {{ existingProjectId ? t.projectCreate.titleDraft : t.projectCreate.titleNew }}
           </h1>
           <p class="text-white/80 mt-2">{{ t.projectCreate.subtitle }}</p>
+          <div class="flex items-center gap-2 mt-5">
+            <span
+              v-for="n in TOTAL_STEPS"
+              :key="n"
+              :class="['w-11 h-[3px] rounded-full transition', n <= step ? 'bg-white' : 'bg-white/30']"
+            />
+            <span class="ml-1 text-[11px] font-semibold tracking-[0.14em] uppercase text-white/85">
+              {{ stepLabel }}
+            </span>
+          </div>
         </div>
 
-        <form class="p-8 space-y-10" @submit.prevent="handleSubmit">
-          <section v-if="showPhoneField" class="space-y-4 p-5 bg-amber-50 border border-amber-200 rounded-2xl">
-            <div class="flex gap-3 items-start">
-              <svg
-                class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <div>
-                <p class="text-sm font-semibold text-amber-900">{{ t.projectCreate.phoneRequiredTitle }}</p>
-                <p class="text-sm text-amber-800 mt-1">
-                  {{ t.projectCreate.phoneRequiredBody }}
-                </p>
+        <form ref="formRef" class="p-8 space-y-10" @submit.prevent="handleSubmit">
+          <template v-if="step === 1">
+            <section v-if="showPhoneField" class="space-y-4 p-5 bg-amber-50 border border-amber-200 rounded-2xl">
+              <div class="flex gap-3 items-start">
+                <svg
+                  class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <div>
+                  <p class="text-sm font-semibold text-amber-900">{{ t.projectCreate.phoneRequiredTitle }}</p>
+                  <p class="text-sm text-amber-800 mt-1">
+                    {{ t.projectCreate.phoneRequiredBody }}
+                  </p>
+                </div>
               </div>
-            </div>
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2"
-                >{{ t.projectCreate.phoneLabel }}<span class="text-red-500">*</span></label
-              >
-              <input
-                v-model="formData.phoneNumber"
-                type="tel"
-                :placeholder="t.mulaiProyek.form.phonePlaceholder"
-                class="w-full px-4 py-3 border-2 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none transition"
-                :class="phoneError ? 'border-red-300' : 'border-gray-200'"
-              />
-              <p v-if="phoneError" class="mt-1 text-sm text-red-600">{{ phoneError }}</p>
-            </div>
-          </section>
-
-          <section class="space-y-6">
-            <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
-              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
-                >{{ t.projectCreate.part }} 1</span
-              >
-              <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partGeneral }}</h2>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2"
-                >{{ t.projectCreate.projectTitle }}<span class="text-red-500">*</span></label
-              >
-              <input
-                v-model="formData.title"
-                required
-                type="text"
-                :placeholder="t.projectCreate.projectTitlePlaceholder"
-                class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none transition"
-              />
-            </div>
-
-            <AddressAutocomplete
-              v-model:full-address="formData.fullAddress"
-              v-model:city="formData.city"
-              v-model:province="formData.province"
-              v-model:latitude="formData.latitude"
-              v-model:longitude="formData.longitude"
-            />
-
-            <LocationPicker v-model:latitude="formData.latitude" v-model:longitude="formData.longitude" />
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >{{ t.projectCreate.lotSize }}<span class="text-red-500">*</span></label
+                  >{{ t.projectCreate.phoneLabel }}<span class="text-red-500">*</span></label
                 >
                 <input
-                  v-model.number="formData.lotSize"
-                  required
-                  type="number"
-                  min="1"
-                  :placeholder="t.projectCreate.lotSizePlaceholder"
-                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
+                  v-model="formData.phoneNumber"
+                  type="tel"
+                  :placeholder="t.mulaiProyek.form.phonePlaceholder"
+                  class="w-full px-4 py-3 border-2 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none transition"
+                  :class="phoneError ? 'border-red-300' : 'border-gray-200'"
                 />
-                <p class="mt-1 text-xs text-gray-500">{{ t.projectCreate.lotSizeHint }}</p>
+                <p v-if="phoneError" class="mt-1 text-sm text-red-600">{{ phoneError }}</p>
               </div>
+            </section>
 
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">{{ t.projectCreate.buildArea }}</label>
-                <input
-                  v-model.number="formData.buildArea"
-                  type="number"
-                  min="1"
-                  :placeholder="t.projectCreate.buildAreaPlaceholder"
-                  class="w-full px-4 py-3 border-2 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
-                  :class="buildAreaError ? 'border-red-300' : 'border-gray-200'"
-                />
-                <p v-if="buildAreaError" class="mt-1 text-xs text-red-600">{{ buildAreaError }}</p>
-                <p v-else class="mt-1 text-xs text-gray-500">{{ t.projectCreate.buildAreaHint }}</p>
+            <section class="space-y-6">
+              <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
+                <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
+                  >{{ t.projectCreate.part }} 1</span
+                >
+                <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partGeneral }}</h2>
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >{{ t.projectCreate.numberOfFloors }}<span class="text-red-500">*</span></label
+                  >{{ t.projectCreate.projectTitle }}<span class="text-red-500">*</span></label
                 >
                 <input
-                  v-model.number="formData.numberOfFloors"
+                  v-model="formData.title"
                   required
-                  type="number"
-                  min="1"
-                  :placeholder="t.projectCreate.numberOfFloorsPlaceholder"
-                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#7C4728] focus:border-[#7C4728] outline-none"
+                  type="text"
+                  :placeholder="t.projectCreate.projectTitlePlaceholder"
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none transition"
                 />
               </div>
-            </div>
 
-            <div class="grid md:grid-cols-2 gap-6">
+              <AddressAutocomplete
+                v-model:full-address="formData.fullAddress"
+                v-model:city="formData.city"
+                v-model:province="formData.province"
+                v-model:latitude="formData.latitude"
+                v-model:longitude="formData.longitude"
+              />
+
+              <LocationPicker v-model:latitude="formData.latitude" v-model:longitude="formData.longitude" />
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2"
+                    >{{ t.projectCreate.lotSize }}<span class="text-red-500">*</span></label
+                  >
+                  <input
+                    v-model.number="formData.lotSize"
+                    required
+                    type="number"
+                    min="1"
+                    :placeholder="t.projectCreate.lotSizePlaceholder"
+                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
+                  />
+                  <p class="mt-1 text-xs text-gray-500">{{ t.projectCreate.lotSizeHint }}</p>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">{{ t.projectCreate.buildArea }}</label>
+                  <input
+                    v-model.number="formData.buildArea"
+                    type="number"
+                    min="1"
+                    :placeholder="t.projectCreate.buildAreaPlaceholder"
+                    class="w-full px-4 py-3 border-2 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
+                    :class="buildAreaError ? 'border-red-300' : 'border-gray-200'"
+                  />
+                  <p v-if="buildAreaError" class="mt-1 text-xs text-red-600">{{ buildAreaError }}</p>
+                  <p v-else class="mt-1 text-xs text-gray-500">{{ t.projectCreate.buildAreaHint }}</p>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2"
+                    >{{ t.projectCreate.numberOfFloors }}<span class="text-red-500">*</span></label
+                  >
+                  <input
+                    v-model.number="formData.numberOfFloors"
+                    required
+                    type="number"
+                    min="1"
+                    :placeholder="t.projectCreate.numberOfFloorsPlaceholder"
+                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#7C4728] focus:border-[#7C4728] outline-none"
+                  />
+                </div>
+              </div>
+
+              <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2"
+                    >{{ t.projectCreate.projectScope }}<span class="text-red-500">*</span></label
+                  >
+                  <select
+                    v-model="formData.projectScope"
+                    required
+                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
+                  >
+                    <option :value="null" disabled>{{ t.projectCreate.selectScope }}</option>
+                    <option v-for="scope in PROJECT_SCOPES" :key="scope.value" :value="scope.value">
+                      {{ localeLabel(scope) }}
+                    </option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2"
+                    >{{ t.projectCreate.category }}<span class="text-red-500">*</span></label
+                  >
+                  <select
+                    v-model="formData.category"
+                    required
+                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
+                    @change="onCategoryChange"
+                  >
+                    <option :value="null" disabled>{{ t.projectCreate.selectCategory }}</option>
+                    <option v-for="cat in PROJECT_CATEGORIES" :key="cat.value" :value="cat.value">
+                      {{ localeLabel(cat) }}
+                    </option>
+                  </select>
+                  <p v-if="categoryDescription" class="mt-1 text-sm text-gray-500">
+                    {{ categoryDescription }}
+                  </p>
+                </div>
+              </div>
+
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >{{ t.projectCreate.projectScope }}<span class="text-red-500">*</span></label
+                  >{{ t.projectCreate.subCategory }}<span class="text-red-500">*</span></label
                 >
                 <select
-                  v-model="formData.projectScope"
+                  v-model="formData.subCategory"
                   required
-                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
+                  :disabled="availableSubCategories.length === 0"
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none disabled:bg-gray-50 disabled:text-gray-400 disabled:cursor-not-allowed"
                 >
-                  <option :value="null" disabled>{{ t.projectCreate.selectScope }}</option>
-                  <option v-for="scope in PROJECT_SCOPES" :key="scope.value" :value="scope.value">
-                    {{ localeLabel(scope) }}
+                  <option :value="null" disabled>
+                    {{
+                      availableSubCategories.length === 0
+                        ? t.projectCreate.selectCategoryFirst
+                        : t.projectCreate.selectSubCategory
+                    }}
+                  </option>
+                  <option v-for="sub in availableSubCategories" :key="sub.value" :value="sub.value">
+                    {{ localeLabel(sub) }}
                   </option>
                 </select>
               </div>
 
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >{{ t.projectCreate.category }}<span class="text-red-500">*</span></label
+                  >{{ t.projectCreate.detailedRequirements }}<span class="text-red-500">*</span></label
                 >
-                <select
-                  v-model="formData.category"
+                <textarea
+                  v-model="formData.description"
                   required
+                  rows="4"
+                  :placeholder="t.projectCreate.detailedRequirementsPlaceholder"
                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
-                  @change="onCategoryChange"
-                >
-                  <option :value="null" disabled>{{ t.projectCreate.selectCategory }}</option>
-                  <option v-for="cat in PROJECT_CATEGORIES" :key="cat.value" :value="cat.value">
-                    {{ localeLabel(cat) }}
-                  </option>
-                </select>
-                <p v-if="categoryDescription" class="mt-1 text-sm text-gray-500">
-                  {{ categoryDescription }}
-                </p>
+                />
               </div>
-            </div>
+            </section>
+          </template>
 
-            <div v-if="availableSubCategories.length > 0">
-              <label class="block text-sm font-medium text-gray-700 mb-2"
-                >{{ t.projectCreate.subCategory }}<span class="text-red-500">*</span></label
-              >
-              <select
-                v-model="formData.subCategory"
-                required
-                class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
-              >
-                <option :value="null" disabled>{{ t.projectCreate.selectSubCategory }}</option>
-                <option v-for="sub in availableSubCategories" :key="sub.value" :value="sub.value">
-                  {{ localeLabel(sub) }}
-                </option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2"
-                >{{ t.projectCreate.detailedRequirements }}<span class="text-red-500">*</span></label
-              >
-              <textarea
-                v-model="formData.description"
-                required
-                rows="4"
-                :placeholder="t.projectCreate.detailedRequirementsPlaceholder"
-                class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
-              />
-            </div>
-          </section>
-
-          <section class="space-y-6">
-            <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
-              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
-                >{{ t.projectCreate.part }} 2</span
-              >
-              <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partDeliverables }}</h2>
-            </div>
-
-            <DeliverablesSelector v-model="formData.deliverables" />
-          </section>
-
-          <section class="space-y-6">
-            <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
-              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
-                >{{ t.projectCreate.part }} 3</span
-              >
-              <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partImages }}</h2>
-            </div>
-            <p class="text-xs text-gray-500">
-              {{ t.projectCreate.imagesHint }}
-            </p>
-            <MultiImageUploader
-              v-model="coverImages"
-              label=""
-              :max-files="10"
-              :existing-images="existingImages"
-              @delete-existing="handleDeleteExistingImage"
-            />
-          </section>
-
-          <section class="space-y-6">
-            <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
-              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
-                >{{ t.projectCreate.part }} 4</span
-              >
-              <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partBudget }}</h2>
-            </div>
-
-            <div class="space-y-8">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">{{
-                  t.projectCreate.designBudgetLabel
-                }}</label>
-                <p class="text-xs text-gray-500 mb-2">
-                  {{ t.projectCreate.designBudgetDescription }}
-                </p>
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label class="block text-xs font-medium text-gray-500 mb-1"
-                      >{{ t.projectCreate.designBudgetMinLabel }}<span class="text-red-500">*</span></label
-                    >
-                    <div class="relative">
-                      <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">IDR</span>
-                      <input
-                        v-model="formData.designBudgetMin"
-                        type="text"
-                        required
-                        :placeholder="t.projectCreate.budgetPlaceholder"
-                        class="w-full pl-16 pr-4 py-3 border-2 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-right font-medium"
-                        :class="budgetRangeError ? 'border-red-300' : 'border-gray-200'"
-                        @input="formatDesignBudgetMin"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label class="block text-xs font-medium text-gray-500 mb-1"
-                      >{{ t.projectCreate.designBudgetMaxLabel }}<span class="text-red-500">*</span></label
-                    >
-                    <div class="relative">
-                      <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">IDR</span>
-                      <input
-                        v-model="formData.designBudgetMax"
-                        type="text"
-                        required
-                        :placeholder="t.projectCreate.budgetPlaceholder"
-                        class="w-full pl-16 pr-4 py-3 border-2 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-right font-medium"
-                        :class="budgetRangeError ? 'border-red-300' : 'border-gray-200'"
-                        @input="formatDesignBudgetMax"
-                      />
-                    </div>
-                  </div>
-                </div>
-                <p v-if="budgetRangeError" class="mt-2 text-sm text-red-600">{{ budgetRangeError }}</p>
-
-                <div class="mt-3 bg-brand-tan/30 p-4 rounded-xl border border-brand-gold/20 flex gap-3">
-                  <Info :size="20" class="text-brand-brown flex-shrink-0" />
-                  <p class="text-xs text-gray-700 leading-relaxed" v-html="t.projectCreate.designBudgetHint" />
-                </div>
+          <template v-else>
+            <section class="space-y-6">
+              <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
+                <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
+                  >{{ t.projectCreate.part }} 2</span
+                >
+                <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partDeliverables }}</h2>
               </div>
-            </div>
-          </section>
+              <p class="text-xs text-gray-500">{{ t.projectCreate.deliverablesHint }}</p>
 
-          <section class="space-y-6">
-            <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
-              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
-                >{{ t.projectCreate.part }} 5</span
-              >
-              <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partStartDate }}</h2>
-            </div>
-            <p class="text-xs text-gray-500">{{ t.projectCreate.startDateHint }}</p>
+              <DeliverablesSelector v-model="formData.deliverables" />
+            </section>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <label
-                :class="[
-                  'flex items-center gap-4 p-5 rounded-2xl border-2 cursor-pointer transition',
-                  formData.startDateType === 'IMMEDIATELY'
-                    ? 'border-brand-brown bg-brand-tan/30'
-                    : 'border-gray-200 hover:border-gray-300'
-                ]"
-              >
-                <input v-model="formData.startDateType" type="radio" value="IMMEDIATELY" class="hidden" />
-                <div
-                  :class="[
-                    'w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0',
-                    formData.startDateType === 'IMMEDIATELY' ? 'border-brand-brown' : 'border-gray-300'
-                  ]"
+            <section class="space-y-6">
+              <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
+                <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
+                  >{{ t.projectCreate.part }} 3</span
                 >
-                  <div
-                    v-if="formData.startDateType === 'IMMEDIATELY'"
-                    class="w-2.5 h-2.5 rounded-full bg-brand-brown"
-                  />
-                </div>
-                <div>
-                  <p class="font-semibold text-gray-900">{{ t.projectCreate.immediately }}</p>
-                  <p class="text-xs text-gray-500 mt-0.5">{{ t.projectCreate.immediatelyDesc }}</p>
-                </div>
-              </label>
-
-              <label
-                :class="[
-                  'flex items-center gap-4 p-5 rounded-2xl border-2 cursor-pointer transition',
-                  formData.startDateType === 'SPECIFIC_DATE'
-                    ? 'border-brand-brown bg-brand-tan/30'
-                    : 'border-gray-200 hover:border-gray-300'
-                ]"
-              >
-                <input v-model="formData.startDateType" type="radio" value="SPECIFIC_DATE" class="hidden" />
-                <div
-                  :class="[
-                    'w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0',
-                    formData.startDateType === 'SPECIFIC_DATE' ? 'border-brand-brown' : 'border-gray-300'
-                  ]"
-                >
-                  <div
-                    v-if="formData.startDateType === 'SPECIFIC_DATE'"
-                    class="w-2.5 h-2.5 rounded-full bg-brand-brown"
-                  />
-                </div>
-                <div>
-                  <p class="font-semibold text-gray-900">{{ t.projectCreate.specificDate }}</p>
-                  <p class="text-xs text-gray-500 mt-0.5">{{ t.projectCreate.specificDateDesc }}</p>
-                </div>
-              </label>
-            </div>
-
-            <div v-if="formData.startDateType === 'SPECIFIC_DATE'">
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                {{ t.projectCreate.targetStartDate }} <span class="text-red-500">*</span>
-              </label>
-              <input
-                v-model="formData.expectedStartDate"
-                type="date"
-                :min="minStartDate"
-                required
-                class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none transition"
-              />
-            </div>
-          </section>
-
-          <section class="space-y-6">
-            <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
-              <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
-                >{{ t.projectCreate.part }} 6</span
-              >
-              <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partDeadline }}</h2>
-            </div>
-            <p class="text-xs text-gray-500">{{ t.projectCreate.biddingDeadlineHint }}</p>
-
-            <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
-                {{ t.projectCreate.biddingClosesOn }} <span class="text-red-500">*</span>
-              </label>
-              <input
-                v-model="formData.biddingDeadline"
-                type="date"
-                required
-                :min="minBiddingDeadline"
-                :max="maxBiddingDeadline"
-                class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none transition"
-              />
-              <p v-if="biddingDaysLeft !== null" class="mt-2 text-sm font-medium text-brand-brown">
-                {{ biddingDaysLeft }}
-                {{ biddingDaysLeft === 1 ? t.projectCreate.biddingDayLeft : t.projectCreate.biddingDaysLeft }}
+                <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partImages }}</h2>
+              </div>
+              <p class="text-xs text-gray-500">
+                {{ t.projectCreate.imagesHint }}
               </p>
-            </div>
-          </section>
+              <MultiImageUploader
+                v-model="coverImages"
+                label=""
+                :max-files="10"
+                :existing-images="existingImages"
+                @delete-existing="handleDeleteExistingImage"
+              />
+            </section>
+
+            <section class="space-y-6">
+              <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
+                <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
+                  >{{ t.projectCreate.part }} 4</span
+                >
+                <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partBudget }}</h2>
+              </div>
+
+              <div class="space-y-8">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 mb-2">{{
+                    t.projectCreate.designBudgetLabel
+                  }}</label>
+                  <p class="text-xs text-gray-500 mb-2">
+                    {{ t.projectCreate.designBudgetDescription }}
+                  </p>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label class="block text-xs font-medium text-gray-500 mb-1"
+                        >{{ t.projectCreate.designBudgetMinLabel }}<span class="text-red-500">*</span></label
+                      >
+                      <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">IDR</span>
+                        <input
+                          v-model="formData.designBudgetMin"
+                          type="text"
+                          required
+                          :placeholder="t.projectCreate.budgetPlaceholder"
+                          class="w-full pl-16 pr-4 py-3 border-2 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-right font-medium"
+                          :class="budgetRangeError ? 'border-red-300' : 'border-gray-200'"
+                          @input="formatDesignBudgetMin"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label class="block text-xs font-medium text-gray-500 mb-1"
+                        >{{ t.projectCreate.designBudgetMaxLabel }}<span class="text-red-500">*</span></label
+                      >
+                      <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 font-medium">IDR</span>
+                        <input
+                          v-model="formData.designBudgetMax"
+                          type="text"
+                          required
+                          :placeholder="t.projectCreate.budgetPlaceholder"
+                          class="w-full pl-16 pr-4 py-3 border-2 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-right font-medium"
+                          :class="budgetRangeError ? 'border-red-300' : 'border-gray-200'"
+                          @input="formatDesignBudgetMax"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <p v-if="budgetRangeError" class="mt-2 text-sm text-red-600">{{ budgetRangeError }}</p>
+
+                  <div class="mt-3 bg-brand-tan/30 p-4 rounded-xl border border-brand-gold/20 flex gap-3">
+                    <Info :size="20" class="text-brand-brown flex-shrink-0" />
+                    <p class="text-xs text-gray-700 leading-relaxed" v-html="t.projectCreate.designBudgetHint" />
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="space-y-6">
+              <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
+                <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
+                  >{{ t.projectCreate.part }} 5</span
+                >
+                <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partStartDate }}</h2>
+              </div>
+              <p class="text-xs text-gray-500">{{ t.projectCreate.startDateHint }}</p>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <label
+                  :class="[
+                    'flex items-center gap-4 p-5 rounded-2xl border-2 cursor-pointer transition',
+                    formData.startDateType === 'IMMEDIATELY'
+                      ? 'border-brand-brown bg-brand-tan/30'
+                      : 'border-gray-200 hover:border-gray-300'
+                  ]"
+                >
+                  <input v-model="formData.startDateType" type="radio" value="IMMEDIATELY" class="hidden" />
+                  <div
+                    :class="[
+                      'w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0',
+                      formData.startDateType === 'IMMEDIATELY' ? 'border-brand-brown' : 'border-gray-300'
+                    ]"
+                  >
+                    <div
+                      v-if="formData.startDateType === 'IMMEDIATELY'"
+                      class="w-2.5 h-2.5 rounded-full bg-brand-brown"
+                    />
+                  </div>
+                  <div>
+                    <p class="font-semibold text-gray-900">{{ t.projectCreate.immediately }}</p>
+                    <p class="text-xs text-gray-500 mt-0.5">{{ t.projectCreate.immediatelyDesc }}</p>
+                  </div>
+                </label>
+
+                <label
+                  :class="[
+                    'flex items-center gap-4 p-5 rounded-2xl border-2 cursor-pointer transition',
+                    formData.startDateType === 'SPECIFIC_DATE'
+                      ? 'border-brand-brown bg-brand-tan/30'
+                      : 'border-gray-200 hover:border-gray-300'
+                  ]"
+                >
+                  <input v-model="formData.startDateType" type="radio" value="SPECIFIC_DATE" class="hidden" />
+                  <div
+                    :class="[
+                      'w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0',
+                      formData.startDateType === 'SPECIFIC_DATE' ? 'border-brand-brown' : 'border-gray-300'
+                    ]"
+                  >
+                    <div
+                      v-if="formData.startDateType === 'SPECIFIC_DATE'"
+                      class="w-2.5 h-2.5 rounded-full bg-brand-brown"
+                    />
+                  </div>
+                  <div>
+                    <p class="font-semibold text-gray-900">{{ t.projectCreate.specificDate }}</p>
+                    <p class="text-xs text-gray-500 mt-0.5">{{ t.projectCreate.specificDateDesc }}</p>
+                  </div>
+                </label>
+              </div>
+
+              <div v-if="formData.startDateType === 'SPECIFIC_DATE'">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  {{ t.projectCreate.targetStartDate }} <span class="text-red-500">*</span>
+                </label>
+                <input
+                  v-model="formData.expectedStartDate"
+                  type="date"
+                  :min="minStartDate"
+                  required
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none transition"
+                />
+              </div>
+            </section>
+
+            <section class="space-y-6">
+              <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
+                <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
+                  >{{ t.projectCreate.part }} 6</span
+                >
+                <h2 class="text-xl font-bold text-black">{{ t.projectCreate.partDeadline }}</h2>
+              </div>
+              <p class="text-xs text-gray-500">{{ t.projectCreate.biddingDeadlineHint }}</p>
+
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                  {{ t.projectCreate.biddingClosesOn }} <span class="text-red-500">*</span>
+                </label>
+                <input
+                  v-model="formData.biddingDeadline"
+                  type="date"
+                  required
+                  :min="minBiddingDeadline"
+                  :max="maxBiddingDeadline"
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none transition"
+                />
+                <p v-if="biddingDaysLeft !== null" class="mt-2 text-sm font-medium text-brand-brown">
+                  {{ biddingDaysLeft }}
+                  {{ biddingDaysLeft === 1 ? t.projectCreate.biddingDayLeft : t.projectCreate.biddingDaysLeft }}
+                </p>
+              </div>
+            </section>
+          </template>
 
           <BaseAlert v-if="error" variant="error">
             {{ error }}
           </BaseAlert>
 
-          <div class="flex gap-4 pt-6 border-t border-gray-100">
+          <div v-if="step === 1" class="flex flex-wrap items-center gap-4 pt-6 border-t border-gray-100">
             <button
               type="button"
               :disabled="isSavingDraft"
               class="px-6 py-3 text-gray-700 bg-white border-2 border-gray-300 rounded-full hover:bg-gray-50 transition font-medium disabled:opacity-50"
               @click="saveDraftAndLeave"
             >
-              {{ isSavingDraft ? t.projectCreate.saving : t.projectCreate.cancel }}
+              {{ isSavingDraft ? t.projectCreate.saving : t.projectCreate.saveDraftAndExit }}
+            </button>
+            <span class="hidden sm:block flex-1 text-right text-xs text-gray-400">
+              {{ t.projectCreate.nextStepHint }}
+            </span>
+            <button
+              type="button"
+              :disabled="isAdvancing || !!buildAreaError"
+              class="flex-1 sm:flex-none px-8 py-3 text-white bg-brand-brown rounded-full hover:bg-black shadow-md hover:shadow-lg transition-all font-bold flex items-center justify-center gap-2 disabled:opacity-50"
+              @click="goNext"
+            >
+              <Loader v-if="isAdvancing" :size="20" class="animate-spin" />
+              {{ t.projectCreate.next }}
+              <ArrowRight v-if="!isAdvancing" :size="18" />
+            </button>
+          </div>
+
+          <div v-else class="flex gap-4 pt-6 border-t border-gray-100">
+            <button
+              type="button"
+              :disabled="loading"
+              class="px-6 py-3 text-brand-brown bg-white border-2 border-brand-brown rounded-full hover:bg-brand-brown hover:text-white transition font-bold flex items-center gap-2 disabled:opacity-50"
+              @click="goBack"
+            >
+              <ArrowLeft :size="18" />
+              {{ t.projectCreate.back }}
             </button>
             <button
               type="submit"
@@ -425,7 +472,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from '@/composables/useI18n'
 import { PROJECT_SCOPES, PROJECT_CATEGORIES, subCategoriesFor, isValidSubCategory } from '@/constants/projectTaxonomy'
-import { Home, CheckSquare, Loader, Info } from 'lucide-vue-next'
+import { Home, CheckSquare, Loader, Info, ArrowLeft, ArrowRight } from 'lucide-vue-next'
 import { useProjectsStore } from '@/stores/projects'
 import { useClientProfileStore } from '@/stores/clientProfile'
 import { useProjectBrief } from '@/composables/useProjectBrief'
@@ -443,6 +490,11 @@ const projectsStore = useProjectsStore()
 const clientProfileStore = useClientProfileStore()
 const { tokenFromRoute, clearToken } = useProjectBrief()
 
+const TOTAL_STEPS = 2
+
+const formRef = ref(null)
+const step = ref(1)
+const isAdvancing = ref(false)
 const existingProjectId = ref(null)
 const isSavingDraft = ref(false)
 const phoneFieldForced = ref(false)
@@ -664,12 +716,48 @@ const saveDraftAndLeave = async () => {
   router.push({ name: 'ClientDashboard' })
 }
 
+const stepLabel = computed(() =>
+  t.value.projectCreate.stepOf.replace('{step}', step.value).replace('{total}', TOTAL_STEPS)
+)
+
+// Step 2 fields are unmounted while on step 1, so native validity only covers step 1 here.
+const goNext = async () => {
+  error.value = null
+  if (!formRef.value?.reportValidity()) return
+  if (!validatePhoneField() || buildAreaError.value) return
+
+  isAdvancing.value = true
+  try {
+    await persistDraft()
+  } catch (err) {
+    // The draft is saved again on submit, so a failed save here must not block the wizard
+    console.error('Failed to save draft before continuing:', err)
+  } finally {
+    isAdvancing.value = false
+  }
+  step.value = 2
+  window.scrollTo(0, 0)
+}
+
+const goBack = () => {
+  error.value = null
+  step.value = 1
+  window.scrollTo(0, 0)
+}
+
 const handleSubmit = async () => {
+  // Enter inside a step 1 input submits the form; treat it as "continue" instead of posting
+  if (step.value === 1) {
+    await goNext()
+    return
+  }
+
   loading.value = true
   error.value = null
 
   if (!validatePhoneField()) {
     loading.value = false
+    step.value = 1
     return
   }
 
@@ -688,6 +776,7 @@ const handleSubmit = async () => {
     if (message.startsWith('PROFILE_INCOMPLETE:')) {
       error.value = message.replace('PROFILE_INCOMPLETE:', '').trim()
       phoneFieldForced.value = true
+      step.value = 1
       await clientProfileStore.fetchProfile()
     } else {
       error.value = message

@@ -14,11 +14,13 @@ import org.junit.jupiter.api.Test;
 class ProjectTaxonomyTest {
 
   @Test
-  @DisplayName("has the eight agreed categories")
+  @DisplayName("has the ten agreed categories")
   void categoryCount() {
-    assertEquals(8, ProjectTaxonomy.categories().size());
+    assertEquals(10, ProjectTaxonomy.categories().size());
     assertTrue(ProjectTaxonomy.isValidCategory("RESIDENTIAL"));
     assertTrue(ProjectTaxonomy.isValidCategory("MIXED_USE"));
+    assertTrue(ProjectTaxonomy.isValidCategory("RECREATIONAL"));
+    assertTrue(ProjectTaxonomy.isValidCategory("AGRICULTURAL"));
     assertFalse(ProjectTaxonomy.isValidCategory("STUDENT_HOUSING"));
     assertFalse(ProjectTaxonomy.isValidCategory("RENOVATION"));
   }
@@ -26,8 +28,11 @@ class ProjectTaxonomyTest {
   @Test
   @DisplayName("renovation is a scope, not a category")
   void scopes() {
+    assertEquals(4, ProjectTaxonomy.SCOPES.size());
     assertTrue(ProjectTaxonomy.isValidScope("NEW_BUILD"));
     assertTrue(ProjectTaxonomy.isValidScope("RENOVATION"));
+    assertTrue(ProjectTaxonomy.isValidScope("INTERIOR_FIT_OUT"));
+    assertTrue(ProjectTaxonomy.isValidScope("RESTORATION"));
     assertFalse(ProjectTaxonomy.isValidScope("RESIDENTIAL"));
     assertFalse(ProjectTaxonomy.isValidScope(null));
   }
@@ -36,19 +41,22 @@ class ProjectTaxonomyTest {
   @DisplayName("sub-category lists match the agreed sizes")
   void subCategorySizes() {
     assertEquals(7, ProjectTaxonomy.subCategoriesFor("RESIDENTIAL").size());
-    assertEquals(22, ProjectTaxonomy.subCategoriesFor("COMMERCIAL").size());
+    assertEquals(28, ProjectTaxonomy.subCategoriesFor("COMMERCIAL").size());
     assertEquals(9, ProjectTaxonomy.subCategoriesFor("INDUSTRIAL").size());
-    assertEquals(8, ProjectTaxonomy.subCategoriesFor("INSTITUTIONAL").size());
-    assertEquals(4, ProjectTaxonomy.subCategoriesFor("INFRASTRUCTURE").size());
+    assertEquals(14, ProjectTaxonomy.subCategoriesFor("INSTITUTIONAL").size());
+    assertEquals(4, ProjectTaxonomy.subCategoriesFor("INTERIOR_ONLY").size());
+    assertEquals(4, ProjectTaxonomy.subCategoriesFor("LANDSCAPE").size());
+    assertEquals(6, ProjectTaxonomy.subCategoriesFor("INFRASTRUCTURE").size());
+    assertEquals(3, ProjectTaxonomy.subCategoriesFor("MIXED_USE").size());
+    assertEquals(5, ProjectTaxonomy.subCategoriesFor("RECREATIONAL").size());
+    assertEquals(4, ProjectTaxonomy.subCategoriesFor("AGRICULTURAL").size());
   }
 
   @Test
-  @DisplayName("only categories with a list demand a sub-category")
+  @DisplayName("every category demands a sub-category")
   void requiredness() {
-    assertTrue(ProjectTaxonomy.requiresSubCategory("RESIDENTIAL"));
-    assertFalse(ProjectTaxonomy.requiresSubCategory("INTERIOR_ONLY"));
-    assertFalse(ProjectTaxonomy.requiresSubCategory("LANDSCAPE"));
-    assertFalse(ProjectTaxonomy.requiresSubCategory("MIXED_USE"));
+    ProjectTaxonomy.categories()
+        .forEach(category -> assertTrue(ProjectTaxonomy.requiresSubCategory(category), category));
     assertFalse(ProjectTaxonomy.requiresSubCategory("UNKNOWN"));
   }
 
@@ -59,5 +67,13 @@ class ProjectTaxonomyTest {
     assertTrue(ProjectTaxonomy.isValidSubCategory("COMMERCIAL", "SHOPHOUSE"));
     assertFalse(ProjectTaxonomy.isValidSubCategory("RESIDENTIAL", "CAFE"));
     assertFalse(ProjectTaxonomy.isValidSubCategory("INTERIOR_ONLY", "HOUSE"));
+  }
+
+  @Test
+  @DisplayName("park moved from infrastructure to landscape")
+  void retiredInfrastructureValues() {
+    assertFalse(ProjectTaxonomy.isValidSubCategory("INFRASTRUCTURE", "PARK"));
+    assertFalse(ProjectTaxonomy.isValidSubCategory("INFRASTRUCTURE", "OTHER_INFRASTRUCTURE"));
+    assertTrue(ProjectTaxonomy.isValidSubCategory("LANDSCAPE", "PUBLIC_PARK"));
   }
 }

@@ -50,7 +50,7 @@ test.describe('Create Project Form', () => {
   })
 
   test('shows validation errors on empty submit', async ({ page }) => {
-    const submitBtn = page.getByRole('button', { name: /submit|create|next/i }).first()
+    const submitBtn = page.getByRole('button', { name: /continue|lanjutkan|submit|create|next/i }).first()
     await expect(submitBtn).toBeVisible({ timeout: 10000 })
     await submitBtn.click()
     // Should stay on the same page (validation prevents submit)

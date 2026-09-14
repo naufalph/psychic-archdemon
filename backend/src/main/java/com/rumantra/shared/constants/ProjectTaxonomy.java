@@ -14,7 +14,8 @@ import java.util.Set;
  */
 public final class ProjectTaxonomy {
 
-  public static final Set<String> SCOPES = setOf("NEW_BUILD", "RENOVATION");
+  public static final Set<String> SCOPES =
+      setOf("NEW_BUILD", "RENOVATION", "INTERIOR_FIT_OUT", "RESTORATION");
 
   private static final Map<String, Set<String>> SUB_CATEGORIES = buildSubCategories();
 
@@ -81,7 +82,13 @@ public final class ProjectTaxonomy {
             "GYM",
             "SPA",
             "PHARMACY",
-            "LABORATORY"));
+            "LABORATORY",
+            "BANK_BRANCH",
+            "GAS_STATION",
+            "CAR_WASH",
+            "EVENT_HALL",
+            "CINEMA",
+            "LAUNDRY"));
     map.put(
         "INDUSTRIAL",
         setOf(
@@ -104,11 +111,31 @@ public final class ProjectTaxonomy {
             "RELIGIOUS_FACILITY",
             "COMMUNITY_CENTER",
             "GALLERY_MUSEUM",
-            "GOVERNMENT_FACILITY"));
-    map.put("INTERIOR_ONLY", Collections.emptySet());
-    map.put("LANDSCAPE", Collections.emptySet());
-    map.put("INFRASTRUCTURE", setOf("PARK", "DRAINAGE", "ROAD", "OTHER_INFRASTRUCTURE"));
-    map.put("MIXED_USE", Collections.emptySet());
+            "GOVERNMENT_FACILITY",
+            "HOSPITAL",
+            "UNIVERSITY",
+            "NURSING_HOME",
+            "ORPHANAGE",
+            "FIRE_POLICE_STATION",
+            "CEMETERY"));
+    map.put(
+        "INTERIOR_ONLY",
+        setOf(
+            "RESIDENTIAL_INTERIOR",
+            "OFFICE_INTERIOR",
+            "RETAIL_FNB_INTERIOR",
+            "HOSPITALITY_INTERIOR"));
+    map.put("LANDSCAPE", setOf("PRIVATE_GARDEN", "PUBLIC_PARK", "ROOFTOP_GARDEN", "STREETSCAPE"));
+    // PARK and OTHER_INFRASTRUCTURE were retired. Posted projects that hold them are left as-is,
+    // since sub-categories are only checked when a draft is submitted.
+    map.put(
+        "INFRASTRUCTURE",
+        setOf("DRAINAGE", "ROAD", "BRIDGE", "TELECOM_TOWER", "PARKING_STRUCTURE", "SOLAR_PANEL"));
+    map.put("MIXED_USE", setOf("LIVE_WORK", "TOD", "MIXED_USE_TOWER"));
+    map.put(
+        "RECREATIONAL",
+        setOf("SPORTS_FIELD", "SWIMMING_POOL", "SPORTS_HALL", "GOLF_COURSE", "PLAYGROUND"));
+    map.put("AGRICULTURAL", setOf("GREENHOUSE", "BARN", "FARM_STORAGE", "AGROTOURISM"));
     return Collections.unmodifiableMap(map);
   }
 

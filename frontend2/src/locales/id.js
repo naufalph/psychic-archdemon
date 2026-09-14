@@ -554,39 +554,99 @@ export default {
       architecturalDesign: 'Desain Arsitektur',
       technicalDesign: 'Desain Teknis',
       interiorLandscape: 'Interior dan Landscape',
-      calculationEstimation: 'Perhitungan & Estimasi'
+      calculationEstimation: 'Perhitungan & Estimasi',
+      other: 'Lainnya'
     },
     deliverableItems: {
       SITE_ANALYSIS: 'Analisis Tapak',
       ZONING_STUDY: 'Analisis Zonasi & Regulasi',
-      ARCHITECTURAL_DRAWINGS: 'Gambar Arsitektur',
-      DESIGN_VISUALIZATION_3D: 'Visualisasi 3D & Presentasi Desain',
+      SITE_BLOCK_PLAN: 'Site Plan & Block Plan',
+      FLOOR_PLAN: 'Denah',
+      ELEVATION_SECTION: 'Tampak & Potongan',
+      DETAIL_DRAWINGS:
+        'Rencana & Detail (Atap, Plafon, Lantai, Kamar Mandi, Kusen, Pintu & Jendela, dll.)',
+      RENDER_3D_EXTERIOR: 'Render Gambar 3D Eksterior',
+      RENDER_3D_INTERIOR: 'Render Gambar 3D Interior',
+      RENDER_3D_VIDEO: 'Render Video 3D Walkthrough/Animation',
       MATERIAL_FINISHING_SPEC: 'Spesifikasi Material dan Finishing',
       STRUCTURAL_DRAWINGS: 'Gambar Struktur',
-      MEP_DRAWINGS: 'Gambar Mekanikal, Elektrikal & Plumbing (MEP)',
+      MECHANICAL_DRAWINGS: 'Gambar Mechanical',
+      ELECTRICAL_DRAWINGS: 'Gambar Electrical',
+      PLUMBING_DRAWINGS: 'Gambar Plumbing',
       FIRE_PROTECTION_DRAWINGS: 'Gambar Proteksi Kebakaran',
-      INTERIOR_DESIGN: 'Desain Interior',
-      LANDSCAPE_DESIGN: 'Desain Landscape',
       STRUCTURAL_CALCULATION: 'Perhitungan Struktur',
       MEP_CALCULATION: 'Perhitungan Mekanikal, Elektrikal & Plumbing (MEP)',
-      COST_ESTIMATION: 'Estimasi Biaya'
+      INTERIOR_DESIGN: 'Desain Interior',
+      LANDSCAPE_DESIGN: 'Desain Landscape',
+      COST_ESTIMATION: 'Estimasi Biaya',
+      ARCHITECTURAL_DRAWINGS: 'Gambar Arsitektur',
+      DESIGN_VISUALIZATION_3D: 'Visualisasi 3D & Presentasi Desain',
+      MEP_DRAWINGS: 'Gambar Mekanikal, Elektrikal & Plumbing (MEP)'
     },
     deliverableDescriptions: {
-      SITE_ANALYSIS: 'Survei lahan dan penilaian kondisi tapak',
-      ZONING_STUDY: 'Aturan zonasi, KDB/KLB dan regulasi bangunan',
-      ARCHITECTURAL_DRAWINGS: 'Denah, tampak dan potongan',
-      DESIGN_VISUALIZATION_3D: 'Render 3D dan materi presentasi desain',
-      MATERIAL_FINISHING_SPEC: 'Daftar material dan spesifikasi finishing',
-      STRUCTURAL_DRAWINGS: 'Gambar pondasi, kolom, balok dan pelat',
-      MEP_DRAWINGS: 'Tata letak mekanikal, elektrikal dan plambing',
-      FIRE_PROTECTION_DRAWINGS: 'Deteksi kebakaran, sprinkler dan jalur evakuasi',
-      INTERIOR_DESIGN: 'Tata ruang dan finishing interior',
-      LANDSCAPE_DESIGN: 'Taman, hardscape dan ruang luar',
-      STRUCTURAL_CALCULATION: 'Analisis struktur dan perhitungan beban',
-      MEP_CALCULATION: 'Perhitungan beban, kapasitas dan dimensi sistem MEP',
-      COST_ESTIMATION: 'Bill of quantity dan estimasi anggaran'
+      SITE_ANALYSIS: [
+        'Arsitek mempelajari lahan Anda sebelum merancang apa pun, misalnya arah matahari dan angin, jalur akses, dan pepohonan yang ada. Dengan tahapan ini, bangunan Anda dirancang menyesuaikan kondisi lahan yang sebenarnya.'
+      ],
+      ZONING_STUDY: [
+        'Pengecekan terhadap aturan tata ruang pemerintah daerah, seperti apakah lahan Anda boleh dibangun, jumlah lantai maksimal yang diizinkan, dan teknis lain seperti jarak minimum antara muka bangunan dan jalan, batas lahan terbangun, batas total luas lantai, dan minimum lahan hijau pada lahan Anda. Tahap ini melindungi Anda dari risiko izin ditolak atau bangunan yang harus dibongkar di kemudian hari.'
+      ],
+      SITE_BLOCK_PLAN: [
+        'Site Plan menunjukkan posisi bangunan Anda di dalam lahan, misalnya letak carport, taman, dan pagar.',
+        'Block Plan menunjukkan posisi lahan Anda dalam suatu kawasan, umumnya digunakan untuk proyek townhouse.'
+      ],
+      FLOOR_PLAN: [
+        'Gambar tata letak dan dimensi seluruh ruangan dalam bangunan yang dilihat dari atas.'
+      ],
+      ELEVATION_SECTION: [
+        'Tampak menunjukkan wujud bangunan dari empat arah beserta materialnya.',
+        'Potongan menunjukkan bangunan yang “diiris” secara vertikal untuk memperlihatkan detail seperti tinggi plafon, ketebalan lantai, dan kemiringan atap.'
+      ],
+      DETAIL_DRAWINGS: [
+        'Gambar rinci mengenai dimensi komponen bangunan Anda. Berguna untuk tahap konstruksi dan menjadi referensi ketika Anda membeli atau mendesain komponen seperti pintu, jendela, kusen, dan lain-lain.'
+      ],
+      RENDER_3D_EXTERIOR: [
+        'Visualisasi tampilan luar bangunan dalam bentuk gambar realistis sebelum bangunan benar-benar berdiri.'
+      ],
+      RENDER_3D_INTERIOR: [
+        'Visualisasi suasana ruang dalam bangunan, seperti pencahayaan, ukuran ruangan, warna, dan penataan furnitur.'
+      ],
+      RENDER_3D_VIDEO: ['Simulasi video yang membawa Anda menyusuri rancangan bangunan.'],
+      MATERIAL_FINISHING_SPEC: [
+        'Daftar rinci mengenai jenis, merek, dan kualitas material yang digunakan pada setiap bagian bangunan. Dokumen ini umumnya menjadi acuan tertulis untuk memastikan kesesuaian kualitas material yang terpasang.'
+      ],
+      STRUCTURAL_DRAWINGS: [
+        'Gambar teknis untuk komponen seperti pondasi, kolom, dan balok, beserta ukuran dan kekuatannya. Tahap ini krusial untuk Anda melanjutkan desain ke tahap konstruksi.'
+      ],
+      MECHANICAL_DRAWINGS: [
+        'Gambar teknis untuk mengatur sistem tata udara, seperti AC dan ventilasi, di seluruh bagian bangunan.'
+      ],
+      ELECTRICAL_DRAWINGS: [
+        'Gambar teknis untuk mengatur jalur kelistrikan, termasuk titik lampu, saklar, dan stop kontak di setiap ruangan dalam bangunan.'
+      ],
+      PLUMBING_DRAWINGS: [
+        'Gambar teknis untuk mengatur jalur perpipaan air bersih, air kotor, dan air hujan.'
+      ],
+      FIRE_PROTECTION_DRAWINGS: [
+        'Gambar teknis untuk mengatur sistem deteksi dan pemadam kebakaran, seperti sprinkler dan alarm. Umumnya diperlukan untuk bangunan komersial atau bertingkat.'
+      ],
+      STRUCTURAL_CALCULATION: [
+        'Perhitungan teknis yang membuktikan bahwa kekuatan struktur bangunan telah sesuai standar keamanan. Dokumen ini diperlukan untuk pengurusan izin bangunan (PBG) dan menjadi jaminan bahwa struktur dirancang dengan perhitungan yang tepat, bukan perkiraan.'
+      ],
+      MEP_CALCULATION: [
+        'Perhitungan kebutuhan daya listrik, kapasitas pompa air, dan sistem pendukung lainnya sesuai kebutuhan bangunan.'
+      ],
+      INTERIOR_DESIGN: [
+        'Perancangan lanjutan setelah denah, yang menentukan pemilihan warna, furnitur, dan pencahayaan di dalam ruangan. Tahap ini menghadirkan karakter dan kenyamanan pada rumah Anda, tidak sekadar ruang kosong yang telah selesai dibangun.'
+      ],
+      LANDSCAPE_DESIGN: [
+        'Perancangan mendetail area terbuka seperti taman dan jalur pejalan kaki yang meliputi jumlah, tipe, dan ukuran komponen seperti pohon, bebatuan, dan pencahayaan.'
+      ],
+      COST_ESTIMATION: [
+        'Perkiraan total biaya yang dibutuhkan untuk membangun desain bangunan Anda.'
+      ]
     },
-    selectAll: 'Pilih Semua'
+    selectAll: 'Pilih Semua',
+    deselectAll: 'Batalkan Semua'
   },
   identityDocs: {
     title: 'Verifikasi Identitas',
@@ -694,8 +754,16 @@ export default {
     designBudgetRangeError: 'Harga maksimum harus sama dengan atau lebih besar dari harga minimum.',
     part: 'Bagian',
     partImages: 'Gambar Proyek',
-    partGeneral: 'Informasi Umum',
-    partDeliverables: 'Keluaran yang Dibutuhkan',
+    partGeneral: 'Tentang Proyek Anda',
+    partDeliverables: 'Deliverable',
+    stepOf: 'Langkah {step} dari {total}',
+    nextStepHint: 'Langkah berikutnya: deliverable & gambar proyek',
+    next: 'Lanjutkan',
+    back: 'Kembali',
+    saveDraftAndExit: 'Simpan Draft & Keluar',
+    selectCategoryFirst: 'Pilih kategori terlebih dahulu',
+    deliverablesHint:
+      'Pilih dokumen dan gambar yang Anda butuhkan dari arsitek. Arahkan kursor ke ikon informasi untuk melihat penjelasan tiap deliverable.',
     partBudget: 'Anggaran',
     partStartDate: 'Perkiraan Tanggal Mulai',
     partDeadline: 'Batas Waktu Penawaran',

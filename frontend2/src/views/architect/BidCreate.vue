@@ -565,7 +565,7 @@ import UploadProgress from '@/components/upload/UploadProgress.vue'
 import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
 import PaymentPhaseBuilder from '@/components/project/PaymentPhaseBuilder.vue'
 import PortfolioSelector from '@/components/architect/PortfolioSelector.vue'
-import { DELIVERABLE_GROUPS } from '@/constants/projectDeliverables'
+import { groupDeliverables } from '@/constants/projectDeliverables'
 
 const route = useRoute()
 const router = useRouter()
@@ -665,13 +665,7 @@ const formatCurrency = value => {
   return `Rp ${thousands.toFixed(0)}K`
 }
 
-const groupedProjectDeliverables = computed(() => {
-  const deliverables = project.value?.deliverables || []
-  return DELIVERABLE_GROUPS.map(group => ({
-    categoryKey: group.categoryKey,
-    items: group.items.filter(d => deliverables.includes(d))
-  })).filter(group => group.items.length > 0)
-})
+const groupedProjectDeliverables = computed(() => groupDeliverables(project.value?.deliverables))
 
 const wordCount = computed(() => {
   const text = formData.value.conceptStatement || ''

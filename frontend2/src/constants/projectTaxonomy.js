@@ -15,6 +15,12 @@ export const PROJECT_SCOPES = [
     value: 'RENOVATION',
     labelEn: 'Renovation, Remodel, Expansion',
     labelId: 'Renovasi, Remodel, Perluasan'
+  },
+  { value: 'INTERIOR_FIT_OUT', labelEn: 'Interior Fit-Out', labelId: 'Fit-Out Interior' },
+  {
+    value: 'RESTORATION',
+    labelEn: 'Restoration / Conservation',
+    labelId: 'Restorasi / Konservasi'
   }
 ]
 
@@ -42,8 +48,8 @@ export const PROJECT_CATEGORIES = [
   },
   {
     value: 'INSTITUTIONAL',
-    labelEn: 'Institutional / Cultural / Religious',
-    labelId: 'Institusi / Budaya / Ibadah',
+    labelEn: 'Institutional',
+    labelId: 'Institusi',
     descriptionEn: 'Schools, hospitals, religious buildings, gov. facilities',
     descriptionId: 'Sekolah, rumah sakit, tempat ibadah, fasilitas pemerintah'
   },
@@ -65,15 +71,31 @@ export const PROJECT_CATEGORIES = [
     value: 'INFRASTRUCTURE',
     labelEn: 'Infrastructure / Utility',
     labelId: 'Infrastruktur / Utilitas',
-    descriptionEn: 'Drainage, water tank, towers, etc.',
-    descriptionId: 'Drainase, tandon air, menara, dll.'
+    descriptionEn: 'Drainage, water tank, towers, bridges, etc.',
+    descriptionId: 'Drainase, tandon air, menara, jembatan, dll.'
   },
   {
     value: 'MIXED_USE',
     labelEn: 'Other / Mixed-Use',
     labelId: 'Lainnya / Multi-Fungsi',
-    descriptionEn: 'Anything that spans several categories',
-    descriptionId: 'Proyek yang mencakup beberapa kategori sekaligus'
+    descriptionEn:
+      "Projects combining multiple functions or that don't fit other categories (e.g. live-work space, ruko, TOD)",
+    descriptionId:
+      'Proyek yang menggabungkan beberapa fungsi atau tidak masuk kategori lain (mis. hunian-kerja, ruko, TOD)'
+  },
+  {
+    value: 'RECREATIONAL',
+    labelEn: 'Recreational / Sports',
+    labelId: 'Rekreasi / Olahraga',
+    descriptionEn: 'Sports fields, pools, sports halls, playgrounds',
+    descriptionId: 'Lapangan olahraga, kolam renang, gedung olahraga, taman bermain'
+  },
+  {
+    value: 'AGRICULTURAL',
+    labelEn: 'Agricultural',
+    labelId: 'Pertanian',
+    descriptionEn: 'Farms, greenhouses, barns, agro-processing facilities',
+    descriptionId: 'Lahan pertanian, rumah kaca, kandang, fasilitas pengolahan hasil tani'
   }
 ]
 
@@ -125,7 +147,13 @@ export const SUB_CATEGORIES = {
     { value: 'GYM', labelEn: 'Gym / Fitness Center', labelId: 'Gym / Pusat Kebugaran' },
     { value: 'SPA', labelEn: 'Spa / Wellness Retreat', labelId: 'Spa / Wellness Retreat' },
     { value: 'PHARMACY', labelEn: 'Pharmacy', labelId: 'Apotek' },
-    { value: 'LABORATORY', labelEn: 'Laboratory', labelId: 'Laboratorium' }
+    { value: 'LABORATORY', labelEn: 'Laboratory', labelId: 'Laboratorium' },
+    { value: 'BANK_BRANCH', labelEn: 'Bank Branch', labelId: 'Kantor Cabang Bank' },
+    { value: 'GAS_STATION', labelEn: 'Gas Station (SPBU)', labelId: 'SPBU' },
+    { value: 'CAR_WASH', labelEn: 'Car Wash', labelId: 'Cuci Mobil' },
+    { value: 'EVENT_HALL', labelEn: 'Event Hall / Ballroom', labelId: 'Gedung Acara / Ballroom' },
+    { value: 'CINEMA', labelEn: 'Cinema', labelId: 'Bioskop' },
+    { value: 'LAUNDRY', labelEn: 'Laundry', labelId: 'Laundry' }
   ],
   INDUSTRIAL: [
     {
@@ -166,12 +194,93 @@ export const SUB_CATEGORIES = {
       value: 'GOVERNMENT_FACILITY',
       labelEn: 'Government Facility',
       labelId: 'Fasilitas Pemerintah'
+    },
+    { value: 'HOSPITAL', labelEn: 'Hospital', labelId: 'Rumah Sakit' },
+    { value: 'UNIVERSITY', labelEn: 'University / Campus', labelId: 'Universitas / Kampus' },
+    { value: 'NURSING_HOME', labelEn: 'Nursing Home (Panti Jompo)', labelId: 'Panti Jompo' },
+    { value: 'ORPHANAGE', labelEn: 'Orphanage (Panti Asuhan)', labelId: 'Panti Asuhan' },
+    {
+      value: 'FIRE_POLICE_STATION',
+      labelEn: 'Fire Station / Police Station',
+      labelId: 'Pos Pemadam Kebakaran / Kantor Polisi'
+    },
+    { value: 'CEMETERY', labelEn: 'Cemetery (TPU)', labelId: 'Pemakaman (TPU)' }
+  ],
+  INTERIOR_ONLY: [
+    { value: 'RESIDENTIAL_INTERIOR', labelEn: 'Residential Interior', labelId: 'Interior Hunian' },
+    { value: 'OFFICE_INTERIOR', labelEn: 'Office Interior', labelId: 'Interior Kantor' },
+    {
+      value: 'RETAIL_FNB_INTERIOR',
+      labelEn: 'Retail / F&B Interior',
+      labelId: 'Interior Retail / F&B'
+    },
+    {
+      value: 'HOSPITALITY_INTERIOR',
+      labelEn: 'Hospitality Interior (Hotel / Resort)',
+      labelId: 'Interior Perhotelan (Hotel / Resort)'
+    }
+  ],
+  LANDSCAPE: [
+    { value: 'PRIVATE_GARDEN', labelEn: 'Private Garden', labelId: 'Taman Pribadi' },
+    { value: 'PUBLIC_PARK', labelEn: 'Public Park', labelId: 'Taman Publik' },
+    { value: 'ROOFTOP_GARDEN', labelEn: 'Rooftop Garden', labelId: 'Taman Atap' },
+    {
+      value: 'STREETSCAPE',
+      labelEn: 'Streetscape / Urban Design',
+      labelId: 'Lansekap Jalan / Desain Perkotaan'
     }
   ],
   INFRASTRUCTURE: [
-    { value: 'PARK', labelEn: 'Park', labelId: 'Taman' },
     { value: 'DRAINAGE', labelEn: 'Drainage', labelId: 'Drainase' },
     { value: 'ROAD', labelEn: 'Road', labelId: 'Jalan' },
+    { value: 'BRIDGE', labelEn: 'Bridge', labelId: 'Jembatan' },
+    {
+      value: 'TELECOM_TOWER',
+      labelEn: 'Telecommunication Tower',
+      labelId: 'Menara Telekomunikasi'
+    },
+    { value: 'PARKING_STRUCTURE', labelEn: 'Parking Structure', labelId: 'Gedung Parkir' },
+    { value: 'SOLAR_PANEL', labelEn: 'Solar Panel Installation', labelId: 'Instalasi Panel Surya' }
+  ],
+  MIXED_USE: [
+    { value: 'LIVE_WORK', labelEn: 'Live-Work Space', labelId: 'Ruang Hunian-Kerja' },
+    {
+      value: 'TOD',
+      labelEn: 'Transit-Oriented Development (TOD)',
+      labelId: 'Kawasan Berorientasi Transit (TOD)'
+    },
+    {
+      value: 'MIXED_USE_TOWER',
+      labelEn: 'Mixed-Use Tower (Residential + Commercial)',
+      labelId: 'Gedung Multi-Fungsi (Hunian + Komersial)'
+    }
+  ],
+  RECREATIONAL: [
+    {
+      value: 'SPORTS_FIELD',
+      labelEn: 'Sports Field / Futsal Court',
+      labelId: 'Lapangan Olahraga / Futsal'
+    },
+    { value: 'SWIMMING_POOL', labelEn: 'Public Swimming Pool', labelId: 'Kolam Renang Umum' },
+    { value: 'SPORTS_HALL', labelEn: 'GOR / Sports Hall', labelId: 'GOR / Gedung Olahraga' },
+    { value: 'GOLF_COURSE', labelEn: 'Golf Course', labelId: 'Lapangan Golf' },
+    { value: 'PLAYGROUND', labelEn: 'Playground', labelId: 'Taman Bermain' }
+  ],
+  AGRICULTURAL: [
+    { value: 'GREENHOUSE', labelEn: 'Greenhouse', labelId: 'Rumah Kaca' },
+    { value: 'BARN', labelEn: 'Barn / Livestock Shed', labelId: 'Lumbung / Kandang Ternak' },
+    { value: 'FARM_STORAGE', labelEn: 'Farm Storage / Silo', labelId: 'Gudang Hasil Tani / Silo' },
+    { value: 'AGROTOURISM', labelEn: 'Agrotourism Facility', labelId: 'Fasilitas Agrowisata' }
+  ]
+}
+
+/**
+ * Sub-categories retired by the 2026 taxonomy revision. Projects created before it still carry
+ * them, so they keep a readable label but are never offered in a picker or accepted on submit.
+ */
+const LEGACY_SUB_CATEGORIES = {
+  INFRASTRUCTURE: [
+    { value: 'PARK', labelEn: 'Park', labelId: 'Taman' },
     { value: 'OTHER_INFRASTRUCTURE', labelEn: 'Other', labelId: 'Lainnya' }
   ]
 }
@@ -198,12 +307,16 @@ export const scopeLabel = (value, locale) => findLabel(PROJECT_SCOPES, value, lo
 export const categoryLabel = (value, locale) => findLabel(PROJECT_CATEGORIES, value, locale)
 
 export const subCategoryLabel = (category, value, locale) =>
-  findLabel(subCategoriesFor(category), value, locale)
+  findLabel(
+    [...subCategoriesFor(category), ...(LEGACY_SUB_CATEGORIES[category] || [])],
+    value,
+    locale
+  )
 
 /**
  * What to show when a project is summarised in one line. The sub-category is the most
- * specific thing we know, so it wins; the category is the fallback for the three
- * categories that have no third level.
+ * specific thing we know, so it wins; the category is the fallback for drafts and older
+ * projects saved without one.
  */
 export const projectTypeLabel = (project, locale) => {
   if (!project) return ''

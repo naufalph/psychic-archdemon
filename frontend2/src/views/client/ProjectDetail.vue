@@ -243,7 +243,7 @@ import SiteLocationMap from '@/components/project/SiteLocationMap.vue'
 import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
 import BidComparisonTable from '@/components/bid/BidComparisonTable.vue'
 import BidComparison from '@/components/bid/BidComparison.vue'
-import { DELIVERABLE_GROUPS } from '@/constants/projectDeliverables'
+import { groupDeliverables } from '@/constants/projectDeliverables'
 
 const { t, locale } = useI18n()
 const route = useRoute()
@@ -265,13 +265,7 @@ const hasLocation = computed(
   () => !!(currentProject.value?.fullAddress || currentProject.value?.city || currentProject.value?.location)
 )
 
-const groupedDeliverables = computed(() => {
-  const deliverables = currentProject.value?.deliverables || []
-  return DELIVERABLE_GROUPS.map(g => ({
-    categoryKey: g.categoryKey,
-    items: g.items.filter(d => deliverables.includes(d))
-  })).filter(g => g.items.length > 0)
-})
+const groupedDeliverables = computed(() => groupDeliverables(currentProject.value?.deliverables))
 
 const bidCount = computed(() => projectBids.value?.length || 0)
 const bidA = computed(() => projectBids.value?.find(b => b.id === compareIds.value[0]) ?? null)

@@ -97,16 +97,29 @@ const show = async () => {
   place()
 }
 
+// A tap or click also fires mouseenter and focus, which open the panel just before the click
+// lands. Toggling on that click would close it again at once, so a click only closes a panel
+// that an earlier click opened.
+let pinned = false
+
 const hide = () => {
   clearTimeout(hideTimer)
   hideTimer = setTimeout(() => {
+    pinned = false
     open.value = false
     window.removeEventListener('scroll', place, true)
     window.removeEventListener('resize', place)
   }, 80)
 }
 
-const toggle = () => (open.value ? hide() : show())
+const toggle = () => {
+  if (open.value && pinned) {
+    hide()
+  } else {
+    pinned = true
+    show()
+  }
+}
 
 onBeforeUnmount(() => {
   clearTimeout(hideTimer)
