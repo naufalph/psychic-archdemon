@@ -1,5 +1,9 @@
 package com.rumantra.architect.service;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -7,6 +11,7 @@ import com.rumantra.architect.domain.Architect;
 import com.rumantra.architect.dto.*;
 import com.rumantra.architect.repository.ArchitectRepository;
 import com.rumantra.architect.repository.PortoRepository;
+import com.rumantra.shared.constants.IaiTaxonomy;
 import com.rumantra.shared.exception.ResourceNotFoundException;
 import com.rumantra.shared.storage.FileStorageService;
 
@@ -20,6 +25,22 @@ public class ArchitectService {
   private final ArchitectRepository architectRepository;
   private final PortoRepository portoRepository;
   private final FileStorageService fileStorageService;
+
+  /**
+   * Expertise must be IAI taxonomy codes, except for values already on the profile: the V19
+   * migration deliberately left behind the old free-text tags that have no IAI counterpart, and the
+   * autosave form re-sends the whole list on every keystroke, so rejecting them would make those
+   * profiles unsaveable.
+   */
+  private List<String> validatedExpertise(List<String> submitted, List<String> existing) {
+    Set<String> grandfathered = existing == null ? Set.of() : new HashSet<>(existing);
+    for (String value : submitted) {
+      if (!IaiTaxonomy.isValidType(value) && !grandfathered.contains(value)) {
+        throw new IllegalArgumentException("Unknown expertise category: " + value);
+      }
+    }
+    return submitted;
+  }
 
   @Transactional
   public ArchitectDto updateArchitect(Long userId, UpdateArchitectDto updateRequest) {
@@ -98,7 +119,8 @@ public class ArchitectService {
     }
 
     if (updateRequest.getExpertise() != null) {
-      architect.setExpertise(updateRequest.getExpertise());
+      architect.setExpertise(
+          validatedExpertise(updateRequest.getExpertise(), architect.getExpertise()));
     }
 
     if (updateRequest.getEducation() != null) {

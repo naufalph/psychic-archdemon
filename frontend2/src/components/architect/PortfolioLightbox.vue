@@ -19,7 +19,7 @@
           <div class="min-w-0">
             <h2 class="text-white font-bold text-lg truncate">{{ portfolio.title }}</h2>
             <div class="flex items-center gap-3 text-white/50 text-sm mt-0.5 flex-wrap">
-              <span v-if="portfolio.projectType">{{ portfolio.projectType }}</span>
+              <span v-if="portfolio.projectType">{{ iaiTypeFullLabel(portfolio.projectType, locale) }}</span>
               <span v-if="portfolio.projectType && projectYear">·</span>
               <span v-if="projectYear">{{ projectYear }}</span>
               <span v-if="portfolio.location" class="flex items-center gap-1">
@@ -106,6 +106,8 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { X, ChevronLeft, ChevronRight, MapPin, ImageIcon } from 'lucide-vue-next'
+import { useI18n } from '@/composables/useI18n'
+import { iaiTypeFullLabel } from '@/constants/iaiTaxonomy'
 
 const props = defineProps({
   portfolio: {
@@ -115,6 +117,8 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['close'])
+
+const { locale } = useI18n()
 
 const currentIndex = ref(0)
 const slideDirection = ref('slide-right')

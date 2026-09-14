@@ -444,8 +444,9 @@ export default {
       projectDatePlaceholder: 'Select date',
       location: 'Location',
       locationPlaceholder: 'e.g., Jakarta, Indonesia',
-      projectType: 'Project Type',
-      projectTypePlaceholder: 'Select type',
+      projectType: 'Building Category (IAI)',
+      projectTypePlaceholder:
+        'Open a category and pick the one building type this project belongs to.',
       isBuilt: 'This project has been built',
       images: 'Project Images',
       lockedHint: 'Pulled from the original project data and cannot be changed'
@@ -814,7 +815,8 @@ export default {
     backToDashboard: 'Back to Dashboard',
     back: 'Back',
     optional: 'optional',
-    dismiss: 'Dismiss'
+    dismiss: 'Dismiss',
+    moreInfo: 'More information'
   },
   tokenPurchase: {
     modal: {
@@ -1858,6 +1860,13 @@ export default {
     ACCEPTED: 'Accepted',
     REJECTED: 'Rejected',
     WITHDRAWN: 'Withdrawn'
+  },
+  iaiPicker: {
+    examplesLabel: 'Examples',
+    legacyNote:
+      'These earlier entries have no equivalent in the IAI classification. They are kept on your profile but can no longer be selected.',
+    selectedCount: 'selected',
+    emptyHint: 'Open a category to choose the building types you work on.'
   },
   expertiseTagLabels: {
     Residential: 'Residential',

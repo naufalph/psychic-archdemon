@@ -29,6 +29,7 @@ import com.rumantra.project.domain.ProjectPhase;
 import com.rumantra.project.repository.PhaseDeliverableRepository;
 import com.rumantra.project.repository.ProjectPhaseRepository;
 import com.rumantra.security.SecurityUtils;
+import com.rumantra.shared.constants.IaiTaxonomy;
 import com.rumantra.shared.storage.FileStorageService;
 import com.rumantra.shared.storage.ImageSize;
 
@@ -113,6 +114,21 @@ public class PortoService {
     verifyArchitectOwnership(porto.getArchitect().getId());
   }
 
+  /**
+   * Portfolios carry a single IAI taxonomy code. Values stored before that taxonomy existed are
+   * left in place by the V19 migration and stay readable, but nothing new may be written unless it
+   * is a real code.
+   */
+  private String validatedProjectType(String projectType) {
+    if (projectType == null || projectType.isBlank()) {
+      return null;
+    }
+    if (!IaiTaxonomy.isValidType(projectType)) {
+      throw new IllegalArgumentException("Unknown building category: " + projectType);
+    }
+    return projectType;
+  }
+
   @Transactional
   public PortoResponse createPorto(CreatePortoRequest request, List<MultipartFile> images) {
 
@@ -130,7 +146,7 @@ public class PortoService {
             .description(request.getDescription())
             .projectDate(request.getProjectDate())
             .location(request.getLocation())
-            .projectType(request.getProjectType())
+            .projectType(validatedProjectType(request.getProjectType()))
             .isBuilt(request.getIsBuilt())
             .build();
 
@@ -183,7 +199,7 @@ public class PortoService {
             .description(project.getScopeOfWork())
             .projectDate(LocalDate.now())
             .location(project.getLocation())
-            .projectType(project.getProjectCategory())
+            .projectType(IaiTaxonomy.fromProjectCategory(project.getProjectCategory()))
             .isBuilt(true)
             .madeWithRumantra(true)
             .sourceProjectId(projectId)
@@ -306,7 +322,7 @@ public class PortoService {
       porto.setLocation(request.getLocation());
     }
     if (request.getProjectType() != null) {
-      porto.setProjectType(request.getProjectType());
+      porto.setProjectType(validatedProjectType(request.getProjectType()));
     }
     if (request.getIsBuilt() != null) {
       porto.setBuilt(request.getIsBuilt());

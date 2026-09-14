@@ -233,6 +233,17 @@ if (!resource.getOwner().getUser().getId().equals(userId)) {
 - Backend controllers return standardized `ApiResponse<T>` DTOs
 - Error handling via global exception handler
 
+### Building taxonomies
+
+Two unrelated vocabularies — don't mix them. Project briefs use the scope/category/sub-category
+taxonomy (`projectTaxonomy.js` + `ProjectTaxonomy.java`); architect expertise and portfolio
+project type use the IAI classification (`iaiTaxonomy.js` + `IaiTaxonomy.java`). Each pair is
+mirrored frontend/backend and must be edited together — their tests pin the shapes.
+
+IAI codes are a (Kategori, Tipe) pair, e.g. `K2_KOMERSIAL` — "Hunian" exists under four
+categories, so the prefix is not optional. V19 left unmappable legacy values in place and
+`ArchitectService` grandfathers them; don't clean them up with a blind delete.
+
 ### Database Changes
 - Create Flyway migration files in `backend/src/main/resources/db/migration/`
 - Follow naming pattern: `V{version}__{description}.sql`

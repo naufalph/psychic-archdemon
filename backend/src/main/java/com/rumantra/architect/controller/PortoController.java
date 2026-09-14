@@ -60,6 +60,14 @@ public class PortoController {
                   .message(e.getMessage())
                   .timestamp(LocalDateTime.now().toString())
                   .build());
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(
+              ApiResponse.<PortoResponse>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
     } catch (StorageException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(
@@ -267,6 +275,14 @@ public class PortoController {
               .build());
     } catch (AccessDeniedException e) {
       return ResponseEntity.status(HttpStatus.FORBIDDEN)
+          .body(
+              ApiResponse.<PortoResponse>builder()
+                  .success(false)
+                  .message(e.getMessage())
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(
               ApiResponse.<PortoResponse>builder()
                   .success(false)

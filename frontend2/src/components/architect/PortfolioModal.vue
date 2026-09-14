@@ -104,16 +104,8 @@
                   <label class="block text-sm font-semibold text-black/70 tracking-tight">
                     {{ t.portfolio.form.projectType }}
                   </label>
-                  <select
-                    v-model="formData.projectType"
-                    class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all bg-white"
-                    :class="{ 'border-red-300': errors.projectType }"
-                  >
-                    <option value="" disabled>{{ t.portfolio.form.projectTypePlaceholder }}</option>
-                    <option v-for="type in PROJECT_TYPES" :key="type" :value="type">
-                      {{ type }}
-                    </option>
-                  </select>
+                  <p class="text-xs text-black/50">{{ t.portfolio.form.projectTypePlaceholder }}</p>
+                  <IaiTypePicker v-model="formData.projectType" :error="Boolean(errors.projectType)" />
                   <p v-if="errors.projectType" class="text-xs text-red-600">{{ errors.projectType }}</p>
                 </div>
 
@@ -188,7 +180,7 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useI18n } from '@/composables/useI18n'
-import { PROJECT_TYPES } from '@/constants/architectProfileOptions'
+import IaiTypePicker from '@/components/architect/IaiTypePicker.vue'
 import PortfolioImageManager from './PortfolioImageManager.vue'
 
 const props = defineProps({

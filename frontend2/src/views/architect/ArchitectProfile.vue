@@ -143,9 +143,14 @@
                 <span
                   v-for="tag in store.profileExpertise"
                   :key="tag"
-                  class="px-4 py-2 bg-amber-100 text-amber-900 rounded-full text-sm font-medium border border-amber-200"
+                  class="px-4 py-2 rounded-full text-sm font-medium border"
+                  :class="
+                    isValidIaiType(tag)
+                      ? 'bg-amber-100 text-amber-900 border-amber-200'
+                      : 'bg-gray-100 text-gray-500 border-gray-200'
+                  "
                 >
-                  {{ tag }}
+                  {{ isValidIaiType(tag) ? iaiTypeFullLabel(tag, locale) : t.expertiseTagLabels?.[tag] || tag }}
                 </span>
               </div>
             </div>
@@ -155,11 +160,7 @@
                 {{ t.profile.viewMode.education }}
               </label>
               <div v-if="store.profileEducation.length" class="space-y-2">
-                <div
-                  v-for="(entry, index) in store.profileEducation"
-                  :key="index"
-                  class="flex items-center gap-3"
-                >
+                <div v-for="(entry, index) in store.profileEducation" :key="index" class="flex items-center gap-3">
                   <span
                     class="px-4 py-2 bg-amber-100 text-amber-900 rounded-full text-sm font-medium border border-amber-200"
                   >
@@ -255,9 +256,10 @@ import { ref, computed, onMounted } from 'vue'
 import { useArchitectProfileStore } from '@/stores/architectProfile'
 import { useI18n } from '@/composables/useI18n'
 import ProfileForm from '@/components/architect/ProfileForm.vue'
+import { isValidIaiType, iaiTypeFullLabel } from '@/constants/iaiTaxonomy'
 
 const store = useArchitectProfileStore()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const showToast = ref(false)
 const toastMessage = ref('')

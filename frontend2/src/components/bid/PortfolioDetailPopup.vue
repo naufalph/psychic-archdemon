@@ -85,7 +85,7 @@
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <div v-if="portfolio.projectType" class="bg-gray-50 rounded-2xl p-3">
                 <p class="text-xs text-gray-500 uppercase font-bold mb-1">{{ t.portfolio.form.projectType }}</p>
-                <p class="text-sm font-semibold text-gray-900">{{ portfolio.projectType }}</p>
+                <p class="text-sm font-semibold text-gray-900">{{ iaiTypeFullLabel(portfolio.projectType, locale) }}</p>
               </div>
               <div v-if="portfolio.location" class="bg-gray-50 rounded-2xl p-3">
                 <p class="text-xs text-gray-500 uppercase font-bold mb-1">{{ t.portfolio.form.location }}</p>
@@ -115,6 +115,7 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { X, ChevronLeft, ChevronRight, ImageIcon } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
+import { iaiTypeFullLabel } from '@/constants/iaiTaxonomy'
 
 const props = defineProps({
   portfolio: {
@@ -125,7 +126,7 @@ const props = defineProps({
 
 const emit = defineEmits(['close'])
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const activeIndex = ref(0)
 

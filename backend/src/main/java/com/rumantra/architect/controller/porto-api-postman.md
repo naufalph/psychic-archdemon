@@ -30,7 +30,7 @@ curl --location 'http://localhost:8080/rmtr/porto' \
 --form 'description="A 250sqm family home in South Jakarta featuring biophilic design principles."' \
 --form 'projectDate="2025-03-15"' \
 --form 'location="Jakarta Selatan"' \
---form 'projectType="Residential"' \
+--form 'projectType="K3_HUNIAN"' \
 --form 'isBuilt="true"' \
 --form 'images=@"/home/user/photos/exterior.jpg"' \
 --form 'images=@"/home/user/photos/interior.jpg"'
@@ -50,7 +50,7 @@ curl --location 'http://localhost:8080/rmtr/porto' \
 | `description` | String | No | |
 | `projectDate` | LocalDate (`YYYY-MM-DD`) | Yes | |
 | `location` | String | No | |
-| `projectType` | String | No | e.g. "Residential", "Commercial" |
+| `projectType` | String | No | An IAI taxonomy code, e.g. `K3_HUNIAN`, `K2_KOMERSIAL`. See `IaiTaxonomy.java`; anything else is rejected with 400. |
 | `isBuilt` | Boolean | Yes | `true` = built project, `false` = concept/unbuilt |
 | `images` | MultipartFile[] | No | Multiple files accepted |
 
@@ -65,7 +65,7 @@ curl --location 'http://localhost:8080/rmtr/porto' \
     "description": "A 250sqm family home in South Jakarta.",
     "projectDate": "2025-03-15",
     "location": "Jakarta Selatan",
-    "projectType": "Residential",
+    "projectType": "K3_HUNIAN",
     "isBuilt": true,
     "images": [
       {
@@ -105,7 +105,7 @@ Each item in the list:
   "description": "A 250sqm family home in South Jakarta.",
   "projectDate": "2025-03-15",
   "location": "Jakarta Selatan",
-  "projectType": "Residential",
+  "projectType": "K3_HUNIAN",
   "isBuilt": true,
   "images": [
     {
@@ -151,7 +151,7 @@ curl --location --request PUT 'http://localhost:8080/rmtr/porto/1' \
   "description": "Updated description with award recognition.",
   "projectDate": "2025-06-01",
   "location": "Jakarta Selatan, DKI Jakarta",
-  "projectType": "Residential",
+  "projectType": "K3_HUNIAN",
   "isBuilt": true
 }'
 ```

@@ -84,7 +84,7 @@
       <div class="flex items-center justify-between text-xs">
         <div class="flex items-center gap-3">
           <span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-full font-medium">
-            {{ portfolio.projectType }}
+            {{ iaiTypeFullLabel(portfolio.projectType, locale) }}
           </span>
           <span v-if="projectYear" class="text-gray-600">{{ projectYear }}</span>
         </div>
@@ -108,6 +108,7 @@
 import { computed } from 'vue'
 import { Eye } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
+import { iaiTypeFullLabel } from '@/constants/iaiTaxonomy'
 
 const props = defineProps({
   portfolio: {
@@ -118,7 +119,7 @@ const props = defineProps({
 
 defineEmits(['view', 'edit', 'delete'])
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const coverImage = computed(() => {
   if (props.portfolio.images && props.portfolio.images.length > 0) {

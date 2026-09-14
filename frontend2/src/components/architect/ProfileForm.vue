@@ -127,24 +127,10 @@
         <label class="block text-sm font-semibold text-black/70 tracking-tight">
           {{ t.profile.form.expertise }}
         </label>
-        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-          <button
-            v-for="tag in EXPERTISE_TAGS"
-            :key="tag"
-            type="button"
-            :class="[
-              'px-4 py-3 rounded-2xl font-medium text-sm transition-all',
-              formData.expertise.includes(tag)
-                ? 'bg-brand-brown text-white shadow-md scale-105'
-                : 'bg-black/5 text-black/60 hover:bg-black/10'
-            ]"
-            @click="toggleExpertise(tag)"
-          >
-            {{ t.expertiseTagLabels?.[tag] || tag }}
-          </button>
-        </div>
+        <p class="text-xs text-black/50">{{ t.iaiPicker.emptyHint }}</p>
+        <IaiTypePicker v-model="formData.expertise" multiple />
         <p v-if="formData.expertise.length > 0" class="text-xs text-black/60">
-          Selected {{ formData.expertise.length }} {{ formData.expertise.length === 1 ? 'expertise' : 'expertises' }}
+          {{ formData.expertise.length }} {{ t.iaiPicker.selectedCount }}
         </p>
       </div>
 
@@ -343,11 +329,12 @@
 <script setup>
 import { ref, computed, watch, onMounted, onBeforeUnmount } from 'vue'
 import { useI18n } from '@/composables/useI18n'
-import { EXPERTISE_TAGS, EXPERIENCE_OPTIONS, DEGREE_LEVELS } from '@/constants/architectProfileOptions'
+import { EXPERIENCE_OPTIONS, DEGREE_LEVELS } from '@/constants/architectProfileOptions'
 import { useArchitectProfileStore } from '@/stores/architectProfile'
 import { universityAPI } from '@/services/api'
 import BaseAlert from '@/components/ui/BaseAlert.vue'
 import ProvinceCitySelect from '@/components/project/ProvinceCitySelect.vue'
+import IaiTypePicker from '@/components/architect/IaiTypePicker.vue'
 
 const props = defineProps({
   initialData: {
@@ -441,15 +428,6 @@ const hasIncompleteIdentity = computed(() => {
     !formData.value.phoneNum.trim()
   )
 })
-
-const toggleExpertise = tag => {
-  const index = formData.value.expertise.indexOf(tag)
-  if (index > -1) {
-    formData.value.expertise.splice(index, 1)
-  } else {
-    formData.value.expertise.push(tag)
-  }
-}
 
 const addEducation = () => {
   formData.value.education.push({ level: '', universityName: '', fieldOfStudy: '', graduationYear: '' })

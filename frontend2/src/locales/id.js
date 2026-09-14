@@ -447,8 +447,9 @@ export default {
       projectDatePlaceholder: 'Pilih tanggal',
       location: 'Lokasi',
       locationPlaceholder: 'contoh: Jakarta, Indonesia',
-      projectType: 'Tipe Proyek',
-      projectTypePlaceholder: 'Pilih tipe',
+      projectType: 'Kategori Bangunan (IAI)',
+      projectTypePlaceholder:
+        'Buka sebuah kategori dan pilih satu tipe bangunan yang sesuai dengan proyek ini.',
       isBuilt: 'Proyek ini sudah dibangun',
       images: 'Gambar Proyek',
       lockedHint: 'Diambil dari data proyek asli dan tidak dapat diubah'
@@ -822,7 +823,8 @@ export default {
     backToDashboard: 'Kembali ke Dashboard',
     back: 'Kembali',
     optional: 'opsional',
-    dismiss: 'Tutup'
+    dismiss: 'Tutup',
+    moreInfo: 'Informasi selengkapnya'
   },
   tokenPurchase: {
     modal: {
@@ -1877,6 +1879,13 @@ export default {
     ACCEPTED: 'Diterima',
     REJECTED: 'Ditolak',
     WITHDRAWN: 'Ditarik'
+  },
+  iaiPicker: {
+    examplesLabel: 'Contoh / Jenis Bangunan',
+    legacyNote:
+      'Entri lama ini tidak memiliki padanan dalam klasifikasi IAI. Entri tetap tersimpan di profil Anda, tetapi tidak dapat dipilih lagi.',
+    selectedCount: 'terpilih',
+    emptyHint: 'Buka sebuah kategori untuk memilih tipe bangunan yang Anda kerjakan.'
   },
   expertiseTagLabels: {
     Residential: 'Hunian',
