@@ -120,10 +120,21 @@ public class PortoService {
    * is a real code.
    */
   private String validatedProjectType(String projectType) {
+    return validatedProjectType(projectType, null);
+  }
+
+  /**
+   * Same rule, except the value already on the portfolio is grandfathered -- the mirror of
+   * ArchitectService.validatedExpertise. V19 left the unmappable legacy types in place, and the
+   * edit form prefills and re-sends whatever is stored (IaiTypePicker renders an unrecognised value
+   * as an inert chip rather than clearing it), so rejecting it would make an unrelated edit to a
+   * legacy portfolio impossible to save.
+   */
+  private String validatedProjectType(String projectType, String existing) {
     if (projectType == null || projectType.isBlank()) {
       return null;
     }
-    if (!IaiTaxonomy.isValidType(projectType)) {
+    if (!IaiTaxonomy.isValidType(projectType) && !projectType.equals(existing)) {
       throw new IllegalArgumentException("Unknown building category: " + projectType);
     }
     return projectType;
@@ -322,7 +333,7 @@ public class PortoService {
       porto.setLocation(request.getLocation());
     }
     if (request.getProjectType() != null) {
-      porto.setProjectType(validatedProjectType(request.getProjectType()));
+      porto.setProjectType(validatedProjectType(request.getProjectType(), porto.getProjectType()));
     }
     if (request.getIsBuilt() != null) {
       porto.setBuilt(request.getIsBuilt());
