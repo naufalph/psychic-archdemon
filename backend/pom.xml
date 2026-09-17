@@ -21,6 +21,7 @@
     <maven.compiler.source>17</maven.compiler.source>
     <maven.compiler.target>17</maven.compiler.target>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <skipTests>true</skipTests>
 
     <jwt.version>0.12.6</jwt.version>
     <springdoc.version>2.2.0</springdoc.version>
@@ -191,7 +192,8 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <skipTests>true</skipTests>
+          <!-- Skipped by default, as the deploy build relies on; -DskipTests=false runs them. -->
+          <skipTests>${skipTests}</skipTests>
         </configuration>
       </plugin>
 

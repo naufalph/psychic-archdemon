@@ -236,6 +236,14 @@ public class SecurityConfig {
                     .hasRole("CLIENT")
                     .requestMatchers(HttpMethod.POST, "/rmtr/phases/*/deliverables")
                     .hasRole("ARCHITECT")
+                    // A single "*" does not span a "/", so the per-deliverable approve path needs
+                    // its own matcher rather than being covered by the phase-level one above.
+                    .requestMatchers(HttpMethod.POST, "/rmtr/phases/*/deliverables/*/approve")
+                    .hasRole("CLIENT")
+                    .requestMatchers(HttpMethod.POST, "/rmtr/phases/*/request-revision")
+                    .hasRole("CLIENT")
+                    .requestMatchers(HttpMethod.POST, "/rmtr/phases/*/submit-for-review")
+                    .hasRole("ARCHITECT")
                     .requestMatchers(HttpMethod.POST, "/rmtr/phases/*/disburse")
                     .hasRole("ARCHITECT")
                     .requestMatchers(HttpMethod.GET, "/rmtr/phases/*/logs")

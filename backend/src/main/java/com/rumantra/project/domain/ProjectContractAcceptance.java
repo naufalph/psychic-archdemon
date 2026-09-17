@@ -3,16 +3,22 @@ package com.rumantra.project.domain;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.Immutable;
+
 import jakarta.persistence.*;
 import lombok.*;
 
 /**
  * One party's signature on a contract. An audit row, so userId is a plain column rather than an
  * association -- the same choice UserAgreementAcceptance makes.
+ *
+ * <p>Append-only like the contract itself: the database rejects UPDATE and DELETE, and
+ * {@code @Immutable} stops Hibernate flushing one.
  */
 @Builder
 @Getter
 @Setter
+@Immutable
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor

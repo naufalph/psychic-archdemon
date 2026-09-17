@@ -689,6 +689,7 @@ public class PhasePaymentService {
     return toPhaseResponse(phase, payment, deliverables);
   }
 
+  @Transactional
   public PhaseResponse approveDeliverable(Long phaseId, Long clientUserId) {
     ProjectPhase phase =
         projectPhaseRepository

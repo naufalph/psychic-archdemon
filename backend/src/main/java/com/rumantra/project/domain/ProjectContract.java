@@ -3,6 +3,7 @@ package com.rumantra.project.domain;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.Immutable;
 import org.hibernate.annotations.Type;
 
 import com.rumantra.project.dto.ContractTermsSnapshot;
@@ -13,12 +14,13 @@ import lombok.*;
 
 /**
  * The agreement both parties sign before a project leaves NEGOTIATION. Written once and never again
- * -- the database rejects UPDATE and DELETE, so no setter may be called on a loaded instance inside
- * a transaction.
+ * -- the database rejects UPDATE and DELETE, so {@code @Immutable} keeps Hibernate from ever
+ * flushing one and turning a stray setter call into a trigger exception at runtime.
  */
 @Builder
 @Getter
 @Setter
+@Immutable
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor

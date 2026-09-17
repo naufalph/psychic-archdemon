@@ -24,11 +24,13 @@ import com.rumantra.client.repository.ProjectRepository;
 import com.rumantra.integration.xendit.XenditService;
 import com.rumantra.integration.xendit.dto.XenditInvoiceResponse;
 import com.rumantra.integration.xendit.dto.XenditInvoiceWebhook;
+import com.rumantra.ledger.service.StatusTransitionService;
 import com.rumantra.payment.domain.PhasePayment;
 import com.rumantra.payment.domain.PhasePaymentStatus;
 import com.rumantra.payment.repository.PhasePaymentRepository;
 import com.rumantra.project.domain.*;
 import com.rumantra.project.repository.*;
+import com.rumantra.shared.domain.ActorType;
 import com.rumantra.shared.exception.BusinessException;
 import com.rumantra.shared.exception.ExceptionConstants;
 import com.rumantra.user.domain.User;
@@ -50,6 +52,7 @@ class PhasePaymentServiceTest {
   @Mock private BidRepository bidRepository;
   @Mock private UserRepository userRepository;
   @Mock private XenditService xenditService;
+  @Mock private StatusTransitionService statusTransitionService;
 
   private Project project;
   private Client client;
@@ -177,7 +180,6 @@ class PhasePaymentServiceTest {
 
     when(phaseDisbursementRepository.findByXenditPayoutId("payout_abc"))
         .thenReturn(Optional.of(disbursement));
-    when(phaseDisbursementRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
     when(userRepository.findById(any())).thenReturn(Optional.empty());
 
     service.handlePayoutCallback(callback);
@@ -192,7 +194,6 @@ class PhasePaymentServiceTest {
             100L, PhaseStatus.PENDING))
         .thenReturn(Optional.empty());
     when(projectRepository.findById(100L)).thenReturn(Optional.of(project));
-    when(projectRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
     com.rumantra.integration.xendit.dto.XenditPayoutCallback callback =
         new com.rumantra.integration.xendit.dto.XenditPayoutCallback();
@@ -212,14 +213,21 @@ class PhasePaymentServiceTest {
 
     when(phaseDisbursementRepository.findByXenditPayoutId("payout_xyz"))
         .thenReturn(Optional.of(disbursement));
-    when(phaseDisbursementRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
     when(projectPhaseRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
     when(phaseProcessLogRepository.save(any())).thenAnswer(inv -> inv.getArgument(0));
 
     service.handlePayoutCallback(callback);
 
-    // Project should be set to COMPLETED
-    assertEquals(ProjectStatus.COMPLETED, project.getStatus());
-    verify(projectRepository).save(project);
+    // The project close goes through the ledger, which writes the log row and the status
+    // column together — asserting on project.getStatus() would only re-test the mock.
+    verify(statusTransitionService)
+        .transitionProject(
+            eq(project),
+            eq(ProjectStatus.COMPLETED),
+            isNull(),
+            eq(ActorType.SYSTEM),
+            eq("PROJECT_COMPLETED"),
+            isNull());
+    verify(projectRepository, never()).save(any());
   }
 }

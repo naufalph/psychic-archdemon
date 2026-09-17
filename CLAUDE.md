@@ -267,9 +267,15 @@ tables, one per stream, each with a real FK to its subject:
 
 **The log is the source of truth; the entity's `status` column is a projection of it.**
 Authorization reads the column because it is a single row that can be locked and
-constrained. Both are written in the same transaction by
-`ledger/service/StatusTransitionService` — **never call `setStatus` on these entities
-directly.** If the two ever diverge, the log wins and the column is rebuilt from it.
+constrained. If the two ever diverge, the log wins and the column is rebuilt from it.
+
+For the **first five** streams both writes go through
+`ledger/service/StatusTransitionService` in one transaction — **never call `setStatus`
+on those five entities directly.** `ProjectPhase` is the exception: it has no
+`transitionPhase` method yet, so its transitions are hand-rolled `setStatus` +
+`log(...)` pairs (nine sites, mostly in `PhasePaymentService`). Each pair must stay
+inside one `@Transactional` boundary, or a phase can end up advanced with no log row —
+so if you add or move one, check the annotation on the enclosing method.
 
 All six tables reject `UPDATE`, `DELETE` and `TRUNCATE` via triggers calling
 `rmtr_reject_mutation()` (V15). Row-level triggers do not fire on `TRUNCATE`, hence the
