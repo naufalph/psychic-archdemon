@@ -2,9 +2,16 @@ import { test, expect } from '@playwright/test'
 import { TEST_USERS, API_BASE_URL } from './helpers/fixtures.js'
 import { loginAsClient, loginAsArchitect } from './helpers/auth.js'
 import { resetArchitectQuota, ensureArchitectIdentityComplete } from './helpers/db.js'
-import { createApprovedOpenProject, submitBid, acceptBid } from './helpers/scenario.js'
+import {
+  createApprovedOpenProject,
+  submitBid,
+  acceptBid,
+  confirmNegotiationBothParties
+} from './helpers/scenario.js'
 
-test('contract endpoint returns schedule, terms, winning bid and ledger transactions', async ({ page }) => {
+test('contract endpoint returns schedule, terms, winning bid and ledger transactions', async ({
+  page
+}) => {
   const title = `Contract probe ${Date.now()}`
   resetArchitectQuota(TEST_USERS.architect.email)
   ensureArchitectIdentityComplete(TEST_USERS.architect.email)
@@ -19,27 +26,25 @@ test('contract endpoint returns schedule, terms, winning bid and ledger transact
   })
   await acceptBid(page, projectId)
 
-  const ct = await loginAsClient(page)
-  await page.request.post(`${API_BASE_URL}/rmtr/projects/${projectId}/confirm-negotiation`, {
-    headers: { Authorization: `Bearer ${ct}` }
-  })
-  const at = await loginAsArchitect(page)
-  await page.request.post(`${API_BASE_URL}/rmtr/projects/${projectId}/architect-confirm-negotiation`, {
-    headers: { Authorization: `Bearer ${at}` }
-  })
+  await confirmNegotiationBothParties(page, projectId)
 
   const clientAuth = { Authorization: `Bearer ${await loginAsClient(page)}` }
 
   // Create an invoice so there is a real ledger event to read back.
-  const summary = await page.request.get(`${API_BASE_URL}/rmtr/payments/projects/${projectId}`, { headers: clientAuth })
+  const summary = await page.request.get(`${API_BASE_URL}/rmtr/payments/projects/${projectId}`, {
+    headers: clientAuth
+  })
   const bidPhase = ((await summary.json()).data ?? [])[0]
-  const inv = await page.request.post(`${API_BASE_URL}/rmtr/payments/phases/${bidPhase.phaseId}`, { headers: clientAuth })
+  const inv = await page.request.post(`${API_BASE_URL}/rmtr/payments/phases/${bidPhase.phaseId}`, {
+    headers: clientAuth
+  })
   expect(inv.ok(), await inv.text()).toBeTruthy()
 
-  const res = await page.request.get(`${API_BASE_URL}/rmtr/projects/${projectId}/contract`, { headers: clientAuth })
+  const res = await page.request.get(`${API_BASE_URL}/rmtr/projects/${projectId}/contract`, {
+    headers: clientAuth
+  })
   expect(res.ok(), await res.text()).toBeTruthy()
   const c = (await res.json()).data
-
 
   expect(Number(c.totalValue)).toBe(90000000)
   expect(c.paymentSchedule).toHaveLength(2)
@@ -53,6 +58,9 @@ test('contract endpoint returns schedule, terms, winning bid and ledger transact
   // The winning architect reads the same contract. This needs an explicit security rule: the
   // broad /rmtr/projects/** CLIENT-only matcher would otherwise 403 them.
   const archAuth = { Authorization: `Bearer ${await loginAsArchitect(page)}` }
-  const asArchitect = await page.request.get(`${API_BASE_URL}/rmtr/projects/${projectId}/contract`, { headers: archAuth })
+  const asArchitect = await page.request.get(
+    `${API_BASE_URL}/rmtr/projects/${projectId}/contract`,
+    { headers: archAuth }
+  )
   expect(asArchitect.ok()).toBeTruthy()
 })

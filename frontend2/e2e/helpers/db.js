@@ -93,6 +93,19 @@ export const ensureArchitectIdentityComplete = email => {
 }
 
 /**
+ * Posting a project is gated on the client having a phone number
+ * (ProjectService.validateClientProfile), which registration does not collect. Seed one so
+ * a freshly registered test client can reach the submit step.
+ */
+export const ensureClientProfileComplete = email => {
+  runSql(`
+    UPDATE rmtr_client SET phone_num = '081234567890'
+    WHERE user_id = (SELECT id FROM rmtr_user WHERE email = '${email}')
+      AND (phone_num IS NULL OR phone_num = '');
+  `)
+}
+
+/**
  * After billing via the workspace Contract & Payment tab ("Bayar Sekarang"), the backend
  * (PaymentService.initiatePhasePayment) creates a real rmtr_phase_payment row
  * keyed by the BidPaymentPhase id, not the ProjectPhase id — join through

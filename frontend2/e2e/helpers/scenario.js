@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test'
-import { API_BASE_URL } from './fixtures.js'
+import { API_BASE_URL, TEST_USERS } from './fixtures.js'
 import { loginAsClient, loginAsArchitect, loginAsSuperuser } from './auth.js'
+import { ensureClientProfileComplete } from './db.js'
 
 /**
  * Client creates a project, then superuser approves it (PENDING_APPROVAL -> OPEN).
@@ -8,6 +9,9 @@ import { loginAsClient, loginAsArchitect, loginAsSuperuser } from './auth.js'
  * Returns the new project's id.
  */
 export const createApprovedOpenProject = async (page, title) => {
+  // Registration does not collect a phone number, but submitting a project requires one.
+  ensureClientProfileComplete(TEST_USERS.client.email)
+
   const clientToken = await loginAsClient(page)
   const clientAuth = { Authorization: `Bearer ${clientToken}` }
 
@@ -39,17 +43,17 @@ export const createApprovedOpenProject = async (page, title) => {
   const projectId = (await draft.json()).data.id
 
   // submitProject is multipart with an optional files part; send it empty.
-  const submitted = await page.request.post(
-    `${API_BASE_URL}/rmtr/projects/${projectId}/submit`,
-    { headers: clientAuth, multipart: {} }
-  )
+  const submitted = await page.request.post(`${API_BASE_URL}/rmtr/projects/${projectId}/submit`, {
+    headers: clientAuth,
+    multipart: {}
+  })
   expect(submitted.ok(), await submitted.text()).toBeTruthy()
 
   const superToken = await loginAsSuperuser(page)
-  const validated = await page.request.put(
-    `${API_BASE_URL}/rmtr/projects/${projectId}/validate`,
-    { headers: { Authorization: `Bearer ${superToken}` }, data: { isValid: true } }
-  )
+  const validated = await page.request.put(`${API_BASE_URL}/rmtr/projects/${projectId}/validate`, {
+    headers: { Authorization: `Bearer ${superToken}` },
+    data: { isValid: true }
+  })
   expect(validated.ok(), await validated.text()).toBeTruthy()
 
   return String(projectId)
@@ -115,6 +119,82 @@ export const acceptBid = async (page, projectId) => {
     headers: auth
   })
   expect(accepted.ok(), await accepted.text()).toBeTruthy()
+}
+
+/**
+ * Both parties sign the agreement, which is a precondition for confirming the negotiation --
+ * confirm-negotiation answers 409 CONTRACT_NOT_ACCEPTED until they have.
+ *
+ * The signature name has to match the name the contract snapshot recorded for that party, and
+ * the posted contentHash has to match the contract the signer was shown, so both are read back
+ * from the document rather than guessed.
+ */
+export const signContract = async (page, projectId) => {
+  for (const loginAs of [loginAsClient, loginAsArchitect]) {
+    const auth = { Authorization: `Bearer ${await loginAs(page)}` }
+
+    const doc = await page.request.get(
+      `${API_BASE_URL}/rmtr/projects/${projectId}/contract/document`,
+      { headers: auth }
+    )
+    expect(doc.ok(), await doc.text()).toBeTruthy()
+    const d = (await doc.json()).data
+
+    const name = d.myParty === 'CLIENT' ? d.terms?.clientName : d.terms?.architectName
+    expect(name, `contract snapshot has no name for party ${d.myParty}`).toBeTruthy()
+
+    const signed = await page.request.post(
+      `${API_BASE_URL}/rmtr/projects/${projectId}/contract/accept`,
+      { headers: auth, data: { contentHash: d.contentHash, signatureName: name, lang: 'id' } }
+    )
+    expect(signed.ok(), await signed.text()).toBeTruthy()
+  }
+}
+
+/**
+ * Takes an accepted-bid project from NEGOTIATION to IN_PROGRESS: sign as both parties, then
+ * confirm as both. Every lifecycle spec needs this same sequence.
+ */
+export const confirmNegotiationBothParties = async (page, projectId) => {
+  await signContract(page, projectId)
+
+  const clientAuth = { Authorization: `Bearer ${await loginAsClient(page)}` }
+  const clientConfirmed = await page.request.post(
+    `${API_BASE_URL}/rmtr/projects/${projectId}/confirm-negotiation`,
+    { headers: clientAuth }
+  )
+  expect(clientConfirmed.ok(), await clientConfirmed.text()).toBeTruthy()
+
+  const architectAuth = { Authorization: `Bearer ${await loginAsArchitect(page)}` }
+  const architectConfirmed = await page.request.post(
+    `${API_BASE_URL}/rmtr/projects/${projectId}/architect-confirm-negotiation`,
+    { headers: architectAuth }
+  )
+  expect(architectConfirmed.ok(), await architectConfirmed.text()).toBeTruthy()
+}
+
+/**
+ * Signs the contract through the finalization page's modal, as whoever is logged in. The
+ * confirm button stays disabled until the viewer has signed, so every UI-driven confirmation
+ * goes through this first. The modal only reveals the signature field once the document has
+ * been scrolled to the end, and the expected name is shown as the field's placeholder.
+ */
+export const signContractThroughModal = async page => {
+  await page.getByRole('button', { name: 'Baca & Setujui Perjanjian Kontrak' }).click()
+  const body = page.locator('.contract-doc')
+  await expect(body).toBeVisible({ timeout: 10000 })
+  await body.evaluate(el => {
+    el.scrollTop = el.scrollHeight
+    el.dispatchEvent(new Event('scroll'))
+  })
+  const signature = page
+    .getByPlaceholder(/.+/)
+    .and(page.locator('input[autocomplete="off"]'))
+    .last()
+  await expect(signature).toBeVisible({ timeout: 10000 })
+  await signature.fill(await signature.getAttribute('placeholder'))
+  await page.getByRole('button', { name: 'Saya setuju & tanda tangan' }).click()
+  await expect(page.getByText('Kontrak disetujui')).toBeVisible({ timeout: 10000 })
 }
 
 /**

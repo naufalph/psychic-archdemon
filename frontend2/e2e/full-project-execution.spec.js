@@ -3,8 +3,18 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { TEST_USERS, API_BASE_URL } from './helpers/fixtures.js'
 import { loginAsClient, loginAsArchitect } from './helpers/auth.js'
-import { resetArchitectQuota, ensureArchitectIdentityComplete, getPhasePaymentReferenceId } from './helpers/db.js'
-import { createApprovedOpenProject, submitBid, acceptBid , confirmThroughModal } from './helpers/scenario.js'
+import {
+  resetArchitectQuota,
+  ensureArchitectIdentityComplete,
+  getPhasePaymentReferenceId
+} from './helpers/db.js'
+import {
+  createApprovedOpenProject,
+  submitBid,
+  acceptBid,
+  confirmThroughModal,
+  signContractThroughModal
+} from './helpers/scenario.js'
 import { simulatePhasePaymentWebhook } from './helpers/xendit.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -54,22 +64,32 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
     const chatInput = page.getByPlaceholder('Type a message...')
     await chatInput.fill('Hi, looking forward to working together!')
     await chatInput.press('Enter')
-    await expect(page.getByText('Hi, looking forward to working together!')).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('Hi, looking forward to working together!')).toBeVisible({
+      timeout: 10000
+    })
 
     await page.getByRole('button', { name: 'Minta Dukungan IT' }).click()
-    await expect(page.getByRole('button', { name: 'Dukungan IT diundang' })).toBeVisible({ timeout: 10000 })
+    await expect(page.getByRole('button', { name: 'Dukungan IT diundang' })).toBeVisible({
+      timeout: 10000
+    })
   })
 
   test('both parties confirm negotiation terms -> IN_PROGRESS', async ({ page }) => {
     await loginAsClient(page)
     await page.goto(`/client/projects/${projectId}/finalization`)
+    await signContractThroughModal(page)
     await confirmThroughModal(page, 'Konfirmasi & Lanjut ke Pembayaran')
-    await expect(page.getByText('awaiting').or(page.getByText('Menunggu'))).toBeVisible({ timeout: 10000 })
+    await expect(page.getByText('awaiting').or(page.getByText('Menunggu'))).toBeVisible({
+      timeout: 10000
+    })
 
     await loginAsArchitect(page)
     await page.goto(`/architect/projects/${projectId}/finalization`)
+    await signContractThroughModal(page)
     await confirmThroughModal(page, 'Konfirmasi & Mulai Proyek')
-    await expect(page).toHaveURL(new RegExp(`/architect/projects/${projectId}/workspace`), { timeout: 10000 })
+    await expect(page).toHaveURL(new RegExp(`/architect/projects/${projectId}/workspace`), {
+      timeout: 10000
+    })
 
     await loginAsClient(page)
     const body = await authedGet(page, `${API_BASE_URL}/rmtr/projects/${projectId}`)
@@ -100,7 +120,14 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
     // card -- a page-level lookup would see a sibling's body and skip the click.
     const card = page.locator('[id^="phase-"]').filter({ has: toggle })
     for (let attempt = 0; attempt < 3; attempt++) {
-      if (await card.getByText('Deliverable', { exact: true }).first().isVisible().catch(() => false)) return
+      if (
+        await card
+          .getByText('Deliverable', { exact: true })
+          .first()
+          .isVisible()
+          .catch(() => false)
+      )
+        return
       await toggle.click()
       await page.waitForTimeout(300)
     }
@@ -116,7 +143,9 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
       await locator.page().waitForTimeout(300)
       if (await checkFn()) return
     }
-    throw new Error(`Click on "${await locator.innerText().catch(() => '?')}" had no visible effect after ${attempts} attempts`)
+    throw new Error(
+      `Click on "${await locator.innerText().catch(() => '?')}" had no visible effect after ${attempts} attempts`
+    )
   }
 
   // The deliverable names the scenario helper puts on the bid; each one is a row of its own.
@@ -130,7 +159,14 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
     for (const name of DELIVERABLE_NAMES) {
       // Answering the last outstanding row delivers the phase immediately, which closes the
       // upload path for the rows after it -- after a revision that can be the very first one.
-      if (await card.getByText('Sedang Direview').first().isVisible().catch(() => false)) break
+      if (
+        await card
+          .getByText('Sedang Direview')
+          .first()
+          .isVisible()
+          .catch(() => false)
+      )
+        break
       const uploadBtn = card
         .getByRole('button', { name: new RegExp(`Deliverable: ${name}$`) })
         .first()
@@ -168,9 +204,12 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
       const clientToken = await loginAsClient(page)
       const clientAuth = { Authorization: `Bearer ${clientToken}` }
 
-      const summary = await page.request.get(`${API_BASE_URL}/rmtr/payments/projects/${projectId}`, {
-        headers: clientAuth
-      })
+      const summary = await page.request.get(
+        `${API_BASE_URL}/rmtr/payments/projects/${projectId}`,
+        {
+          headers: clientAuth
+        }
+      )
       expect(summary.ok(), await summary.text()).toBeTruthy()
       const bidPhase = ((await summary.json()).data ?? []).find(p => p.phaseNumber === phaseNumber)
       expect(bidPhase, `no bid payment phase ${phaseNumber}`).toBeTruthy()
@@ -192,7 +231,9 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
       await expect(page.getByText(`Fase ${phaseNumber} dimulai`)).toBeVisible({ timeout: 10000 })
 
       await expandPhase(page, phaseNumber)
-      await expect(phaseCard(page, phaseNumber).getByText('Pekerjaan Berlangsung').first()).toBeVisible({
+      await expect(
+        phaseCard(page, phaseNumber).getByText('Pekerjaan Berlangsung').first()
+      ).toBeVisible({
         timeout: 10000
       })
 
@@ -210,7 +251,10 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
         // A revision is now composed from the deliverable rows: mark what needs redoing, write
         // the comment in the basket below the table, then confirm the round it will consume.
         const card = phaseCard(page, phaseNumber)
-        await card.getByRole('button', { name: /^Revisi Deliverable:/ }).first().click()
+        await card
+          .getByRole('button', { name: /^Revisi Deliverable:/ })
+          .first()
+          .click()
 
         // Each marked deliverable carries its own instruction; the round is pooled, not the note.
         const basketComment = card.getByPlaceholder(/Mohon sesuaikan/).first()
@@ -221,7 +265,10 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
         await clickUntil(card.getByRole('button', { name: 'Kirim permintaan revisi' }), () =>
           revisionModal.isVisible()
         )
-        await clickUntil(revisionModal.getByRole('button', { name: 'Ya, minta revisi' }), async () => !(await revisionModal.isVisible()))
+        await clickUntil(
+          revisionModal.getByRole('button', { name: 'Ya, minta revisi' }),
+          async () => !(await revisionModal.isVisible())
+        )
 
         // --- Architect: re-upload and resubmit ---
         await loginAsArchitect(page)
@@ -254,7 +301,9 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
     })
   }
 
-  test('end state: all phases approved, project still IN_PROGRESS (not completed)', async ({ page }) => {
+  test('end state: all phases approved, project still IN_PROGRESS (not completed)', async ({
+    page
+  }) => {
     await loginAsClient(page)
     await page.goto(`/client/projects/${projectId}/workspace`)
 

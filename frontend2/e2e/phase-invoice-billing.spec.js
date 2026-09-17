@@ -3,7 +3,13 @@ import { TEST_USERS, API_BASE_URL } from './helpers/fixtures.js'
 import { simulateInvoicePaidWebhook } from './helpers/xendit.js'
 import { loginAsClient, loginAsArchitect } from './helpers/auth.js'
 import { resetArchitectQuota, ensureArchitectIdentityComplete, querySql } from './helpers/db.js'
-import { createApprovedOpenProject, submitBid, acceptBid , confirmThroughModal } from './helpers/scenario.js'
+import {
+  createApprovedOpenProject,
+  submitBid,
+  acceptBid,
+  confirmThroughModal,
+  signContractThroughModal
+} from './helpers/scenario.js'
 
 // Regression test for a backend bug where PhasePaymentService.createInvoiceForPhase()
 // never set rmtr_phase_payment.phase_id, violating its NOT NULL constraint — every
@@ -26,13 +32,19 @@ test('client bills a phase via the workspace "Buat Invoice" button', async ({ pa
 
   await loginAsClient(page)
   await page.goto(`/client/projects/${projectId}/finalization`)
+  await signContractThroughModal(page)
   await confirmThroughModal(page, 'Konfirmasi & Lanjut ke Pembayaran')
-  await expect(page.getByText('awaiting').or(page.getByText('Menunggu'))).toBeVisible({ timeout: 10000 })
+  await expect(page.getByText('awaiting').or(page.getByText('Menunggu'))).toBeVisible({
+    timeout: 10000
+  })
 
   await loginAsArchitect(page)
   await page.goto(`/architect/projects/${projectId}/finalization`)
+  await signContractThroughModal(page)
   await confirmThroughModal(page, 'Konfirmasi & Mulai Proyek')
-  await expect(page).toHaveURL(new RegExp(`/architect/projects/${projectId}/workspace`), { timeout: 10000 })
+  await expect(page).toHaveURL(new RegExp(`/architect/projects/${projectId}/workspace`), {
+    timeout: 10000
+  })
 
   await loginAsClient(page)
 

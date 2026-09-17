@@ -1,6 +1,6 @@
 <template>
   <div class="w-full">
-    <label class="block text-sm font-medium text-gray-700 mb-1 ml-1">
+    <label :for="inputId" class="block text-sm font-medium text-gray-700 mb-1 ml-1">
       {{ label }}
     </label>
     <div class="relative group">
@@ -11,6 +11,7 @@
         <component :is="icon" class="w-5 h-5" />
       </div>
       <input
+        :id="inputId"
         :value="modelValue"
         :class="inputClasses"
         v-bind="$attrs"
@@ -22,7 +23,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, useId } from 'vue'
 
 const props = defineProps({
   label: {
@@ -44,6 +45,11 @@ const props = defineProps({
 })
 
 defineEmits(['update:modelValue'])
+
+// The label was rendered unassociated, so it read as decoration: screen readers announced an
+// unlabelled field and clicking it did not focus the input. An explicit id/for pair fixes both.
+// A caller-supplied id still wins, since $attrs is bound after this one.
+const inputId = useId()
 
 const inputClasses = computed(() => {
   const baseClasses =
