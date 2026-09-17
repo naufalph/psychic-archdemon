@@ -119,7 +119,7 @@ The backend follows domain-driven design with these modules:
 ### Key Configuration
 - **Frontend Port**: 3000 (proxies `/api` requests to backend)
 - **Backend Port**: 8080 (API endpoints under `/api`)
-- **Database**: PostgreSQL on port 5432 (container: `rumantra-database`)
+- **Database**: PostgreSQL on port 5432 (container: `rumantra-db`)
 - **Database Name**: `rumantra-db`
 
 ## File Structure Patterns
@@ -609,6 +609,23 @@ before login works:
 ```sql
 UPDATE rmtr_user SET is_email_verified = true WHERE email = 'test.client1@rumantra.com';
 ```
+
+Put all of these in `frontend2/e2e/.env.test.local` (gitignored) —
+`playwright.config.js` loads that file itself, so no shell export is needed.
+
+Some specs reset quota and phase state directly in the database via
+`e2e/helpers/db.js`, which runs `psql` **inside the dev container**, so no host
+Postgres client is required. Overrides, if you need them:
+
+| Env var | Default | Purpose |
+|---|---|---|
+| `E2E_DB_CONTAINER` | `rumantra-db` | Container to exec `psql` in |
+| `E2E_DB_PSQL` | (unset) | Set to `host` to use a host `psql` instead — needed when `E2E_DB_HOST` is not the dev container |
+| `E2E_DB_NAME` / `_USER` / `_PASSWORD` | `rumantra-db` / `postgres` / `password` | Match `docker/dev-database.yml` |
+
+Those helpers **write** to the database — they overwrite bid quota, force phase
+statuses, and stamp fake KTP/NPWP identity data with all verification flags set.
+Never point `E2E_DB_*` at beta or production.
 
 #### 2. Claude + Playwright MCP — Interactive testing by Claude
 Claude Code has built-in Playwright MCP tools that give it direct real-time browser control. No spec files needed — just ask Claude to test something while the app is running.

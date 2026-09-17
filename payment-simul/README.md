@@ -63,7 +63,7 @@ the exact "patched state isn't real state" problem this tool exists to solve.
 |---|---|---|---|
 | Bid Token Purchases | Architect → buy tokens | `token_purchase_arch_{id}_{ms}` | Pay, Expire |
 | Phase Payments — Workspace | `ProjectWorkspace.vue` → "Buat Invoice" | `proj_phase_{phaseId}_{ms}` | Pay, Expire |
-| Phase Payments — Dashboard | `ActiveProjectDashboard.vue` → "Bayar Sekarang" | `phase_payment_proj_{p}_phase_{ph}_{ms}` | Pay, Expire |
+| Phase Payments — Contract tab | `ProjectWorkspace.vue` → Contract & Payment → "Bayar Sekarang" | `phase_payment_proj_{p}_phase_{ph}_{ms}` | Pay, Expire |
 | Disbursements | Architect → request payout on an APPROVED phase | `phase_payout_{phaseId}_{ms}` | Succeed, Fail, Reverse |
 
 The two phase-payment rows are **separate backend paths** that share `rmtr_phase_payment`

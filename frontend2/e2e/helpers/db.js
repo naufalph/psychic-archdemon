@@ -6,15 +6,41 @@ const DB_USER = process.env.E2E_DB_USER || 'postgres'
 const DB_PASSWORD = process.env.E2E_DB_PASSWORD || 'password'
 const DB_NAME = process.env.E2E_DB_NAME || 'rumantra-db'
 
+/**
+ * The dev database runs in a container, which already ships a psql. Going through
+ * `docker exec` means the suite needs no Postgres client on the host -- one less thing
+ * to install per developer, and per OS. Set E2E_DB_PSQL=host to use a host psql
+ * instead, which is what you want when E2E_DB_HOST points somewhere other than the
+ * dev container.
+ */
+const DB_CONTAINER = process.env.E2E_DB_CONTAINER || 'rumantra-db'
+const USE_HOST_PSQL = process.env.E2E_DB_PSQL === 'host'
+
+const psqlCommand = extraArgs => {
+  const psqlArgs = ['-U', DB_USER, '-d', DB_NAME, ...extraArgs]
+  if (USE_HOST_PSQL) {
+    return {
+      file: 'psql',
+      args: ['-h', DB_HOST, '-p', DB_PORT, ...psqlArgs],
+      env: { ...process.env, PGPASSWORD: DB_PASSWORD }
+    }
+  }
+  return {
+    file: 'docker',
+    args: ['exec', '-e', `PGPASSWORD=${DB_PASSWORD}`, DB_CONTAINER, 'psql', ...psqlArgs],
+    env: process.env
+  }
+}
+
+const describeTarget = () => (USE_HOST_PSQL ? `${DB_HOST}:${DB_PORT}` : `container ${DB_CONTAINER}`)
+
 const runSql = sql => {
+  const { file, args, env } = psqlCommand(['-v', 'ON_ERROR_STOP=1', '-c', sql])
   try {
-    execFileSync('psql', ['-h', DB_HOST, '-p', DB_PORT, '-U', DB_USER, '-d', DB_NAME, '-c', sql], {
-      env: { ...process.env, PGPASSWORD: DB_PASSWORD },
-      stdio: ['ignore', 'pipe', 'pipe']
-    })
+    execFileSync(file, args, { env, stdio: ['ignore', 'pipe', 'pipe'] })
   } catch (err) {
     throw new Error(
-      `Failed to run setup SQL against the dev database at ${DB_HOST}:${DB_PORT}. ` +
+      `Failed to run setup SQL against the dev database (${describeTarget()}). ` +
         `Is Postgres running (docker compose -f docker/dev-database.yml up -d)? ` +
         `Original error: ${err.stderr?.toString() || err.message}`
     )
@@ -22,16 +48,12 @@ const runSql = sql => {
 }
 
 export const querySql = sql => {
+  const { file, args, env } = psqlCommand(['-t', '-A', '-c', sql])
   try {
-    const out = execFileSync(
-      'psql',
-      ['-h', DB_HOST, '-p', DB_PORT, '-U', DB_USER, '-d', DB_NAME, '-t', '-A', '-c', sql],
-      { env: { ...process.env, PGPASSWORD: DB_PASSWORD } }
-    )
-    return out.toString().trim()
+    return execFileSync(file, args, { env }).toString().trim()
   } catch (err) {
     throw new Error(
-      `Failed to query the dev database at ${DB_HOST}:${DB_PORT}. ` +
+      `Failed to query the dev database (${describeTarget()}). ` +
         `Original error: ${err.stderr?.toString() || err.message}`
     )
   }
@@ -71,7 +93,7 @@ export const ensureArchitectIdentityComplete = email => {
 }
 
 /**
- * After billing via ProjectPhasePayments.vue ("Bayar Sekarang"), the backend
+ * After billing via the workspace Contract & Payment tab ("Bayar Sekarang"), the backend
  * (PaymentService.initiatePhasePayment) creates a real rmtr_phase_payment row
  * keyed by the BidPaymentPhase id, not the ProjectPhase id — join through
  * rmtr_bid_payment_phase by phase_number to find it. Read the reference id
@@ -90,7 +112,10 @@ export const getPhasePaymentReferenceId = (projectId, phaseNumber) => {
     WHERE pp.project_id = ${projectId} AND bpp.phase_number = ${phaseNumber}
     ORDER BY pp.id DESC LIMIT 1;
   `)
-  if (!id) throw new Error(`No rmtr_phase_payment row found for project_id=${projectId} phase_number=${phaseNumber}`)
+  if (!id)
+    throw new Error(
+      `No rmtr_phase_payment row found for project_id=${projectId} phase_number=${phaseNumber}`
+    )
   return id
 }
 
