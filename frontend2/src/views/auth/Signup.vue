@@ -1,242 +1,235 @@
 <template>
-  <div class="min-h-screen bg-surface-alt flex items-center justify-center p-6">
+  <div class="min-h-screen bg-surface-alt flex flex-col">
     <div
-      class="absolute inset-0 opacity-[0.03] pointer-events-none"
-      style="
-        background-image: linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px);
-        background-size: 50px 50px;
-      "
-    ></div>
-
-    <div class="w-full max-w-5xl relative z-10">
+      class="min-h-[72px] flex items-center justify-between box-border px-5 md:px-12 py-3 max-w-[1328px] mx-auto w-full"
+    >
+      <router-link to="/" class="flex items-baseline gap-0.5">
+        <span class="text-[22px] font-extrabold tracking-[-.03em] text-ink-900">rumantra</span>
+        <span class="text-[22px] font-extrabold text-brand-gold">.</span>
+      </router-link>
       <router-link
         v-if="currentStep <= 2"
         to="/"
-        class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black transition mb-4 font-medium"
+        class="h-11 inline-flex items-center gap-2 px-4 rounded-full border border-hairline bg-white text-caption font-semibold text-ink-900 hover:border-ink-500 transition-colors"
       >
         <ArrowLeft :size="16" />
         {{ t.common.back }}
       </router-link>
+    </div>
 
-      <div
-        v-if="currentStep === 1"
-        v-motion
-        :initial="{ opacity: 0, y: 20 }"
-        :enter="{ opacity: 1, y: 0 }"
-        class="text-center mb-12"
-      >
-        <router-link to="/" class="inline-block mb-8">
-          <Logo class="h-10" />
-        </router-link>
-        <h1 class="text-4xl md:text-5xl font-bold mb-4 text-black">{{ t.auth.signup.roleSelection.title }}</h1>
-        <p class="text-gray-500 text-lg">{{ t.auth.signup.roleSelection.subtitle }}</p>
-      </div>
-
-      <div v-if="currentStep === 1" class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+    <div class="flex-1 flex items-center justify-center box-border px-5 md:px-12 py-10 md:py-16">
+      <div class="w-full max-w-[880px]">
         <div
+          v-if="currentStep === 1"
           v-motion
-          :initial="{ opacity: 0, x: -30 }"
-          :enter="{ opacity: 1, x: 0 }"
-          :delay="100"
-          class="bg-white rounded-3xl p-12 border-2 border-gray-100 hover:border-brand-gold hover:shadow-xl transition-all cursor-pointer group"
-          :class="{ 'border-brand-gold shadow-xl': selectedRole === 'CLIENT' }"
-          @click="selectRole('CLIENT')"
+          :initial="{ opacity: 0, y: 20 }"
+          :enter="{ opacity: 1, y: 0 }"
+          class="mb-10"
         >
-          <div
-            class="w-16 h-16 bg-surface-alt rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-gold/10 transition-colors"
+          <h1
+            class="font-bold tracking-[-.035em] leading-[1.1] m-0 mb-4 text-ink-900"
+            style="font-size: clamp(32px, 4vw, 48px)"
           >
-            <Building2 class="w-8 h-8 text-brand-gold" />
-          </div>
-          <h3 class="text-2xl font-bold mb-3 text-black">{{ t.auth.signup.roleSelection.client.title }}</h3>
-          <p class="text-gray-500 leading-relaxed">{{ t.auth.signup.roleSelection.client.desc }}</p>
+            {{ t.auth.signup.roleSelection.title }}
+          </h1>
+          <p class="text-body-lg text-ink-500 m-0 max-w-[56ch]">{{ t.auth.signup.roleSelection.subtitle }}</p>
+        </div>
+
+        <div v-if="currentStep === 1" class="grid md:grid-cols-2 gap-6">
+          <button
+            v-for="(role, i) in roleOptions"
+            :key="role.value"
+            v-motion
+            type="button"
+            :initial="{ opacity: 0, y: 16 }"
+            :enter="{ opacity: 1, y: 0 }"
+            :delay="100 + i * 100"
+            class="group text-left bg-white rounded-[20px] p-8 border transition-all cursor-pointer hover:-translate-y-1 hover:shadow-soft"
+            :class="selectedRole === role.value ? 'border-ink-900 shadow-soft' : 'border-hairline hover:border-ink-500'"
+            @click="selectRole(role.value)"
+          >
+            <div class="w-12 h-12 rounded-xl bg-surface-blue flex items-center justify-center mb-6">
+              <component :is="role.icon" class="w-6 h-6 text-accent-blue" />
+            </div>
+            <h3 class="text-[24px] font-bold tracking-[-.02em] mb-2 text-ink-900">{{ role.title }}</h3>
+            <p class="text-body text-ink-500 leading-relaxed m-0 mb-6">{{ role.desc }}</p>
+            <span
+              class="w-9 h-9 rounded-full flex items-center justify-center transition-colors"
+              :class="
+                selectedRole === role.value
+                  ? 'bg-ink-900 text-white'
+                  : 'bg-surface-alt text-ink-900 group-hover:bg-ink-900 group-hover:text-white'
+              "
+            >
+              <ArrowRight :size="16" />
+            </span>
+          </button>
         </div>
 
         <div
+          v-if="currentStep === 2"
           v-motion
-          :initial="{ opacity: 0, x: 30 }"
-          :enter="{ opacity: 1, x: 0 }"
-          :delay="200"
-          class="bg-white rounded-3xl p-12 border-2 border-gray-100 hover:border-brand-brown hover:shadow-xl transition-all cursor-pointer group"
-          :class="{ 'border-brand-brown shadow-xl': selectedRole === 'ARCHITECT' }"
-          @click="selectRole('ARCHITECT')"
+          :initial="{ opacity: 0, y: 20 }"
+          :enter="{ opacity: 1, y: 0 }"
+          class="bg-white rounded-[20px] border border-hairline p-8 md:p-10 max-w-[600px] mx-auto"
         >
-          <div
-            class="w-16 h-16 bg-surface-alt rounded-2xl flex items-center justify-center mb-6 group-hover:bg-brand-brown/10 transition-colors"
-          >
-            <PenTool class="w-8 h-8 text-brand-brown" />
+          <div class="mb-8">
+            <h1 class="text-[36px] font-bold tracking-[-.025em] leading-[1.15] m-0 mb-2 text-ink-900">
+              {{ t.auth.signup.title }}
+            </h1>
+            <p class="text-body-lg text-ink-500 m-0">{{ t.auth.signup.subtitle }}</p>
           </div>
-          <h3 class="text-2xl font-bold mb-3 text-black">{{ t.auth.signup.roleSelection.architect.title }}</h3>
-          <p class="text-gray-500 leading-relaxed">{{ t.auth.signup.roleSelection.architect.desc }}</p>
-        </div>
-      </div>
 
-      <div
-        v-if="currentStep === 2"
-        v-motion
-        :initial="{ opacity: 0, y: 20 }"
-        :enter="{ opacity: 1, y: 0 }"
-        class="bg-white rounded-3xl shadow-2xl p-12 max-w-2xl mx-auto border border-gray-100"
-      >
-        <div class="text-center mb-10">
-          <router-link to="/" class="inline-block mb-6">
-            <Logo class="h-10" />
-          </router-link>
-          <h1 class="text-4xl font-bold mb-3 text-black">{{ t.auth.signup.title }}</h1>
-          <p class="text-gray-500">{{ t.auth.signup.subtitle }}</p>
-        </div>
+          <form class="space-y-5" @submit.prevent="handleSignup">
+            <div class="grid md:grid-cols-2 gap-5">
+              <BaseInput
+                v-model="formData.firstName"
+                :label="t.auth.signup.firstName"
+                :error="errors.firstName"
+                type="text"
+                autocomplete="given-name"
+                required
+              />
+              <BaseInput
+                v-model="formData.lastName"
+                :label="t.auth.signup.lastName"
+                :error="errors.lastName"
+                type="text"
+                autocomplete="family-name"
+                required
+              />
+            </div>
 
-        <form class="space-y-6" @submit.prevent="handleSignup">
-          <div class="grid md:grid-cols-2 gap-6">
             <BaseInput
-              v-model="formData.firstName"
-              :label="t.auth.signup.firstName"
-              :error="errors.firstName"
-              type="text"
-              autocomplete="given-name"
+              v-model="formData.email"
+              :label="t.auth.signup.email"
+              :error="errors.email"
+              type="email"
+              autocomplete="email"
               required
             />
+
             <BaseInput
-              v-model="formData.lastName"
-              :label="t.auth.signup.lastName"
-              :error="errors.lastName"
-              type="text"
-              autocomplete="family-name"
+              v-model="formData.password"
+              :label="t.auth.signup.password"
+              :error="errors.password"
+              type="password"
+              autocomplete="new-password"
               required
             />
-          </div>
 
-          <BaseInput
-            v-model="formData.email"
-            :label="t.auth.signup.email"
-            :error="errors.email"
-            type="email"
-            autocomplete="email"
-            required
-          />
+            <BaseInput
+              v-model="formData.confirmPassword"
+              :label="t.auth.signup.confirmPassword"
+              :error="errors.confirmPassword"
+              type="password"
+              autocomplete="new-password"
+              required
+            />
 
-          <BaseInput
-            v-model="formData.password"
-            :label="t.auth.signup.password"
-            :error="errors.password"
-            type="password"
-            autocomplete="new-password"
-            required
-          />
+            <LegalAcceptance ref="legalAcceptance" v-model="formData.agreeTerms" />
+            <p v-if="errors.agreeTerms" class="text-caption text-red-500 -mt-3">{{ errors.agreeTerms }}</p>
 
-          <BaseInput
-            v-model="formData.confirmPassword"
-            :label="t.auth.signup.confirmPassword"
-            :error="errors.confirmPassword"
-            type="password"
-            autocomplete="new-password"
-            required
-          />
+            <BaseAlert v-if="errorMessage" variant="error">{{ errorMessage }}</BaseAlert>
 
-          <LegalAcceptance ref="legalAcceptance" v-model="formData.agreeTerms" />
-          <p v-if="errors.agreeTerms" class="text-sm text-red-500 -mt-3">{{ errors.agreeTerms }}</p>
+            <BaseButton type="submit" size="md" :full-width="true" :is-loading="isLoading" class="h-12 !shadow-none">
+              {{ t.auth.signup.createAccount }}
+            </BaseButton>
 
-          <BaseAlert v-if="errorMessage" variant="error">{{ errorMessage }}</BaseAlert>
-
-          <BaseButton
-            type="submit"
-            :full-width="true"
-            :is-loading="isLoading"
-            class="bg-brand-gold hover:bg-brand-gold-light text-white border-none"
-          >
-            {{ t.auth.signup.createAccount }}
-          </BaseButton>
-
-          <div class="relative my-8">
-            <div class="absolute inset-0 flex items-center">
-              <div class="w-full border-t border-gray-200"></div>
+            <div class="relative py-3">
+              <div class="absolute inset-0 flex items-center">
+                <div class="w-full border-t border-hairline"></div>
+              </div>
+              <div class="relative flex justify-center">
+                <span class="px-4 bg-white text-caption text-ink-400">{{ t.auth.signup.orContinueWith }}</span>
+              </div>
             </div>
-            <div class="relative flex justify-center text-sm">
-              <span class="px-4 bg-white text-gray-500">{{ t.auth.signup.orContinueWith }}</span>
+
+            <LegalConsentNotice ref="legalConsentNotice" class="-mt-2 mb-2" />
+
+            <div class="grid grid-cols-2 gap-3">
+              <button
+                type="button"
+                class="h-12 flex items-center justify-center gap-3 px-5 rounded-full border border-hairline bg-white text-body-sm font-semibold text-ink-900 hover:border-ink-500 transition-colors"
+                @click="handleGoogleLogin"
+              >
+                <svg class="w-5 h-5" viewBox="0 0 24 24">
+                  <path
+                    fill="#4285F4"
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  />
+                  <path
+                    fill="#34A853"
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  />
+                  <path
+                    fill="#FBBC05"
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                  />
+                  <path
+                    fill="#EA4335"
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                  />
+                </svg>
+                Google
+              </button>
+              <button
+                type="button"
+                class="h-12 flex items-center justify-center gap-3 px-5 rounded-full border border-hairline bg-white text-body-sm font-semibold text-ink-900 hover:border-ink-500 transition-colors"
+                @click="handleLinkedInLogin"
+              >
+                <svg class="w-5 h-5" fill="#0A66C2" viewBox="0 0 24 24">
+                  <path
+                    d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
+                  />
+                </svg>
+                LinkedIn
+              </button>
             </div>
+
+            <p class="text-center text-body-sm text-ink-500 pt-2 m-0">
+              {{ t.auth.signup.alreadyHave }}
+              <router-link
+                :to="{ path: '/login', query: route.query.redirect ? { redirect: route.query.redirect } : {} }"
+                class="text-accent-blue font-semibold hover:underline"
+              >
+                {{ t.auth.signup.signInHere }}
+              </router-link>
+            </p>
+          </form>
+        </div>
+
+        <div
+          v-if="currentStep === 3"
+          v-motion
+          :initial="{ opacity: 0, scale: 0.96 }"
+          :enter="{ opacity: 1, scale: 1 }"
+          class="bg-white rounded-[20px] border border-hairline p-10 md:p-14 max-w-[600px] mx-auto text-center relative overflow-hidden"
+        >
+          <ConfettiExplosion
+            v-if="showConfetti"
+            :particle-count="100"
+            :force="0.3"
+            :duration="3000"
+            :colors="['#185C93', '#2F7DC0', '#C5A17A', '#0A0A0A']"
+          />
+
+          <div class="w-16 h-16 bg-surface-blue rounded-full flex items-center justify-center mx-auto mb-8">
+            <CheckCircle2 class="w-8 h-8 text-accent-blue" />
           </div>
 
-          <LegalConsentNotice ref="legalConsentNotice" class="-mt-2 mb-2" />
-
-          <div class="grid grid-cols-2 gap-4">
-            <button
-              type="button"
-              class="flex items-center justify-center gap-3 px-6 py-3.5 border-2 border-gray-200 rounded-full hover:bg-gray-50 hover:border-gray-300 transition-all font-medium"
-              @click="handleGoogleLogin"
-            >
-              <svg class="w-5 h-5" viewBox="0 0 24 24">
-                <path
-                  fill="#4285F4"
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                />
-                <path
-                  fill="#34A853"
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                />
-                <path
-                  fill="#FBBC05"
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                />
-                <path
-                  fill="#EA4335"
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                />
-              </svg>
-              Google
-            </button>
-            <button
-              type="button"
-              class="flex items-center justify-center gap-3 px-6 py-3.5 border-2 border-gray-200 rounded-full hover:bg-gray-50 hover:border-gray-300 transition-all font-medium"
-              @click="handleLinkedInLogin"
-            >
-              <svg class="w-5 h-5" fill="#0A66C2" viewBox="0 0 24 24">
-                <path
-                  d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
-                />
-              </svg>
-              LinkedIn
-            </button>
-          </div>
-
-          <p class="text-center text-gray-500 text-sm">
-            {{ t.auth.signup.alreadyHave }}
-            <router-link
-              :to="{ path: '/login', query: route.query.redirect ? { redirect: route.query.redirect } : {} }"
-              class="text-brand-gold hover:text-brand-gold-light font-semibold"
-            >
-              {{ t.auth.signup.signInHere }}
-            </router-link>
+          <h1 class="text-[36px] font-bold tracking-[-.025em] leading-[1.15] m-0 mb-3 text-ink-900">
+            {{ t.auth.signup.success.title }}
+          </h1>
+          <p class="text-body-lg text-ink-500 m-0 mb-6">{{ t.auth.signup.success.subtitle }}</p>
+          <p class="text-body text-ink-500 mb-10 max-w-md mx-auto leading-relaxed">
+            {{ t.auth.signup.success.message }}
           </p>
-        </form>
-      </div>
 
-      <div
-        v-if="currentStep === 3"
-        v-motion
-        :initial="{ opacity: 0, scale: 0.9 }"
-        :enter="{ opacity: 1, scale: 1 }"
-        class="bg-white rounded-3xl shadow-2xl p-16 max-w-2xl mx-auto text-center border border-gray-100 relative overflow-hidden"
-      >
-        <ConfettiExplosion
-          v-if="showConfetti"
-          :particle-count="100"
-          :force="0.3"
-          :duration="3000"
-          :colors="['#C5A17A', '#7C4728', '#10B981', '#FBBF24']"
-        />
-
-        <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8">
-          <CheckCircle2 class="w-12 h-12 text-green-600" />
-        </div>
-
-        <h1 class="text-4xl font-bold mb-4 text-black">{{ t.auth.signup.success.title }}</h1>
-        <p class="text-xl text-gray-500 mb-8">{{ t.auth.signup.success.subtitle }}</p>
-        <p class="text-gray-600 mb-12 max-w-md mx-auto leading-relaxed">
-          {{ t.auth.signup.success.message }}
-        </p>
-
-        <div class="flex items-center justify-center gap-3 text-brand-gold">
-          <div class="w-5 h-5 border-2 border-brand-gold border-t-transparent rounded-full animate-spin"></div>
-          <span class="font-medium">{{ t.auth.signup.success.redirecting }}</span>
+          <div class="flex items-center justify-center gap-3 text-accent-blue">
+            <div class="w-5 h-5 border-2 border-accent-blue border-t-transparent rounded-full animate-spin"></div>
+            <span class="text-body-sm font-semibold">{{ t.auth.signup.success.redirecting }}</span>
+          </div>
         </div>
       </div>
     </div>
@@ -244,7 +237,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { useProjectBrief } from '@/composables/useProjectBrief'
@@ -252,11 +245,10 @@ import { useLegalStore } from '@/stores/legal'
 import { useI18n } from '@/composables/useI18n'
 import BaseButton from '@/components/ui/BaseButton.vue'
 import BaseInput from '@/components/ui/BaseInput.vue'
-import Logo from '@/components/ui/Logo.vue'
 import LegalAcceptance from '@/components/legal/LegalAcceptance.vue'
 import LegalConsentNotice from '@/components/legal/LegalConsentNotice.vue'
 import ConfettiExplosion from 'vue-confetti-explosion'
-import { Building2, PenTool, CheckCircle2, ArrowLeft } from 'lucide-vue-next'
+import { Building2, PenTool, CheckCircle2, ArrowLeft, ArrowRight } from 'lucide-vue-next'
 import BaseAlert from '@/components/ui/BaseAlert.vue'
 
 const router = useRouter()
@@ -280,6 +272,11 @@ const legalStore = useLegalStore()
 const { t, locale } = useI18n()
 const legalAcceptance = ref(null)
 const legalConsentNotice = ref(null)
+
+const roleOptions = computed(() => [
+  { value: 'CLIENT', icon: Building2, ...t.value.auth.signup.roleSelection.client },
+  { value: 'ARCHITECT', icon: PenTool, ...t.value.auth.signup.roleSelection.architect }
+])
 
 const currentStep = ref(1)
 const selectedRole = ref(null)
