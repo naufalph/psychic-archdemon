@@ -39,7 +39,7 @@
             {{ tv.nav.login }}
           </router-link>
           <router-link
-            to="/signup"
+            to="/brief-proyek"
             class="h-11 flex items-center px-5 rounded-full text-caption font-bold text-ink-900 bg-white hover:opacity-90 transition-opacity shadow-soft"
           >
             {{ tv.nav.cta }}
@@ -60,7 +60,7 @@
             {{ tv.hero.subline }}
           </p>
           <router-link
-            to="/signup"
+            to="/brief-proyek"
             class="inline-flex h-14 items-center px-8 border border-white rounded-full text-body-lg font-bold text-white hover:bg-white/10 transition-colors"
           >
             {{ tv.hero.cta }}
@@ -86,9 +86,10 @@
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        <div
+        <router-link
           v-for="tipe in tipeCards"
           :key="tipe.key"
+          :to="{ path: '/brief-proyek', query: { kategori: tipe.category } }"
           class="relative rounded-[20px] overflow-hidden bg-ink-900 min-h-[360px] flex flex-col transition-transform duration-300 hover:-translate-y-1.5 hover:shadow-[0_32px_64px_-40px_rgba(0,0,0,.32)]"
         >
           <div class="relative flex-1 min-h-[240px]" :style="{ background: tipe.gradient }"></div>
@@ -98,7 +99,7 @@
             </h3>
             <p class="text-body leading-relaxed m-0 text-white/80">{{ tipe.desc }}</p>
           </div>
-        </div>
+        </router-link>
       </div>
     </div>
 
@@ -107,7 +108,7 @@
       <div class="flex flex-wrap items-baseline justify-between gap-4 mb-10">
         <h2 class="text-[36px] font-bold tracking-[-.025em] m-0 text-ink-900">{{ tv.estimasi.title }}</h2>
         <router-link
-          to="/signup"
+          to="/brief-proyek"
           class="inline-flex items-center gap-2 flex-shrink-0 text-body-lg font-semibold text-ink-900 hover:opacity-60 transition-opacity"
         >
           {{ tv.estimasi.continueCta }} <ChevronRight :size="18" :stroke-width="2.4" />
@@ -143,7 +144,8 @@
             class="relative flex-shrink-0 w-[110px] h-[148px] md:w-[132px] md:h-[176px] -ml-8 rounded-2xl flex flex-col items-center justify-center gap-0.5"
             style="
               background: linear-gradient(135deg, #185c93, #0d2f4d);
-              box-shadow: 0 0 0 4px #fdf6ee,
+              box-shadow:
+                0 0 0 4px #fdf6ee,
                 0 18px 40px -28px rgba(0, 0, 0, 0.45);
             "
           >
@@ -161,9 +163,7 @@
       </h2>
 
       <div class="border border-hairline rounded-3xl overflow-hidden bg-surface-alt mb-5">
-        <div
-          class="flex items-center justify-between gap-6 px-7 py-5 bg-ink-900 border-b border-white/[.14] flex-wrap"
-        >
+        <div class="flex items-center justify-between gap-6 px-7 py-5 bg-ink-900 border-b border-white/[.14] flex-wrap">
           <div class="flex items-center gap-4 flex-wrap">
             <span class="text-body-lg font-bold tracking-[-.01em] text-white">{{ tv.ruangProyek.projectName }}</span>
             <span class="text-body-sm text-white/70">{{ tv.ruangProyek.projectOwner }}</span>
@@ -273,10 +273,7 @@
     </div>
 
     <!-- Pembayaran -->
-    <div
-      class="box-border px-5 md:px-12 py-16 md:py-24"
-      style="background: linear-gradient(135deg, #2f7dc0, #0d2f4d)"
-    >
+    <div class="box-border px-5 md:px-12 py-16 md:py-24" style="background: linear-gradient(135deg, #2f7dc0, #0d2f4d)">
       <div class="max-w-[1328px] mx-auto">
         <h2 class="text-[36px] font-bold tracking-[-.025em] m-0 mb-10 max-w-[720px] text-white">
           {{ tv.pembayaran.title }}
@@ -312,7 +309,7 @@
       <p class="text-body-lg text-white mx-auto mb-3 max-w-[620px] leading-relaxed">{{ tv.penutup.desc1 }}</p>
       <p class="text-body-lg text-white mx-auto mb-8 max-w-[620px] leading-relaxed">{{ tv.penutup.desc2 }}</p>
       <router-link
-        to="/signup"
+        to="/brief-proyek"
         class="inline-flex h-[52px] items-center px-8 bg-white text-ink-900 rounded-full font-semibold text-body-lg hover:opacity-90 transition-opacity"
       >
         {{ tv.penutup.cta }}
@@ -348,6 +345,7 @@ const tv = computed(() => t.value.landing.v2)
 const tipeCards = computed(() => [
   {
     key: 'hunian',
+    category: 'RESIDENTIAL',
     title: tv.value.tipeProyek.hunian.title,
     desc: tv.value.tipeProyek.hunian.desc,
     gradient: 'linear-gradient(135deg,#9B5E3C,#3D2114)',
@@ -355,6 +353,7 @@ const tipeCards = computed(() => [
   },
   {
     key: 'komersil',
+    category: 'COMMERCIAL',
     title: tv.value.tipeProyek.komersil.title,
     desc: tv.value.tipeProyek.komersil.desc,
     gradient: 'linear-gradient(135deg,#2F7DC0,#0d2f4d)',
@@ -362,6 +361,7 @@ const tipeCards = computed(() => [
   },
   {
     key: 'industrial',
+    category: 'INDUSTRIAL',
     title: tv.value.tipeProyek.industrial.title,
     desc: tv.value.tipeProyek.industrial.desc,
     gradient: 'linear-gradient(135deg,#333333,#0A0A0A)',
@@ -369,6 +369,7 @@ const tipeCards = computed(() => [
   },
   {
     key: 'lainnya',
+    category: 'MIXED_USE',
     title: tv.value.tipeProyek.lainnya.title,
     desc: tv.value.tipeProyek.lainnya.desc,
     gradient: 'linear-gradient(135deg,#B39069,#6A3D22)',

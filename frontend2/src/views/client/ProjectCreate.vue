@@ -813,7 +813,14 @@ const applyLandingBrief = async () => {
   // it in the autocomplete rather than losing what they already typed on the landing page.
   if (brief.location && !formData.value.fullAddress) {
     formData.value.fullAddress = brief.location
+    if (brief.city) formData.value.city = brief.city
+    if (brief.province) formData.value.province = brief.province
   }
+  if (formData.value.latitude == null && brief.latitude != null) {
+    formData.value.latitude = Number(brief.latitude)
+    formData.value.longitude = Number(brief.longitude)
+  }
+  if (!formData.value.buildArea) formData.value.buildArea = brief.buildArea ?? null
   if (!formData.value.description) formData.value.description = brief.description || ''
   if (!formData.value.lotSize) formData.value.lotSize = brief.lotSize ?? null
   if (!formData.value.phoneNumber) formData.value.phoneNumber = brief.phoneNumber || ''
