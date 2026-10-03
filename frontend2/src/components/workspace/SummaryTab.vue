@@ -36,16 +36,19 @@
       </div>
     </button>
 
-    <PhaseProgressChart
+    <PhaseTimeline
       :t="t"
       :is-client="isClient"
       :sorted-phases="sortedPhases"
+      :schedule="schedule"
       :total-amount="totalAmount"
       :progress-percent="progressPercent"
       :disbursed-count="disbursedCount"
-      :status-key="statusKey"
+      :phase-fallback-title="phaseFallbackTitle"
       :format-amount="formatAmount"
       :format-date="formatDate"
+      @go-phase="id => $emit('go-phase', id, { fromTimeline: true })"
+      @go-phases="$emit('go-phases')"
     />
 
     <!-- The phase actually in play; the deliverable table for it lives on the phases tab -->
@@ -142,7 +145,7 @@ import { computed } from 'vue'
 import { MapPin, Tag } from 'lucide-vue-next'
 import { statusStyles } from './workspaceMaps'
 import CurrentPhaseCard from './CurrentPhaseCard.vue'
-import PhaseProgressChart from './PhaseProgressChart.vue'
+import PhaseTimeline from './PhaseTimeline.vue'
 
 const props = defineProps({
   t: { type: Object, required: true },
@@ -156,6 +159,7 @@ const props = defineProps({
   progressPercent: { type: Number, default: 0 },
   disbursedCount: { type: Number, default: 0 },
   focusPhase: { type: Object, default: null },
+  schedule: { type: Object, required: true },
   actionLoading: { type: [Number, String], default: null },
   statusKey: { type: Function, required: true },
   revisionsLeft: { type: Function, required: true },

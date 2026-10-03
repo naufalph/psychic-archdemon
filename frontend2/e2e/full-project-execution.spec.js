@@ -224,11 +224,14 @@ test.describe.serial('Full project execution: negotiation -> in-progress -> phas
       // --- Simulate Xendit "PAID" webhook directly (no real checkout) ---
       await simulatePhasePaymentWebhook(page.request, API_BASE_URL, projectId, phaseNumber, amount)
 
-      // The summary's key-date rail is fed by a PAYMENT_RECEIVED log row, which this billing
-      // route (the bid payment schedule) did not used to write at all -- so a missing start date
-      // here means that path stopped recording that the phase was ever paid for.
+      // The summary timeline's "Day 1 of N" chip needs the phase's start date, which this billing
+      // route (the bid payment schedule) did not used to record at all -- so a missing chip here
+      // means that path stopped recording that the phase was ever paid for.
       await page.goto(`/client/projects/${projectId}/workspace`)
-      await expect(page.getByText(`Fase ${phaseNumber} dimulai`)).toBeVisible({ timeout: 10000 })
+      const estimatedDays = phaseNumber === 1 ? 10 : 7
+      await expect(
+        page.locator('#phase-timeline').getByText(`Hari 1 dari ${estimatedDays}`)
+      ).toBeVisible({ timeout: 10000 })
 
       await expandPhase(page, phaseNumber)
       await expect(

@@ -24,6 +24,7 @@ public class PhaseResponse {
   private BigDecimal amount;
   private String status;
   private LocalDate dueDate;
+  private Integer estimatedDays;
   private String paymentStatus;
   private String paymentLink;
   private Integer maxRevisions;

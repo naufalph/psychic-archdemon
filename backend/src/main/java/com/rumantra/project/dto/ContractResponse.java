@@ -1,6 +1,7 @@
 package com.rumantra.project.dto;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 public class ContractResponse {
 
   private Long projectId;
+  private LocalDateTime startedAt;
   private BigDecimal totalValue;
   private BigDecimal paidValue;
   private BigDecimal disbursedValue;

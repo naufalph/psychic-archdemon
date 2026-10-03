@@ -1145,6 +1145,7 @@ public class PhasePaymentService {
         .amount(phase.getAmount())
         .status(phase.getStatus().name())
         .dueDate(phase.getDueDate())
+        .estimatedDays(bidPhaseFor(phase).map(BidPaymentPhase::getEstimatedDays).orElse(null))
         .paymentStatus(payment != null ? payment.getStatus().name() : null)
         .paymentLink(payment != null ? payment.getPaymentLink() : null)
         .maxRevisions(phase.getMaxRevisions())

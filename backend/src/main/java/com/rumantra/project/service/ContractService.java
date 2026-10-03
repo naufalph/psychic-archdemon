@@ -2,6 +2,7 @@ package com.rumantra.project.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -18,7 +19,10 @@ import com.rumantra.bidding.domain.BidStatus;
 import com.rumantra.bidding.repository.BidPaymentPhaseRepository;
 import com.rumantra.bidding.repository.BidRepository;
 import com.rumantra.client.domain.Project;
+import com.rumantra.client.domain.ProjectStatus;
+import com.rumantra.client.domain.ProjectStatusLog;
 import com.rumantra.client.repository.ProjectRepository;
+import com.rumantra.client.repository.ProjectStatusLogRepository;
 import com.rumantra.payment.domain.PhasePayment;
 import com.rumantra.payment.domain.PhasePaymentStatus;
 import com.rumantra.payment.repository.PhasePaymentRepository;
@@ -46,6 +50,7 @@ public class ContractService {
 
   private final ProjectRepository projectRepository;
   private final ProjectPhaseRepository projectPhaseRepository;
+  private final ProjectStatusLogRepository projectStatusLogRepository;
   private final PhasePaymentRepository phasePaymentRepository;
   private final BidRepository bidRepository;
   private final BidPaymentPhaseRepository bidPaymentPhaseRepository;
@@ -87,6 +92,7 @@ public class ContractService {
 
     return ContractResponse.builder()
         .projectId(projectId)
+        .startedAt(startedAt(projectId))
         .totalValue(total)
         .paidValue(sumWhere(phases, paymentsByPhase, PhasePaymentStatus.COMPLETED))
         .disbursedValue(disbursedTotal(phases))
@@ -95,6 +101,18 @@ public class ContractService {
         .winningBid(winningBid(bid, bidPhases))
         .transactions(transactions(projectId))
         .build();
+  }
+
+  /**
+   * When work began: the project's first move into IN_PROGRESS. The bid's phase durations are laid
+   * end to end from here to give the timeline its target lane.
+   */
+  private LocalDateTime startedAt(Long projectId) {
+    return projectStatusLogRepository.findByProjectIdOrderByCreatedAtAsc(projectId).stream()
+        .filter(l -> ProjectStatus.IN_PROGRESS.name().equals(l.getToStatus()))
+        .map(ProjectStatusLog::getCreatedAt)
+        .findFirst()
+        .orElse(null);
   }
 
   private void verifyParticipant(Long userId, Project project) {

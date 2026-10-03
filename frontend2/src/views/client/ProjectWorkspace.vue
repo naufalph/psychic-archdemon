@@ -60,6 +60,7 @@
             :progress-percent="progressPercent"
             :disbursed-count="disbursedCount"
             :focus-phase="focusPhase"
+            :schedule="schedule"
             :action-loading="actionLoading"
             :revisions-left="revisionsLeft"
             :show-revision-badge="showRevisionBadge"
@@ -71,7 +72,7 @@
             :format-amount="formatAmount"
             :format-date="formatDate"
             @go-contract="goToContract"
-            @go-phases="tab = 'phases'"
+            @go-phases="goToPhases"
             @go-phase="goToPhase"
             @approve-phase="p => (approveModal = { phase: p, item: null })"
             @open-dispute="p => (disputeOpenFor = p)"
@@ -82,6 +83,9 @@
             :t="t"
             :is-client="true"
             :sorted-phases="sortedPhases"
+            :schedule="schedule"
+            :came-from-timeline="cameFromTimeline"
+            :flash-phase-id="flashPhaseId"
             :open-phases="openPhases"
             :open-logs="openLogs"
             :phase-logs="phaseLogs"
@@ -98,6 +102,7 @@
             :format-date-time="formatDateTime"
             :format-log-action="formatLogAction"
             @toggle="togglePhase"
+            @back-to-timeline="backToTimeline"
             @toggle-log="toggleLog"
             @go-contract="goToContract"
             @approve-phase="p => (approveModal = { phase: p, item: null })"
@@ -274,6 +279,9 @@ const {
   deliverableItems,
   phaseDescription,
   focusPhase,
+  schedule,
+  cameFromTimeline,
+  flashPhaseId,
   filesByRound,
   formatAmount,
   formatDate,
@@ -284,6 +292,8 @@ const {
   loadAll,
   togglePhase,
   goToPhase,
+  goToPhases,
+  backToTimeline,
   goToContract,
   run
 } = ws

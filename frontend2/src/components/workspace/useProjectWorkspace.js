@@ -1,11 +1,13 @@
-import { ref, reactive, computed, nextTick } from 'vue'
+import { ref, reactive, computed, nextTick, watch } from 'vue'
 import { phaseAPI, projectAPI, bidAPI, chatAPI, contractAPI } from '@/services/api'
 import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
 import { useI18n } from '@/composables/useI18n'
 import { deliverableLabel } from './workspaceMaps'
+import { buildSchedule } from './phaseSchedule'
 
 const SCROLL_OFFSET = 90
+const FLASH_MS = 1600
 
 /**
  * Everything both workspace views need. The two role views differ only in how the project and
@@ -34,6 +36,8 @@ export function useProjectWorkspace(projectId, role) {
   const toast = ref('')
   const architectConversationId = ref(null)
   const myBid = ref(null)
+  const cameFromTimeline = ref(false)
+  const flashPhaseId = ref(null)
 
   let toastTimer = null
   const showToast = message => {
@@ -93,6 +97,18 @@ export function useProjectWorkspace(projectId, role) {
     totalAmount.value > 0 ? (paidAmount.value / totalAmount.value) * 100 : 0
   )
 
+  // Phases are created in the same transaction that moves the project to IN_PROGRESS, so the
+  // earliest of them stands in for the contract start when the status log has none.
+  const contractStart = computed(() => {
+    if (contract.value?.startedAt) return contract.value.startedAt
+    const created = phases.value
+      .map(p => p.createdAt)
+      .filter(Boolean)
+      .sort()
+    return created[0] || null
+  })
+  const schedule = computed(() => buildSchedule(sortedPhases.value, contractStart.value))
+
   /**
    * NOT_STARTED is derived, never stored: a PENDING phase is not started while any earlier
    * phase has yet to be approved.
@@ -119,6 +135,8 @@ export function useProjectWorkspace(projectId, role) {
 
   const deadlineLabel = phase => {
     const w = t.value.projectWorkspace || {}
+    // A signed-off phase has no deadline left to count down to; counting past it would read as late.
+    if (['APPROVED', 'DISBURSED'].includes(phase.status)) return w.statusLabels?.[phase.status]
     const n = daysLeft(phase)
     // No due date means the phase has not been funded yet, not that it is closed.
     if (n === null) return w.noDueDate || 'No deadline set'
@@ -339,13 +357,39 @@ export function useProjectWorkspace(projectId, role) {
     window.scrollTo({ top, behavior: 'smooth' })
   }
 
-  /** Summary rows are navigation: switch tab, force the phase open, then scroll to it. */
-  const goToPhase = async phaseId => {
+  // "Back to timeline" only makes sense while the reader is still where the timeline sent them.
+  watch(tab, now => {
+    if (now !== 'phases') cameFromTimeline.value = false
+  })
+
+  let flashTimer = null
+
+  /**
+   * Summary rows are navigation: switch tab, force the phase open, then scroll to it. Arriving
+   * from the timeline also flashes the card, so the eye lands on the phase that was clicked.
+   */
+  const goToPhase = async (phaseId, { fromTimeline = false } = {}) => {
     tab.value = 'phases'
+    cameFromTimeline.value = fromTimeline
     openPhases[phaseId] = true
     fetchLogs(phaseId)
+    clearTimeout(flashTimer)
+    flashPhaseId.value = fromTimeline ? phaseId : null
+    if (fromTimeline) flashTimer = setTimeout(() => (flashPhaseId.value = null), FLASH_MS)
     await nextTick()
     requestAnimationFrame(() => scrollTo(`phase-${phaseId}`))
+  }
+
+  const goToPhases = () => {
+    tab.value = 'phases'
+    cameFromTimeline.value = true
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const backToTimeline = async () => {
+    tab.value = 'summary'
+    await nextTick()
+    requestAnimationFrame(() => scrollTo('phase-timeline'))
   }
 
   const goToContract = async () => {
@@ -416,6 +460,10 @@ export function useProjectWorkspace(projectId, role) {
     deliverableItems,
     phaseDescription,
     focusPhase,
+    contractStart,
+    schedule,
+    cameFromTimeline,
+    flashPhaseId,
     approvedCount,
     awaitingReviewCount,
     uploadedCount,
@@ -432,6 +480,8 @@ export function useProjectWorkspace(projectId, role) {
     loadAll,
     togglePhase,
     goToPhase,
+    goToPhases,
+    backToTimeline,
     goToContract,
     run,
     projectAPI
