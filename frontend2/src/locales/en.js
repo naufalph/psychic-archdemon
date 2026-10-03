@@ -86,7 +86,8 @@ export default {
       },
       hero: {
         title: 'One stop shop for architect services',
-        subline: 'Send one brief, get design proposals, and manage your project in a single platform.',
+        subline:
+          'Send one brief, get design proposals, and manage your project in a single platform.',
         cta: 'Create project brief',
         yourProject: 'Your project',
         offerPrefix: 'Offer #'
@@ -94,9 +95,18 @@ export default {
       tipeProyek: {
         title: 'Every design need you have, on Rumantra.',
         viewAll: 'View all',
-        hunian: { title: 'Residential', desc: 'Placeholder text — describe the scope of residential projects here.' },
-        komersil: { title: 'Commercial', desc: 'Placeholder text — describe the scope of commercial projects here.' },
-        industrial: { title: 'Industrial', desc: 'Placeholder text — describe the scope of industrial projects here.' },
+        hunian: {
+          title: 'Residential',
+          desc: 'Placeholder text — describe the scope of residential projects here.'
+        },
+        komersil: {
+          title: 'Commercial',
+          desc: 'Placeholder text — describe the scope of commercial projects here.'
+        },
+        industrial: {
+          title: 'Industrial',
+          desc: 'Placeholder text — describe the scope of industrial projects here.'
+        },
         lainnya: { title: 'Other', desc: 'Placeholder text — describe other project types here.' }
       },
       estimasi: {
@@ -107,7 +117,8 @@ export default {
         workRenovasi: 'Renovation',
         budgetLabelBaru: 'Estimated construction budget',
         budgetLabelRenovasi: 'Estimated renovation budget',
-        budgetHint: 'Construction cost estimate only, excluding land price. Fill in the second field if you have a range.',
+        budgetHint:
+          'Construction cost estimate only, excluding land price. Fill in the second field if you have a range.',
         sampai: 'to',
         minPlaceholder: 'Rp',
         maxPlaceholder: 'Rp (optional)',
@@ -155,20 +166,26 @@ export default {
         benefit1Title: 'Know exactly where things stand',
         benefit1Desc: 'See work stages, deliverables, and designs awaiting your review.',
         benefit2Title: 'Give clear revision feedback',
-        benefit2Desc: 'Review the design and request revisions in the same project space. Continue the discussion via chat or call.',
+        benefit2Desc:
+          'Review the design and request revisions in the same project space. Continue the discussion via chat or call.',
         benefit3Title: 'Contracts and files always findable',
-        benefit3Desc: 'Create a contract with your architect and keep design files in one place you can revisit anytime.'
+        benefit3Desc:
+          'Create a contract with your architect and keep design files in one place you can revisit anytime.'
       },
       pembayaran: {
         title: 'Payment follows the progress you approve',
         step1Title: 'Brief and contract agreed',
-        step1Desc: 'Scope of work, revision count, and deadlines are written into the contract before the first payment.',
+        step1Desc:
+          'Scope of work, revision count, and deadlines are written into the contract before the first payment.',
         step2Title: 'Funds held before disbursement',
-        step2Desc: 'Your payment is held first, not immediately passed on in full to the architect.',
+        step2Desc:
+          'Your payment is held first, not immediately passed on in full to the architect.',
         step3Title: 'Payment released per stage',
-        step3Desc: 'You review the results in the project space, request revisions if needed, then approve that stage.',
+        step3Desc:
+          'You review the results in the project space, request revisions if needed, then approve that stage.',
         step4Title: 'Help when disputes arise',
-        step4Desc: 'The Rumantra team helps mediate using the contract and work history in the project space.'
+        step4Desc:
+          'The Rumantra team helps mediate using the contract and work history in the project space.'
       },
       faq: {
         title: 'FAQ',
@@ -213,10 +230,13 @@ export default {
       },
       penutup: {
         title: 'Start with your plan',
-        desc1: 'Tell us your needs, location, and estimated building area to help architects prepare a fitting offer.',
-        desc2: 'After choosing an architect, manage the contract, progress, revisions, and design results together in your project space.',
+        desc1:
+          'Tell us your needs, location, and estimated building area to help architects prepare a fitting offer.',
+        desc2:
+          'After choosing an architect, manage the contract, progress, revisions, and design results together in your project space.',
         cta: 'Create project brief',
-        freeNote: 'Free to create a brief and receive offers. The design fee is agreed with the architect before work begins.',
+        freeNote:
+          'Free to create a brief and receive offers. The design fee is agreed with the architect before work begins.',
         architectCta: 'Are you an architect? Join as a Rumantra partner'
       }
     }
@@ -2103,5 +2123,188 @@ export default {
     S1: "S1 — Bachelor's Degree (Sarjana)",
     S2: "S2 — Master's Degree (Magister)",
     S3: 'S3 — Doctorate (Doktor/PhD)'
+  },
+  brief: {
+    nav: {
+      howItWorks: 'How it works',
+      findArchitect: 'Find an architect',
+      estimateCost: 'Cost estimate',
+      login: 'Log in',
+      cta: 'Create a project brief'
+    },
+    steps: {
+      lineup: {
+        title: 'Which services do you need?',
+        subtitle: 'Choose one or more services.'
+      },
+      quick: {
+        title: 'Tell us about your project',
+        subtitle: ''
+      }
+    },
+    lineup: {
+      design: {
+        label: 'Architectural design',
+        desc: 'Building concept, space planning, working drawings and design visuals.'
+      },
+      build: {
+        label: 'Construction',
+        desc: 'Construction preparation, building works and project completion.'
+      },
+      craftsman: {
+        label: 'Tradespeople and technicians',
+        desc: 'For repairs or small-scale jobs.'
+      },
+      comingSoon: 'Coming soon',
+      providerPrompt: 'Are you a service provider?',
+      providerCta: 'Join here'
+    },
+    privacy: {
+      badge: 'Your data is safe.',
+      learnMore: 'Learn more',
+      title: 'How we protect your data',
+      close: 'Close',
+      ok: 'Got it',
+      points: [
+        {
+          title: 'Your phone number stays hidden',
+          desc: 'An architect can only contact you after you accept their proposal.'
+        },
+        {
+          title: 'Location is shown as an area',
+          desc: 'Architects see the city or district. The exact pin and full address are shared once a contract is agreed.'
+        },
+        {
+          title: 'Verified partners only',
+          desc: 'Only architects who have passed rumantra verification can open your brief.'
+        },
+        {
+          title: 'Never sold to third parties',
+          desc: 'Your data is used to match your project with architects, not for advertising or third parties.'
+        }
+      ]
+    },
+    form: {
+      title: 'Project Title',
+      titlePlaceholder: 'e.g. Modern Family Home in Bandung',
+      scope: 'Project Scope',
+      scopeTips: {
+        NEW_BUILD:
+          'Constructing a new building on empty land or after an old building is demolished.',
+        RENOVATION: 'Changing, repairing or extending an existing building.',
+        INTERIOR_FIT_OUT:
+          'Fitting out the inside of an existing building: finishes, furniture and lighting.',
+        RESTORATION: 'Restoring an old or historic building while keeping its original character.'
+      },
+      category: 'Category',
+      categoryPlaceholder: 'Choose a category',
+      subCategory: 'Sub-category',
+      subCategoryPlaceholder: 'Choose a sub-category',
+      subCategoryDisabled: 'Choose a category first',
+      location: 'Location',
+      locationHint: 'Type the full address of the project site.',
+      locationPlaceholder: 'e.g. Jl. Merdeka No. 10, Bandung',
+      mapPlaceholderTitle: 'Map coming soon',
+      mapPlaceholderDesc: 'For now, type the full project address in the field above.',
+      lotSize: 'Lot Size (m²)',
+      lotSizePlaceholder: 'e.g. 200',
+      buildArea: 'Building Area (m²)',
+      buildAreaPlaceholder: 'e.g. 320',
+      designFee: 'Design Budget (Architect Fee)',
+      designFeePlaceholder: 'e.g. 150,000,000',
+      designFeeHint:
+        'IAI guideline: set a fair design fee for the scale and complexity of your project.',
+      openCalculator: 'Open calculator',
+      vision: 'What do you have in mind?',
+      visionPlaceholder: 'Number of rooms, preferred style, target timeline — anything helps.',
+      phone: 'Phone Number',
+      phonePlaceholder: 'e.g. +62 812 3456 7890',
+      phoneInvalid: 'Phone number must be 10–16 digits.',
+      start: 'Expected Start',
+      startImmediately: 'As soon as possible',
+      startSpecific: 'On a specific date'
+    },
+    actions: {
+      back: 'Back',
+      saveAndContinue: 'Save and continue',
+      continue: 'Continue',
+      submitting: 'Saving…',
+      needService: 'Choose at least one service to continue',
+      needFields: 'Still missing',
+      submitError: 'Your brief was not saved. Please try again in a moment.'
+    },
+    calculator: {
+      title: 'Find your ideal budget',
+      subtitle: 'Click the design fee estimate to use it in the form.',
+      workLabel: 'Type of work',
+      workBaru: 'New build',
+      workRenovasi: 'Renovation',
+      budgetLabelBaru: 'Estimated construction budget',
+      budgetLabelRenovasi: 'Estimated renovation budget',
+      budgetHint:
+        'Construction cost only, excluding land. Fill in the second field if you have a range.',
+      minPlaceholder: 'Rp',
+      maxPlaceholder: 'Rp (optional)',
+      until: 'to',
+      eyebrow: 'Estimated design fee',
+      use: 'Use',
+      useTitle: 'Use in the form',
+      subtitle1: 'For architectural design up to working drawings.',
+      subtitle2: 'Construction costs not included.',
+      calcToggle: 'Calculation assumptions',
+      calcBudget: 'Construction budget',
+      calcScope: 'Service scope',
+      calcScopeValue: 'Architectural design up to working drawings',
+      calcCategory: 'Building category',
+      renovationAdjustment: 'renovation adjustment',
+      calcMethod: 'Method',
+      calcMethodValue: 'IAI fee schedule, 2007 edition',
+      fillBudget: 'Enter an estimated budget to see the estimate.',
+      invalidRange: 'The second amount should be larger than the first.',
+      disclaimer: 'Initial estimate. Final proposals depend on your needs and project scope.'
+    },
+    auth: {
+      panelTitle: 'One account for all your projects.',
+      panelSubtitle: 'The brief you filled in is saved automatically once you log in.',
+      perks: [
+        'Save your brief and continue any time',
+        'Receive proposals from verified architects',
+        'Manage contracts, progress and payments in one place'
+      ],
+      tabLogin: 'Log in',
+      tabRegister: 'Sign up',
+      loginTitle: 'Log in to rumantra',
+      loginSubtitle: 'Use your existing account.',
+      registerTitle: 'Create a new account',
+      registerSubtitle: 'Free. It only takes a minute.',
+      google: 'Continue with Google',
+      linkedin: 'Continue with LinkedIn',
+      orEmail: 'or with email',
+      fullName: 'Full name',
+      fullNamePlaceholder: 'e.g. Budi Santoso',
+      email: 'Email',
+      emailPlaceholder: 'e.g. budi@email.com',
+      password: 'Password',
+      passwordPlaceholder: 'Your password',
+      newPasswordPlaceholder: 'At least 8 characters',
+      passwordHint: 'Use at least 8 characters with uppercase, lowercase, a number and a symbol.',
+      strength: ['Too weak', 'Weak', 'Fair', 'Strong', 'Very strong'],
+      loginCta: 'Log in',
+      registerCta: 'Create account',
+      errEmail: 'Enter a valid email.',
+      errPassword: 'Enter your password.',
+      errName: 'Enter your full name.',
+      errWeakPassword:
+        'Password needs at least 8 characters with uppercase, lowercase, a number and a symbol (@#$%^&+=!_-).',
+      errTerms: 'Accept the Terms and Conditions to continue.',
+      errLogin: 'Incorrect email or password.',
+      errRegister: 'Sign-up failed. Please try again.',
+      errSocial: 'Could not connect. Please try again.',
+      verifyTitle: 'Check your email',
+      verifyBody:
+        'We sent a verification link to {email}. Once your account is active, log in to continue your brief.',
+      verifyCta: 'Back to log in',
+      close: 'Close'
+    }
   }
 }

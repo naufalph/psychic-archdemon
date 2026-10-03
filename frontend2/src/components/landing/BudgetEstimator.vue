@@ -46,7 +46,7 @@
 
       <p class="text-body-sm text-ink-500 mt-7 pt-6 border-t border-hairline leading-relaxed">
         {{ tv.otherNeeds }}
-        <router-link to="/signup" class="text-accent-blue font-semibold">{{ tv.otherNeedsCta }}</router-link>
+        <router-link to="/brief-proyek" class="text-accent-blue font-semibold">{{ tv.otherNeedsCta }}</router-link>
       </p>
     </div>
 
@@ -88,112 +88,23 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useI18n } from '@/composables/useI18n'
+import { estimateDesignFee, FEE_CATEGORY } from '@/utils/architectFee'
 
 const { t } = useI18n()
 const tv = computed(() => t.value.landing.v2.estimasi)
 
-// Pedoman IAI 2007 (Pasal 50, 51, 61 + Lampiran 2.A)
-// Kolom biaya dalam miliar rupiah; kolom kategori dalam persen.
-const PCT_TABLE = [
-  [0.2, 6.5, 7.0, 8.0],
-  [2, 5.51, 5.9, 6.48],
-  [4, 4.78, 5.13, 5.6],
-  [20, 4.2, 4.52, 4.92],
-  [40, 3.71, 4.01, 4.38],
-  [60, 3.29, 3.58, 3.92],
-  [80, 2.92, 3.2, 3.52],
-  [100, 2.6, 2.88, 3.18],
-  [120, 2.32, 2.59, 2.88],
-  [140, 2.07, 2.34, 2.62],
-  [160, 1.86, 2.12, 2.39],
-  [180, 1.67, 1.98, 2.2],
-  [200, 1.51, 1.76, 2.03],
-  [220, 1.37, 1.62, 1.88],
-  [240, 1.25, 1.51, 1.76],
-  [260, 1.16, 1.41, 1.67],
-  [280, 1.09, 1.34, 1.59],
-  [300, 1.04, 1.29, 1.54],
-  [500, 1.0, 1.25, 1.5]
-]
-
-const STAGES = [
-  { id: 'konsep', w: 0.1 },
-  { id: 'pra', w: 0.15 },
-  { id: 'pengembangan', w: 0.3 },
-  { id: 'gambar', w: 0.25 },
-  { id: 'pengadaan', w: 0.1 },
-  { id: 'pengawasan', w: 0.1 }
-]
-const SCOPE_GAMBAR = ['konsep', 'pra', 'pengembangan', 'gambar']
-
-const WORKS = [
-  { id: 'baru', f: 1.0 },
-  { id: 'renovasi', f: 1.5 }
-]
-
-function feePercent(cat, B) {
-  const m = B / 1e9
-  const last = PCT_TABLE.length - 1
-  if (m <= PCT_TABLE[0][0]) return PCT_TABLE[0][cat]
-  if (m >= PCT_TABLE[last][0]) return PCT_TABLE[last][cat]
-  for (let i = 0; i < last; i++) {
-    const b1 = PCT_TABLE[i][0]
-    const b2 = PCT_TABLE[i + 1][0]
-    if (m >= b1 && m <= b2) {
-      const p1 = PCT_TABLE[i][cat]
-      const p2 = PCT_TABLE[i + 1][cat]
-      return p1 + ((m - b1) / (b2 - b1)) * (p2 - p1)
-    }
-  }
-  return PCT_TABLE[last][cat]
-}
-
-function scopeFactor(stageIds) {
-  const S = STAGES.filter(s => stageIds.indexOf(s.id) >= 0).reduce((a, s) => a + s.w, 0)
-  if (S >= 0.999) return 1
-  return S + Math.min(0.5 * (1 - S), 0.2)
-}
-
-function estimateFee(B, cat, sf, wf) {
-  const p = feePercent(cat, B)
-  return { pct: p, fee: (B * p * sf * wf) / 100 }
-}
-
-const rp = n => `Rp ${  Math.round(n).toLocaleString('id-ID')}`
-const num = v => {
-  const n = Number(v)
-  return v === '' || v === null || isNaN(n) ? null : n
-}
+const WORKS = [{ id: 'baru' }, { id: 'renovasi' }]
 
 const work = ref('baru')
 const budgetMin = ref('1000000000')
 const budgetMax = ref('')
 const showCalc = ref(false)
 
-// Kategori bangunan tetap di kategori 3 (mengikuti perilaku desain sumber, yang belum
-// menampilkan pemilih jenis bangunan pada halaman ini).
-const CATEGORY = 3
-
 const result = computed(() => {
-  const workDef = WORKS.find(w => w.id === work.value)
-  const bMin = num(budgetMin.value)
-  let bMax = num(budgetMax.value)
-
-  if (bMin === null || bMin <= 0) return { notice: tv.value.fillBudgetNotice }
-  if (bMax !== null && bMax > 0 && bMax < bMin) return { notice: tv.value.invalidRangeNotice }
-  if (bMax !== null && bMax === bMin) bMax = null
-
-  const sf = scopeFactor(SCOPE_GAMBAR)
-  const wf = workDef.f
-  const lo = estimateFee(bMin, CATEGORY, sf, wf)
-  const hi = bMax !== null ? estimateFee(bMax, CATEGORY, sf, wf) : null
-
-  return {
-    bMin,
-    bMax,
-    workDef,
-    feeText: hi ? `${rp(lo.fee)  } – ${  rp(hi.fee)}` : rp(lo.fee)
-  }
+  const r = estimateDesignFee(work.value, budgetMin.value, budgetMax.value)
+  if (r.notice === 'fillBudget') return { notice: tv.value.fillBudgetNotice }
+  if (r.notice === 'invalidRange') return { notice: tv.value.invalidRangeNotice }
+  return r
 })
 
 const feeText = computed(() => result.value.feeText || '—')
@@ -201,21 +112,19 @@ const feeText = computed(() => result.value.feeText || '—')
 const summary = computed(() => {
   const r = result.value
   if (!r.feeText) return ''
-  const budget = r.bMax ? `${rp(r.bMin)  } – ${  rp(r.bMax)}` : rp(r.bMin)
-  const label = r.workDef.id === 'renovasi' ? tv.value.workRenovasi : tv.value.workBaru
-  return `${label  } · budget ${  budget}`
+  const label = r.work.id === 'renovasi' ? tv.value.workRenovasi : tv.value.workBaru
+  return `${label} · budget ${r.budgetText}`
 })
 
 const calcRows = computed(() => {
   const r = result.value
   if (!r.feeText) return []
-  const budget = r.bMax ? `${rp(r.bMin)  } – ${  rp(r.bMax)}` : rp(r.bMin)
   return [
-    { k: tv.value.calcBudgetLabel, v: budget },
+    { k: tv.value.calcBudgetLabel, v: r.budgetText },
     { k: tv.value.calcScopeLabel, v: tv.value.calcScopeValue },
     {
       k: tv.value.calcCategoryLabel,
-      v: `Kategori ${  CATEGORY  }${r.workDef.id === 'renovasi' ? ` · ${  tv.value.renovationAdjustment}` : ''}`
+      v: `Kategori ${FEE_CATEGORY}${r.work.id === 'renovasi' ? ` · ${tv.value.renovationAdjustment}` : ''}`
     },
     { k: tv.value.calcMethodLabel, v: tv.value.calcMethodValue }
   ]

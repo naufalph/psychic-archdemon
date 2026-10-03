@@ -1,5 +1,6 @@
 package com.rumantra.landing.domain;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -38,8 +39,23 @@ public class LandingBrief {
   @Column(name = "title", length = 160)
   private String title;
 
-  @Column(name = "location", length = 160)
+  @Column(name = "location", length = 255)
   private String location;
+
+  @Column(name = "city", length = 255)
+  private String city;
+
+  @Column(name = "province", length = 100)
+  private String province;
+
+  @Column(name = "latitude", precision = 10, scale = 7)
+  private BigDecimal latitude;
+
+  @Column(name = "longitude", precision = 10, scale = 7)
+  private BigDecimal longitude;
+
+  @Column(name = "build_area")
+  private Integer buildArea;
 
   @Column(name = "lot_size")
   private Integer lotSize;

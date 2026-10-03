@@ -8,6 +8,11 @@ const routes = [
     component: () => import('@/views/landing/LandingPage.vue')
   },
   {
+    path: '/brief-proyek',
+    name: 'ProjectBrief',
+    component: () => import('@/views/landing/ProjectBrief.vue')
+  },
+  {
     path: '/signup',
     name: 'Signup',
     component: () => import('@/views/auth/Signup.vue'),

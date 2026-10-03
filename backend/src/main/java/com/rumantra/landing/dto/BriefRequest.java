@@ -1,7 +1,10 @@
 package com.rumantra.landing.dto;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
@@ -34,8 +37,26 @@ public class BriefRequest {
   @Size(max = 160, message = "Title must not exceed 160 characters")
   private String title;
 
-  @Size(max = 160, message = "Location must not exceed 160 characters")
+  @Size(max = 255, message = "Location must not exceed 255 characters")
   private String location;
+
+  @Size(max = 255, message = "City must not exceed 255 characters")
+  private String city;
+
+  @Size(max = 100, message = "Province must not exceed 100 characters")
+  private String province;
+
+  @DecimalMin(value = "-90", message = "Latitude must be between -90 and 90")
+  @DecimalMax(value = "90", message = "Latitude must be between -90 and 90")
+  private BigDecimal latitude;
+
+  @DecimalMin(value = "-180", message = "Longitude must be between -180 and 180")
+  @DecimalMax(value = "180", message = "Longitude must be between -180 and 180")
+  private BigDecimal longitude;
+
+  @Min(value = 1, message = "Build area must be at least 1")
+  @Max(value = 10000000, message = "Build area is unrealistically large")
+  private Integer buildArea;
 
   @Min(value = 1, message = "Lot size must be at least 1")
   @Max(value = 10000000, message = "Lot size is unrealistically large")

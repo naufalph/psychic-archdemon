@@ -88,7 +88,8 @@ export default {
       },
       hero: {
         title: 'One stop shop for architect services',
-        subline: 'Kirim satu brief, dapatkan proposal desain, dan kelola proyek Anda dalam satu platform.',
+        subline:
+          'Kirim satu brief, dapatkan proposal desain, dan kelola proyek Anda dalam satu platform.',
         cta: 'Buat brief proyek',
         yourProject: 'Proyek Anda',
         offerPrefix: 'Penawaran #'
@@ -96,10 +97,22 @@ export default {
       tipeProyek: {
         title: 'Seluruh kebutuhan desain Anda, ada di rumantra.',
         viewAll: 'Lihat semua',
-        hunian: { title: 'Hunian', desc: 'Placeholder text — jelaskan cakupan proyek hunian di sini.' },
-        komersil: { title: 'Komersil', desc: 'Placeholder text — jelaskan cakupan proyek komersil di sini.' },
-        industrial: { title: 'Industrial', desc: 'Placeholder text — jelaskan cakupan proyek industrial di sini.' },
-        lainnya: { title: 'Lainnya', desc: 'Placeholder text — jelaskan jenis proyek lain di sini.' }
+        hunian: {
+          title: 'Hunian',
+          desc: 'Placeholder text — jelaskan cakupan proyek hunian di sini.'
+        },
+        komersil: {
+          title: 'Komersil',
+          desc: 'Placeholder text — jelaskan cakupan proyek komersil di sini.'
+        },
+        industrial: {
+          title: 'Industrial',
+          desc: 'Placeholder text — jelaskan cakupan proyek industrial di sini.'
+        },
+        lainnya: {
+          title: 'Lainnya',
+          desc: 'Placeholder text — jelaskan jenis proyek lain di sini.'
+        }
       },
       estimasi: {
         title: 'Cari budget ideal Anda',
@@ -109,7 +122,8 @@ export default {
         workRenovasi: 'Renovasi',
         budgetLabelBaru: 'Perkiraan budget pembangunan',
         budgetLabelRenovasi: 'Perkiraan budget renovasi',
-        budgetHint: 'Perkiraan biaya pembangunan saja, di luar harga tanah. Isi kolom kedua bila Anda punya kisaran.',
+        budgetHint:
+          'Perkiraan biaya pembangunan saja, di luar harga tanah. Isi kolom kedua bila Anda punya kisaran.',
         sampai: 'sampai',
         minPlaceholder: 'Rp',
         maxPlaceholder: 'Rp (opsional)',
@@ -155,7 +169,8 @@ export default {
         item2Title: 'Tampak depan',
         item2Meta: 'Disetujui 5 hari lalu',
         benefit1Title: 'Tahu sudah sampai mana',
-        benefit1Desc: 'Lihat tahapan pekerjaan, hasil yang perlu diserahkan, dan desain yang menunggu tinjauan Anda.',
+        benefit1Desc:
+          'Lihat tahapan pekerjaan, hasil yang perlu diserahkan, dan desain yang menunggu tinjauan Anda.',
         benefit2Title: 'Sampaikan revisi dengan jelas',
         benefit2Desc:
           'Tinjau hasil desain dan ajukan revisi dalam ruang proyek yang sama. Lanjutkan diskusi lewat chat atau panggilan.',
@@ -166,11 +181,14 @@ export default {
       pembayaran: {
         title: 'Pembayaran mengikuti progres yang Anda setujui',
         step1Title: 'Brief dan kontrak disepakati',
-        step1Desc: 'Lingkup kerja, jumlah revisi, dan tenggat ditulis di kontrak sebelum pembayaran pertama.',
+        step1Desc:
+          'Lingkup kerja, jumlah revisi, dan tenggat ditulis di kontrak sebelum pembayaran pertama.',
         step2Title: 'Dana ditampung sebelum dicairkan',
-        step2Desc: 'Pembayaran Anda ditampung lebih dulu, tidak langsung diteruskan seluruhnya ke arsitek.',
+        step2Desc:
+          'Pembayaran Anda ditampung lebih dulu, tidak langsung diteruskan seluruhnya ke arsitek.',
         step3Title: 'Pembayaran dicairkan per tahap',
-        step3Desc: 'Anda meninjau hasil di ruang proyek, mengajukan revisi bila perlu, lalu menyetujui tahap tersebut.',
+        step3Desc:
+          'Anda meninjau hasil di ruang proyek, mengajukan revisi bila perlu, lalu menyetujui tahap tersebut.',
         step4Title: 'Bantuan saat terjadi perselisihan',
         step4Desc:
           'Tim Rumantra membantu menengahi dengan acuan kontrak dan rekam jejak pekerjaan di ruang proyek.'
@@ -218,10 +236,13 @@ export default {
       },
       penutup: {
         title: 'Mulai dari rencana Anda',
-        desc1: 'Ceritakan kebutuhan, lokasi, dan perkiraan luas bangunan untuk membantu arsitek menyusun penawaran yang sesuai.',
-        desc2: 'Setelah memilih arsitek, kelola kontrak, progres, revisi, dan hasil desain bersama dalam ruang proyek Anda.',
+        desc1:
+          'Ceritakan kebutuhan, lokasi, dan perkiraan luas bangunan untuk membantu arsitek menyusun penawaran yang sesuai.',
+        desc2:
+          'Setelah memilih arsitek, kelola kontrak, progres, revisi, dan hasil desain bersama dalam ruang proyek Anda.',
         cta: 'Buat brief proyek',
-        freeNote: 'Gratis membuat brief dan menerima penawaran. Biaya desain disepakati dengan arsitek sebelum pekerjaan dimulai.',
+        freeNote:
+          'Gratis membuat brief dan menerima penawaran. Biaya desain disepakati dengan arsitek sebelum pekerjaan dimulai.',
         architectCta: 'Anda arsitek? Bergabung sebagai mitra Rumantra'
       }
     }
@@ -2129,5 +2150,189 @@ export default {
     S1: 'S1 — Sarjana',
     S2: 'S2 — Magister',
     S3: 'S3 — Doktor'
+  },
+  brief: {
+    nav: {
+      howItWorks: 'Cara kerja',
+      findArchitect: 'Cari arsitek',
+      estimateCost: 'Estimasi biaya',
+      login: 'Masuk',
+      cta: 'Buat brief proyek'
+    },
+    steps: {
+      lineup: {
+        title: 'Layanan apa yang Anda butuhkan?',
+        subtitle: 'Pilih satu atau beberapa layanan.'
+      },
+      quick: {
+        title: 'Ceritakan brief proyek Kamu',
+        subtitle: ''
+      }
+    },
+    lineup: {
+      design: {
+        label: 'Desain arsitektur',
+        desc: 'Konsep bangunan, tata ruang, gambar kerja, dan visualisasi desain.'
+      },
+      build: {
+        label: 'Pembangunan',
+        desc: 'Persiapan konstruksi, pelaksanaan pekerjaan, dan penyelesaian bangunan.'
+      },
+      craftsman: {
+        label: 'Tukang dan Teknisi',
+        desc: 'Untuk perbaikan atau pekerjaan berskala kecil.'
+      },
+      comingSoon: 'Segera tersedia',
+      providerPrompt: 'Anda penyedia layanan?',
+      providerCta: 'Gabung di sini'
+    },
+    privacy: {
+      badge: 'Data Anda aman.',
+      learnMore: 'Pelajari lebih lanjut',
+      title: 'Bagaimana kami menjaga data Anda',
+      close: 'Tutup',
+      ok: 'Mengerti',
+      points: [
+        {
+          title: 'Nomor telepon tidak ditampilkan',
+          desc: 'Arsitek baru dapat menghubungi Anda setelah Anda menerima penawarannya.'
+        },
+        {
+          title: 'Lokasi ditampilkan sebagai area',
+          desc: 'Arsitek melihat kota atau kawasan proyek. Titik lokasi dan alamat lengkap dibagikan setelah kontrak disepakati.'
+        },
+        {
+          title: 'Hanya untuk mitra terverifikasi',
+          desc: 'Brief hanya dapat dibuka oleh arsitek yang sudah lolos verifikasi rumantra.'
+        },
+        {
+          title: 'Tidak dijual ke pihak lain',
+          desc: 'Data Anda dipakai untuk mencocokkan proyek dengan arsitek, tidak untuk iklan atau pihak ketiga.'
+        }
+      ]
+    },
+    form: {
+      title: 'Judul Proyek',
+      titlePlaceholder: 'cth. Rumah Keluarga Modern di Bandung',
+      scope: 'Lingkup Proyek',
+      scopeTips: {
+        NEW_BUILD: 'Membangun bangunan baru di lahan kosong atau setelah bangunan lama dibongkar.',
+        RENOVATION: 'Mengubah, memperbaiki, atau menambah luas bangunan yang sudah ada.',
+        INTERIOR_FIT_OUT:
+          'Menata ruang dalam bangunan yang sudah berdiri, seperti finishing, furnitur, dan pencahayaan.',
+        RESTORATION:
+          'Memulihkan bangunan lama atau bersejarah dengan tetap menjaga karakter aslinya.'
+      },
+      category: 'Kategori',
+      categoryPlaceholder: 'Pilih kategori',
+      subCategory: 'Sub-kategori',
+      subCategoryPlaceholder: 'Pilih sub-kategori',
+      subCategoryDisabled: 'Pilih kategori dulu',
+      location: 'Lokasi',
+      locationHint: 'Tulis alamat lengkap lokasi proyek.',
+      locationPlaceholder: 'cth. Jl. Merdeka No. 10, Bandung',
+      mapPlaceholderTitle: 'Peta segera hadir',
+      mapPlaceholderDesc: 'Untuk sementara, tulis alamat lengkap proyek di kolom di atas.',
+      lotSize: 'Luas Lahan (m²)',
+      lotSizePlaceholder: 'cth. 200',
+      buildArea: 'Luas Bangunan (m²)',
+      buildAreaPlaceholder: 'cth. 320',
+      designFee: 'Budget Desain (Fee Arsitek)',
+      designFeePlaceholder: 'cth. 150.000.000',
+      designFeeHint:
+        'Panduan IAI: tentukan fee desain yang wajar sesuai skala dan kompleksitas proyek Kamu.',
+      openCalculator: 'Buka kalkulator',
+      vision: 'Apa yang Kamu bayangkan?',
+      visionPlaceholder: 'Jumlah ruangan, preferensi gaya, target waktu — apa pun akan membantu.',
+      phone: 'Nomor Telepon',
+      phonePlaceholder: 'cth. +62 812 3456 7890',
+      phoneInvalid: 'Nomor telepon harus 10–16 digit.',
+      start: 'Perkiraan Mulai',
+      startImmediately: 'Secepatnya',
+      startSpecific: 'Pada tanggal tertentu'
+    },
+    actions: {
+      back: 'Kembali',
+      saveAndContinue: 'Simpan dan lanjutkan',
+      continue: 'Lanjutkan',
+      submitting: 'Menyimpan…',
+      needService: 'Pilih minimal satu layanan untuk melanjutkan',
+      needFields: 'Belum diisi',
+      submitError: 'Brief belum tersimpan. Coba lagi sebentar lagi.'
+    },
+    calculator: {
+      title: 'Cari budget ideal Anda',
+      subtitle: 'Klik perkiraan biaya desain untuk memakainya di form.',
+      workLabel: 'Jenis pekerjaan',
+      workBaru: 'Bangun baru',
+      workRenovasi: 'Renovasi',
+      budgetLabelBaru: 'Perkiraan budget pembangunan',
+      budgetLabelRenovasi: 'Perkiraan budget renovasi',
+      budgetHint:
+        'Perkiraan biaya pembangunan saja, di luar harga tanah. Isi kolom kedua bila Anda punya kisaran.',
+      minPlaceholder: 'Rp',
+      maxPlaceholder: 'Rp (opsional)',
+      until: 'sampai',
+      eyebrow: 'Perkiraan biaya desain',
+      use: 'Gunakan',
+      useTitle: 'Gunakan di form',
+      subtitle1: 'Untuk desain arsitektur sampai gambar kerja.',
+      subtitle2: 'Tidak termasuk biaya pembangunan.',
+      calcToggle: 'Asumsi perhitungan',
+      calcBudget: 'Budget pembangunan',
+      calcScope: 'Lingkup layanan',
+      calcScopeValue: 'Desain arsitektur sampai gambar kerja',
+      calcCategory: 'Kategori bangunan',
+      renovationAdjustment: 'penyesuaian renovasi',
+      calcMethod: 'Metode',
+      calcMethodValue: 'Tabel imbalan jasa Pedoman IAI edisi 2007',
+      fillBudget: 'Isi perkiraan budget untuk melihat estimasi.',
+      invalidRange: 'Angka kedua sebaiknya lebih besar dari angka pertama.',
+      disclaimer: 'Estimasi awal. Penawaran akhir mengikuti kebutuhan dan lingkup proyek.'
+    },
+    auth: {
+      panelTitle: 'Satu akun untuk seluruh proyek Anda.',
+      panelSubtitle: 'Brief yang sudah Anda isi tersimpan otomatis setelah masuk.',
+      perks: [
+        'Simpan brief dan lanjutkan kapan saja',
+        'Terima penawaran dari arsitek terverifikasi',
+        'Kelola kontrak, progres, dan pembayaran di satu tempat'
+      ],
+      tabLogin: 'Masuk',
+      tabRegister: 'Daftar',
+      loginTitle: 'Masuk ke rumantra',
+      loginSubtitle: 'Gunakan akun yang sudah terdaftar.',
+      registerTitle: 'Buat akun baru',
+      registerSubtitle: 'Gratis. Hanya butuh satu menit.',
+      google: 'Lanjutkan dengan Google',
+      linkedin: 'Lanjutkan dengan LinkedIn',
+      orEmail: 'atau dengan email',
+      fullName: 'Nama lengkap',
+      fullNamePlaceholder: 'cth. Budi Santoso',
+      email: 'Email',
+      emailPlaceholder: 'cth. budi@email.com',
+      password: 'Kata sandi',
+      passwordPlaceholder: 'Kata sandi Anda',
+      newPasswordPlaceholder: 'Minimal 8 karakter',
+      passwordHint:
+        'Gunakan minimal 8 karakter dengan huruf besar, huruf kecil, angka, dan simbol.',
+      strength: ['Terlalu lemah', 'Lemah', 'Cukup', 'Kuat', 'Sangat kuat'],
+      loginCta: 'Masuk',
+      registerCta: 'Buat akun',
+      errEmail: 'Masukkan email yang valid.',
+      errPassword: 'Masukkan kata sandi.',
+      errName: 'Masukkan nama lengkap.',
+      errWeakPassword:
+        'Kata sandi minimal 8 karakter dengan huruf besar, huruf kecil, angka, dan simbol (@#$%^&+=!_-).',
+      errTerms: 'Setujui Syarat dan Ketentuan untuk melanjutkan.',
+      errLogin: 'Email atau kata sandi salah.',
+      errRegister: 'Pendaftaran gagal. Coba lagi.',
+      errSocial: 'Gagal terhubung. Coba lagi.',
+      verifyTitle: 'Cek email Anda',
+      verifyBody:
+        'Kami mengirim tautan verifikasi ke {email}. Setelah akun aktif, masuk untuk melanjutkan brief Anda.',
+      verifyCta: 'Kembali ke halaman masuk',
+      close: 'Tutup'
+    }
   }
 }
