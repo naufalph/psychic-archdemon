@@ -77,6 +77,153 @@ export default {
         'Bergabunglah dengan ribuan klien yang membangun dengan percaya diri bersama Rumantra.',
       primary: 'Mulai Proyek Gratis',
       secondary: 'Daftar sebagai Arsitek'
+    },
+    v2: {
+      nav: {
+        howItWorks: 'Cara kerja',
+        findArchitect: 'Cari arsitek',
+        estimateCost: 'Estimasi biaya',
+        login: 'Masuk',
+        cta: 'Buat brief proyek'
+      },
+      hero: {
+        title: 'One stop shop for architect services',
+        subline: 'Kirim satu brief, dapatkan proposal desain, dan kelola proyek Anda dalam satu platform.',
+        cta: 'Buat brief proyek',
+        yourProject: 'Proyek Anda',
+        offerPrefix: 'Penawaran #'
+      },
+      tipeProyek: {
+        title: 'Seluruh kebutuhan desain Anda, ada di rumantra.',
+        viewAll: 'Lihat semua',
+        hunian: { title: 'Hunian', desc: 'Placeholder text — jelaskan cakupan proyek hunian di sini.' },
+        komersil: { title: 'Komersil', desc: 'Placeholder text — jelaskan cakupan proyek komersil di sini.' },
+        industrial: { title: 'Industrial', desc: 'Placeholder text — jelaskan cakupan proyek industrial di sini.' },
+        lainnya: { title: 'Lainnya', desc: 'Placeholder text — jelaskan jenis proyek lain di sini.' }
+      },
+      estimasi: {
+        title: 'Cari budget ideal Anda',
+        continueCta: 'Lanjutkan ke brief proyek',
+        jenisLabel: 'Jenis pekerjaan',
+        workBaru: 'Bangun baru',
+        workRenovasi: 'Renovasi',
+        budgetLabelBaru: 'Perkiraan budget pembangunan',
+        budgetLabelRenovasi: 'Perkiraan budget renovasi',
+        budgetHint: 'Perkiraan biaya pembangunan saja, di luar harga tanah. Isi kolom kedua bila Anda punya kisaran.',
+        sampai: 'sampai',
+        minPlaceholder: 'Rp',
+        maxPlaceholder: 'Rp (opsional)',
+        otherNeeds: 'Punya kebutuhan lain, seperti desain interior atau perluasan bangunan?',
+        otherNeedsCta: 'Ceritakan lewat brief proyek',
+        feeEyebrow: 'Perkiraan biaya desain',
+        feeSubtitle1: 'Untuk desain arsitektur sampai gambar kerja.',
+        feeSubtitle2: 'Tidak termasuk biaya pembangunan.',
+        calcToggle: 'Asumsi perhitungan',
+        estimateNote: 'Estimasi awal. Penawaran akhir mengikuti kebutuhan dan lingkup proyek.',
+        fillBudgetNotice: 'Isi perkiraan budget untuk melihat estimasi.',
+        invalidRangeNotice: 'Angka kedua sebaiknya lebih besar dari angka pertama.',
+        calcBudgetLabel: 'Budget pembangunan',
+        calcScopeLabel: 'Lingkup layanan',
+        calcScopeValue: 'Desain arsitektur sampai gambar kerja',
+        calcCategoryLabel: 'Kategori bangunan',
+        renovationAdjustment: 'penyesuaian renovasi',
+        calcMethodLabel: 'Metode',
+        calcMethodValue: 'Tabel imbalan jasa Pedoman IAI edisi 2007'
+      },
+      mitra: {
+        title: 'Arsitek dan desainer terbaik, ada di rumantra.',
+        subtitle: 'Mitra kami telah melewati proses screening, hanya yang terbaik yang ada disini',
+        more: 'more'
+      },
+      ruangProyek: {
+        title: 'Satu tempat untuk mengelola proyek Anda.',
+        projectName: 'Kosan Premium 12 Kamar',
+        projectOwner: 'Aryadiza Gunawan',
+        tabDiskusi: 'Diskusi',
+        tabKontrak: 'Kontrak',
+        tabFile: 'File desain',
+        stageLabel: 'Tahapan pekerjaan',
+        stage1: 'Konsep desain',
+        stage2: 'Pengembangan desain',
+        stage3: 'Gambar kerja',
+        stage4: 'Penyerahan akhir',
+        reviewLabel: 'Menunggu tinjauan Anda',
+        item1Title: 'Denah lantai 1',
+        item1Meta: 'Dikirim 2 hari lalu · revisi ke-1 dari 3',
+        viewBtn: 'Lihat gambar',
+        reviseBtn: 'Ajukan revisi',
+        item2Title: 'Tampak depan',
+        item2Meta: 'Disetujui 5 hari lalu',
+        benefit1Title: 'Tahu sudah sampai mana',
+        benefit1Desc: 'Lihat tahapan pekerjaan, hasil yang perlu diserahkan, dan desain yang menunggu tinjauan Anda.',
+        benefit2Title: 'Sampaikan revisi dengan jelas',
+        benefit2Desc:
+          'Tinjau hasil desain dan ajukan revisi dalam ruang proyek yang sama. Lanjutkan diskusi lewat chat atau panggilan.',
+        benefit3Title: 'Kontrak dan gambar mudah ditemukan',
+        benefit3Desc:
+          'Buat kontrak bersama arsitek dan simpan hasil gambar dalam satu tempat yang bisa Anda akses kembali.'
+      },
+      pembayaran: {
+        title: 'Pembayaran mengikuti progres yang Anda setujui',
+        step1Title: 'Brief dan kontrak disepakati',
+        step1Desc: 'Lingkup kerja, jumlah revisi, dan tenggat ditulis di kontrak sebelum pembayaran pertama.',
+        step2Title: 'Dana ditampung sebelum dicairkan',
+        step2Desc: 'Pembayaran Anda ditampung lebih dulu, tidak langsung diteruskan seluruhnya ke arsitek.',
+        step3Title: 'Pembayaran dicairkan per tahap',
+        step3Desc: 'Anda meninjau hasil di ruang proyek, mengajukan revisi bila perlu, lalu menyetujui tahap tersebut.',
+        step4Title: 'Bantuan saat terjadi perselisihan',
+        step4Desc:
+          'Tim Rumantra membantu menengahi dengan acuan kontrak dan rekam jejak pekerjaan di ruang proyek.'
+      },
+      faq: {
+        title: 'FAQ',
+        items: [
+          {
+            q: 'Apa saja yang gratis di Rumantra?',
+            a: 'Membuat brief proyek, menerima penawaran, dan membandingkan arsitek tidak dipungut biaya. Yang Anda bayar adalah jasa desain arsitek, sesuai kesepakatan di kontrak.'
+          },
+          {
+            q: 'Apakah saya wajib memilih penawaran yang masuk?',
+            a: 'Tidak. Brief proyek bisa Anda revisi dan sebar ulang, atau tutup tanpa biaya, kalau belum ada penawaran yang cocok.'
+          },
+          {
+            q: 'Apa bedanya biaya desain dan biaya pembangunan?',
+            a: 'Biaya desain adalah jasa arsitek: konsep, gambar kerja, dan revisi sesuai kontrak. Biaya pembangunan mencakup konstruksi, material, dan perizinan, dan tidak termasuk dalam estimasi di halaman ini.'
+          },
+          {
+            q: 'Berapa lama sampai penawaran pertama masuk?',
+            a: 'Rumantra masih dalam tahap beta, jadi kami belum punya angka rata-rata yang bisa dipertanggungjawabkan. Anda akan diberi kabar setiap kali ada penawaran baru di ruang proyek.'
+          },
+          {
+            q: 'Siapa pemilik hak atas gambar desainnya?',
+            a: 'Ketentuan hak pakai gambar diatur dalam kontrak yang Anda sepakati dengan arsitek sebelum pekerjaan dimulai, dan bisa Anda baca kembali kapan saja di ruang proyek.'
+          },
+          {
+            q: 'Bagaimana kalau hasil tidak sesuai brief?',
+            a: 'Ajukan revisi dengan merujuk poin brief yang belum terpenuhi, sesuai jatah revisi di kontrak.'
+          },
+          {
+            q: 'Bagaimana kalau pekerjaan terlambat?',
+            a: 'Tenggat setiap tahap tercatat di ruang proyek dan bisa Anda angkat ke tim Rumantra.'
+          },
+          {
+            q: 'Bagaimana kalau saya tidak sepakat dengan arsitek?',
+            a: 'Perselisihan ditengahi dengan acuan kontrak, riwayat diskusi, dan hasil yang sudah diserahkan.'
+          },
+          {
+            q: 'Bagaimana kalau proyek dibatalkan?',
+            a: 'Penanganan dana yang belum dicairkan mengikuti ketentuan pembatalan di kontrak Anda.'
+          }
+        ]
+      },
+      penutup: {
+        title: 'Mulai dari rencana Anda',
+        desc1: 'Ceritakan kebutuhan, lokasi, dan perkiraan luas bangunan untuk membantu arsitek menyusun penawaran yang sesuai.',
+        desc2: 'Setelah memilih arsitek, kelola kontrak, progres, revisi, dan hasil desain bersama dalam ruang proyek Anda.',
+        cta: 'Buat brief proyek',
+        freeNote: 'Gratis membuat brief dan menerima penawaran. Biaya desain disepakati dengan arsitek sebelum pekerjaan dimulai.',
+        architectCta: 'Anda arsitek? Bergabung sebagai mitra Rumantra'
+      }
     }
   },
   mulaiProyek: {

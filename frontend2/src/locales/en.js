@@ -75,6 +75,150 @@ export default {
       subline: 'Join thousands of clients building confidently with Rumantra.',
       primary: 'Start Free Project',
       secondary: 'Join as an Architect'
+    },
+    v2: {
+      nav: {
+        howItWorks: 'How it works',
+        findArchitect: 'Find an architect',
+        estimateCost: 'Estimate cost',
+        login: 'Log in',
+        cta: 'Create project brief'
+      },
+      hero: {
+        title: 'One stop shop for architect services',
+        subline: 'Send one brief, get design proposals, and manage your project in a single platform.',
+        cta: 'Create project brief',
+        yourProject: 'Your project',
+        offerPrefix: 'Offer #'
+      },
+      tipeProyek: {
+        title: 'Every design need you have, on Rumantra.',
+        viewAll: 'View all',
+        hunian: { title: 'Residential', desc: 'Placeholder text — describe the scope of residential projects here.' },
+        komersil: { title: 'Commercial', desc: 'Placeholder text — describe the scope of commercial projects here.' },
+        industrial: { title: 'Industrial', desc: 'Placeholder text — describe the scope of industrial projects here.' },
+        lainnya: { title: 'Other', desc: 'Placeholder text — describe other project types here.' }
+      },
+      estimasi: {
+        title: 'Find your ideal budget',
+        continueCta: 'Continue to project brief',
+        jenisLabel: 'Type of work',
+        workBaru: 'New build',
+        workRenovasi: 'Renovation',
+        budgetLabelBaru: 'Estimated construction budget',
+        budgetLabelRenovasi: 'Estimated renovation budget',
+        budgetHint: 'Construction cost estimate only, excluding land price. Fill in the second field if you have a range.',
+        sampai: 'to',
+        minPlaceholder: 'Rp',
+        maxPlaceholder: 'Rp (optional)',
+        otherNeeds: 'Have other needs, like interior design or a building extension?',
+        otherNeedsCta: 'Tell us in your project brief',
+        feeEyebrow: 'Estimated design fee',
+        feeSubtitle1: 'For architectural design through to working drawings.',
+        feeSubtitle2: 'Excludes construction costs.',
+        calcToggle: 'Calculation assumptions',
+        estimateNote: 'Initial estimate. The final offer follows your project needs and scope.',
+        fillBudgetNotice: 'Fill in your estimated budget to see the estimate.',
+        invalidRangeNotice: 'The second number should be larger than the first.',
+        calcBudgetLabel: 'Construction budget',
+        calcScopeLabel: 'Service scope',
+        calcScopeValue: 'Architectural design through to working drawings',
+        calcCategoryLabel: 'Building category',
+        renovationAdjustment: 'renovation adjustment',
+        calcMethodLabel: 'Method',
+        calcMethodValue: 'IAI Guideline 2007 edition fee table'
+      },
+      mitra: {
+        title: 'The best architects and designers, on Rumantra.',
+        subtitle: 'Our partners have passed a screening process — only the best are here',
+        more: 'more'
+      },
+      ruangProyek: {
+        title: 'One place to manage your project.',
+        projectName: '12-Room Premium Boarding House',
+        projectOwner: 'Aryadiza Gunawan',
+        tabDiskusi: 'Discussion',
+        tabKontrak: 'Contract',
+        tabFile: 'Design files',
+        stageLabel: 'Work stages',
+        stage1: 'Design concept',
+        stage2: 'Design development',
+        stage3: 'Working drawings',
+        stage4: 'Final handover',
+        reviewLabel: 'Waiting for your review',
+        item1Title: 'Floor plan 1',
+        item1Meta: 'Sent 2 days ago · revision 1 of 3',
+        viewBtn: 'View drawing',
+        reviseBtn: 'Request revision',
+        item2Title: 'Front elevation',
+        item2Meta: 'Approved 5 days ago',
+        benefit1Title: 'Know exactly where things stand',
+        benefit1Desc: 'See work stages, deliverables, and designs awaiting your review.',
+        benefit2Title: 'Give clear revision feedback',
+        benefit2Desc: 'Review the design and request revisions in the same project space. Continue the discussion via chat or call.',
+        benefit3Title: 'Contracts and files always findable',
+        benefit3Desc: 'Create a contract with your architect and keep design files in one place you can revisit anytime.'
+      },
+      pembayaran: {
+        title: 'Payment follows the progress you approve',
+        step1Title: 'Brief and contract agreed',
+        step1Desc: 'Scope of work, revision count, and deadlines are written into the contract before the first payment.',
+        step2Title: 'Funds held before disbursement',
+        step2Desc: 'Your payment is held first, not immediately passed on in full to the architect.',
+        step3Title: 'Payment released per stage',
+        step3Desc: 'You review the results in the project space, request revisions if needed, then approve that stage.',
+        step4Title: 'Help when disputes arise',
+        step4Desc: 'The Rumantra team helps mediate using the contract and work history in the project space.'
+      },
+      faq: {
+        title: 'FAQ',
+        items: [
+          {
+            q: 'What is free on Rumantra?',
+            a: 'Creating a project brief, receiving offers, and comparing architects are free. What you pay for is the architect design fee, as agreed in the contract.'
+          },
+          {
+            q: 'Am I required to choose an incoming offer?',
+            a: 'No. You can revise and re-broadcast your project brief, or close it at no cost, if no offer fits yet.'
+          },
+          {
+            q: 'What is the difference between design fee and construction cost?',
+            a: 'The design fee is the architect’s service: concept, working drawings, and revisions per the contract. Construction cost covers construction, materials, and permits, and is not included in this page’s estimate.'
+          },
+          {
+            q: 'How long until the first offer arrives?',
+            a: 'Rumantra is still in beta, so we don’t yet have a reliable average figure. You’ll be notified whenever a new offer arrives in your project space.'
+          },
+          {
+            q: 'Who owns the rights to the design drawings?',
+            a: 'Usage rights for the drawings are set out in the contract you agree with the architect before work begins, and can be reviewed anytime in the project space.'
+          },
+          {
+            q: 'What if the result doesn’t match the brief?',
+            a: 'Request a revision referencing the brief points that weren’t met, within your contract’s revision allowance.'
+          },
+          {
+            q: 'What if the work is late?',
+            a: 'Each stage’s deadline is recorded in the project space and can be escalated to the Rumantra team.'
+          },
+          {
+            q: 'What if I disagree with the architect?',
+            a: 'Disputes are mediated using the contract, discussion history, and delivered work as reference.'
+          },
+          {
+            q: 'What if the project is cancelled?',
+            a: 'Handling of undisbursed funds follows the cancellation terms in your contract.'
+          }
+        ]
+      },
+      penutup: {
+        title: 'Start with your plan',
+        desc1: 'Tell us your needs, location, and estimated building area to help architects prepare a fitting offer.',
+        desc2: 'After choosing an architect, manage the contract, progress, revisions, and design results together in your project space.',
+        cta: 'Create project brief',
+        freeNote: 'Free to create a brief and receive offers. The design fee is agreed with the architect before work begins.',
+        architectCta: 'Are you an architect? Join as a Rumantra partner'
+      }
     }
   },
   mulaiProyek: {
