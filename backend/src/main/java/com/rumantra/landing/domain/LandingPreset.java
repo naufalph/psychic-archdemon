@@ -65,6 +65,15 @@ public class LandingPreset {
   @Column(name = "default_description_id", columnDefinition = "TEXT")
   private String defaultDescriptionId;
 
+  @Column(name = "image_original_url", columnDefinition = "TEXT")
+  private String imageOriginalUrl;
+
+  @Column(name = "image_large_url", columnDefinition = "TEXT")
+  private String imageLargeUrl;
+
+  @Column(name = "image_medium_url", columnDefinition = "TEXT")
+  private String imageMediumUrl;
+
   @Column(name = "display_order", nullable = false)
   @Builder.Default
   private int displayOrder = 0;

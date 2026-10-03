@@ -1,7 +1,9 @@
 <template>
   <div class="space-y-2">
-    <label class="block text-sm font-medium text-gray-700">{{ t.projectCreate.pinLocation }}</label>
-    <p class="text-xs text-gray-500">{{ t.projectCreate.pinLocationHint }}</p>
+    <template v-if="!hideLabel">
+      <label class="block text-sm font-medium text-gray-700">{{ t.projectCreate.pinLocation }}</label>
+      <p class="text-xs text-gray-500">{{ t.projectCreate.pinLocationHint }}</p>
+    </template>
 
     <div v-if="!available" class="text-sm text-gray-400 bg-gray-50 border border-gray-200 rounded-2xl px-4 py-6">
       {{ t.projectCreate.pinLocationUnavailable }}
@@ -36,7 +38,9 @@ import { loadGoogleMaps, hasMapsKey } from '@/composables/useGoogleMaps'
 
 const props = defineProps({
   latitude: { type: [Number, String], default: null },
-  longitude: { type: [Number, String], default: null }
+  longitude: { type: [Number, String], default: null },
+  // For hosts that render their own label above the map
+  hideLabel: { type: Boolean, default: false }
 })
 
 const emit = defineEmits(['update:latitude', 'update:longitude'])

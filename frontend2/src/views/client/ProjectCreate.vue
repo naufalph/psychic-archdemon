@@ -22,43 +22,6 @@
 
         <form ref="formRef" class="p-8 space-y-10" @submit.prevent="handleSubmit">
           <template v-if="step === 1">
-            <section v-if="showPhoneField" class="space-y-4 p-5 bg-amber-50 border border-amber-200 rounded-2xl">
-              <div class="flex gap-3 items-start">
-                <svg
-                  class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <div>
-                  <p class="text-sm font-semibold text-amber-900">{{ t.projectCreate.phoneRequiredTitle }}</p>
-                  <p class="text-sm text-amber-800 mt-1">
-                    {{ t.projectCreate.phoneRequiredBody }}
-                  </p>
-                </div>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                  >{{ t.projectCreate.phoneLabel }}<span class="text-red-500">*</span></label
-                >
-                <input
-                  v-model="formData.phoneNumber"
-                  type="tel"
-                  :placeholder="t.mulaiProyek.form.phonePlaceholder"
-                  class="w-full px-4 py-3 border-2 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none transition"
-                  :class="phoneError ? 'border-red-300' : 'border-gray-200'"
-                />
-                <p v-if="phoneError" class="mt-1 text-sm text-red-600">{{ phoneError }}</p>
-              </div>
-            </section>
-
             <section class="space-y-6">
               <div class="flex items-center gap-2 border-b border-gray-100 pb-3">
                 <span class="bg-brand-tan text-brand-brown font-bold px-3 py-1 rounded-full text-sm"
@@ -78,6 +41,23 @@
                   :placeholder="t.projectCreate.projectTitlePlaceholder"
                   class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none transition"
                 />
+              </div>
+
+              <div>
+                <label for="project-phone" class="block text-sm font-medium text-gray-700 mb-2"
+                  >{{ t.projectCreate.phoneLabel }}<span class="text-red-500">*</span></label
+                >
+                <input
+                  id="project-phone"
+                  v-model="formData.phoneNumber"
+                  type="tel"
+                  autocomplete="tel"
+                  :placeholder="t.mulaiProyek.form.phonePlaceholder"
+                  class="w-full px-4 py-3 border-2 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none transition"
+                  :class="phoneError ? 'border-red-300' : 'border-gray-200'"
+                />
+                <p v-if="phoneError" class="mt-1 text-sm text-red-600">{{ phoneError }}</p>
+                <p v-else class="mt-1 text-xs text-gray-500">{{ t.projectCreate.phoneRequiredBody }}</p>
               </div>
 
               <AddressAutocomplete
@@ -497,12 +477,7 @@ const step = ref(1)
 const isAdvancing = ref(false)
 const existingProjectId = ref(null)
 const isSavingDraft = ref(false)
-const phoneFieldForced = ref(false)
 const phoneError = ref('')
-
-const showPhoneField = computed(
-  () => phoneFieldForced.value || (clientProfileStore.hasProfile && !clientProfileStore.profilePhone)
-)
 
 const formData = ref({
   title: '',
@@ -621,7 +596,12 @@ const buildProjectData = () => ({
   title: formData.value.title,
   // location stays the human-readable summary every existing consumer already renders
   // (project cards, admin lists, the public landing preview) — derived, never typed.
-  location: [formData.value.city, formData.value.province].filter(Boolean).join(', '),
+  // Falls back to the typed address when no Places suggestion was picked (e.g. a landing brief's
+  // free-text location), otherwise the backend rejects the post for a missing location.
+  location:
+    [formData.value.city, formData.value.province].filter(Boolean).join(', ') ||
+    formData.value.fullAddress?.trim() ||
+    '',
   province: formData.value.province || null,
   city: formData.value.city || null,
   fullAddress: formData.value.fullAddress?.trim() || null,
@@ -647,8 +627,6 @@ const buildProjectData = () => ({
 
 const validatePhoneField = () => {
   phoneError.value = ''
-  if (!showPhoneField.value) return true
-
   const value = formData.value.phoneNumber?.trim() || ''
   if (!value) {
     phoneError.value = t.value.projectCreate.phoneRequiredError
@@ -672,9 +650,10 @@ const persistDraft = async () => {
     existingProjectId.value = draft.id
   }
 
-  if (showPhoneField.value && formData.value.phoneNumber?.trim()) {
+  const phone = formData.value.phoneNumber?.trim()
+  if (phone && phone !== clientProfileStore.profilePhone) {
     try {
-      await clientProfileStore.updateProfile({ phoneNumber: formData.value.phoneNumber.trim() })
+      await clientProfileStore.updateProfile({ phoneNumber: phone })
     } catch {
       // Best-effort — submission will still enforce this before posting
     }
@@ -775,7 +754,6 @@ const handleSubmit = async () => {
     const message = err.response?.data?.message || 'Failed to create project. Please try again.'
     if (message.startsWith('PROFILE_INCOMPLETE:')) {
       error.value = message.replace('PROFILE_INCOMPLETE:', '').trim()
-      phoneFieldForced.value = true
       step.value = 1
       await clientProfileStore.fetchProfile()
     } else {
@@ -844,6 +822,7 @@ const applyLandingBrief = async () => {
 onMounted(async () => {
   try {
     await clientProfileStore.fetchProfile()
+    formData.value.phoneNumber = clientProfileStore.profilePhone
   } catch (err) {
     console.error('Failed to fetch client profile:', err)
   }

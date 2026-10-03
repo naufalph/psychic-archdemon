@@ -42,7 +42,13 @@
               class="p-4 flex items-center gap-3"
               :class="{ 'bg-gray-50': editingId === preset.id }"
             >
-              <div class="w-10 h-10 rounded-lg bg-gray-100 shrink-0 flex items-center justify-center">
+              <img
+                v-if="preset.imageUrl"
+                :src="preset.imageUrl"
+                alt=""
+                class="w-10 h-10 rounded-lg object-cover shrink-0 bg-gray-100"
+              />
+              <div v-else class="w-10 h-10 rounded-lg bg-gray-100 shrink-0 flex items-center justify-center">
                 <component :is="resolvePresetIcon(preset.iconName)" class="w-5 h-5 text-gray-500" />
               </div>
               <div class="min-w-0 flex-1">
@@ -199,6 +205,44 @@
               </div>
             </div>
 
+            <div>
+              <label for="preset-image" class="block text-xs font-semibold text-gray-500 mb-1">
+                {{ t.presetEditor.image }}
+              </label>
+              <p class="text-xs text-gray-400 mb-2">{{ t.presetEditor.imageHint }}</p>
+              <div class="flex items-center gap-4">
+                <img
+                  v-if="imagePreview"
+                  :src="imagePreview"
+                  alt=""
+                  class="w-32 h-20 rounded-lg object-cover border border-gray-200 bg-gray-100"
+                />
+                <div
+                  v-else
+                  class="w-32 h-20 rounded-lg border-2 border-dashed border-gray-200 flex items-center justify-center text-xs text-gray-400"
+                >
+                  {{ t.presetEditor.noImage }}
+                </div>
+                <div class="flex flex-col gap-2">
+                  <input
+                    id="preset-image"
+                    type="file"
+                    accept="image/jpeg,image/png"
+                    class="text-xs text-gray-600"
+                    @change="onImagePicked"
+                  />
+                  <button
+                    v-if="imagePreview"
+                    type="button"
+                    class="self-start text-xs font-semibold text-red-600 hover:underline"
+                    @click="clearImage"
+                  >
+                    {{ t.presetEditor.removeImage }}
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <div class="pt-2 border-t border-gray-100">
               <p class="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">
                 {{ t.presetEditor.defaultsLabel }}
@@ -306,7 +350,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { ChevronUp, ChevronDown, Trash2 } from 'lucide-vue-next'
 import StarterCard from '@/components/landing/StarterCard.vue'
 import BaseAlert from '@/components/ui/BaseAlert.vue'
@@ -350,6 +394,39 @@ const error = ref(null)
 const editingId = ref(null)
 const form = ref(null)
 const deleteTarget = ref(null)
+
+// The image is uploaded through its own multipart endpoint after the JSON save, so it is held
+// outside `form` and never leaks into the preset payload.
+const imageFile = ref(null)
+const imagePreview = ref(null)
+const imageRemoved = ref(false)
+
+const revokePreview = () => {
+  if (imagePreview.value?.startsWith('blob:')) URL.revokeObjectURL(imagePreview.value)
+}
+
+const resetImage = (url = null) => {
+  revokePreview()
+  imageFile.value = null
+  imagePreview.value = url
+  imageRemoved.value = false
+}
+
+const onImagePicked = event => {
+  const file = event.target.files?.[0]
+  if (!file) return
+  revokePreview()
+  imageFile.value = file
+  imagePreview.value = URL.createObjectURL(file)
+  imageRemoved.value = false
+}
+
+const clearImage = () => {
+  revokePreview()
+  imageFile.value = null
+  imagePreview.value = null
+  imageRemoved.value = true
+}
 
 const previewPresets = computed(() => {
   const visible = presets.value.filter(p => p.active && p.id !== editingId.value)
@@ -400,6 +477,7 @@ const blankForm = () => ({
 const startCreate = () => {
   editingId.value = null
   form.value = blankForm()
+  resetImage()
 }
 
 const startEdit = preset => {
@@ -422,12 +500,14 @@ const startEdit = preset => {
     defaultDescriptionId: preset.defaultDescriptionId || '',
     active: preset.active
   }
+  resetImage(preset.imageUrl || null)
 }
 
 const cancelEdit = () => {
   editingId.value = null
   form.value = null
   error.value = null
+  resetImage()
 }
 
 const toPayload = () => ({
@@ -440,10 +520,15 @@ const save = async () => {
   saving.value = true
   error.value = null
   try {
-    if (editingId.value) {
-      await adminLandingAPI.updatePreset(editingId.value, toPayload())
-    } else {
-      await adminLandingAPI.createPreset(toPayload())
+    const res = editingId.value
+      ? await adminLandingAPI.updatePreset(editingId.value, toPayload())
+      : await adminLandingAPI.createPreset(toPayload())
+    const presetId = res.data?.data?.id ?? editingId.value
+
+    if (imageFile.value) {
+      await adminLandingAPI.uploadPresetImage(presetId, imageFile.value)
+    } else if (imageRemoved.value && editingId.value) {
+      await adminLandingAPI.removePresetImage(presetId)
     }
     cancelEdit()
     await load()
@@ -485,4 +570,5 @@ const move = async (index, delta) => {
 }
 
 onMounted(load)
+onBeforeUnmount(revokePreview)
 </script>

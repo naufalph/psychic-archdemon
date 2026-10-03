@@ -87,17 +87,20 @@
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <router-link
-          v-for="tipe in tipeCards"
+          v-for="tipe in projectTypeCards"
           :key="tipe.key"
-          :to="{ path: '/brief-proyek', query: { kategori: tipe.category } }"
+          :to="tipe.to"
           class="relative rounded-[20px] overflow-hidden bg-ink-900 min-h-[360px] flex flex-col transition-transform duration-300 hover:-translate-y-1.5 hover:shadow-[0_32px_64px_-40px_rgba(0,0,0,.32)]"
         >
-          <div class="relative flex-1 min-h-[240px]" :style="{ background: tipe.gradient }"></div>
+          <div
+            class="relative flex-1 min-h-[240px] bg-cover bg-center"
+            :style="tipe.image ? { backgroundImage: `url(${tipe.image})` } : { background: tipe.gradient }"
+          ></div>
           <div class="p-7 pb-8" :style="{ background: tipe.footerGradient }">
             <h3 class="text-[34px] font-bold tracking-[-.03em] leading-[1.08] m-0 mb-2 text-white">
               {{ tipe.title }}
             </h3>
-            <p class="text-body leading-relaxed m-0 text-white/80">{{ tipe.desc }}</p>
+            <p class="text-body leading-relaxed m-0 text-white/80 line-clamp-2">{{ tipe.desc }}</p>
           </div>
         </router-link>
       </div>
@@ -330,16 +333,17 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { ChevronRight } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
+import { landingAPI } from '@/services/api'
 import HeroShowcase from '@/components/landing/HeroShowcase.vue'
 import BudgetEstimator from '@/components/landing/BudgetEstimator.vue'
 import LandingFaq from '@/components/landing/LandingFaq.vue'
 import LandingFooter from '@/components/landing/LandingFooter.vue'
 import heroBg from '@/assets/images/landing/hero-background.png'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const tv = computed(() => t.value.landing.v2)
 
 const tipeCards = computed(() => [
@@ -376,6 +380,42 @@ const tipeCards = computed(() => [
     footerGradient: 'linear-gradient(135deg,#C5A17A,#6A3D22)'
   }
 ])
+
+const presets = ref([])
+
+const localizedPreset = (preset, field) =>
+  (locale.value === 'en' ? preset[`${field}En`] : preset[`${field}Id`]) || preset[`${field}En`] || ''
+
+// Presets are the cards when the superuser has any; the four fixed category cards are the fallback
+// so the section never renders empty. A preset borrows its category's gradient until it has a photo.
+const projectTypeCards = computed(() => {
+  const fixed = tipeCards.value
+  if (!presets.value.length) {
+    return fixed.map(c => ({ ...c, to: { path: '/brief-proyek', query: { kategori: c.category } } }))
+  }
+  const fallbackStyle = fixed[fixed.length - 1]
+  return presets.value.map(preset => {
+    const style = fixed.find(c => c.category === preset.buildingFunction) || fallbackStyle
+    return {
+      key: preset.slug,
+      to: { path: '/brief-proyek', query: { preset: preset.slug } },
+      title: localizedPreset(preset, 'label'),
+      desc: localizedPreset(preset, 'defaultDescription') || localizedPreset(preset, 'eyebrow'),
+      image: preset.imageLargeUrl || preset.imageUrl,
+      gradient: style.gradient,
+      footerGradient: style.footerGradient
+    }
+  })
+})
+
+onMounted(async () => {
+  try {
+    const res = await landingAPI.getPresets()
+    presets.value = res.data?.data || []
+  } catch {
+    // The fixed category cards cover a failed request
+  }
+})
 
 const mitraGradients = [
   'linear-gradient(135deg,#9B5E3C,#3D2114)',

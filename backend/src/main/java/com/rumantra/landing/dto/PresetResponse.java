@@ -27,6 +27,8 @@ public class PresetResponse {
   private Long defaultDesignBudget;
   private String defaultDescriptionEn;
   private String defaultDescriptionId;
+  private String imageUrl;
+  private String imageLargeUrl;
   private int displayOrder;
   private boolean active;
 }

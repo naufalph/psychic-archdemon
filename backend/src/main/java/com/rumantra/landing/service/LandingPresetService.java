@@ -1,17 +1,23 @@
 package com.rumantra.landing.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.rumantra.landing.domain.LandingPreset;
 import com.rumantra.landing.dto.PresetRequest;
 import com.rumantra.landing.dto.PresetResponse;
 import com.rumantra.landing.repository.LandingPresetRepository;
 import com.rumantra.shared.exception.ResourceNotFoundException;
+import com.rumantra.shared.storage.FileStorageService;
+import com.rumantra.shared.storage.ImageSize;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +27,12 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class LandingPresetService {
 
+  // Presets have no owning architect; -1 keeps their images in a folder of their own, apart
+  // from hero slides (0) and every real architect's portfolio uploads.
+  private static final Long STORAGE_NAMESPACE = -1L;
+
   private final LandingPresetRepository presetRepository;
+  private final FileStorageService fileStorageService;
 
   @Transactional(readOnly = true)
   public List<PresetResponse> listPublic() {
@@ -78,11 +89,40 @@ public class LandingPresetService {
 
   @Transactional
   public void delete(Long presetId) {
-    LandingPreset preset =
-        presetRepository
-            .findById(presetId)
-            .orElseThrow(() -> new ResourceNotFoundException("Preset not found: " + presetId));
+    LandingPreset preset = findPreset(presetId);
+    deleteStoredImages(storedImageUrls(preset));
     presetRepository.delete(preset);
+  }
+
+  @Transactional
+  public PresetResponse uploadImage(Long presetId, MultipartFile image) {
+    if (image == null || image.isEmpty()) {
+      throw new IllegalArgumentException("Image file is required");
+    }
+    LandingPreset preset = findPreset(presetId);
+    List<String> previous = storedImageUrls(preset);
+
+    // Upload before deleting, so a failed upload leaves the preset with its old image rather
+    // than none.
+    Map<ImageSize, String> urls =
+        fileStorageService.uploadImagePorto(image, STORAGE_NAMESPACE, preset.getId());
+    preset.setImageOriginalUrl(urls.get(ImageSize.ORIGINAL));
+    preset.setImageLargeUrl(urls.get(ImageSize.LARGE));
+    preset.setImageMediumUrl(urls.get(ImageSize.MEDIUM));
+    preset = presetRepository.save(preset);
+
+    deleteStoredImages(previous);
+    return mapToResponse(preset);
+  }
+
+  @Transactional
+  public PresetResponse removeImage(Long presetId) {
+    LandingPreset preset = findPreset(presetId);
+    deleteStoredImages(storedImageUrls(preset));
+    preset.setImageOriginalUrl(null);
+    preset.setImageLargeUrl(null);
+    preset.setImageMediumUrl(null);
+    return mapToResponse(presetRepository.save(preset));
   }
 
   @Transactional
@@ -101,6 +141,29 @@ public class LandingPresetService {
 
     presetRepository.saveAll(presets);
     return listAll();
+  }
+
+  private LandingPreset findPreset(Long presetId) {
+    return presetRepository
+        .findById(presetId)
+        .orElseThrow(() -> new ResourceNotFoundException("Preset not found: " + presetId));
+  }
+
+  private List<String> storedImageUrls(LandingPreset preset) {
+    return Stream.of(
+            preset.getImageOriginalUrl(), preset.getImageLargeUrl(), preset.getImageMediumUrl())
+        .filter(Objects::nonNull)
+        .collect(Collectors.toCollection(ArrayList::new));
+  }
+
+  private void deleteStoredImages(List<String> urls) {
+    if (!urls.isEmpty()) {
+      fileStorageService.deleteImages(urls);
+    }
+  }
+
+  private String toPublicUrl(String storedPath) {
+    return storedPath == null ? null : fileStorageService.getPublicUrl(storedPath);
   }
 
   private void applyRequest(LandingPreset preset, PresetRequest request) {
@@ -142,6 +205,8 @@ public class LandingPresetService {
         .defaultDesignBudget(preset.getDefaultDesignBudget())
         .defaultDescriptionEn(preset.getDefaultDescriptionEn())
         .defaultDescriptionId(preset.getDefaultDescriptionId())
+        .imageUrl(toPublicUrl(preset.getImageMediumUrl()))
+        .imageLargeUrl(toPublicUrl(preset.getImageLargeUrl()))
         .displayOrder(preset.getDisplayOrder())
         .active(preset.isActive())
         .build();

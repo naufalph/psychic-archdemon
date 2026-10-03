@@ -912,7 +912,6 @@ export default {
     titleNew: 'Pasang Proyek Baru',
     titleDraft: 'Lanjutkan Draf Proyek',
     subtitle: 'Tentukan kebutuhan Anda untuk menemukan arsitek yang tepat',
-    phoneRequiredTitle: 'Nomor telepon diperlukan',
     phoneRequiredBody:
       'Tambahkan nomor telepon agar arsitek dan tim kami dapat menghubungi Anda. Nomor ini akan disimpan di profil Anda.',
     phoneLabel: 'Nomor Telepon',
@@ -1949,6 +1948,10 @@ export default {
     eyebrowEn: 'Eyebrow kartu (EN)',
     eyebrowId: 'Eyebrow kartu (ID)',
     icon: 'Ikon',
+    image: 'Gambar kartu',
+    imageHint: 'Tampil di kartu "Tipe Proyek" landing page. JPG atau PNG, sebaiknya lanskap.',
+    noImage: 'Belum ada gambar',
+    removeImage: 'Hapus gambar',
     defaultsLabel: 'Nilai awal formulir',
     defaultsHint:
       'Terisi otomatis saat formulir dibuka dari kartu ini. Kosongkan bila tidak perlu.',
@@ -2229,10 +2232,8 @@ export default {
       subCategoryPlaceholder: 'Pilih sub-kategori',
       subCategoryDisabled: 'Pilih kategori dulu',
       location: 'Lokasi',
-      locationHint: 'Tulis alamat lengkap lokasi proyek.',
-      locationPlaceholder: 'cth. Jl. Merdeka No. 10, Bandung',
-      mapPlaceholderTitle: 'Peta segera hadir',
-      mapPlaceholderDesc: 'Untuk sementara, tulis alamat lengkap proyek di kolom di atas.',
+      locationHint:
+        'Cari alamatnya, lalu geser pin atau klik peta untuk menandai lokasi persisnya.',
       lotSize: 'Luas Lahan (m²)',
       lotSizePlaceholder: 'cth. 200',
       buildArea: 'Luas Bangunan (m²)',
@@ -2247,6 +2248,7 @@ export default {
       phone: 'Nomor Telepon',
       phonePlaceholder: 'cth. +62 812 3456 7890',
       phoneInvalid: 'Nomor telepon harus 10–16 digit.',
+      requiredError: 'Wajib diisi.',
       start: 'Perkiraan Mulai',
       startImmediately: 'Secepatnya',
       startSpecific: 'Pada tanggal tertentu'

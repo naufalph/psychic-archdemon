@@ -54,7 +54,13 @@ export const adminLandingAPI = {
   createPreset: payload => api.post('/rmtr/admin/landing/presets', payload),
   updatePreset: (presetId, payload) => api.put(`/rmtr/admin/landing/presets/${presetId}`, payload),
   deletePreset: presetId => api.delete(`/rmtr/admin/landing/presets/${presetId}`),
-  reorderPresets: orderedIds => api.put('/rmtr/admin/landing/presets/reorder', { orderedIds })
+  reorderPresets: orderedIds => api.put('/rmtr/admin/landing/presets/reorder', { orderedIds }),
+  uploadPresetImage: (presetId, file) => {
+    const formData = new FormData()
+    formData.append('image', file)
+    return api.post(`/rmtr/admin/landing/presets/${presetId}/image`, formData, multipart)
+  },
+  removePresetImage: presetId => api.delete(`/rmtr/admin/landing/presets/${presetId}/image`)
 }
 
 // Existing superuser project endpoints (from ProjectController)

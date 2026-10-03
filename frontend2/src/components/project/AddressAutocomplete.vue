@@ -1,11 +1,18 @@
 <template>
   <div class="space-y-2">
-    <label class="block text-sm font-medium text-gray-700">
-      {{ t.projectCreate.addressSearch }}<span class="text-red-500">*</span>
-    </label>
-    <p class="text-xs text-gray-500">{{ t.projectCreate.addressSearchHint }}</p>
+    <template v-if="!hideLabel">
+      <label class="block text-sm font-medium text-gray-700">
+        {{ t.projectCreate.addressSearch }}<span class="text-red-500">*</span>
+      </label>
+      <p class="text-xs text-gray-500">{{ t.projectCreate.addressSearchHint }}</p>
+    </template>
 
-    <div v-if="autocompleteReady" ref="hostEl" class="rumantra-place-autocomplete" />
+    <div
+      v-if="autocompleteReady"
+      ref="hostEl"
+      class="rumantra-place-autocomplete"
+      :class="{ 'rumantra-place-autocomplete--minimal': minimal, 'rumantra-place-autocomplete--error': error }"
+    />
 
     <input
       v-else
@@ -13,6 +20,7 @@
       required
       type="text"
       :placeholder="t.projectCreate.addressSearchPlaceholder"
+      :class="error ? '!border-red-400' : ''"
       class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none transition"
       @input="$emit('update:fullAddress', $event.target.value)"
     />
@@ -43,7 +51,12 @@ import { loadGoogleMaps, hasMapsKey } from '@/composables/useGoogleMaps'
 const props = defineProps({
   fullAddress: { type: String, default: '' },
   city: { type: String, default: '' },
-  province: { type: String, default: '' }
+  province: { type: String, default: '' },
+  // For hosts that render their own label above the field
+  hideLabel: { type: Boolean, default: false },
+  // Hairline 48px field matching the landing / brief design language
+  minimal: { type: Boolean, default: false },
+  error: { type: Boolean, default: false }
 })
 
 const emit = defineEmits([
@@ -145,5 +158,24 @@ onBeforeUnmount(() => {
   --gmp-place-autocomplete-input-border: 2px solid rgb(229 231 235);
   --gmp-place-autocomplete-input-padding: 0.75rem 1rem;
   font-family: inherit;
+  color-scheme: light;
+  background-color: #fff;
+  border: 2px solid rgb(229 231 235);
+  border-radius: 1rem;
+}
+
+.rumantra-place-autocomplete--minimal :deep(gmp-place-autocomplete) {
+  --gmp-place-autocomplete-input-border-radius: 0.75rem;
+  --gmp-place-autocomplete-input-border: 1px solid #e8e8e8;
+  border: 1px solid #e8e8e8;
+  border-radius: 0.75rem;
+  min-height: 3rem;
+}
+
+.rumantra-place-autocomplete--minimal :deep(gmp-place-autocomplete:focus-within) {
+  border-color: #0a0a0a;
+}
+.rumantra-place-autocomplete--error :deep(gmp-place-autocomplete) {
+  border-color: #f87171;
 }
 </style>

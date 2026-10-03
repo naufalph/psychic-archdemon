@@ -3,8 +3,10 @@ package com.rumantra.landing.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.rumantra.landing.dto.PresetReorderRequest;
 import com.rumantra.landing.dto.PresetRequest;
@@ -46,6 +48,18 @@ public class AdminLandingPresetController {
   public ResponseEntity<ApiResponse<PresetResponse>> updatePreset(
       @PathVariable Long presetId, @Valid @RequestBody PresetRequest request) {
     return ResponseEntity.ok(ApiResponse.success(presetService.update(presetId, request)));
+  }
+
+  @PostMapping(value = "/presets/{presetId}/image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  public ResponseEntity<ApiResponse<PresetResponse>> uploadPresetImage(
+      @PathVariable Long presetId, @RequestParam("image") MultipartFile image) {
+    return ResponseEntity.ok(ApiResponse.success(presetService.uploadImage(presetId, image)));
+  }
+
+  @DeleteMapping("/presets/{presetId}/image")
+  public ResponseEntity<ApiResponse<PresetResponse>> removePresetImage(
+      @PathVariable Long presetId) {
+    return ResponseEntity.ok(ApiResponse.success(presetService.removeImage(presetId)));
   }
 
   @DeleteMapping("/presets/{presetId}")
