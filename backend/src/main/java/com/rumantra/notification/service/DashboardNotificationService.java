@@ -2,6 +2,9 @@ package com.rumantra.notification.service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
@@ -10,10 +13,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.rumantra.bidding.repository.BidRepository;
+import com.rumantra.client.domain.Project;
+import com.rumantra.client.repository.ProjectRepository;
 import com.rumantra.notification.domain.DashboardNotification;
 import com.rumantra.notification.domain.NotificationType;
+import com.rumantra.notification.dto.NotificationPageResponse;
 import com.rumantra.notification.dto.NotificationResponse;
 import com.rumantra.notification.repository.DashboardNotificationRepository;
+import com.rumantra.project.repository.ProjectPhaseRepository;
 import com.rumantra.security.SecurityUtils;
 import com.rumantra.shared.exception.ResourceNotFoundException;
 import com.rumantra.user.domain.User;
@@ -31,6 +39,12 @@ public class DashboardNotificationService {
 
   private final DashboardNotificationRepository notificationRepository;
   private final UserRepository userRepository;
+  private final ProjectRepository projectRepository;
+  private final BidRepository bidRepository;
+  private final ProjectPhaseRepository projectPhaseRepository;
+
+  static final int DEFAULT_PAGE_SIZE = 20;
+  static final int MAX_PAGE_SIZE = 50;
 
   @PersistenceContext private EntityManager entityManager;
 
@@ -72,6 +86,7 @@ public class DashboardNotificationService {
             .messageData(messageData)
             .referenceType(referenceType)
             .referenceId(referenceId)
+            .projectId(resolveProjectId(referenceType, referenceId))
             .isRead(false)
             .createdAt(LocalDateTime.now())
             .build();
@@ -80,6 +95,23 @@ public class DashboardNotificationService {
     entityManager.flush();
     log.info("Created dashboard notification {} for user {}", saved.getId(), userId);
     return saved;
+  }
+
+  Long resolveProjectId(String referenceType, Long referenceId) {
+    if (referenceType == null || referenceId == null) {
+      return null;
+    }
+    return switch (referenceType) {
+      case "PROJECT" -> referenceId;
+      case "BID" ->
+          bidRepository.findById(referenceId).map(bid -> bid.getProject().getId()).orElse(null);
+      case "PHASE" ->
+          projectPhaseRepository
+              .findById(referenceId)
+              .map(phase -> phase.getProject().getId())
+              .orElse(null);
+      default -> null;
+    };
   }
 
   /**
@@ -108,7 +140,42 @@ public class DashboardNotificationService {
     Pageable pageable = PageRequest.of(page, size);
     Page<DashboardNotification> notificationPage =
         notificationRepository.findByUserIdOrderByCreatedAtDesc(userId, pageable);
-    return notificationPage.map(this::toResponse);
+    Map<Long, Project> projects = loadProjects(notificationPage.getContent());
+    return notificationPage.map(notification -> toResponse(notification, projects));
+  }
+
+  @Transactional(readOnly = true)
+  public NotificationPageResponse getNotificationPage(
+      Long cursor, Integer limit, boolean unreadOnly) {
+    Long userId = SecurityUtils.getCurrentUserId();
+    int size = limit == null ? DEFAULT_PAGE_SIZE : Math.max(1, Math.min(limit, MAX_PAGE_SIZE));
+    // One extra row tells us whether another page exists without a second count query
+    Pageable pageable = PageRequest.of(0, size + 1);
+
+    List<DashboardNotification> rows;
+    if (cursor == null) {
+      rows = notificationRepository.findFirstPage(userId, unreadOnly, pageable);
+    } else {
+      rows =
+          notificationRepository
+              .findById(cursor)
+              .filter(anchor -> anchor.getUser().getId().equals(userId))
+              .map(
+                  anchor ->
+                      notificationRepository.findPageAfter(
+                          userId, unreadOnly, anchor.getCreatedAt(), anchor.getId(), pageable))
+              .orElse(List.of());
+    }
+
+    boolean hasMore = rows.size() > size;
+    List<DashboardNotification> pageRows = hasMore ? rows.subList(0, size) : rows;
+
+    return NotificationPageResponse.builder()
+        .items(toResponseList(pageRows))
+        .nextCursor(hasMore ? pageRows.get(pageRows.size() - 1).getId() : null)
+        .unreadCount(notificationRepository.countUnreadByUserId(userId))
+        .totalCount(notificationRepository.countByUserId(userId))
+        .build();
   }
 
   /**
@@ -148,15 +215,11 @@ public class DashboardNotificationService {
     DashboardNotification notification =
         notificationRepository
             .findById(notificationId)
+            .filter(found -> found.getUser().getId().equals(userId))
             .orElseThrow(
                 () ->
                     new ResourceNotFoundException(
                         "Notification not found with id: " + notificationId));
-
-    // Verify ownership
-    if (!notification.getUser().getId().equals(userId)) {
-      throw new RuntimeException("You do not have permission to access this notification");
-    }
 
     if (!notification.getIsRead()) {
       notification.setIsRead(true);
@@ -165,7 +228,7 @@ public class DashboardNotificationService {
       log.info("Notification {} marked as read by user {}", notificationId, userId);
     }
 
-    return toResponse(notification);
+    return toResponseList(List.of(notification)).get(0);
   }
 
   /**
@@ -198,10 +261,14 @@ public class DashboardNotificationService {
    * @param notification The notification entity
    * @return NotificationResponse DTO
    */
-  private NotificationResponse toResponse(DashboardNotification notification) {
+  private NotificationResponse toResponse(
+      DashboardNotification notification, Map<Long, Project> projects) {
     if (notification == null) {
       return null;
     }
+
+    Project project =
+        notification.getProjectId() == null ? null : projects.get(notification.getProjectId());
 
     return NotificationResponse.builder()
         .id(notification.getId())
@@ -212,6 +279,9 @@ public class DashboardNotificationService {
         .messageData(notification.getMessageData())
         .referenceType(notification.getReferenceType())
         .referenceId(notification.getReferenceId())
+        .projectId(notification.getProjectId())
+        .projectStatus(project == null ? null : project.getStatus().name())
+        .projectName(project == null ? null : project.getTitle())
         .isRead(notification.getIsRead())
         .readAt(notification.getReadAt())
         .createdAt(notification.getCreatedAt())
@@ -229,6 +299,23 @@ public class DashboardNotificationService {
       return List.of();
     }
 
-    return notifications.stream().map(this::toResponse).collect(Collectors.toList());
+    Map<Long, Project> projects = loadProjects(notifications);
+    return notifications.stream()
+        .map(notification -> toResponse(notification, projects))
+        .collect(Collectors.toList());
+  }
+
+  private Map<Long, Project> loadProjects(List<DashboardNotification> notifications) {
+    List<Long> projectIds =
+        notifications.stream()
+            .map(DashboardNotification::getProjectId)
+            .filter(Objects::nonNull)
+            .distinct()
+            .toList();
+    if (projectIds.isEmpty()) {
+      return Map.of();
+    }
+    return projectRepository.findAllById(projectIds).stream()
+        .collect(Collectors.toMap(Project::getId, Function.identity()));
   }
 }

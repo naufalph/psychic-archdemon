@@ -23,6 +23,9 @@ public class NotificationResponse {
   private String messageData;
   private String referenceType;
   private Long referenceId;
+  private Long projectId;
+  private String projectStatus;
+  private String projectName;
   private Boolean isRead;
   private LocalDateTime readAt;
   private LocalDateTime createdAt;

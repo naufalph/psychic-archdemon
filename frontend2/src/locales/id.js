@@ -1149,6 +1149,28 @@ export default {
     markAllRead: 'Tandai semua sudah dibaca',
     viewAll: 'Lihat semua notifikasi',
     loading: 'Memuat notifikasi...',
+    loadError: 'Gagal memuat notifikasi',
+    retry: 'Coba lagi',
+    filterAll: 'Semua',
+    filterUnread: 'Belum dibaca',
+    subtitleUnread: '{n} belum dibaca dari {total} notifikasi.',
+    subtitleAllRead: 'Semua notifikasi sudah dibaca.',
+    subtitleEmpty: 'Pembaruan proyek dan tawaran Anda.',
+    allReadTitle: 'Semua sudah dibaca',
+    allReadMessage: 'Notifikasi baru akan muncul di sini.',
+    loadMore: 'Muat lebih banyak',
+    groups: {
+      today: 'Hari ini',
+      thisWeek: 'Minggu ini',
+      older: 'Lebih lama'
+    },
+    cta: {
+      viewBids: 'Lihat tawaran',
+      continueFinalization: 'Lanjutkan finalisasi',
+      openWorkspace: 'Buka workspace',
+      completeBrief: 'Lengkapi brief',
+      openProject: 'Buka proyek'
+    },
     emptyTitle: 'Belum ada notifikasi',
     emptyMessage: 'Anda akan diberitahu tentang pembaruan proyek dan tawaran di sini',
     justNow: 'Baru saja',

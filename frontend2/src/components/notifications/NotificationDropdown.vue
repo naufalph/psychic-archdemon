@@ -1,16 +1,17 @@
 <template>
-  <div class="relative">
+  <div ref="rootRef">
     <button
-      class="relative p-2 rounded-full transition-colors"
-      :class="themeClasses.button"
-      aria-label="Notifications"
+      class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all"
+      :class="isOpen || isOnPage ? 'bg-white/10 text-white' : 'text-white/60 hover:text-white hover:bg-white/5'"
+      :aria-expanded="isOpen"
+      aria-haspopup="dialog"
       @click.stop="toggleDropdown"
     >
-      <BellIcon class="h-6 w-6" />
+      <Bell :size="18" />
+      <span>{{ t.notifications.title }}</span>
       <span
         v-if="notificationsStore.hasUnread"
-        class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none transform translate-x-1/4 -translate-y-1/4 rounded-full"
-        :class="themeClasses.badge"
+        class="ml-auto min-w-[20px] h-5 px-1.5 rounded-full bg-brand-gold text-ink-900 text-[11px] font-bold flex items-center justify-center"
       >
         {{ notificationsStore.formattedUnreadCount }}
       </span>
@@ -18,93 +19,103 @@
 
     <Transition
       enter-active-class="transition ease-out duration-100"
-      enter-from-class="transform opacity-0 scale-95"
-      enter-to-class="transform opacity-100 scale-100"
+      enter-from-class="opacity-0 translate-y-1"
+      enter-to-class="opacity-100 translate-y-0"
       leave-active-class="transition ease-in duration-75"
-      leave-from-class="transform opacity-100 scale-100"
-      leave-to-class="transform opacity-0 scale-95"
+      leave-from-class="opacity-100 translate-y-0"
+      leave-to-class="opacity-0 translate-y-1"
     >
       <div
         v-if="isOpen"
-        ref="dropdownRef"
-        class="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg ring-1 ring-black ring-opacity-5 z-50"
+        class="fixed left-[calc(14rem+12px)] bottom-4 w-96 z-50 bg-white border border-hairline rounded-[20px] shadow-popover overflow-hidden"
+        role="dialog"
+        :aria-label="t.notifications.title"
       >
-        <div class="p-4 border-b border-gray-200">
-          <div class="flex items-center justify-between">
-            <h3 class="text-lg font-semibold text-gray-900">{{ t.notifications.title }}</h3>
-            <button
-              v-if="notificationsStore.hasUnread"
-              class="text-sm font-medium transition-colors"
-              :class="themeClasses.markAllButton"
-              @click="handleMarkAllAsRead"
-            >
-              {{ t.notifications.markAllRead }}
-            </button>
-          </div>
+        <div class="px-5 pt-[18px] pb-3.5 flex items-center justify-between">
+          <h3 class="text-base font-semibold text-ink-900 tracking-[-0.01em]">{{ t.notifications.title }}</h3>
+          <button
+            v-if="notificationsStore.hasUnread"
+            class="text-[13px] font-medium text-accent-blue hover:opacity-65 transition-opacity"
+            @click="handleMarkAllAsRead"
+          >
+            {{ t.notifications.markAllRead }}
+          </button>
         </div>
 
-        <div class="max-h-96 overflow-y-auto">
-          <div v-if="notificationsStore.loading" class="p-4 text-center text-gray-500">
-            <div class="animate-spin rounded-full h-8 w-8 border-b-2 mx-auto mb-2" :class="themeClasses.spinner"></div>
+        <div class="max-h-[min(560px,calc(100vh-120px))] overflow-y-auto">
+          <div
+            v-if="notificationsStore.loading"
+            class="px-5 py-8 border-t border-hairline text-center text-sm text-ink-400"
+          >
+            <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-ink-900 mx-auto mb-2"></div>
             {{ t.notifications.loading }}
           </div>
 
-          <div v-else-if="notificationsStore.error" class="p-8 text-center">
-            <ExclamationCircleIcon class="h-12 w-12 mx-auto mb-3 text-red-400" />
-            <p class="text-sm font-medium text-gray-900">Failed to load notifications</p>
+          <div v-else-if="notificationsStore.error" class="px-5 py-8 border-t border-hairline text-center">
+            <AlertCircle :size="40" class="mx-auto mb-3 text-ink-300" />
+            <p class="text-sm font-medium text-ink-900">{{ t.notifications.loadError }}</p>
             <button
-              class="mt-2 text-sm text-blue-600 hover:text-blue-700"
+              class="mt-2 text-[13px] font-medium text-accent-blue hover:opacity-65 transition-opacity"
               @click="notificationsStore.fetchNotifications()"
             >
-              Try again
+              {{ t.notifications.retry }}
             </button>
           </div>
 
-          <div v-else-if="notificationsStore.recentNotifications.length === 0" class="p-8 text-center">
-            <BellIcon class="h-12 w-12 mx-auto mb-3 text-gray-400" />
-            <p class="text-sm font-medium text-gray-900">{{ t.notifications.emptyTitle }}</p>
-            <p class="text-sm text-gray-500 mt-1">{{ t.notifications.emptyMessage }}</p>
+          <div
+            v-else-if="notificationsStore.recentNotifications.length === 0"
+            class="px-5 py-8 border-t border-hairline text-center"
+          >
+            <Bell :size="40" class="mx-auto mb-3 text-ink-300" />
+            <p class="text-sm font-medium text-ink-900">{{ t.notifications.emptyTitle }}</p>
+            <p class="text-[13px] text-ink-400 mt-1">{{ t.notifications.emptyMessage }}</p>
           </div>
 
-          <div v-else class="divide-y divide-gray-100">
-            <button
+          <template v-else>
+            <component
+              :is="getNotificationRoute(notification) ? RouterLink : 'div'"
               v-for="notification in notificationsStore.recentNotifications"
               :key="notification.id"
-              class="w-full px-4 py-3 hover:bg-gray-50 transition-colors text-left flex gap-3"
-              :class="{ 'bg-blue-50/50': !notification.isRead }"
+              :to="getNotificationRoute(notification) || undefined"
+              class="flex gap-3 px-5 py-3.5 border-t border-hairline text-left w-full"
+              :class="[
+                notification.isRead ? '' : 'bg-brand-cream',
+                getNotificationRoute(notification) ? 'hover:bg-surface-alt transition-colors' : ''
+              ]"
               @click="handleNotificationClick(notification)"
             >
-              <div class="flex-shrink-0 mt-1">
-                <component :is="getNotificationIcon(notification.type)" class="h-6 w-6" :class="themeClasses.icon" />
+              <div
+                class="w-9 h-9 shrink-0 rounded-full bg-white border border-hairline text-ink-900 flex items-center justify-center"
+              >
+                <component :is="getNotificationIcon(notification)" :size="16" />
               </div>
 
               <div class="flex-1 min-w-0">
                 <div class="flex items-start justify-between gap-2">
-                  <p class="text-sm font-medium text-gray-900 truncate">
+                  <p class="text-sm font-semibold text-ink-900">
                     {{ getNotificationDisplay(notification).title }}
                   </p>
-                  <span
-                    v-if="!notification.isRead"
-                    class="flex-shrink-0 w-2 h-2 rounded-full mt-1.5"
-                    :class="themeClasses.unreadDot"
-                  ></span>
+                  <span v-if="!notification.isRead" class="shrink-0 w-2 h-2 rounded-full bg-brand-gold mt-1.5"></span>
                 </div>
-                <p class="text-xs text-gray-600 mt-0.5 line-clamp-2">
+                <p class="text-[13px] leading-normal text-ink-400 mt-0.5 line-clamp-2">
                   {{ getNotificationDisplay(notification).message }}
                 </p>
-                <p class="text-xs text-gray-400 mt-1">
+                <p class="text-xs text-ink-300 mt-1">
                   {{ getRelativeTime(notification.createdAt) }}
                 </p>
               </div>
-            </button>
-          </div>
+            </component>
+          </template>
         </div>
 
-        <div v-if="notificationsStore.notifications.length > 10" class="p-3 border-t border-gray-200 text-center">
-          <button class="text-sm font-medium transition-colors" :class="themeClasses.viewAllButton">
-            {{ t.notifications.viewAll }}
-          </button>
-        </div>
+        <RouterLink
+          :to="{ name: notificationsRouteName(props.variant) }"
+          class="border-t border-hairline py-3.5 flex items-center justify-center gap-1 text-[13px] font-semibold text-ink-900 hover:opacity-65 transition-opacity"
+          @click="isOpen = false"
+        >
+          {{ t.notifications.viewAll }}
+          <ChevronRight :size="16" />
+        </RouterLink>
       </div>
     </Transition>
   </div>
@@ -112,18 +123,16 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { RouterLink, useRoute } from 'vue-router'
 import { useNotificationsStore } from '@/stores/notifications'
 import { useI18n } from '@/composables/useI18n'
 import { composeNotificationMessage, getRelativeTime as getRelativeTimeUtil } from '@/utils/notificationUtils'
 import {
-  BellIcon,
-  CheckCircleIcon,
-  ExclamationCircleIcon,
-  CurrencyDollarIcon,
-  DocumentTextIcon,
-  PencilSquareIcon
-} from '@heroicons/vue/24/outline'
+  getNotificationIcon,
+  getNotificationRoute as resolveRoute,
+  notificationsRouteName
+} from '@/utils/notificationRoutes'
+import { AlertCircle, Bell, ChevronRight } from 'lucide-vue-next'
 
 const props = defineProps({
   variant: {
@@ -134,36 +143,14 @@ const props = defineProps({
 })
 
 const notificationsStore = useNotificationsStore()
-const router = useRouter()
 const { t } = useI18n()
 
-const isOpen = ref(false)
-const dropdownRef = ref(null)
-let pollingInterval = null
+const route = useRoute()
 
-const themeClasses = computed(() => {
-  if (props.variant === 'architect') {
-    return {
-      button: 'hover:bg-amber-50 text-amber-700',
-      badge: 'bg-amber-500 text-white',
-      spinner: 'border-amber-500',
-      icon: 'text-amber-600',
-      unreadDot: 'bg-amber-500',
-      markAllButton: 'text-amber-600 hover:text-amber-700',
-      viewAllButton: 'text-amber-600 hover:text-amber-700'
-    }
-  } else {
-    return {
-      button: 'hover:bg-blue-50 text-blue-700',
-      badge: 'bg-blue-500 text-white',
-      spinner: 'border-blue-500',
-      icon: 'text-blue-600',
-      unreadDot: 'bg-blue-500',
-      markAllButton: 'text-blue-600 hover:text-blue-700',
-      viewAllButton: 'text-blue-600 hover:text-blue-700'
-    }
-  }
-})
+const isOpen = ref(false)
+const isOnPage = computed(() => route.name === notificationsRouteName(props.variant))
+const rootRef = ref(null)
+let pollingInterval = null
 
 const CACHE_TTL_MS = 5 * 60 * 1000
 
@@ -173,6 +160,7 @@ const isStale = () => {
 }
 
 const toggleDropdown = async () => {
+  if (isOnPage.value) return
   isOpen.value = !isOpen.value
 
   if (isOpen.value) {
@@ -186,21 +174,15 @@ const toggleDropdown = async () => {
 }
 
 const handleClickOutside = event => {
-  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
+  if (rootRef.value && !rootRef.value.contains(event.target)) {
     isOpen.value = false
   }
 }
 
-const getNotificationIcon = type => {
-  const iconMap = {
-    PROJECT_VALIDATED: CheckCircleIcon,
-    PROJECT_UPDATED: PencilSquareIcon,
-    BID_RECEIVED: DocumentTextIcon,
-    BID_ACCEPTED: CheckCircleIcon,
-    BID_REJECTED: ExclamationCircleIcon,
-    PAYMENT_RECEIVED: CurrencyDollarIcon
+const handleKeydown = event => {
+  if (event.key === 'Escape') {
+    isOpen.value = false
   }
-  return iconMap[type] || BellIcon
 }
 
 const getNotificationDisplay = notification => {
@@ -211,37 +193,16 @@ const getRelativeTime = timestamp => {
   return getRelativeTimeUtil(timestamp, t.value)
 }
 
-const getNotificationRoute = notification => {
-  const typeRouteMap = {
-    PROJECT_VALIDATED: { name: 'ClientProjects' },
-    PROJECT_UPDATED: { name: 'ClientProjects' },
-    BID_RECEIVED: { name: 'ClientProjects', params: { id: notification.referenceId } },
-    BID_ACCEPTED: { name: 'ArchitectMyBids' },
-    BID_REJECTED: { name: 'ArchitectMyBids' },
-    PAYMENT_RECEIVED: { name: 'ArchitectDashboard' }
-  }
-
-  return (
-    typeRouteMap[notification.type] || {
-      name: props.variant === 'architect' ? 'ArchitectDashboard' : 'ClientDashboard'
-    }
-  )
-}
+const getNotificationRoute = notification => resolveRoute(notification, props.variant)
 
 const handleNotificationClick = async notification => {
+  isOpen.value = false
   try {
     if (!notification.isRead) {
       await notificationsStore.markAsRead(notification.id)
     }
-
-    isOpen.value = false
-
-    const route = getNotificationRoute(notification)
-    if (route) {
-      router.push(route)
-    }
   } catch (error) {
-    console.error('Failed to handle notification click:', error)
+    console.error('Failed to mark notification as read:', error)
   }
 }
 
@@ -255,6 +216,7 @@ const handleMarkAllAsRead = async () => {
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
+  document.addEventListener('keydown', handleKeydown)
 
   notificationsStore.fetchUnreadCount()
 
@@ -265,6 +227,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
+  document.removeEventListener('keydown', handleKeydown)
 
   if (pollingInterval) {
     clearInterval(pollingInterval)

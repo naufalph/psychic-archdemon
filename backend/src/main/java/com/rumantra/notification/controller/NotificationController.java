@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.rumantra.notification.dto.NotificationPageResponse;
 import com.rumantra.notification.dto.NotificationResponse;
 import com.rumantra.notification.dto.UnreadCountResponse;
 import com.rumantra.notification.service.DashboardNotificationService;
@@ -25,11 +26,10 @@ public class NotificationController {
   private final DashboardNotificationService notificationService;
 
   /**
-   * Get all notifications for the authenticated user.
-   *
-   * @return List of notifications
+   * Get notifications for the authenticated user. Without {@code cursor}/{@code limit} this returns
+   * the full list (legacy shape used by the sidebar panel); with either it returns one keyset page.
    */
-  @GetMapping
+  @GetMapping(params = {"!cursor", "!limit"})
   public ResponseEntity<ApiResponse<List<NotificationResponse>>> getUserNotifications() {
     try {
       List<NotificationResponse> notifications = notificationService.getUserNotifications();
@@ -47,6 +47,35 @@ public class NotificationController {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(
               ApiResponse.<List<NotificationResponse>>builder()
+                  .success(false)
+                  .message("An error occurred while retrieving notifications")
+                  .timestamp(LocalDateTime.now().toString())
+                  .build());
+    }
+  }
+
+  @GetMapping
+  public ResponseEntity<ApiResponse<NotificationPageResponse>> getNotificationPage(
+      @RequestParam(required = false) Long cursor,
+      @RequestParam(required = false) Integer limit,
+      @RequestParam(defaultValue = "false") boolean unreadOnly) {
+    try {
+      NotificationPageResponse page =
+          notificationService.getNotificationPage(cursor, limit, unreadOnly);
+
+      return ResponseEntity.ok(
+          ApiResponse.<NotificationPageResponse>builder()
+              .success(true)
+              .message("Notifications retrieved successfully")
+              .data(page)
+              .timestamp(LocalDateTime.now().toString())
+              .build());
+
+    } catch (Exception e) {
+      log.error("Error retrieving notification page", e);
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(
+              ApiResponse.<NotificationPageResponse>builder()
                   .success(false)
                   .message("An error occurred while retrieving notifications")
                   .timestamp(LocalDateTime.now().toString())
@@ -121,7 +150,9 @@ public class NotificationController {
    * @param notificationId The notification ID
    * @return The updated notification
    */
-  @PutMapping("/{notificationId}/read")
+  @RequestMapping(
+      value = "/{notificationId}/read",
+      method = {RequestMethod.PUT, RequestMethod.PATCH})
   public ResponseEntity<ApiResponse<NotificationResponse>> markAsRead(
       @PathVariable Long notificationId) {
     try {
@@ -172,7 +203,9 @@ public class NotificationController {
    *
    * @return Count of notifications marked as read
    */
-  @PutMapping("/read-all")
+  @RequestMapping(
+      value = "/read-all",
+      method = {RequestMethod.PUT, RequestMethod.PATCH})
   public ResponseEntity<ApiResponse<Integer>> markAllAsRead() {
     try {
       int count = notificationService.markAllAsRead();

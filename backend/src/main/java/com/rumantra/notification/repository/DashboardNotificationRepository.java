@@ -1,5 +1,6 @@
 package com.rumantra.notification.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -23,6 +24,28 @@ public interface DashboardNotificationRepository
 
   // Find unread notifications for a user
   List<DashboardNotification> findByUserIdAndIsReadFalseOrderByCreatedAtDesc(Long userId);
+
+  @Query(
+      "SELECT n FROM DashboardNotification n WHERE n.user.id = :userId"
+          + " AND (:unreadOnly = false OR n.isRead = false)"
+          + " ORDER BY n.createdAt DESC, n.id DESC")
+  List<DashboardNotification> findFirstPage(
+      @Param("userId") Long userId, @Param("unreadOnly") boolean unreadOnly, Pageable pageable);
+
+  @Query(
+      "SELECT n FROM DashboardNotification n WHERE n.user.id = :userId"
+          + " AND (:unreadOnly = false OR n.isRead = false)"
+          + " AND (n.createdAt < :cursorCreatedAt"
+          + " OR (n.createdAt = :cursorCreatedAt AND n.id < :cursorId))"
+          + " ORDER BY n.createdAt DESC, n.id DESC")
+  List<DashboardNotification> findPageAfter(
+      @Param("userId") Long userId,
+      @Param("unreadOnly") boolean unreadOnly,
+      @Param("cursorCreatedAt") LocalDateTime cursorCreatedAt,
+      @Param("cursorId") Long cursorId,
+      Pageable pageable);
+
+  long countByUserId(Long userId);
 
   // Count unread notifications for a user
   @Query(

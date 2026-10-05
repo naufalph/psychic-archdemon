@@ -241,6 +241,8 @@ export const userAPI = {
 
 export const notificationAPI = {
   getAll: () => api.get('/rmtr/notifications'),
+  getPage: ({ cursor, limit = 20, unreadOnly = false } = {}) =>
+    api.get('/rmtr/notifications', { params: { cursor, limit, unreadOnly } }),
   getUnread: () => api.get('/rmtr/notifications/unread'),
   getUnreadCount: () => api.get('/rmtr/notifications/unread-count'),
   markAsRead: notificationId => api.put(`/rmtr/notifications/${notificationId}/read`),

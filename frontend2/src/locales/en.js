@@ -1132,6 +1132,28 @@ export default {
     markAllRead: 'Mark all as read',
     viewAll: 'View all notifications',
     loading: 'Loading notifications...',
+    loadError: 'Failed to load notifications',
+    retry: 'Try again',
+    filterAll: 'All',
+    filterUnread: 'Unread',
+    subtitleUnread: '{n} unread of {total} notifications.',
+    subtitleAllRead: 'All notifications have been read.',
+    subtitleEmpty: 'Updates on your projects and bids.',
+    allReadTitle: 'All caught up',
+    allReadMessage: 'New notifications will appear here.',
+    loadMore: 'Load more',
+    groups: {
+      today: 'Today',
+      thisWeek: 'This week',
+      older: 'Older'
+    },
+    cta: {
+      viewBids: 'View bids',
+      continueFinalization: 'Continue finalization',
+      openWorkspace: 'Open workspace',
+      completeBrief: 'Complete brief',
+      openProject: 'Open project'
+    },
     emptyTitle: 'No notifications yet',
     emptyMessage: "You'll be notified about project updates and bids here",
     justNow: 'Just now',

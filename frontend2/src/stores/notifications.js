@@ -9,6 +9,15 @@ export const useNotificationsStore = defineStore('notifications', () => {
   const error = ref(null)
   const lastFetchedAt = ref(null)
 
+  // The notifications page pages through the server separately from the panel's list
+  const pageItems = ref([])
+  const nextCursor = ref(null)
+  const totalCount = ref(0)
+  const pageLoading = ref(false)
+  const pageError = ref(null)
+
+  const copiesOf = id => [...notifications.value, ...pageItems.value].filter(n => n.id === id)
+
   const unreadNotifications = computed(() => {
     return notifications.value.filter(n => !n.isRead)
   })
@@ -73,26 +82,52 @@ export const useNotificationsStore = defineStore('notifications', () => {
     }
   }
 
+  async function fetchPage({ cursor = null, unreadOnly = false } = {}) {
+    pageLoading.value = true
+    pageError.value = null
+
+    try {
+      const response = await notificationAPI.getPage({ cursor, unreadOnly })
+      const page = response.data.data
+      if (cursor) {
+        const loadedIds = new Set(pageItems.value.map(n => n.id))
+        pageItems.value = [...pageItems.value, ...page.items.filter(n => !loadedIds.has(n.id))]
+      } else {
+        pageItems.value = page.items
+      }
+      nextCursor.value = page.nextCursor
+      totalCount.value = page.totalCount
+      unreadCount.value = page.unreadCount
+    } catch (err) {
+      pageError.value = err.response?.data?.message || 'Failed to fetch notifications'
+      console.error('Failed to fetch notification page:', err)
+    } finally {
+      pageLoading.value = false
+    }
+  }
+
   async function markAsRead(notificationId) {
-    const notification = notifications.value.find(n => n.id === notificationId)
-    if (!notification) return
+    const copies = copiesOf(notificationId)
+    const wasUnread = copies.some(n => !n.isRead)
+    if (!wasUnread) return
 
-    const wasUnread = !notification.isRead
-    notification.isRead = true
-    notification.readAt = new Date().toISOString()
-
-    if (wasUnread && unreadCount.value > 0) {
+    const readAt = new Date().toISOString()
+    copies.forEach(n => {
+      n.isRead = true
+      n.readAt = readAt
+    })
+    if (unreadCount.value > 0) {
       unreadCount.value--
     }
 
     try {
       await notificationAPI.markAsRead(notificationId)
     } catch (err) {
-      if (wasUnread) {
-        unreadCount.value++
-      }
-      notification.isRead = false
-      notification.readAt = null
+      unreadCount.value++
+      copies.forEach(n => {
+        n.isRead = false
+        n.readAt = null
+      })
 
       error.value = err.response?.data?.message || 'Failed to mark notification as read'
       console.error('Failed to mark notification as read:', err)
@@ -101,21 +136,23 @@ export const useNotificationsStore = defineStore('notifications', () => {
   }
 
   async function markAllAsRead() {
-    const previousNotifications = [...notifications.value]
+    const changed = [...notifications.value, ...pageItems.value].filter(n => !n.isRead)
     const previousCount = unreadCount.value
 
-    notifications.value.forEach(n => {
-      if (!n.isRead) {
-        n.isRead = true
-        n.readAt = new Date().toISOString()
-      }
+    const readAt = new Date().toISOString()
+    changed.forEach(n => {
+      n.isRead = true
+      n.readAt = readAt
     })
     unreadCount.value = 0
 
     try {
       await notificationAPI.markAllAsRead()
     } catch (err) {
-      notifications.value = previousNotifications
+      changed.forEach(n => {
+        n.isRead = false
+        n.readAt = null
+      })
       unreadCount.value = previousCount
 
       error.value = err.response?.data?.message || 'Failed to mark all notifications as read'
@@ -130,6 +167,11 @@ export const useNotificationsStore = defineStore('notifications', () => {
     loading,
     error,
     lastFetchedAt,
+    pageItems,
+    nextCursor,
+    totalCount,
+    pageLoading,
+    pageError,
     unreadNotifications,
     hasUnread,
     recentNotifications,
@@ -137,6 +179,7 @@ export const useNotificationsStore = defineStore('notifications', () => {
     fetchNotifications,
     fetchUnreadNotifications,
     fetchUnreadCount,
+    fetchPage,
     markAsRead,
     markAllAsRead
   }

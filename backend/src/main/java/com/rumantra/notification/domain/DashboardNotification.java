@@ -46,6 +46,9 @@ public class DashboardNotification {
   @Column(name = "reference_id")
   private Long referenceId;
 
+  @Column(name = "project_id")
+  private Long projectId;
+
   @Column(name = "is_read")
   @Builder.Default
   private Boolean isRead = false;

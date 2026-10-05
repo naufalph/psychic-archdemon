@@ -25,6 +25,7 @@
 
       <!-- Bottom: settings + sign out + user -->
       <div class="px-3 py-4 border-t border-white/10 space-y-1">
+        <NotificationDropdown variant="architect" />
         <RouterLink
           to="/architect/settings"
           class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all text-white/60 hover:text-white hover:bg-white/5"
@@ -60,9 +61,6 @@
 
     <!-- Main content -->
     <main class="flex-1 overflow-y-auto relative">
-      <div class="fixed top-6 right-6 z-40 bg-white rounded-full shadow-soft border border-gray-200">
-        <NotificationDropdown variant="architect" />
-      </div>
       <RouterView />
     </main>
   </div>

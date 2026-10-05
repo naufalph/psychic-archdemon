@@ -62,6 +62,12 @@ const routes = [
         component: () => import('@/views/client/ClientSettings.vue')
       },
       {
+        path: 'notifications',
+        name: 'ClientNotifications',
+        component: () => import('@/views/notifications/NotificationsPage.vue'),
+        props: { role: 'client' }
+      },
+      {
         path: 'profile',
         name: 'ClientProfile',
         component: () => import('@/views/client/ClientProfile.vue')
@@ -149,6 +155,12 @@ const routes = [
         path: 'settings',
         name: 'ArchitectSettings',
         component: () => import('@/views/architect/ArchitectSettings.vue')
+      },
+      {
+        path: 'notifications',
+        name: 'ArchitectNotifications',
+        component: () => import('@/views/notifications/NotificationsPage.vue'),
+        props: { role: 'architect' }
       },
       {
         path: 'projects/:id/workspace',
