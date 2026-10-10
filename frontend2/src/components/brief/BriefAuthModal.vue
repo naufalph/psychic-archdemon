@@ -12,7 +12,6 @@
     <div class="flex-[1_1_320px] bg-ink-900 text-white p-10 box-border flex flex-col gap-8">
       <div class="flex items-baseline gap-0.5">
         <span class="text-[22px] font-extrabold tracking-[-.03em]">rumantra</span>
-        <span class="text-[22px] font-extrabold text-brand-gold">.</span>
       </div>
       <div>
         <h3 class="text-[28px] font-bold tracking-[-.03em] leading-[1.15] m-0 mb-3">{{ tv.panelTitle }}</h3>

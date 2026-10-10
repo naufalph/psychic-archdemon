@@ -7,7 +7,7 @@
 
       <div class="flex-1">
         <h3 class="text-2xl font-bold text-white mb-2 flex items-center gap-2">
-          Analyze with Rumantra AI
+          Analyze with rumantra AI
           <span class="px-3 py-1 bg-amber-500/20 text-amber-300 text-xs font-bold rounded-full uppercase">
             Coming Soon
           </span>

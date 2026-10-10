@@ -5,7 +5,6 @@
     >
       <router-link to="/" class="flex items-baseline gap-0.5">
         <span class="text-[22px] font-extrabold tracking-[-.03em] text-ink-900">rumantra</span>
-        <span class="text-[22px] font-extrabold text-brand-gold">.</span>
       </router-link>
       <router-link
         v-if="currentStep <= 2"

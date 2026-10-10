@@ -62,7 +62,7 @@
 
       <div
         class="rounded-[20px] p-6 md:p-8 flex flex-col text-white"
-        style="background: linear-gradient(135deg, #2f7dc0, #185c93)"
+        :style="{ background: `center / cover no-repeat url(${calculatorBg})` }"
       >
         <span class="text-caption-sm font-semibold uppercase tracking-[.06em] text-white/70">{{ tv.eyebrow }}</span>
 
@@ -117,6 +117,7 @@ import { ref, computed } from 'vue'
 import { X, Check } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
 import { estimateDesignFee, FEE_CATEGORY } from '@/utils/architectFee'
+import calculatorBg from '@/assets/images/landing/calculator-bg.jpg'
 import BriefModal from './BriefModal.vue'
 
 defineProps({ open: { type: Boolean, default: false } })

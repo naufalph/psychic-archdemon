@@ -65,7 +65,7 @@
       <div
         class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-gray-100 text-sm text-gray-400"
       >
-        <p>&copy; {{ currentYear }} Rumantra Indonesia. {{ t.footer.rights }}</p>
+        <p>&copy; {{ currentYear }} rumantra Indonesia. {{ t.footer.rights }}</p>
         <div class="flex gap-6 mt-4 md:mt-0">
           <span>Instagram</span>
           <span>LinkedIn</span>
