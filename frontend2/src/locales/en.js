@@ -248,7 +248,7 @@ export default {
     toggleToForm: 'Fill manual form',
     toggleToBrowse: 'Back to browse designs',
     form: {
-      heading: 'Tell us about your project',
+      heading: 'Describe your project',
       projectType: 'Category',
       projectScope: 'Project Scope',
       location: 'Location',
@@ -2218,7 +2218,7 @@ export default {
         subtitle: 'Choose one or more services.'
       },
       quick: {
-        title: 'Tell us about your project',
+        title: 'Describe your project',
         subtitle: ''
       }
     },
@@ -2383,6 +2383,9 @@ export default {
       verifyBody:
         'We sent a verification link to {email}. Once your account is active, log in to continue your brief.',
       verifyCta: 'Back to log in',
+      doneTitle: 'Signed in',
+      doneBody: 'Your brief so far is saved to your account. Continue with the project details.',
+      doneCta: 'Continue',
       close: 'Close'
     }
   }

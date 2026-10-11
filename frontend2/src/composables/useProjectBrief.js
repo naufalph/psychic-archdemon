@@ -1,3 +1,5 @@
+import { hasPendingSurvey } from './useProjectSurvey'
+
 const STORAGE_KEY = 'rumantra:project-brief-token:v2'
 
 /**
@@ -45,10 +47,9 @@ export function useProjectBrief() {
    * consult this, or the brief is silently stranded and the user sees an empty form.
    */
   const pendingBriefPath = user => {
-    const token = storedToken()
-    if (!token) return null
     if (!user?.registeredRoles?.includes('CLIENT')) return null
-    return `/client/projects/create?brief=${encodeURIComponent(token)}`
+    // The survey-style brief keeps its answers in this browser and finishes on its own page
+    return hasPendingSurvey() ? '/brief-proyek' : null
   }
 
   return { saveToken, storedToken, tokenFromRoute, pendingBriefPath, clearToken }

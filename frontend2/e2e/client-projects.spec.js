@@ -11,7 +11,9 @@ test.describe('Client Dashboard', () => {
   test('renders dashboard without crashing', async ({ page }) => {
     await expect(page).toHaveURL(ROUTES.clientDashboard)
     // Dashboard should show some content (not a blank page or error)
-    await expect(page.locator('main, [class*="dashboard"], h1, h2').first()).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('main, [class*="dashboard"], h1, h2').first()).toBeVisible({
+      timeout: 10000
+    })
   })
 
   test('navbar is present', async ({ page }) => {
@@ -44,17 +46,19 @@ test.describe('Create Project Form', () => {
     await page.goto(ROUTES.clientProjectCreate)
   })
 
-  test('create project page loads', async ({ page }) => {
-    await expect(page).toHaveURL(url => url.pathname.includes('create'))
-    await expect(page.locator('form, [class*="form"]').first()).toBeVisible({ timeout: 10000 })
+  // The old /client/projects/create wizard is retired; it now opens the survey-style brief
+  test('create project opens the survey brief', async ({ page }) => {
+    await expect(page).toHaveURL(url => url.pathname === '/brief-proyek')
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+      'Layanan apa yang Anda butuhkan?'
+    )
   })
 
-  test('shows validation errors on empty submit', async ({ page }) => {
-    const submitBtn = page.getByRole('button', { name: /continue|lanjutkan|submit|create|next/i }).first()
-    await expect(submitBtn).toBeVisible({ timeout: 10000 })
-    await submitBtn.click()
-    // Should stay on the same page (validation prevents submit)
-    await expect(page).toHaveURL(url => url.pathname.includes('create'))
+  test('cannot continue past an unanswered step', async ({ page }) => {
+    await page.getByRole('button', { name: 'Lanjutkan' }).click()
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Apa tujuan dari proyek Anda?')
+    await expect(page.getByRole('button', { name: 'Lanjutkan' })).toBeDisabled()
+    await expect(page.getByText('Pilih minimal satu lingkup')).toBeVisible()
   })
 })
 
@@ -73,7 +77,9 @@ test.describe('Client Navigation', () => {
 
   test('client profile page loads', async ({ page }) => {
     await page.goto(ROUTES.clientProfile)
-    await expect(page.locator('main, form, [class*="profile"]').first()).toBeVisible({ timeout: 10000 })
+    await expect(page.locator('main, form, [class*="profile"]').first()).toBeVisible({
+      timeout: 10000
+    })
   })
 })
 
@@ -130,10 +136,9 @@ test.describe('Delete Project guard', () => {
     )
     test.skip(!undeletable, 'no project past bidding in this environment')
 
-    const attempt = await page.request.delete(
-      `${API_BASE_URL}/rmtr/projects/${undeletable.id}`,
-      { headers: auth }
-    )
+    const attempt = await page.request.delete(`${API_BASE_URL}/rmtr/projects/${undeletable.id}`, {
+      headers: auth
+    })
     expect(attempt.status()).toBe(409)
 
     // And it is still there afterwards.

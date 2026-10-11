@@ -10,7 +10,7 @@ const routes = [
   {
     path: '/brief-proyek',
     name: 'ProjectBrief',
-    component: () => import('@/views/landing/ProjectBrief.vue')
+    component: () => import('@/views/landing/ProjectSurvey.vue')
   },
   {
     path: '/signup',
@@ -73,9 +73,10 @@ const routes = [
         component: () => import('@/views/client/ClientProfile.vue')
       },
       {
+        // The survey at /brief-proyek is the one project-submission flow; old links land there
         path: 'projects/create',
         name: 'ProjectCreate',
-        component: () => import('@/views/client/ProjectCreate.vue')
+        redirect: { name: 'ProjectBrief', query: { baru: '1' } }
       },
       {
         path: 'projects/:projectId/finalization',

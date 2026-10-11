@@ -2412,6 +2412,9 @@ export default {
       verifyBody:
         'Kami mengirim tautan verifikasi ke {email}. Setelah akun aktif, masuk untuk melanjutkan brief Anda.',
       verifyCta: 'Kembali ke halaman masuk',
+      doneTitle: 'Berhasil masuk',
+      doneBody: 'Brief awal Anda sudah tersimpan di akun. Lanjutkan mengisi detail proyek.',
+      doneCta: 'Lanjutkan',
       close: 'Tutup'
     }
   }
