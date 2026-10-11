@@ -94,6 +94,22 @@ export default {
         yourProject: 'Proyek Anda',
         offerPrefix: 'Penawaran #'
       },
+      joinArchitect: {
+        question: 'Anda arsitek/desainer?',
+        cta: 'Gabung di sini'
+      },
+      caraKerja: {
+        title: 'Cara kerja rumantra',
+        cta: 'Mulai brief gratis',
+        step1Title: 'Ceritakan proyek Anda',
+        step1Desc: 'Isi brief singkat soal jenis, lokasi, luas, dan budget. Gratis, ±5 menit.',
+        step2Title: 'Terima penawaran arsitek',
+        step2Desc: 'Harga, jadwal, dan portofolio dari arsitek yang terverifikasi.',
+        step3Title: 'Bandingkan dan pilih',
+        step3Desc: 'Lihat penawaran berdampingan, lalu pilih arsitek yang paling cocok.',
+        step4Title: 'Kelola bersama di dashboard',
+        step4Desc: 'Pantau progres, diskusi, dan setujui tiap tahap bersama arsitek Anda.'
+      },
       tipeProyek: {
         title: 'Seluruh kebutuhan desain Anda, ada di rumantra',
         viewAll: 'Lihat semua',
@@ -147,7 +163,12 @@ export default {
       mitra: {
         title: 'Arsitek dan desainer terbaik, ada di rumantra',
         subtitle: 'Mitra kami telah melewati proses screening, hanya yang terbaik yang ada disini',
-        more: 'Lainnya'
+        awardTitle: 'Arsitek Peraih Penghargaan',
+        awardDesc: 'Karya mereka diakui di ajang arsitektur nasional maupun internasional.',
+        firmTitle: 'Biro Arsitek Ternama',
+        firmDesc: 'Firma mapan dengan rekam jejak panjang dan portofolio proyek yang terbukti.',
+        risingTitle: 'Desainer Muda Berbakat',
+        risingDesc: 'Talenta baru dengan ide segar dan pendekatan desain yang berani.'
       },
       ruangProyek: {
         title: 'Satu tempat untuk mengelola proyek Anda.',

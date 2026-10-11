@@ -121,6 +121,12 @@ const routes = [
     component: () => import('@/views/architect/BidCreate.vue'),
     meta: { requiresAuth: true, requiresRole: 'ARCHITECT' }
   },
+  {
+    path: '/architect/onboarding',
+    name: 'ArchitectOnboarding',
+    component: () => import('@/views/architect/ArchitectOnboarding.vue'),
+    meta: { requiresAuth: true, requiresRole: 'ARCHITECT' }
+  },
   // Architect app shell (persistent sidebar)
   {
     path: '/architect',

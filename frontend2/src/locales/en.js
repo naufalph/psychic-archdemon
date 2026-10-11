@@ -92,6 +92,22 @@ export default {
         yourProject: 'Your project',
         offerPrefix: 'Offer #'
       },
+      joinArchitect: {
+        question: 'Are you an architect/designer?',
+        cta: 'Join here'
+      },
+      caraKerja: {
+        title: 'How rumantra works',
+        cta: 'Start a free brief',
+        step1Title: 'Describe your project',
+        step1Desc: 'A short brief on type, location, area and budget. Free, about 5 minutes.',
+        step2Title: 'Receive proposals',
+        step2Desc: 'Verified architects send their fee, timeline and portfolio.',
+        step3Title: 'Compare and choose',
+        step3Desc: 'Review proposals side by side, then pick the architect that fits best.',
+        step4Title: 'Manage it in one dashboard',
+        step4Desc: 'Track progress, discuss, and approve each stage with your architect.'
+      },
       tipeProyek: {
         title: 'Every design need you have, on rumantra',
         viewAll: 'View all',
@@ -142,7 +158,12 @@ export default {
       mitra: {
         title: 'The best architects and designers, on rumantra',
         subtitle: 'Our partners have passed a screening process — only the best are here',
-        more: 'more'
+        awardTitle: 'Award-winning Architects',
+        awardDesc: 'Work recognised at national and international architecture awards.',
+        firmTitle: 'Well-established Firms',
+        firmDesc: 'Established practices with a long track record and a proven project portfolio.',
+        risingTitle: 'Rising Designers',
+        risingDesc: 'New talent with fresh ideas and a bold approach to design.'
       },
       ruangProyek: {
         title: 'One place to manage your project.',
