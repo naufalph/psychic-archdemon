@@ -46,7 +46,7 @@ const segments = computed(() =>
     ? [{ key: 'paid', bar: 'bg-green-500', percent: pct(props.paid) }]
     : [
         { key: 'disbursed', bar: 'bg-green-500', percent: pct(props.disbursed) },
-        { key: 'escrow', bar: 'bg-brand-gold', percent: pct(escrow.value) }
+        { key: 'escrow', bar: 'bg-ink-900', percent: pct(escrow.value) }
       ]
 )
 
@@ -68,7 +68,7 @@ const legend = computed(() => {
       label: w.disbursedToYouLabel,
       amount: props.disbursed
     },
-    { key: 'escrow', dot: 'bg-brand-gold', label: w.heldInEscrowLabel, amount: escrow.value },
+    { key: 'escrow', dot: 'bg-ink-900', label: w.heldInEscrowLabel, amount: escrow.value },
     unfundedRow
   ]
 })

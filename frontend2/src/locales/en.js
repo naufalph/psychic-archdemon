@@ -367,6 +367,12 @@ export default {
   },
   auth: {
     signup: {
+      registerTitle: 'Create a new account',
+      registerSubtitle: 'Free. Takes just a minute.',
+      registerAs: 'Sign up as',
+      roleClient: 'Client',
+      roleArchitect: 'Architect',
+      orEmail: 'or sign up with email',
       title: 'Join rumantra',
       subtitle: 'Start your architecture journey today',
       firstName: 'First Name',
@@ -429,6 +435,21 @@ export default {
       noAccount: "Don't have an account?",
       signUpHere: 'Sign up here',
       orContinueWith: 'Or continue with',
+      panelTitle: 'One account for all your projects.',
+      panelSubtitle: 'Clients and architects sign in through the same door.',
+      perks: [
+        'Pick up your brief and projects anytime',
+        'Compare proposals from verified architects',
+        'Manage contracts, progress, and payments in one place'
+      ],
+      tabLogin: 'Sign in',
+      tabRegister: 'Sign up',
+      emailPlaceholder: 'e.g. budi@email.com',
+      passwordPlaceholder: 'Your password',
+      googleCta: 'Continue with Google',
+      linkedinCta: 'Continue with LinkedIn',
+      orEmail: 'or with email',
+      verified: 'Email verified. Please sign in to continue.',
       errors: {
         invalidCredentials: 'Invalid email or password',
         required: 'This field is required'
@@ -840,6 +861,8 @@ export default {
     title: 'Client Dashboard',
     subtitle: 'Welcome to your workspace',
     myProjects: 'My Projects',
+    seeAll: 'View all',
+    noSubmittedProjects: 'No submitted projects yet. Briefs you send will appear here.',
     myProjectsSubtitle: 'Manage and track your architecture projects',
     newProject: 'New Project',
     noProjectsYet: 'No projects yet',

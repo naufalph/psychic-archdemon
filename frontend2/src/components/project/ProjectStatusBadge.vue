@@ -44,7 +44,7 @@ const statusConfig = {
   },
   COMPLETED: {
     text: 'Completed',
-    classes: 'bg-brand-brown text-white border-brand-brown'
+    classes: 'bg-ink-900 text-white border-ink-900'
   },
   CANCELLED: {
     text: 'Cancelled',
@@ -56,7 +56,7 @@ const statusConfig = {
   },
   // Legacy values kept for backwards compatibility
   CLOSED: { text: 'Closed', classes: 'bg-gray-100 text-gray-700 border-gray-200' },
-  AWARDED: { text: 'Awarded', classes: 'bg-brand-brown text-white border-brand-brown' },
+  AWARDED: { text: 'Awarded', classes: 'bg-ink-900 text-white border-ink-900' },
   PENDING: { text: 'Pending Validation', classes: 'bg-yellow-100 text-yellow-700 border-yellow-200' }
 }
 

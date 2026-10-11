@@ -17,7 +17,7 @@
 
       <div v-else-if="error" class="bg-white rounded-3xl border border-gray-200 p-12 text-center">
         <p class="text-red-600 mb-4">{{ error }}</p>
-        <button class="text-brand-brown hover:underline" @click="fetchProject">Try again</button>
+        <button class="text-ink-900 hover:underline" @click="fetchProject">Try again</button>
       </div>
 
       <div v-else-if="currentProject" class="space-y-6">
@@ -44,7 +44,7 @@
             </div>
             <div class="bg-gray-50 rounded-2xl p-6">
               <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.clientDashboard.bidPlural }}</p>
-              <p class="text-2xl font-bold text-brand-brown">{{ bidCount }}</p>
+              <p class="text-2xl font-bold text-ink-900">{{ bidCount }}</p>
             </div>
           </div>
 
@@ -84,7 +84,7 @@
                   <span
                     v-for="d in group.items"
                     :key="d"
-                    class="bg-brand-tan text-brand-brown px-4 py-2 rounded-full text-sm font-medium border border-brand-gold/20"
+                    class="bg-surface-alt text-ink-900 px-4 py-2 rounded-full text-sm font-medium border border-hairline"
                   >
                     {{ t.bidCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ') }}
                   </span>
@@ -121,8 +121,8 @@
                 </p>
               </div>
               <button
-                class="flex-shrink-0 px-5 py-2.5 bg-brand-brown text-white rounded-full font-bold text-sm hover:bg-black transition ml-4"
-                @click="router.push({ name: 'ProjectCreate' })"
+                class="flex-shrink-0 px-5 py-2.5 bg-ink-900 text-white rounded-full font-bold text-sm hover:bg-ink-500 transition ml-4"
+                @click="router.push({ name: 'ProjectBrief', query: { draft: currentProject.id } })"
               >
                 {{ t.clientDashboard.continueEditing }}
               </button>
@@ -138,7 +138,7 @@
                 </p>
               </div>
               <button
-                class="flex-shrink-0 px-5 py-2.5 bg-brand-brown text-white rounded-full font-bold text-sm hover:bg-black transition ml-4"
+                class="flex-shrink-0 px-5 py-2.5 bg-ink-900 text-white rounded-full font-bold text-sm hover:bg-ink-500 transition ml-4"
                 @click="router.push(`/client/projects/${currentProject.id}/finalization`)"
               >
                 {{ t.clientDashboard.continueToFinalization }}
@@ -182,7 +182,7 @@
               v-for="(slot, idx) in [{ bid: bidA }, { bid: bidB }]"
               :key="idx"
               class="rounded-2xl border-2 border-dashed p-6 transition"
-              :class="slot.bid ? 'border-brand-brown bg-brand-tan/20' : 'border-gray-200 bg-gray-50'"
+              :class="slot.bid ? 'border-ink-900 bg-surface-alt' : 'border-gray-200 bg-gray-50'"
             >
               <p class="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">
                 {{ idx === 0 ? t.clientDashboard.subjectA : t.clientDashboard.subjectB }}
@@ -194,7 +194,7 @@
                   <p v-if="slot.bid.architectCompany" class="text-sm text-gray-500 mt-0.5">
                     {{ slot.bid.architectCompany }}
                   </p>
-                  <p class="text-sm font-medium text-brand-brown mt-2">{{ formatCurrency(slot.bid.bidAmount) }}</p>
+                  <p class="text-sm font-medium text-ink-900 mt-2">{{ formatCurrency(slot.bid.bidAmount) }}</p>
                   <p class="text-xs text-gray-500 mt-0.5">{{ slot.bid.proposedTimelineDays || '—' }} days</p>
                 </div>
                 <button

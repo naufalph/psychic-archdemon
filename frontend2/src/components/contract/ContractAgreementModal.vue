@@ -15,13 +15,13 @@
       >
         <div class="bg-white rounded-2xl w-full max-w-3xl max-h-full shadow-2xl overflow-hidden flex flex-col">
           <!-- Header -->
-          <div class="bg-brand-brown px-6 py-5 shrink-0">
+          <div class="bg-ink-900 px-6 py-5 shrink-0">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
                 <FileText :size="20" class="text-white" aria-hidden="true" />
               </div>
               <div class="min-w-0">
-                <p class="text-xs text-brand-tan font-semibold uppercase tracking-wide">
+                <p class="text-xs text-white/70 font-semibold uppercase tracking-wide">
                   {{ readOnly || alreadySigned ? c.eyebrowSigned : c.eyebrow }}
                 </p>
                 <h3 class="text-lg font-bold text-white truncate">{{ c.title }}</h3>
@@ -39,7 +39,7 @@
 
           <!-- Document body -->
           <div v-if="loading" class="flex-1 flex items-center justify-center py-16 text-gray-400 text-sm">
-            <div class="w-8 h-8 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />
+            <div class="w-8 h-8 border-2 border-ink-900 border-t-transparent rounded-full animate-spin" />
           </div>
           <div v-else-if="loadError" class="flex-1 flex items-center justify-center py-16 px-6">
             <p class="text-sm text-red-600 text-center">{{ loadError }}</p>
@@ -59,7 +59,7 @@
                 <div
                   v-for="block in signatureBlocks"
                   :key="block.party"
-                  class="rounded-xl border border-gray-100 bg-brand-cream/40 px-3 py-2"
+                  class="rounded-xl border border-gray-100 bg-surface-alt px-3 py-2"
                 >
                   <p class="text-[10px] font-bold uppercase tracking-wide text-gray-400">
                     {{ block.label }}
@@ -90,7 +90,7 @@
                     v-model="signatureName"
                     type="text"
                     :placeholder="expectedName || c.signaturePlaceholder"
-                    class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-gold/40 focus:border-brand-gold transition"
+                    class="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-ink-900/20 focus:border-ink-900 transition"
                     autocomplete="off"
                     spellcheck="false"
                     @keyup.enter="submit"
@@ -124,7 +124,7 @@
                   <button
                     type="button"
                     :disabled="!canSubmit"
-                    class="flex-1 px-4 py-2.5 bg-brand-brown text-white text-sm font-bold rounded-lg hover:bg-brand-brown-dark disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
+                    class="flex-1 px-4 py-2.5 bg-ink-900 text-white text-sm font-bold rounded-lg hover:bg-ink-500 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
                     @click="submit"
                   >
                     <span v-if="submitting">{{ c.agreeing }}</span>
@@ -357,7 +357,7 @@ watch(
   text-align: left;
 }
 .contract-doc :deep(th) {
-  background: theme('colors.brand-cream');
+  background: theme('colors.surface-alt');
   font-weight: 700;
 }
 .contract-doc :deep(strong) {

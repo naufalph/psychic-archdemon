@@ -12,7 +12,7 @@
       <h3 class="text-base font-bold text-gray-900 truncate">{{ deliverableLabel(item?.name, t) }}</h3>
 
       <label
-        class="mt-4 flex items-center gap-2 border border-border-gray rounded-lg px-3 py-2.5 cursor-pointer hover:border-brand-gold"
+        class="mt-4 flex items-center gap-2 border border-border-gray rounded-lg px-3 py-2.5 cursor-pointer hover:border-ink-900"
       >
         <input type="file" class="hidden" @change="onPick" />
         <Paperclip class="w-4 h-4 text-gray-400 shrink-0" />

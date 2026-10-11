@@ -14,7 +14,7 @@
 
       <div v-else-if="error" class="bg-white rounded-3xl border border-gray-200 p-12 text-center">
         <p class="text-red-600 mb-4">{{ error }}</p>
-        <button class="text-brand-brown hover:underline" @click="fetchBid">Try again</button>
+        <button class="text-ink-900 hover:underline" @click="fetchBid">Try again</button>
       </div>
 
       <div v-else-if="currentBid" class="lg:grid lg:grid-cols-3 gap-6">
@@ -74,7 +74,7 @@
                         <span
                           v-for="d in group.items"
                           :key="d"
-                          class="bg-brand-tan text-brand-brown px-2 py-0.5 rounded-full text-xs font-medium"
+                          class="bg-surface-alt text-ink-900 px-2 py-0.5 rounded-full text-xs font-medium"
                         >
                           {{ t.bidCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ') }}
                         </span>
@@ -108,7 +108,7 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="bg-gray-50 rounded-2xl p-6">
                 <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.bidDetail.proposedCost }}</p>
-                <p class="text-3xl font-bold text-brand-brown">{{ formatCurrency(currentBid.bidAmount) }}</p>
+                <p class="text-3xl font-bold text-ink-900">{{ formatCurrency(currentBid.bidAmount) }}</p>
               </div>
               <div class="bg-gray-50 rounded-2xl p-6">
                 <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.bidDetail.timeline }}</p>
@@ -204,18 +204,18 @@
               <div
                 v-for="phase in currentBid.details.phases"
                 :key="phase.phaseNumber"
-                class="rounded-2xl border border-gray-100 p-4 bg-brand-cream"
+                class="rounded-2xl border border-gray-100 p-4 bg-surface-alt"
               >
                 <div class="flex items-center justify-between mb-2">
                   <div class="flex items-center gap-2">
-                    <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-brand-brown text-white">
+                    <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-ink-900 text-white">
                       {{ t.clientFinalization.phase }} {{ phase.phaseNumber }}
                     </span>
                     <span class="text-sm font-bold text-black">{{
                       phase.title || `${t.clientFinalization.phase} ${phase.phaseNumber}`
                     }}</span>
                   </div>
-                  <span class="text-sm font-bold text-brand-brown">{{ formatCurrency(phase.amount) }}</span>
+                  <span class="text-sm font-bold text-ink-900">{{ formatCurrency(phase.amount) }}</span>
                 </div>
                 <div v-if="phase.deliverables?.length" class="flex flex-wrap gap-1 mb-2">
                   <span
@@ -268,7 +268,7 @@
 
             <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between text-sm">
               <span class="text-gray-500 font-bold">{{ t.clientFinalization.total }}</span>
-              <span class="font-bold text-brand-brown">{{ formatCurrency(currentBid.bidAmount) }}</span>
+              <span class="font-bold text-ink-900">{{ formatCurrency(currentBid.bidAmount) }}</span>
             </div>
           </div>
 
@@ -282,7 +282,7 @@
                 v-for="portfolio in currentBid.portfolioReferences"
                 :key="portfolio.id"
                 type="button"
-                class="text-left bg-gray-50 rounded-2xl p-4 border border-gray-200 hover:border-brand-gold transition"
+                class="text-left bg-gray-50 rounded-2xl p-4 border border-gray-200 hover:border-ink-900 transition"
                 @click="viewingPortfolio = portfolio"
               >
                 <div v-if="portfolio.images?.[0]" class="aspect-video bg-gray-200 rounded-xl mb-3 overflow-hidden">
@@ -303,7 +303,7 @@
             <div class="flex gap-4">
               <button
                 v-if="currentBid.status === 'PENDING'"
-                class="flex-1 px-6 py-4 bg-brand-brown text-white rounded-full font-bold hover:bg-black transition shadow-md hover:shadow-lg flex items-center justify-center gap-2"
+                class="flex-1 px-6 py-4 bg-ink-900 text-white rounded-full font-bold hover:bg-ink-500 transition shadow-md hover:shadow-lg flex items-center justify-center gap-2"
                 @click="handleAcceptBid"
               >
                 <Check :size="20" />

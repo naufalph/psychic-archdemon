@@ -23,15 +23,15 @@
 
       <div v-if="quota" class="bg-white rounded-2xl border border-gray-200 p-6 mb-8 flex items-center justify-between">
         <div class="flex items-center gap-6">
-          <div class="w-12 h-12 bg-brand-tan rounded-full flex items-center justify-center shrink-0">
-            <Coins :size="24" class="text-brand-brown" />
+          <div class="w-12 h-12 bg-surface-alt rounded-full flex items-center justify-center shrink-0">
+            <Coins :size="24" class="text-ink-900" />
           </div>
           <div class="flex gap-8">
             <div>
               <p class="text-xs text-gray-500 uppercase font-bold tracking-wide">
                 {{ t.opportunityList.tokensAvailable }}
               </p>
-              <p class="text-2xl font-bold text-brand-brown">{{ quota.tokensRemaining }}</p>
+              <p class="text-2xl font-bold text-ink-900">{{ quota.tokensRemaining }}</p>
             </div>
             <div class="border-l border-gray-200 pl-8">
               <p class="text-xs text-gray-500 uppercase font-bold tracking-wide">
@@ -42,7 +42,7 @@
           </div>
         </div>
         <button
-          class="bg-brand-brown hover:bg-black text-white px-6 py-2 rounded-full text-sm font-medium transition"
+          class="bg-ink-900 hover:bg-ink-500 text-white px-6 py-2 rounded-full text-sm font-medium transition"
           @click="tokenPurchaseStore.openModal()"
         >
           {{ t.opportunityList.purchaseTokens }}
@@ -52,12 +52,12 @@
       <router-link
         v-if="architectProfileStore.hasProfile && architectProfileStore.profileCompletionPercent < 100"
         :to="{ name: 'ArchitectProfile' }"
-        class="flex items-center justify-between bg-brand-tan/40 border border-brand-brown/20 rounded-2xl p-4 mb-8 hover:bg-brand-tan/60 transition"
+        class="flex items-center justify-between bg-surface-alt border border-ink-900 rounded-2xl p-4 mb-8 hover:bg-surface-alt transition"
       >
         <div class="flex items-center gap-3">
           <div class="h-2 w-24 rounded-full bg-black/10 overflow-hidden shrink-0">
             <div
-              class="h-full bg-brand-brown"
+              class="h-full bg-ink-900"
               :style="{ width: architectProfileStore.profileCompletionPercent + '%' }"
             ></div>
           </div>
@@ -65,7 +65,7 @@
             {{ t.profile.completion.cta }} ({{ architectProfileStore.profileCompletionPercent }}%)
           </p>
         </div>
-        <span class="text-xs font-bold text-brand-brown">{{ t.profile.editProfile }} →</span>
+        <span class="text-xs font-bold text-ink-900">{{ t.profile.editProfile }} →</span>
       </router-link>
 
       <div v-if="loading" class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">

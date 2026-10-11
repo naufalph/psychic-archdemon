@@ -4,7 +4,7 @@
       <div
         v-for="(bid, idx) in [bidA, bidB]"
         :key="bid.id"
-        class="group relative bg-white rounded-2xl border border-gray-200 p-6 shadow-soft text-center transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-brand-brown/40 has-[button:focus-visible]:-translate-y-0.5 has-[button:focus-visible]:border-brand-brown/40 motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:has-[button:focus-visible]:translate-y-0"
+        class="group relative bg-white rounded-2xl border border-gray-200 p-6 shadow-soft text-center transition-all duration-300 ease-out hover:-translate-y-0.5 hover:border-ink-900 has-[button:focus-visible]:-translate-y-0.5 has-[button:focus-visible]:border-ink-900 motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:has-[button:focus-visible]:translate-y-0"
       >
         <p class="text-xs text-gray-500 uppercase tracking-widest mb-1">
           {{ idx === 0 ? t.bidComparison.bidA : t.bidComparison.bidB }}
@@ -18,7 +18,7 @@
             class="pointer-events-none absolute -inset-5 rounded-full opacity-0 blur-xl bg-[radial-gradient(circle,rgba(124,71,40,0.35)_0%,rgba(124,71,40,0)_70%)] transition-opacity duration-500 ease-out group-hover:opacity-100 group-has-[button:focus-visible]:opacity-100"
           />
           <button
-            class="appoint-lead-btn relative inline-flex items-center gap-1.5 bg-brand-brown text-white px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 ease-out hover:bg-brand-brown-dark hover:-translate-y-px hover:shadow-[0_0_0_4px_rgba(124,71,40,0.18),0_6px_20px_-4px_rgba(124,71,40,0.45)] focus-visible:bg-brand-brown-dark focus-visible:-translate-y-px focus-visible:shadow-[0_0_0_4px_rgba(124,71,40,0.18),0_6px_20px_-4px_rgba(124,71,40,0.45)] focus-visible:outline-none active:scale-[0.98] motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:focus-visible:translate-y-0 motion-reduce:active:scale-100"
+            class="appoint-lead-btn relative inline-flex items-center gap-1.5 bg-ink-900 text-white px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 ease-out hover:bg-ink-500 hover:-translate-y-px hover:shadow-[0_0_0_4px_rgba(124,71,40,0.18),0_6px_20px_-4px_rgba(124,71,40,0.45)] focus-visible:bg-ink-500 focus-visible:-translate-y-px focus-visible:shadow-[0_0_0_4px_rgba(124,71,40,0.18),0_6px_20px_-4px_rgba(124,71,40,0.45)] focus-visible:outline-none active:scale-[0.98] motion-reduce:transition-none motion-reduce:hover:translate-y-0 motion-reduce:focus-visible:translate-y-0 motion-reduce:active:scale-100"
             @click="pendingAppointBid = bid"
           >
             <Crown :size="14" aria-hidden="true" />
@@ -46,7 +46,7 @@
             :key="type"
             :class="[
               'px-4 py-1.5 rounded-full text-xs font-bold transition',
-              activeImageType === type ? 'bg-brand-brown text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              activeImageType === type ? 'bg-ink-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
             ]"
             @click="switchType(type)"
           >
@@ -122,9 +122,7 @@
             <ChevronLeft :size="12" />
           </button>
           <span class="text-xs text-gray-400">
-            {{
-              t.bidComparison.imageOf.replace('{current}', imageIndexA + 1).replace('{total}', imageAImages.length)
-            }}
+            {{ t.bidComparison.imageOf.replace('{current}', imageIndexA + 1).replace('{total}', imageAImages.length) }}
           </span>
           <button
             :disabled="imageIndexA === imageAImages.length - 1"
@@ -151,9 +149,7 @@
             <ChevronLeft :size="12" />
           </button>
           <span class="text-xs text-gray-400">
-            {{
-              t.bidComparison.imageOf.replace('{current}', imageIndexB + 1).replace('{total}', imageBImages.length)
-            }}
+            {{ t.bidComparison.imageOf.replace('{current}', imageIndexB + 1).replace('{total}', imageBImages.length) }}
           </span>
           <button
             :disabled="imageIndexB === imageBImages.length - 1"
@@ -236,7 +232,7 @@
       <table class="w-full text-sm">
         <thead class="bg-gray-50">
           <tr>
-            <th class="text-center px-6 py-3 text-xs text-brand-brown font-bold uppercase tracking-wider">
+            <th class="text-center px-6 py-3 text-xs text-ink-900 font-bold uppercase tracking-wider">
               {{ t.bidComparison.bidA }}
             </th>
             <th class="text-center px-6 py-3 text-xs text-gray-500 font-bold uppercase tracking-wider">
@@ -249,18 +245,14 @@
         </thead>
         <tbody>
           <tr class="border-t border-gray-100">
-            <td class="px-6 py-4 text-center font-bold text-brand-brown">{{ formatCurrency(bidA.bidAmount) }}</td>
+            <td class="px-6 py-4 text-center font-bold text-ink-900">{{ formatCurrency(bidA.bidAmount) }}</td>
             <td class="px-6 py-4 text-center text-gray-700 font-medium">{{ t.bidComparison.costEstimate }}</td>
             <td class="px-6 py-4 text-center font-bold">{{ formatCurrency(bidB.bidAmount) }}</td>
           </tr>
           <tr class="border-t border-gray-100">
-            <td class="px-6 py-4 text-center">
-              {{ bidA.proposedTimelineDays || '—' }} {{ t.bidComparison.days }}
-            </td>
+            <td class="px-6 py-4 text-center">{{ bidA.proposedTimelineDays || '—' }} {{ t.bidComparison.days }}</td>
             <td class="px-6 py-4 text-center text-gray-700 font-medium">{{ t.bidComparison.timeline }}</td>
-            <td class="px-6 py-4 text-center">
-              {{ bidB.proposedTimelineDays || '—' }} {{ t.bidComparison.days }}
-            </td>
+            <td class="px-6 py-4 text-center">{{ bidB.proposedTimelineDays || '—' }} {{ t.bidComparison.days }}</td>
           </tr>
           <tr class="border-t border-gray-100">
             <td class="px-6 py-4 text-center">{{ bidA.portfolioReferences?.length || 0 }}</td>
@@ -295,7 +287,7 @@
           >
             <div class="flex items-center justify-between mb-2">
               <div class="flex items-center gap-1.5">
-                <span class="text-xs font-bold px-1.5 py-0 rounded-full bg-brand-brown text-white"
+                <span class="text-xs font-bold px-1.5 py-0 rounded-full bg-ink-900 text-white"
                   >P{{ phase.phaseNumber }}</span
                 >
                 <span class="text-sm font-medium text-gray-800">{{
@@ -303,10 +295,10 @@
                 }}</span>
               </div>
               <div class="flex items-center gap-1.5">
-                <span class="text-xs font-bold text-brand-brown">{{ formatCurrency(phase.amount) }}</span>
+                <span class="text-xs font-bold text-ink-900">{{ formatCurrency(phase.amount) }}</span>
                 <button
                   type="button"
-                  class="w-4 h-4 rounded-full flex items-center justify-center text-gray-400 hover:text-brand-brown hover:bg-brand-tan/40 transition"
+                  class="w-4 h-4 rounded-full flex items-center justify-center text-gray-400 hover:text-ink-900 hover:bg-surface-alt transition"
                   :title="t.bidComparison.paymentFlowInfo"
                   @click="
                     activePhaseInfo = {
@@ -330,9 +322,7 @@
                     : 'bg-blue-100 text-blue-700 border-blue-200'
                 ]"
                 :title="
-                  isMatchingDeliverable(d)
-                    ? t.bidComparison.matchingDeliverable
-                    : t.bidComparison.additionalDeliverable
+                  isMatchingDeliverable(d) ? t.bidComparison.matchingDeliverable : t.bidComparison.additionalDeliverable
                 "
               >
                 {{ t.bidCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ') }}
@@ -456,13 +446,13 @@
           @click.self="closeAppointModal"
         >
           <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
-            <div class="bg-brand-brown px-6 py-5">
+            <div class="bg-ink-900 px-6 py-5">
               <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
                   <Crown :size="20" class="text-white" aria-hidden="true" />
                 </div>
                 <div>
-                  <p class="text-xs text-brand-tan font-semibold uppercase tracking-wide">
+                  <p class="text-xs text-white/70 font-semibold uppercase tracking-wide">
                     {{ t.bidComparison.appointModalEyebrow }}
                   </p>
                   <h3 class="text-lg font-bold text-white">{{ t.bidComparison.appointModalTitle }}</h3>
@@ -471,16 +461,14 @@
             </div>
 
             <div class="p-6 space-y-4">
-              <div
-                class="flex items-center justify-between gap-3 p-4 bg-brand-tan/30 border border-brand-gold/30 rounded-xl"
-              >
+              <div class="flex items-center justify-between gap-3 p-4 bg-surface-alt border border-hairline rounded-xl">
                 <div class="min-w-0">
                   <p class="font-bold text-gray-900 truncate">{{ pendingAppointBid.architectName || 'Architect' }}</p>
                   <p v-if="pendingAppointBid.architectCompany" class="text-sm text-gray-500 truncate">
                     {{ pendingAppointBid.architectCompany }}
                   </p>
                 </div>
-                <p class="text-sm font-bold text-brand-brown shrink-0">
+                <p class="text-sm font-bold text-ink-900 shrink-0">
                   {{ formatCurrency(pendingAppointBid.bidAmount) }}
                 </p>
               </div>
@@ -510,7 +498,7 @@
                 <button
                   type="button"
                   :disabled="appointLoading"
-                  class="flex-1 px-4 py-2.5 bg-brand-brown text-white text-sm font-bold rounded-lg hover:bg-brand-brown-dark disabled:opacity-50 transition flex items-center justify-center gap-2"
+                  class="flex-1 px-4 py-2.5 bg-ink-900 text-white text-sm font-bold rounded-lg hover:bg-ink-500 disabled:opacity-50 transition flex items-center justify-center gap-2"
                   @click="confirmAppoint"
                 >
                   <span v-if="appointLoading">{{ t.bidComparison.appointModalLoading }}</span>

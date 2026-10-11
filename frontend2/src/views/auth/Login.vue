@@ -1,159 +1,176 @@
 <template>
-  <div class="min-h-screen bg-surface-alt flex items-center justify-center p-6">
+  <div class="min-h-screen bg-white flex flex-col">
     <div
-      class="absolute inset-0 opacity-[0.03] pointer-events-none"
-      style="
-        background-image: linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px);
-        background-size: 50px 50px;
-      "
-    ></div>
-
-    <div v-motion :initial="{ opacity: 0, y: 20 }" :enter="{ opacity: 1, y: 0 }" class="w-full max-w-lg relative z-10">
+      class="min-h-[72px] flex items-center justify-between box-border px-5 md:px-12 py-3 max-w-[1328px] mx-auto w-full"
+    >
+      <router-link to="/" class="flex items-baseline gap-0.5">
+        <span class="text-[22px] font-extrabold tracking-[-.03em] text-ink-900">rumantra</span>
+      </router-link>
       <router-link
         to="/"
-        class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black transition mb-4 font-medium"
+        class="h-11 inline-flex items-center gap-2 px-4 rounded-full border border-hairline bg-white text-caption font-semibold text-ink-900 hover:border-ink-500 transition-colors"
       >
         <ArrowLeft :size="16" />
         {{ t.common.back }}
       </router-link>
+    </div>
 
-      <div class="bg-white rounded-3xl shadow-2xl p-12 border border-gray-100">
-        <div class="text-center mb-10">
-          <router-link to="/" class="inline-block mb-6">
-            <Logo class="h-10" />
-          </router-link>
-          <h1 class="text-4xl font-bold mb-3 text-black">{{ t.auth.login.title }}</h1>
-          <p class="text-gray-500">{{ t.auth.login.subtitle }}</p>
+    <div class="flex-1 flex items-center justify-center box-border px-5 md:px-12 py-10 md:py-16">
+      <div
+        v-motion
+        :initial="{ opacity: 0, y: 20 }"
+        :enter="{ opacity: 1, y: 0 }"
+        class="w-full max-w-[920px] bg-white rounded-[20px] border border-hairline overflow-hidden flex flex-wrap"
+      >
+        <div
+          class="flex-[1_1_320px] bg-no-repeat text-white p-10 box-border flex flex-col gap-8"
+          :style="{ backgroundImage: `url(${heroBg})`, backgroundSize: 'cover', backgroundPosition: 'left top' }"
+        >
+          <div class="flex items-baseline gap-0.5">
+            <span class="text-[22px] font-extrabold tracking-[-.03em]">rumantra</span>
+          </div>
+          <div>
+            <h3 class="text-[28px] font-bold tracking-[-.03em] leading-[1.15] m-0 mb-3">{{ tl.panelTitle }}</h3>
+            <p class="text-[15px] leading-relaxed text-white/85 m-0">{{ tl.panelSubtitle }}</p>
+          </div>
+          <div class="flex flex-col gap-4 mt-auto">
+            <div v-for="perk in tl.perks" :key="perk" class="flex gap-3 items-start">
+              <span class="flex-none w-6 h-6 rounded-full bg-white text-ink-900 flex items-center justify-center">
+                <Check :size="13" :stroke-width="3" />
+              </span>
+              <span class="text-[15px] leading-normal">{{ perk }}</span>
+            </div>
+          </div>
         </div>
 
-        <form class="space-y-6" @submit.prevent="handleLogin">
-          <BaseInput
-            v-model="formData.email"
-            :label="t.auth.login.email"
-            :error="errors.email"
-            type="email"
-            autocomplete="email"
-            required
-          />
-
-          <BaseInput
-            v-model="formData.password"
-            :label="t.auth.login.password"
-            :error="errors.password"
-            type="password"
-            autocomplete="current-password"
-            required
-          />
-
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <input
-                id="rememberMe"
-                v-model="formData.rememberMe"
-                type="checkbox"
-                class="w-4 h-4 rounded border-gray-300 text-brand-gold focus:ring-brand-gold"
-              />
-              <label for="rememberMe" class="text-sm text-gray-600 cursor-pointer">
-                {{ t.auth.login.rememberMe }}
-              </label>
-            </div>
-            <a href="#" class="text-sm text-brand-gold hover:text-brand-gold-light font-semibold">
-              {{ t.auth.login.forgotPassword }}
-            </a>
-          </div>
-
-          <BaseAlert v-if="errorMessage" variant="error">{{ errorMessage }}</BaseAlert>
-
-          <BaseButton
-            type="submit"
-            :full-width="true"
-            :is-loading="isLoading"
-            class="bg-brand-gold hover:bg-brand-gold-light text-white border-none"
-          >
-            {{ t.auth.login.signIn }}
-          </BaseButton>
-
-          <div class="relative my-8">
-            <div class="absolute inset-0 flex items-center">
-              <div class="w-full border-t border-gray-200"></div>
-            </div>
-            <div class="relative flex justify-center text-sm">
-              <span class="px-4 bg-white text-gray-500">{{ t.auth.login.orContinueWith }}</span>
-            </div>
-          </div>
-
-          <LegalConsentNotice ref="legalConsentNotice" />
-
-          <div class="grid grid-cols-2 gap-4">
-            <button
-              type="button"
-              class="flex items-center justify-center gap-3 px-6 py-3.5 border-2 border-gray-200 rounded-full hover:bg-gray-50 hover:border-gray-300 transition-all font-medium"
-              @click="handleGoogleLogin"
+        <div class="flex-[1_1_380px] px-6 md:px-10 py-10 box-border flex flex-col">
+          <div class="flex gap-1 p-1 border border-hairline rounded-full mb-7">
+            <span
+              class="flex-1 h-10 rounded-full text-caption font-bold bg-ink-900 text-white flex items-center justify-center"
             >
-              <svg class="w-5 h-5" viewBox="0 0 24 24">
+              {{ tl.tabLogin }}
+            </span>
+            <router-link
+              :to="signupLink"
+              class="flex-1 h-10 rounded-full text-caption font-bold text-ink-400 hover:text-ink-900 transition-colors flex items-center justify-center"
+            >
+              {{ tl.tabRegister }}
+            </router-link>
+          </div>
+
+          <h1 class="text-[24px] font-bold tracking-[-.025em] m-0 mb-2 text-ink-900">{{ tl.title }}</h1>
+          <p class="text-[15px] leading-relaxed text-ink-400 m-0 mb-6">{{ tl.subtitle }}</p>
+
+          <div
+            v-if="route.query.verified === 'true'"
+            class="mb-5 px-4 py-3 rounded-xl bg-surface-blue text-caption leading-normal text-accent-blue"
+          >
+            {{ tl.verified }}
+          </div>
+
+          <div class="flex flex-col gap-3">
+            <button type="button" :class="socialBtn" @click="handleGoogleLogin">
+              <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
                 <path
-                  fill="#4285F4"
-                  d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                  fill="#EA4335"
+                  d="M24 9.5c3.5 0 6.6 1.2 9 3.5l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.6 5.4 2.7 13.3l7.8 6.1C12.4 13.6 17.7 9.5 24 9.5z"
                 />
                 <path
-                  fill="#34A853"
-                  d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                  fill="#4285F4"
+                  d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.5-4.8 7.2l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.5z"
                 />
                 <path
                   fill="#FBBC05"
-                  d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                  d="M10.5 28.6c-.5-1.4-.8-3-.8-4.6s.3-3.2.8-4.6l-7.8-6.1C1 16.6 0 20.2 0 24s1 7.4 2.7 10.7l7.8-6.1z"
                 />
                 <path
-                  fill="#EA4335"
-                  d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                  fill="#34A853"
+                  d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.8 2.3-8.4 2.3-6.3 0-11.6-4.1-13.5-9.9l-7.8 6.1C6.6 42.6 14.6 48 24 48z"
                 />
               </svg>
-              Google
+              {{ tl.googleCta }}
             </button>
-            <button
-              type="button"
-              class="flex items-center justify-center gap-3 px-6 py-3.5 border-2 border-gray-200 rounded-full hover:bg-gray-50 hover:border-gray-300 transition-all font-medium"
-              @click="handleLinkedInLogin"
-            >
-              <svg class="w-5 h-5" fill="#0A66C2" viewBox="0 0 24 24">
+            <button type="button" :class="socialBtn" @click="handleLinkedInLogin">
+              <svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true">
+                <rect width="24" height="24" rx="4" fill="#0A66C2" />
                 <path
-                  d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"
+                  fill="#fff"
+                  d="M7.1 9.5h-2.6V19h2.6V9.5zM5.8 5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3zM19.5 13.6c0-2.6-1.4-4.3-3.7-4.3-1.3 0-2.2.7-2.6 1.4V9.5h-2.5V19h2.6v-5c0-1.3.6-2.2 1.7-2.2 1.1 0 1.8.8 1.8 2.2v5h2.7v-5.4z"
                 />
               </svg>
-              LinkedIn
+              {{ tl.linkedinCta }}
             </button>
           </div>
+          <LegalConsentNotice ref="legalConsentNotice" class="mt-3" />
 
-          <p class="text-center text-gray-500 text-sm">
-            {{ t.auth.login.noAccount }}
-            <router-link
-              :to="{ path: '/signup', query: route.query.redirect ? { redirect: route.query.redirect } : {} }"
-              class="text-brand-gold hover:text-brand-gold-light font-semibold"
-            >
-              {{ t.auth.login.signUpHere }}
+          <div class="flex items-center gap-3 my-5 text-caption text-ink-400">
+            <span class="flex-1 h-px bg-hairline"></span>{{ tl.orEmail }}<span class="flex-1 h-px bg-hairline"></span>
+          </div>
+
+          <form class="flex flex-col gap-5" novalidate @submit.prevent="handleLogin">
+            <div>
+              <label :for="ids.email" :class="labelCls">{{ tl.email }}</label>
+              <input
+                :id="ids.email"
+                v-model="formData.email"
+                type="email"
+                autocomplete="email"
+                :placeholder="tl.emailPlaceholder"
+                :class="[inputCls, errors.email && 'border-[#B42318]']"
+              />
+              <p v-if="errors.email" class="text-caption-sm text-[#B42318] mt-1.5 mb-0">{{ errors.email }}</p>
+            </div>
+            <div>
+              <div class="flex items-baseline justify-between mb-2.5">
+                <label :for="ids.password" class="text-body font-medium text-ink-700">{{ tl.password }}</label>
+                <a href="#" class="text-caption font-semibold text-accent-blue hover:underline">
+                  {{ tl.forgotPassword }}
+                </a>
+              </div>
+              <input
+                :id="ids.password"
+                v-model="formData.password"
+                type="password"
+                autocomplete="current-password"
+                :placeholder="tl.passwordPlaceholder"
+                :class="[inputCls, errors.password && 'border-[#B42318]']"
+              />
+              <p v-if="errors.password" class="text-caption-sm text-[#B42318] mt-1.5 mb-0">
+                {{ errors.password }}
+              </p>
+            </div>
+
+            <p v-if="errorMessage" class="text-caption leading-normal text-[#B42318] m-0">{{ errorMessage }}</p>
+
+            <button type="submit" :class="primaryBtn" :disabled="isLoading">
+              <span
+                v-if="isLoading"
+                class="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"
+              ></span>
+              {{ tl.signIn }}
+            </button>
+          </form>
+
+          <p class="text-center text-caption text-ink-400 mt-6 mb-0">
+            {{ tl.noAccount }}
+            <router-link :to="signupLink" class="font-semibold text-ink-900 hover:underline">
+              {{ tl.signUpHere }}
             </router-link>
           </p>
-        </form>
-      </div>
-
-      <div v-if="route.query.verified === 'true'" class="mt-4">
-        <BaseAlert variant="success">Email verified successfully! Please sign in to continue.</BaseAlert>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted, useId } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { ArrowLeft } from 'lucide-vue-next'
+import { ArrowLeft, Check } from 'lucide-vue-next'
 import { useAuthStore } from '@/stores/auth'
 import { useProjectBrief } from '@/composables/useProjectBrief'
 import { useI18n } from '@/composables/useI18n'
-import BaseButton from '@/components/ui/BaseButton.vue'
-import BaseInput from '@/components/ui/BaseInput.vue'
-import BaseAlert from '@/components/ui/BaseAlert.vue'
-import Logo from '@/components/ui/Logo.vue'
+import heroBg from '@/assets/images/landing/hero-background.jpg'
 import LegalConsentNotice from '@/components/legal/LegalConsentNotice.vue'
 
 const router = useRouter()
@@ -162,14 +179,28 @@ const authStore = useAuthStore()
 const { t } = useI18n()
 const legalConsentNotice = ref(null)
 const { pendingBriefPath } = useProjectBrief()
+const tl = computed(() => t.value.auth.login)
+
+const ids = { email: useId(), password: useId() }
+const labelCls = 'block text-body font-medium text-ink-700 mb-2.5'
+const inputCls =
+  'w-full box-border h-12 px-4 border border-hairline rounded-xl bg-white text-body text-ink-900 placeholder-ink-300 outline-none focus:border-ink-900 transition-colors'
+const primaryBtn =
+  'w-full h-[52px] flex items-center justify-center gap-3 rounded-full bg-ink-900 text-white text-[15px] font-bold hover:opacity-85 transition-opacity disabled:opacity-50 disabled:cursor-not-allowed'
+const socialBtn =
+  'w-full h-[52px] flex items-center justify-center gap-3 rounded-full border border-hairline bg-white text-ink-900 text-[15px] font-bold hover:border-ink-900 transition-colors'
+
+const signupLink = computed(() => ({
+  path: '/signup',
+  query: route.query.redirect ? { redirect: route.query.redirect } : {}
+}))
 
 const isLoading = ref(false)
 const errorMessage = ref('')
 
 const formData = ref({
   email: '',
-  password: '',
-  rememberMe: false
+  password: ''
 })
 
 const errors = ref({

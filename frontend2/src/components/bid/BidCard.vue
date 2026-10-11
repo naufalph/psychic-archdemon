@@ -3,7 +3,7 @@
     class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-soft hover:shadow-glow transition-all cursor-pointer group"
     @click="navigate"
   >
-    <div class="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-brand-brown to-brand-brown-900">
+    <div class="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-ink-700 to-ink-900">
       <img
         v-if="coverImage"
         :src="coverImage"
@@ -34,7 +34,7 @@
           {{ formatDate(bid.submittedAt) }}
         </span>
         <button
-          class="bg-black text-white text-xs font-bold px-4 py-2 rounded-full tracking-wider hover:bg-brand-brown transition"
+          class="bg-black text-white text-xs font-bold px-4 py-2 rounded-full tracking-wider hover:bg-ink-500 transition"
           @click.stop="navigate"
         >
           {{ ctaLabel }}

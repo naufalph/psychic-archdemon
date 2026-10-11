@@ -70,7 +70,7 @@
       <!-- Add more button (shown while below max) -->
       <div
         v-if="totalCount < maxFiles"
-        class="aspect-square border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer hover:border-brand-gold transition"
+        class="aspect-square border-2 border-dashed border-gray-300 rounded-xl flex items-center justify-center cursor-pointer hover:border-ink-900 transition"
         @click="openPicker"
       >
         <Plus :size="32" class="text-gray-400" />
@@ -182,13 +182,13 @@ watch(
 
 const dropzoneClasses = ref([
   'border-2 border-dashed rounded-xl cursor-pointer transition-all',
-  isDragging.value ? 'border-brand-brown bg-brand-tan/20' : 'border-gray-300 hover:border-brand-gold'
+  isDragging.value ? 'border-ink-900 bg-surface-alt' : 'border-gray-300 hover:border-ink-900'
 ])
 
 watch(isDragging, newValue => {
   dropzoneClasses.value = [
     'border-2 border-dashed rounded-xl cursor-pointer transition-all',
-    newValue ? 'border-brand-brown bg-brand-tan/20' : 'border-gray-300 hover:border-brand-gold'
+    newValue ? 'border-ink-900 bg-surface-alt' : 'border-gray-300 hover:border-ink-900'
   ]
 })
 </script>

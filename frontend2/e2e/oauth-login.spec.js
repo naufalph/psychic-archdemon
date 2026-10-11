@@ -65,11 +65,8 @@ test.describe('OAuth Callback Component', () => {
 })
 
 test.describe('Signup Page OAuth Buttons', () => {
-  test('signup page shows OAuth buttons after role selection', async ({ page }) => {
+  test('signup page shows OAuth buttons', async ({ page }) => {
     await page.goto(ROUTES.signup)
-
-    await page.getByText('Offer Services').click()
-    await page.waitForTimeout(500)
 
     await expect(page.getByRole('button', { name: /google/i })).toBeVisible()
     await expect(page.getByRole('button', { name: /linkedin/i })).toBeVisible()

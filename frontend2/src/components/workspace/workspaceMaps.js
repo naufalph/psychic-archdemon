@@ -65,7 +65,7 @@ export const deliverableStyles = {
 export const logIconClass = actorType =>
   ({
     CLIENT: 'bg-ink-700 text-white',
-    ARCHITECT: 'bg-brand-tan text-brand-brown',
+    ARCHITECT: 'bg-surface-alt text-ink-900',
     SYSTEM: 'bg-gray-100 text-gray-500',
     XENDIT: 'bg-green-100 text-green-700',
     SUPERUSER: 'bg-gray-100 text-gray-500'

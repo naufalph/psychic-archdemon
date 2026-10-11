@@ -1,57 +1,60 @@
 <template>
   <div
     v-if="variant === 'client'"
-    class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-soft hover:shadow-glow transition-all cursor-pointer group"
+    class="bg-white rounded-[20px] border border-hairline overflow-hidden flex flex-col cursor-pointer group transition-all hover:-translate-y-0.5 hover:shadow-[0_24px_48px_-36px_rgba(0,0,0,.35)]"
     @click="handleClick"
   >
-    <div class="relative aspect-[16/10] overflow-hidden bg-gradient-to-br from-brand-brown to-brand-brown-900">
+    <div class="relative aspect-[16/9] overflow-hidden bg-surface-alt">
       <img
         v-if="coverImage"
         :src="coverImage"
         :alt="project.title"
         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
       />
+      <div v-else class="w-full h-full flex items-center justify-center text-ink-200">
+        <Building2 :size="40" :stroke-width="1.5" />
+      </div>
       <span
-        class="absolute top-3 right-3 bg-black/70 text-white text-xs font-bold px-2.5 py-1 rounded-full tracking-wider uppercase"
+        class="absolute top-3 right-3 max-w-[60%] truncate bg-white/90 text-ink-900 text-micro font-semibold px-2.5 py-1 rounded-full"
       >
-        {{ buildingLabel }}
+        {{ projectTypeText || 'Proyek' }}
       </span>
       <span
-        class="absolute bottom-3 left-3 px-2.5 py-1 rounded-full text-xs font-bold tracking-wider"
-        :class="statusBadgeClass"
+        class="absolute bottom-3 left-3 inline-flex items-center gap-1.5 bg-white/90 text-ink-900 text-micro font-semibold px-2.5 py-1 rounded-full"
       >
+        <span class="w-1.5 h-1.5 rounded-full" :class="statusDotClass"></span>
         {{ t.projectStatus?.[project.status] || project.status }}
       </span>
     </div>
 
-    <div class="p-5">
-      <h3 class="text-base font-bold text-black mb-1 line-clamp-1">{{ project.title }}</h3>
-      <p v-if="project.description" class="text-gray-500 text-xs mb-3 line-clamp-2 leading-relaxed">
-        {{ project.description }}
+    <div class="p-5 flex flex-col flex-1">
+      <h3 class="text-base font-bold leading-snug text-ink-900 m-0 mb-1.5 line-clamp-2 min-h-[2.75em]">
+        {{ project.title }}
+      </h3>
+      <p v-if="summary" class="text-caption leading-relaxed text-ink-400 m-0 mb-3 line-clamp-2">
+        {{ summary }}
       </p>
 
-      <div class="flex items-center gap-3 text-xs text-gray-500 mb-4">
-        <span v-if="project.location" class="flex items-center gap-1">
-          <MapPin :size="11" /> {{ project.location }}
+      <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-caption-sm text-ink-400 mt-auto mb-4">
+        <span v-if="project.location" class="inline-flex items-center gap-1 min-w-0 max-w-full">
+          <MapPin :size="12" class="shrink-0" /> <span class="truncate">{{ project.location }}</span>
         </span>
-        <span v-if="project.designBudget" class="flex items-center gap-1">
-          Rp {{ formatCurrency(project.designBudget) }}
-        </span>
-        <span v-if="project.createdAt" class="flex items-center gap-1 ml-auto">
-          <Clock :size="11" /> {{ timeAgo(project.createdAt) }}
+        <span v-if="project.designBudget" class="whitespace-nowrap">Rp {{ formatCurrency(project.designBudget) }}</span>
+        <span v-if="project.createdAt" class="inline-flex items-center gap-1 whitespace-nowrap">
+          <Clock :size="12" /> {{ timeAgo(project.createdAt) }}
         </span>
       </div>
 
-      <div class="flex items-center justify-between pt-3 border-t border-gray-100">
-        <span class="text-xs text-gray-500 font-medium">
+      <div class="flex items-center justify-between gap-3 pt-3 border-t border-hairline">
+        <span class="text-caption-sm text-ink-400 font-medium whitespace-nowrap">
           {{ bidCount }}
           {{ bidCount === 1 ? t.clientDashboard.bidSingular : t.clientDashboard.bidPlural }}
         </span>
-        <button
-          class="bg-black text-white text-xs font-bold px-4 py-2 rounded-full tracking-wider hover:bg-brand-brown transition"
+        <span
+          class="inline-flex items-center gap-1 bg-ink-900 text-white text-caption-sm font-semibold px-4 h-9 rounded-full whitespace-nowrap group-hover:bg-ink-500 transition-colors"
         >
           {{ project.status === 'DRAFT' ? t.projectCard.continueDraft : t.projectCard.manage }}
-        </button>
+        </span>
       </div>
     </div>
   </div>
@@ -92,7 +95,7 @@
         </span>
         <span
           v-if="showBidCount && bidCount > 0"
-          class="bg-brand-brown text-white px-3 py-1.5 rounded-full text-xs font-bold"
+          class="bg-ink-900 text-white px-3 py-1.5 rounded-full text-xs font-bold"
         >
           {{ bidCount }}
           {{ bidCount === 1 ? t.clientDashboard.bidSingular : t.clientDashboard.bidPlural }}
@@ -118,12 +121,13 @@
 <script setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { MapPin, Clock } from 'lucide-vue-next'
+import { MapPin, Clock, Building2 } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
 import { projectTypeLabel } from '@/constants/projectTaxonomy'
 import ProjectStatusBadge from './ProjectStatusBadge.vue'
 import BidStatusBadge from './BidStatusBadge.vue'
 import BiddingCountdown from '../bidding/BiddingCountdown.vue'
+import { briefVision } from '@/utils/briefProgress'
 
 const props = defineProps({
   project: {
@@ -158,30 +162,24 @@ const coverImage = computed(() => {
   return img?.filePath || null
 })
 
-const buildingLabel = computed(() => projectTypeLabel(props.project, locale.value).toUpperCase() || 'PROJECT')
-
 const projectTypeText = computed(() => projectTypeLabel(props.project, locale.value))
 
-const statusBadgeClass = computed(() => {
-  switch (props.project.status) {
-    case 'OPEN':
-      return 'bg-green-500 text-white'
-    case 'NEGOTIATION':
-      return 'bg-amber-400 text-white'
-    case 'IN_PROGRESS':
-      return 'bg-blue-500 text-white'
-    case 'AWARDED':
-      return 'bg-blue-600 text-white'
-    case 'CLOSED':
-      return 'bg-gray-500 text-white'
-    case 'REJECTED':
-      return 'bg-red-500 text-white'
-    case 'DRAFT':
-      return 'bg-amber-500 text-white'
-    default:
-      return 'bg-gray-400 text-white'
-  }
-})
+// Status reads as a coloured dot on a neutral pill, so the badge stays calm over any photo
+const STATUS_DOT = {
+  DRAFT: 'bg-amber-500',
+  PENDING_APPROVAL: 'bg-amber-500',
+  NEGOTIATION: 'bg-amber-500',
+  OPEN: 'bg-green-500',
+  IN_PROGRESS: 'bg-blue-500',
+  AWARDED: 'bg-blue-500',
+  COMPLETED: 'bg-ink-400',
+  CLOSED: 'bg-ink-400',
+  CANCELLED: 'bg-ink-400',
+  REJECTED: 'bg-red-500'
+}
+const statusDotClass = computed(() => STATUS_DOT[props.project.status] || 'bg-ink-300')
+
+const summary = computed(() => briefVision(props.project.description))
 
 const formatCurrency = value => {
   if (!value) return '0'
@@ -207,7 +205,7 @@ const timeAgo = dateString => {
 const handleClick = () => {
   if (props.variant === 'client') {
     if (props.project.status === 'DRAFT') {
-      router.push({ name: 'ProjectCreate' })
+      router.push({ name: 'ProjectBrief', query: { draft: props.project.id } })
     } else if (props.project.status === 'IN_PROGRESS') {
       router.push({ name: 'ClientProjectWorkspace', params: { id: props.project.id } })
     } else {

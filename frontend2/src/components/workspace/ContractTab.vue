@@ -145,7 +145,7 @@
           </div>
           <div class="text-right shrink-0">
             <p class="text-xs text-gray-400">{{ t.projectWorkspace?.bidAmountLabel }}</p>
-            <p class="font-bold text-brand-brown">{{ formatAmount(winningBid.bidAmount) }}</p>
+            <p class="font-bold text-ink-900">{{ formatAmount(winningBid.bidAmount) }}</p>
           </div>
         </div>
         <div

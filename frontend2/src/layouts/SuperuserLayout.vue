@@ -4,7 +4,7 @@
     <aside class="w-56 shrink-0 flex flex-col bg-ink-700 h-screen">
       <div class="px-5 py-6 cursor-pointer" @mouseenter="logoHovered = true" @mouseleave="logoHovered = false">
         <span class="text-lg font-black tracking-tighter logo" :class="logoHovered ? 'logo-hover' : 'logo-default'"
-          >rumantra.</span
+          >rumantra</span
         >
         <p class="text-white/30 text-xs mt-0.5 font-medium tracking-wide">BACKOFFICE</p>
       </div>

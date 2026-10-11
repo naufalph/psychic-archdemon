@@ -33,16 +33,16 @@ const props = defineProps({
 const isOwn = computed(() => Number(props.message.senderUserId) === Number(props.currentUserId))
 
 const avatarClass = computed(() => {
-  if (isOwn.value) return 'bg-brand-brown'
+  if (isOwn.value) return 'bg-ink-900'
   if (props.message.senderType === 'SUPERUSER') return 'bg-blue-500'
-  if (props.message.senderType === 'CLIENT') return 'bg-amber-500'
+  if (props.message.senderType === 'CLIENT') return 'bg-ink-500'
   return 'bg-gray-500'
 })
 
 const bubbleClass = computed(() => {
-  if (isOwn.value) return 'bg-brand-brown text-white rounded-tr-sm'
+  if (isOwn.value) return 'bg-ink-900 text-white rounded-tr-sm'
   if (props.message.senderType === 'SUPERUSER') return 'bg-blue-50 border border-blue-200 text-blue-900 rounded-tl-sm'
-  if (props.message.senderType === 'CLIENT') return 'bg-amber-50 border border-amber-200 text-amber-900 rounded-tl-sm'
+  if (props.message.senderType === 'CLIENT') return 'bg-surface-alt border border-hairline text-ink-900 rounded-tl-sm'
   return 'bg-white border border-gray-200 text-gray-800 rounded-tl-sm'
 })
 

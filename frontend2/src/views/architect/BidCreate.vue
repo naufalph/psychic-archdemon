@@ -13,7 +13,7 @@
 
       <div v-else-if="projectError" class="bg-white rounded-3xl border border-gray-200 p-12 text-center">
         <p class="text-red-600 mb-4">{{ projectError }}</p>
-        <button class="text-brand-brown hover:underline" @click="router.push({ name: 'OpportunityList' })">
+        <button class="text-ink-900 hover:underline" @click="router.push({ name: 'OpportunityList' })">
           {{ t.bidCreate?.backToOpportunities || 'Back to Opportunities' }}
         </button>
       </div>
@@ -83,7 +83,7 @@
                       <span
                         v-for="d in group.items"
                         :key="d"
-                        class="bg-brand-tan text-brand-brown px-2 py-0.5 rounded-full text-xs font-medium"
+                        class="bg-surface-alt text-ink-900 px-2 py-0.5 rounded-full text-xs font-medium"
                       >
                         {{ t.bidCreate?.deliverableItems?.[d] || d.replace(/_/g, ' ') }}
                       </span>
@@ -101,7 +101,7 @@
                     v-for="(img, index) in sidebarImages"
                     :key="img.id"
                     type="button"
-                    class="aspect-square rounded-lg overflow-hidden border border-gray-200 hover:border-brand-brown transition"
+                    class="aspect-square rounded-lg overflow-hidden border border-gray-200 hover:border-ink-900 transition"
                     @click="openLightbox(index)"
                   >
                     <img :src="img.url" :alt="img.name" class="w-full h-full object-cover" />
@@ -118,7 +118,7 @@
 
         <div class="lg:col-span-2">
           <div class="bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
-            <div class="bg-brand-brown p-8 text-white">
+            <div class="bg-ink-900 p-8 text-white">
               <h1 class="text-3xl font-bold flex items-center gap-3">
                 <FileText :size="32" />
                 {{ existingBidId ? t.bidCreate?.updateTitle || 'Update Bid' : t.bidCreate?.title || 'Submit Bid' }}
@@ -162,7 +162,7 @@
                 <button
                   type="button"
                   :disabled="isSavingDraft"
-                  class="inline-block mt-2 text-sm font-semibold text-amber-900 underline hover:text-brand-brown disabled:opacity-60"
+                  class="inline-block mt-2 text-sm font-semibold text-amber-900 underline hover:text-ink-900 disabled:opacity-60"
                   @click="goToProfile"
                 >
                   {{
@@ -187,7 +187,7 @@
                   v-model="formData.proposal"
                   rows="6"
                   placeholder="Tell the client about your studio's expertise, experience, and approach..."
-                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-ink-900 focus:border-ink-900 outline-none"
                 />
               </div>
 
@@ -203,7 +203,7 @@
                   rows="6"
                   required
                   placeholder="Explain your design concept, key features, and how you'll address the client's needs..."
-                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
+                  class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-ink-900 focus:border-ink-900 outline-none"
                   @input="validateWordCount"
                 />
                 <p class="text-xs text-gray-500 mt-1">{{ wordCount }}/200 words</p>
@@ -232,7 +232,7 @@
                     t.bidCreate?.facadeDescriptionPlaceholder ||
                     'Add context about these facade images (materials, style, site conditions)...'
                   "
-                  class="w-full mt-3 px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-sm"
+                  class="w-full mt-3 px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-ink-900 focus:border-ink-900 outline-none text-sm"
                 />
               </div>
 
@@ -258,7 +258,7 @@
                   :placeholder="
                     t.bidCreate?.interiorDescriptionPlaceholder || 'Add context about these interior images...'
                   "
-                  class="w-full mt-3 px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-sm"
+                  class="w-full mt-3 px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-ink-900 focus:border-ink-900 outline-none text-sm"
                 />
               </div>
 
@@ -284,7 +284,7 @@
                   :placeholder="
                     t.bidCreate?.massingDescriptionPlaceholder || 'Add context about these massing images...'
                   "
-                  class="w-full mt-3 px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-sm"
+                  class="w-full mt-3 px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-ink-900 focus:border-ink-900 outline-none text-sm"
                 />
               </div>
 
@@ -308,7 +308,7 @@
                   v-model="formData.zoningDescription"
                   rows="2"
                   :placeholder="t.bidCreate?.zoningDescriptionPlaceholder || 'Add context about these zoning images...'"
-                  class="w-full mt-3 px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none text-sm"
+                  class="w-full mt-3 px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-ink-900 focus:border-ink-900 outline-none text-sm"
                 />
               </div>
 
@@ -329,7 +329,7 @@
                     type="text"
                     inputmode="numeric"
                     placeholder="e.g., 50.000.000"
-                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
+                    class="w-full px-4 py-3 border-2 border-gray-200 rounded-2xl focus:ring-2 focus:ring-ink-900 focus:border-ink-900 outline-none"
                   />
                 </div>
               </div>
@@ -364,7 +364,7 @@
                   v-if="!isIdentityComplete"
                   type="button"
                   :disabled="isSavingDraft"
-                  class="inline-block text-sm font-semibold text-brand-brown underline disabled:opacity-60"
+                  class="inline-block text-sm font-semibold text-ink-900 underline disabled:opacity-60"
                   @click="goToProfile"
                 >
                   {{
@@ -386,7 +386,7 @@
                 <button
                   type="submit"
                   :disabled="(loading && !isSavingDraft) || uploadProgress > 0"
-                  class="flex-1 px-6 py-3 text-white bg-brand-brown rounded-full hover:bg-black shadow-md hover:shadow-lg transition-all font-bold flex items-center justify-center gap-2 disabled:opacity-50"
+                  class="flex-1 px-6 py-3 text-white bg-ink-900 rounded-full hover:bg-ink-500 shadow-md hover:shadow-lg transition-all font-bold flex items-center justify-center gap-2 disabled:opacity-50"
                 >
                   <Loader v-if="loading && !isSavingDraft" :size="20" class="animate-spin" />
                   <Send v-else :size="20" />
@@ -483,7 +483,7 @@
                   </button>
                   <button
                     :disabled="isSavingDraft"
-                    class="px-6 py-2.5 bg-brand-brown text-white rounded-full font-semibold hover:bg-brand-brown-dark transition-all disabled:opacity-60 flex items-center gap-2"
+                    class="px-6 py-2.5 bg-ink-900 text-white rounded-full font-semibold hover:bg-ink-500 transition-all disabled:opacity-60 flex items-center gap-2"
                     @click="goToProfile"
                   >
                     <Loader v-if="isSavingDraft" :size="16" class="animate-spin" />

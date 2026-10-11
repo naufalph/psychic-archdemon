@@ -70,7 +70,7 @@
       <div class="h-1.5 rounded-full bg-gray-100 overflow-hidden">
         <div
           class="h-full rounded-full transition-[width] duration-500"
-          :class="allUploaded ? 'bg-green-500' : 'bg-brand-gold'"
+          :class="allUploaded ? 'bg-green-500' : 'bg-ink-900'"
           :style="{ width: `${(uploadedCount / deliverables.length) * 100}%` }"
         />
       </div>
@@ -94,7 +94,7 @@
     <!-- Money states hand off to the contract tab, which owns invoicing and disbursement -->
     <button
       v-if="panel.link"
-      class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-brand-brown hover:underline"
+      class="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-ink-900 hover:underline"
       @click="$emit('go-contract')"
     >
       {{ panel.link }}

@@ -375,6 +375,12 @@ export default {
   },
   auth: {
     signup: {
+      registerTitle: 'Buat akun baru',
+      registerSubtitle: 'Gratis. Hanya butuh satu menit.',
+      registerAs: 'Daftar sebagai',
+      roleClient: 'Klien',
+      roleArchitect: 'Arsitek',
+      orEmail: 'atau daftar dengan email',
       title: 'Bergabung dengan rumantra',
       subtitle: 'Mulai perjalanan arsitektur Anda hari ini',
       firstName: 'Nama Depan',
@@ -437,6 +443,21 @@ export default {
       noAccount: 'Belum punya akun?',
       signUpHere: 'Daftar di sini',
       orContinueWith: 'Atau lanjutkan dengan',
+      panelTitle: 'Satu akun untuk seluruh proyek Anda.',
+      panelSubtitle: 'Klien dan arsitek masuk dari pintu yang sama.',
+      perks: [
+        'Lanjutkan brief dan proyek kapan saja',
+        'Bandingkan penawaran dari arsitek terverifikasi',
+        'Kelola kontrak, progres, dan pembayaran di satu tempat'
+      ],
+      tabLogin: 'Masuk',
+      tabRegister: 'Daftar',
+      emailPlaceholder: 'cth. budi@email.com',
+      passwordPlaceholder: 'Kata sandi Anda',
+      googleCta: 'Lanjutkan dengan Google',
+      linkedinCta: 'Lanjutkan dengan LinkedIn',
+      orEmail: 'atau dengan email',
+      verified: 'Email berhasil diverifikasi. Silakan masuk untuk melanjutkan.',
       errors: {
         invalidCredentials: 'Email atau kata sandi salah',
         required: 'Bidang ini wajib diisi'
@@ -853,6 +874,9 @@ export default {
     title: 'Dashboard Klien',
     subtitle: 'Selamat datang di ruang kerja Anda',
     myProjects: 'Proyek Saya',
+    seeAll: 'Lihat semua',
+    noSubmittedProjects:
+      'Belum ada proyek yang dikirim. Brief yang sudah Anda kirim akan muncul di sini.',
     myProjectsSubtitle: 'Kelola dan lacak proyek arsitektur Anda',
     newProject: 'Proyek Baru',
     noProjectsYet: 'Belum ada proyek',

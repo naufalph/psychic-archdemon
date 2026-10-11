@@ -2,7 +2,7 @@
   <div class="flex flex-col gap-4">
     <!-- Hero: the whole card navigates to the contract tab -->
     <button
-      class="bg-white border border-border-gray rounded-xl p-5 text-left hover:border-brand-gold hover:shadow-sm transition-all"
+      class="bg-white border border-border-gray rounded-xl p-5 text-left hover:border-ink-900 hover:shadow-sm transition-all"
       @click="$emit('go-contract')"
     >
       <div class="flex gap-4">
@@ -15,7 +15,7 @@
               <h2 class="text-base font-bold text-gray-900 truncate">
                 {{ project?.title || t.projectWorkspace?.titleFallback }}
               </h2>
-              <span class="text-xs font-medium text-brand-brown">
+              <span class="text-xs font-medium text-ink-900">
                 {{ t.projectWorkspace?.viewDetail }}
               </span>
             </div>
@@ -83,7 +83,7 @@
         <button
           v-for="row in needsAction"
           :key="row.phase.id"
-          class="w-full p-3 rounded-lg bg-gray-50 border border-border-gray hover:border-brand-gold hover:bg-white transition-colors flex items-center gap-3 text-left"
+          class="w-full p-3 rounded-lg bg-gray-50 border border-border-gray hover:border-ink-900 hover:bg-white transition-colors flex items-center gap-3 text-left"
           @click="$emit(row.target === 'contract' ? 'go-contract' : 'go-phase', row.phase.id)"
         >
           <span
@@ -95,7 +95,7 @@
             <p class="text-sm font-semibold text-gray-900 truncate">{{ row.title }}</p>
             <p class="text-xs text-gray-500 truncate">{{ phaseFallbackTitle(row.phase) }}</p>
           </div>
-          <span class="text-xs font-semibold text-brand-brown shrink-0">{{ row.cta }} &rarr;</span>
+          <span class="text-xs font-semibold text-ink-900 shrink-0">{{ row.cta }} &rarr;</span>
         </button>
       </div>
       <div v-else class="border-2 border-dashed border-border-gray rounded-lg py-6 text-center text-sm text-gray-400">
@@ -109,7 +109,7 @@
         <p class="text-xs font-bold uppercase tracking-wider text-gray-400">
           {{ t.projectWorkspace?.paymentPhasesTitle }}
         </p>
-        <button class="text-xs font-semibold text-brand-brown" @click="$emit('go-phases')">
+        <button class="text-xs font-semibold text-ink-900" @click="$emit('go-phases')">
           {{ t.projectWorkspace?.allPhasesLink }} &rarr;
         </button>
       </div>

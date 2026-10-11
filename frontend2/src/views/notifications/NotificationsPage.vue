@@ -29,7 +29,7 @@
         {{ tab.label }}
         <span
           v-if="tab.count > 0"
-          class="min-w-[20px] h-5 px-1.5 rounded-full bg-brand-gold text-ink-900 text-[11px] font-bold flex items-center justify-center"
+          class="min-w-[20px] h-5 px-1.5 rounded-full bg-ink-900 text-white text-[11px] font-bold flex items-center justify-center"
         >
           {{ notificationsStore.formattedUnreadCount }}
         </span>
@@ -74,7 +74,7 @@
       v-else-if="!visibleItems.length"
       class="bg-white border border-hairline rounded-[20px] py-[72px] px-8 flex flex-col items-center text-center gap-4"
     >
-      <span class="w-16 h-16 rounded-full bg-brand-cream text-brand-brown flex items-center justify-center">
+      <span class="w-16 h-16 rounded-full bg-surface-alt text-ink-900 flex items-center justify-center">
         <Bell :size="26" />
       </span>
       <div>
@@ -94,8 +94,8 @@
             :to="row.route || undefined"
             class="flex gap-4 items-start px-6 py-[18px] border-t border-hairline first:border-t-0 transition-colors"
             :class="[
-              row.notification.isRead ? 'bg-white' : 'bg-brand-cream',
-              row.route && row.notification.isRead ? 'hover:bg-brand-cream/50' : ''
+              row.notification.isRead ? 'bg-white' : 'bg-surface-alt',
+              row.route && row.notification.isRead ? 'hover:bg-surface-alt' : ''
             ]"
             @click="handleRowClick(row.notification)"
           >
@@ -107,7 +107,7 @@
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2">
                 <p class="text-[15px] font-semibold text-ink-900">{{ row.display.title }}</p>
-                <span v-if="!row.notification.isRead" class="w-2 h-2 shrink-0 rounded-full bg-brand-gold"></span>
+                <span v-if="!row.notification.isRead" class="w-2 h-2 shrink-0 rounded-full bg-ink-900"></span>
               </div>
               <p class="mt-1 text-sm leading-[1.55] text-ink-500">{{ row.display.message }}</p>
               <p class="mt-1.5 text-xs text-ink-300">{{ row.meta }}</p>

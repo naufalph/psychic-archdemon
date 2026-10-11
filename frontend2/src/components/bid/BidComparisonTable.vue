@@ -11,7 +11,7 @@
         <label class="block text-xs font-medium text-gray-500 mb-1.5">{{ t.bidTable.filterByCity }}</label>
         <select
           v-model="cityFilter"
-          class="px-4 py-2 border-2 border-gray-200 rounded-full text-sm focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
+          class="px-4 py-2 border-2 border-gray-200 rounded-full text-sm focus:ring-2 focus:ring-ink-900 focus:border-ink-900 outline-none"
         >
           <option value="">{{ t.bidTable.allCities }}</option>
           <option v-for="city in availableCities" :key="city" :value="city">{{ city }}</option>
@@ -26,7 +26,7 @@
             v-model="priceMinDisplay"
             type="text"
             :placeholder="t.bidTable.priceMin"
-            class="w-40 pl-10 pr-3 py-2 border-2 border-gray-200 rounded-full text-sm focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
+            class="w-40 pl-10 pr-3 py-2 border-2 border-gray-200 rounded-full text-sm focus:ring-2 focus:ring-ink-900 focus:border-ink-900 outline-none"
             @input="onPriceMinInput"
           />
         </div>
@@ -40,7 +40,7 @@
             v-model="priceMaxDisplay"
             type="text"
             :placeholder="t.bidTable.priceMax"
-            class="w-40 pl-10 pr-3 py-2 border-2 border-gray-200 rounded-full text-sm focus:ring-2 focus:ring-brand-brown focus:border-brand-brown outline-none"
+            class="w-40 pl-10 pr-3 py-2 border-2 border-gray-200 rounded-full text-sm focus:ring-2 focus:ring-ink-900 focus:border-ink-900 outline-none"
             @input="onPriceMaxInput"
           />
         </div>
@@ -136,7 +136,7 @@
               </span>
               <span v-else class="text-gray-400">{{ t.bidTable.noEducation }}</span>
             </td>
-            <td class="px-6 py-4 text-right font-bold text-brand-brown whitespace-nowrap">
+            <td class="px-6 py-4 text-right font-bold text-ink-900 whitespace-nowrap">
               {{ formatCurrency(bid.bidAmount) }}
             </td>
             <td class="px-6 py-4 text-right text-gray-700 whitespace-nowrap">
@@ -145,7 +145,7 @@
             <td class="px-6 py-4">
               <div class="flex items-center justify-end gap-2">
                 <button
-                  class="px-3 py-1.5 bg-white border-2 border-brand-gold text-brand-brown rounded-full text-xs font-medium hover:bg-brand-gold hover:text-white transition flex items-center gap-1.5 whitespace-nowrap"
+                  class="px-3 py-1.5 bg-white border-2 border-ink-900 text-ink-900 rounded-full text-xs font-medium hover:bg-ink-500 hover:text-white transition flex items-center gap-1.5 whitespace-nowrap"
                   @click="$emit('view-details', bid.id)"
                 >
                   <Eye :size="14" />
@@ -154,7 +154,7 @@
                 <button
                   :class="[
                     'px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 transition whitespace-nowrap',
-                    isSelected(bid.id) ? 'bg-brand-brown text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                    isSelected(bid.id) ? 'bg-ink-900 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                   ]"
                   @click="$emit('toggle-compare', bid.id)"
                 >
@@ -176,7 +176,7 @@
       </p>
       <button
         v-if="pendingBids.length > 0 && (cityFilter || priceMinFilter != null || priceMaxFilter != null)"
-        class="mt-3 text-sm text-brand-brown font-medium hover:underline"
+        class="mt-3 text-sm text-ink-900 font-medium hover:underline"
         @click="clearFilters"
       >
         {{ t.bidTable.clearFilters }}

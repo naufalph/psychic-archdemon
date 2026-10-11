@@ -1,6 +1,6 @@
 <template>
   <div
-    class="group relative bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-amber-200"
+    class="group relative bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-hairline-alt"
   >
     <div class="aspect-square overflow-hidden bg-gray-100 relative">
       <img
@@ -9,8 +9,8 @@
         :alt="portfolio.title"
         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
       />
-      <div v-else class="w-full h-full flex items-center justify-center bg-gradient-to-br from-amber-100 to-amber-200">
-        <svg class="w-16 h-16 text-amber-600/30" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <div v-else class="w-full h-full flex items-center justify-center bg-gradient-to-br from-surface-alt to-hairline">
+        <svg class="w-16 h-16 text-ink-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path
             stroke-linecap="round"
             stroke-linejoin="round"
@@ -43,11 +43,11 @@
           <Eye class="w-4 h-4 text-blue-600" />
         </button>
         <button
-          class="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-amber-50 transition-colors"
+          class="w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-surface-alt transition-colors"
           :title="t.portfolio.card.edit"
           @click.stop="$emit('edit')"
         >
-          <svg class="w-4 h-4 text-amber-800" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg class="w-4 h-4 text-ink-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -83,7 +83,7 @@
 
       <div class="flex items-center justify-between text-xs">
         <div class="flex items-center gap-3">
-          <span class="px-3 py-1 bg-amber-100 text-amber-800 rounded-full font-medium">
+          <span class="px-3 py-1 bg-surface-alt text-ink-700 rounded-full font-medium">
             {{ iaiTypeFullLabel(portfolio.projectType, locale) }}
           </span>
           <span v-if="projectYear" class="text-gray-600">{{ projectYear }}</span>
