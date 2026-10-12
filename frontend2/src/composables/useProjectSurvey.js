@@ -12,9 +12,9 @@ import {
   INTERIOR_DOCUMENTS,
   APARTMENT_SUB_CATEGORY,
   SURVEY_SERVICES,
-  SURVEY_CATEGORY_GROUPS,
-  SURVEY_PROVINCES
+  SURVEY_CATEGORY_GROUPS
 } from '@/constants/projectSurvey'
+import { citiesFor, provinceLabel } from '@/constants/regions'
 import { formatIDRDisplay } from '@/utils/currencyFormat'
 
 const STORAGE_KEY = 'rumantra:project-survey:v1'
@@ -75,6 +75,13 @@ const readStored = () => {
   }
 }
 
+// Only a province code and a city from that province's list count as an answer. Anything else
+// (a draft saved before the dropdowns, or a project from the old Google form) is asked again.
+const knownPlace = (province, city) => {
+  const code = provinceLabel(province) ? province : ''
+  return { province: code, city: code && citiesFor(code).some(c => c.value === city) ? city : '' }
+}
+
 let shared = null
 
 /**
@@ -87,6 +94,7 @@ export function useProjectSurvey() {
   if (shared) return shared
 
   const state = reactive({ ...blankState(), ...(readStored() || {}) })
+  Object.assign(state, knownPlace(state.province, state.city))
   const refs = reactive([])
 
   watch(
@@ -197,7 +205,7 @@ export function useProjectSurvey() {
     scope: scopeLabels.value.length > 0 && interiorComplete.value,
     property: !!(state.category && state.subCategory),
     akun: true,
-    alamat: !!(state.province && trim(state.city)),
+    alamat: !!(state.province && state.city),
     luas: interiorOnly.value
       ? !isApartment.value || !!state.aptType
       : !!(
@@ -244,8 +252,8 @@ export function useProjectSurvey() {
 
   const buildProjectData = () => ({
     title: projectTitle(),
-    location: [trim(state.city), state.province].filter(Boolean).join(', '),
-    city: trim(state.city) || null,
+    location: [state.city, provinceLabel(state.province)].filter(Boolean).join(', '),
+    city: state.city || null,
     province: state.province || null,
     fullAddress: trim(state.address) || null,
     latitude: state.latitude,
@@ -348,8 +356,7 @@ export function useProjectSurvey() {
     fresh.subCategory = group ? project.subCategory || '' : ''
     fresh.aptType = meta.apartment || ''
 
-    fresh.province = SURVEY_PROVINCES.includes(project.province) ? project.province : ''
-    fresh.city = project.city || ''
+    Object.assign(fresh, knownPlace(project.province, project.city))
     fresh.address = project.fullAddress || ''
     fresh.latitude = project.latitude != null ? Number(project.latitude) : null
     fresh.longitude = project.longitude != null ? Number(project.longitude) : null

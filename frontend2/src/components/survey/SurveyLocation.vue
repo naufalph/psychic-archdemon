@@ -6,12 +6,12 @@
         <div class="relative">
           <select
             :id="ids.province"
-            v-model="state.province"
-            class="w-full box-border h-12 pl-4 pr-11 border border-hairline rounded-xl bg-white text-body font-semibold outline-none appearance-none cursor-pointer focus:border-ink-900 transition-colors bg-none"
-            :class="state.province ? 'text-ink-900' : 'text-ink-400'"
+            :value="state.province"
+            :class="[selectCls, state.province ? 'text-ink-900' : 'text-ink-400']"
+            @change="onProvince($event.target.value)"
           >
             <option value="">Pilih provinsi</option>
-            <option v-for="province in SURVEY_PROVINCES" :key="province" :value="province">{{ province }}</option>
+            <option v-for="p in PROVINCES" :key="p.value" :value="p.value">{{ p.label }}</option>
           </select>
           <ChevronDown
             :size="18"
@@ -22,7 +22,26 @@
       </div>
       <div>
         <label :for="ids.city" :class="labelCls">Kota / Kabupaten</label>
-        <input :id="ids.city" v-model="state.city" type="text" placeholder="cth. Jakarta Selatan" :class="inputCls" />
+        <div class="relative">
+          <select
+            :id="ids.city"
+            v-model="state.city"
+            :class="[
+              selectCls,
+              state.city ? 'text-ink-900' : 'text-ink-400',
+              'disabled:bg-surface-alt disabled:cursor-not-allowed'
+            ]"
+            :disabled="!state.province"
+          >
+            <option value="">{{ state.province ? 'Pilih kota / kabupaten' : 'Pilih provinsi dulu' }}</option>
+            <option v-for="c in cities" :key="c.value" :value="c.value">{{ c.label }}</option>
+          </select>
+          <ChevronDown
+            :size="18"
+            :stroke-width="2"
+            class="absolute right-4 top-[15px] pointer-events-none text-ink-400"
+          />
+        </div>
       </div>
     </div>
 
@@ -75,18 +94,26 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount, useId } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, useId } from 'vue'
 import { ChevronDown, MapPin } from 'lucide-vue-next'
 import { useProjectSurvey } from '@/composables/useProjectSurvey'
 import { loadGoogleMaps, hasMapsKey } from '@/composables/useGoogleMaps'
-import { SURVEY_PROVINCES } from '@/constants/projectSurvey'
+import { PROVINCES, citiesFor } from '@/constants/regions'
 
 const { state } = useProjectSurvey()
 
 const ids = { province: useId(), city: useId(), address: useId() }
 const labelCls = 'block text-body font-medium text-ink-700 mb-2.5'
-const inputCls =
-  'w-full box-border h-12 px-4 border border-hairline rounded-xl bg-white text-body text-ink-900 placeholder-ink-300 outline-none focus:border-ink-900 transition-colors'
+const selectCls =
+  'w-full box-border h-12 pl-4 pr-11 border border-hairline rounded-xl bg-white text-body font-semibold outline-none appearance-none cursor-pointer focus:border-ink-900 transition-colors bg-none'
+
+const cities = computed(() => citiesFor(state.province))
+
+// A city only belongs to its own province, so it is dropped when the province moves
+const onProvince = value => {
+  state.province = value
+  if (!citiesFor(value).some(c => c.value === state.city)) state.city = ''
+}
 
 const JAKARTA = { lat: -6.2, lng: 106.82 }
 

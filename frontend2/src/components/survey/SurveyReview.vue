@@ -47,6 +47,7 @@ import { computed, useId } from 'vue'
 import { useProjectSurvey } from '@/composables/useProjectSurvey'
 import { SURVEY_CATEGORY_GROUPS, START_OPTIONS } from '@/constants/projectSurvey'
 import { subCategoryLabel } from '@/constants/projectTaxonomy'
+import { provinceLabel } from '@/constants/regions'
 
 defineProps({
   needsPhone: { type: Boolean, default: false },
@@ -64,7 +65,9 @@ const rows = computed(() => {
   const property =
     group && sub ? [group.label, sub, survey.isApartment.value && s.aptType].filter(Boolean).join(' · ') : ''
   const location =
-    s.province && s.city ? `${s.city.trim()}, ${s.province}${s.address.trim() ? `\n${s.address.trim()}` : ''}` : ''
+    s.province && s.city
+      ? `${s.city}, ${provinceLabel(s.province)}${s.address.trim() ? `\n${s.address.trim()}` : ''}`
+      : ''
 
   const size = intOnly
     ? [s.building && `Area ${s.building} m²`, survey.pieceMode.value && s.wall && `Panjang dinding ${s.wall} m`]
