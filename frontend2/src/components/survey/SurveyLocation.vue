@@ -49,49 +49,23 @@
     </div>
 
     <div>
-      <label :for="ids.search" class="block text-body font-medium text-ink-700 mb-1">
+      <p class="text-body font-medium text-ink-700 mt-0 mb-1">
         Titik lokasi <span class="font-normal text-ink-400">(opsional)</span>
-      </label>
-      <p class="text-caption text-ink-400 mt-0 mb-3">Cari area, lalu klik peta untuk menandai titik lokasi proyek.</p>
-      <div class="relative">
-        <div class="flex gap-2">
-          <input
-            :id="ids.search"
-            v-model="query"
-            type="text"
-            placeholder="cth. Jakarta Selatan"
-            :class="[inputCls, 'flex-1 min-w-0']"
-            @keydown.enter.prevent="search"
-          />
-          <button
-            type="button"
-            class="flex-none h-12 px-5 rounded-full border border-ink-900 text-ink-900 text-[15px] font-bold hover:bg-black/5 transition-colors disabled:opacity-50"
-            :disabled="searching"
-            @click="search"
-          >
-            {{ searching ? 'Mencari…' : 'Cari' }}
-          </button>
-        </div>
+      </p>
+      <p class="text-caption text-ink-400 mt-0 mb-3">Cari alamat, lalu klik peta untuk menandai titik lokasi proyek.</p>
+      <p
+        v-if="!available"
+        class="text-caption text-ink-400 m-0 px-4 py-6 rounded-2xl border border-hairline bg-surface-alt"
+      >
+        Peta tidak tersedia saat ini. Isi alamat lengkap di atas agar arsitek tetap dapat menemukan lokasinya.
+      </p>
+      <template v-else>
+        <div ref="searchHost" class="survey-place-autocomplete"></div>
         <div
-          v-if="results.length"
-          class="absolute inset-x-0 top-14 z-[1000] bg-white border border-hairline rounded-xl shadow-[0_24px_48px_-24px_rgba(0,0,0,.25)] overflow-hidden"
-        >
-          <button
-            v-for="result in results"
-            :key="result.place_id"
-            type="button"
-            class="block w-full text-left px-4 py-3 text-caption leading-snug text-ink-900 border-b border-hairline last:border-b-0 hover:bg-surface-alt"
-            @click="pickResult(result)"
-          >
-            {{ result.display_name }}
-          </button>
-        </div>
-        <p v-if="searchError" class="text-caption text-[#B42318] mt-2 mb-0">{{ searchError }}</p>
-      </div>
-      <div
-        ref="mapEl"
-        class="mt-3 h-[340px] border border-hairline rounded-2xl overflow-hidden bg-surface-alt relative z-0"
-      ></div>
+          ref="mapEl"
+          class="mt-3 h-[340px] border border-hairline rounded-2xl overflow-hidden bg-surface-alt relative z-0"
+        ></div>
+      </template>
       <div v-if="state.locationLabel" class="flex gap-2.5 items-start mt-3 text-caption leading-normal text-ink-900">
         <MapPin :size="18" :stroke-width="2" class="flex-none mt-px" />
         <span>{{ state.locationLabel }}</span>
@@ -102,110 +76,131 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, useId } from 'vue'
-import L from 'leaflet'
-import 'leaflet/dist/leaflet.css'
 import { ChevronDown, MapPin } from 'lucide-vue-next'
 import { useProjectSurvey } from '@/composables/useProjectSurvey'
+import { loadGoogleMaps, hasMapsKey } from '@/composables/useGoogleMaps'
 import { SURVEY_PROVINCES } from '@/constants/projectSurvey'
 
 const { state } = useProjectSurvey()
 
-const ids = { province: useId(), city: useId(), address: useId(), search: useId() }
+const ids = { province: useId(), city: useId(), address: useId() }
 const labelCls = 'block text-body font-medium text-ink-700 mb-2.5'
 const inputCls =
   'w-full box-border h-12 px-4 border border-hairline rounded-xl bg-white text-body text-ink-900 placeholder-ink-300 outline-none focus:border-ink-900 transition-colors'
 
-// OpenStreetMap's free Nominatim service: no key and no billing, but its usage policy asks for
-// light, user-initiated traffic, so lookups only run on an explicit search or map click
-const NOMINATIM = 'https://nominatim.openstreetmap.org'
-const JAKARTA = [-6.2, 106.82]
+const JAKARTA = { lat: -6.2, lng: 106.82 }
 
 const mapEl = ref(null)
-const query = ref(state.locationLabel || '')
-const results = ref([])
-const searching = ref(false)
-const searchError = ref('')
+const searchHost = ref(null)
+const available = ref(hasMapsKey())
 let map = null
 let marker = null
+let autocomplete = null
 
-const pinIcon = L.divIcon({
-  className: '',
-  html: '<div style="width:22px;height:22px;border-radius:999px;background:#0A0A0A;border:4px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,.35)"></div>',
-  iconSize: [22, 22],
-  iconAnchor: [11, 11]
-})
+const coordinateLabel = ({ lat, lng }) => `${lat.toFixed(5)}, ${lng.toFixed(5)}`
 
-const placePin = (lat, lng) => {
-  if (marker) marker.setLatLng([lat, lng])
-  else marker = L.marker([lat, lng], { icon: pinIcon }).addTo(map)
-  state.latitude = Number(lat.toFixed(7))
-  state.longitude = Number(lng.toFixed(7))
-}
-
-const reverseLookup = async (lat, lng) => {
-  const fallback = `${lat.toFixed(5)}, ${lng.toFixed(5)}`
-  try {
-    const res = await fetch(`${NOMINATIM}/reverse?format=json&accept-language=id&lat=${lat}&lon=${lng}`)
-    const data = await res.json()
-    state.locationLabel = data?.display_name || fallback
-  } catch {
-    state.locationLabel = fallback
+const placePin = position => {
+  if (marker) marker.setPosition(position)
+  else {
+    marker = new window.google.maps.Marker({ map, position, draggable: true })
+    marker.addListener('dragend', event => {
+      const moved = { lat: event.latLng.lat(), lng: event.latLng.lng() }
+      placePin(moved)
+      state.locationLabel = coordinateLabel(moved)
+    })
   }
-  query.value = state.locationLabel
+  state.latitude = Number(position.lat.toFixed(7))
+  state.longitude = Number(position.lng.toFixed(7))
 }
 
-const search = async () => {
-  const q = query.value.trim()
-  if (!q) return
-  searching.value = true
-  searchError.value = ''
+const onSelect = async event => {
   try {
-    const res = await fetch(
-      `${NOMINATIM}/search?format=json&accept-language=id&countrycodes=id&limit=5&q=${encodeURIComponent(q)}`
-    )
-    const list = await res.json()
-    results.value = Array.isArray(list) ? list : []
-    if (!results.value.length) searchError.value = 'Lokasi tidak ditemukan. Coba kata kunci lain.'
-  } catch {
-    results.value = []
-    searchError.value = 'Pencarian gagal. Anda tetap bisa menandai lokasi langsung di peta.'
-  } finally {
-    searching.value = false
+    const place = event.placePrediction.toPlace()
+    // Essentials-tier fields only. A Pro field such as displayName would reprice every
+    // autocomplete request in the session at the Enterprise rate, not just this one call.
+    await place.fetchFields({ fields: ['formattedAddress', 'location'] })
+    if (!place.location) return
+    const position = { lat: place.location.lat(), lng: place.location.lng() }
+    placePin(position)
+    map.setCenter(position)
+    if (map.getZoom() < 17) map.setZoom(18)
+    state.locationLabel = place.formattedAddress || coordinateLabel(position)
+    if (!state.address.trim()) state.address = place.formattedAddress || ''
+  } catch (err) {
+    console.error('Failed to resolve selected place:', err)
   }
 }
 
-const pickResult = result => {
-  const lat = parseFloat(result.lat)
-  const lng = parseFloat(result.lon)
-  results.value = []
-  query.value = result.display_name
-  state.locationLabel = result.display_name
-  map.setView([lat, lng], 16)
-  placePin(lat, lng)
-}
+onMounted(async () => {
+  if (!available.value) return
+  let maps
+  try {
+    maps = await loadGoogleMaps()
+  } catch {
+    available.value = false
+    return
+  }
+  if (!mapEl.value) return
 
-onMounted(() => {
   const hasPin = state.latitude != null && state.longitude != null
-  map = L.map(mapEl.value, { zoomControl: true, attributionControl: true }).setView(
-    hasPin ? [state.latitude, state.longitude] : JAKARTA,
-    hasPin ? 16 : 11
-  )
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; OpenStreetMap'
-  }).addTo(map)
-  if (hasPin) placePin(state.latitude, state.longitude)
-  map.on('click', event => {
-    placePin(event.latlng.lat, event.latlng.lng)
-    reverseLookup(event.latlng.lat, event.latlng.lng)
+  const center = hasPin ? { lat: Number(state.latitude), lng: Number(state.longitude) } : JAKARTA
+  map = new maps.Map(mapEl.value, {
+    center,
+    zoom: hasPin ? 18 : 11,
+    mapTypeId: 'satellite',
+    mapTypeControl: true,
+    streetViewControl: false,
+    fullscreenControl: true
   })
-  // The step animates in, so Leaflet measures the container before it has its final size
-  setTimeout(() => map?.invalidateSize(), 250)
+  if (hasPin) placePin(center)
+  map.addListener('click', event => {
+    const position = { lat: event.latLng.lat(), lng: event.latLng.lng() }
+    placePin(position)
+    state.locationLabel = coordinateLabel(position)
+  })
+
+  try {
+    const places = maps.importLibrary ? await maps.importLibrary('places') : maps.places
+    const { PlaceAutocompleteElement } = places || {}
+    if (!PlaceAutocompleteElement) throw new Error('PlaceAutocompleteElement unavailable')
+    autocomplete = new PlaceAutocompleteElement({
+      includedRegionCodes: ['id'],
+      requestedLanguage: 'id',
+      requestedRegion: 'id'
+    })
+    autocomplete.addEventListener('gmp-select', onSelect)
+    searchHost.value?.appendChild(autocomplete)
+  } catch (err) {
+    // The map still takes a pin by click, so a missing search box is not fatal
+    console.error('Places Autocomplete unavailable:', err)
+  }
 })
 
 onBeforeUnmount(() => {
-  map?.remove()
-  map = null
+  autocomplete?.removeEventListener('gmp-select', onSelect)
+  autocomplete?.remove()
+  autocomplete = null
+  marker?.setMap(null)
   marker = null
+  map = null
 })
 </script>
+
+<style scoped>
+/* The element is a web component; these custom properties are its supported styling surface. */
+.survey-place-autocomplete :deep(gmp-place-autocomplete) {
+  width: 100%;
+  --gmp-place-autocomplete-input-border-radius: 0.75rem;
+  --gmp-place-autocomplete-input-border: 1px solid #e8e8e8;
+  font-family: inherit;
+  color-scheme: light;
+  background-color: #fff;
+  border: 1px solid #e8e8e8;
+  border-radius: 0.75rem;
+  min-height: 3rem;
+}
+
+.survey-place-autocomplete :deep(gmp-place-autocomplete:focus-within) {
+  border-color: #0a0a0a;
+}
+</style>
