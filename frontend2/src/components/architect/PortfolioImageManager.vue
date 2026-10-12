@@ -32,8 +32,8 @@
 
       <label
         v-if="displayImages.length < 8"
-        class="aspect-square rounded-2xl border-2 border-dashed border-black/20 hover:border-brand-brown hover:bg-brand-brown/5 transition-all flex flex-col items-center justify-center cursor-pointer group"
-        :class="{ 'border-brand-brown bg-brand-brown/5': isDragging }"
+        class="aspect-square rounded-2xl border-2 border-dashed border-black/20 hover:border-ink-900 hover:bg-ink-500 transition-all flex flex-col items-center justify-center cursor-pointer group"
+        :class="{ 'border-ink-900 bg-ink-900/5': isDragging }"
         @drop.prevent="handleDrop"
         @dragover.prevent="isDragging = true"
         @dragleave.prevent="isDragging = false"
@@ -49,14 +49,14 @@
         />
         <svg
           v-if="!isUploading"
-          class="w-8 h-8 text-black/40 group-hover:text-brand-brown transition-colors mb-2"
+          class="w-8 h-8 text-black/40 group-hover:text-ink-900 transition-colors mb-2"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
         >
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
         </svg>
-        <svg v-else class="w-8 h-8 text-brand-brown animate-spin mb-2" fill="none" viewBox="0 0 24 24">
+        <svg v-else class="w-8 h-8 text-ink-900 animate-spin mb-2" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
           <path
             class="opacity-75"
@@ -85,7 +85,7 @@
         <span>{{ uploadProgress }}%</span>
       </div>
       <div class="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-        <div class="bg-brand-brown h-full transition-all duration-300" :style="{ width: `${uploadProgress}%` }"></div>
+        <div class="bg-ink-900 h-full transition-all duration-300" :style="{ width: `${uploadProgress}%` }"></div>
       </div>
     </div>
   </div>

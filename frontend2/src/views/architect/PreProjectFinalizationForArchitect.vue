@@ -2,7 +2,7 @@
   <div class="min-h-screen bg-surface-alt">
     <div v-if="loading && !bid" class="flex items-center justify-center h-screen">
       <div class="text-center">
-        <div class="w-10 h-10 border-2 border-brand-gold border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <div class="w-10 h-10 border-2 border-ink-900 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
         <p class="text-gray-500">{{ t.finalization?.loading }}</p>
       </div>
     </div>
@@ -10,7 +10,7 @@
     <div v-else-if="error" class="flex items-center justify-center h-screen">
       <div class="text-center">
         <p class="text-red-500 mb-4">{{ error }}</p>
-        <button class="text-brand-brown hover:underline" @click="loadData">{{ t.finalization?.tryAgain }}</button>
+        <button class="text-ink-900 hover:underline" @click="loadData">{{ t.finalization?.tryAgain }}</button>
       </div>
     </div>
 
@@ -73,9 +73,9 @@
               </div>
 
               <div class="grid grid-cols-2 gap-3">
-                <div class="bg-brand-cream rounded-2xl p-4">
+                <div class="bg-surface-alt rounded-2xl p-4">
                   <p class="text-xs text-gray-500 uppercase font-bold mb-1">{{ t.finalization?.proposedPrice }}</p>
-                  <p class="text-2xl font-bold text-brand-brown">{{ formatCurrency(bid.bidAmount) }}</p>
+                  <p class="text-2xl font-bold text-ink-900">{{ formatCurrency(bid.bidAmount) }}</p>
                 </div>
                 <div class="bg-gray-50 rounded-2xl p-4">
                   <p class="text-xs text-gray-500 uppercase font-bold mb-1">{{ t.finalization?.timeline }}</p>
@@ -94,18 +94,18 @@
                 <div
                   v-for="phase in bid.details.phases"
                   :key="phase.phaseNumber"
-                  class="rounded-2xl border border-gray-100 p-4 bg-brand-cream"
+                  class="rounded-2xl border border-gray-100 p-4 bg-surface-alt"
                 >
                   <div class="flex items-center justify-between mb-2">
                     <div class="flex items-center gap-2">
-                      <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-brand-brown text-white">
+                      <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-ink-900 text-white">
                         {{ t.clientFinalization?.phase }} {{ phase.phaseNumber }}
                       </span>
                       <span class="text-sm font-bold text-black">{{
                         phase.title || `${t.clientFinalization?.phase} ${phase.phaseNumber}`
                       }}</span>
                     </div>
-                    <span class="text-sm font-bold text-brand-brown">{{ formatCurrency(phase.amount) }}</span>
+                    <span class="text-sm font-bold text-ink-900">{{ formatCurrency(phase.amount) }}</span>
                   </div>
                   <div v-if="phase.deliverables?.length" class="flex flex-wrap gap-1 mb-2">
                     <span
@@ -127,7 +127,7 @@
               </div>
               <div class="mt-3 pt-3 border-t border-gray-100 flex justify-between text-sm">
                 <span class="text-gray-500 font-bold">{{ t.clientFinalization?.total }}</span>
-                <span class="font-bold text-brand-brown">{{ formatCurrency(bid.bidAmount) }}</span>
+                <span class="font-bold text-ink-900">{{ formatCurrency(bid.bidAmount) }}</span>
               </div>
             </div>
 
@@ -217,7 +217,7 @@
               <div class="px-5 py-4 border-b border-gray-100">
                 <div class="flex items-center gap-2">
                   <h3 class="font-bold text-black">{{ t.finalization?.discussion }}</h3>
-                  <span v-if="itSupportRequested" class="text-xs text-brand-brown font-medium"
+                  <span v-if="itSupportRequested" class="text-xs text-ink-900 font-medium"
                     >· {{ t.clientFinalization?.itSupportInvited }}</span
                   >
                 </div>
@@ -277,7 +277,7 @@
                 />
                 <button
                   :disabled="actionLoading || !myContractAccepted"
-                  class="w-full px-5 py-3.5 bg-brand-brown text-white rounded-full font-bold hover:bg-black transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="w-full px-5 py-3.5 bg-ink-900 text-white rounded-full font-bold hover:bg-ink-500 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   @click="openConfirmModal"
                 >
                   <CheckCircle :size="18" />
@@ -306,13 +306,13 @@
           @click.self="closeConfirmModal"
         >
           <div class="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
-            <div class="bg-brand-brown px-6 py-5">
+            <div class="bg-ink-900 px-6 py-5">
               <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center shrink-0">
                   <CheckCircle :size="20" class="text-white" aria-hidden="true" />
                 </div>
                 <div>
-                  <p class="text-xs text-brand-tan font-semibold uppercase tracking-wide">
+                  <p class="text-xs text-white/70 font-semibold uppercase tracking-wide">
                     {{ t.finalization?.confirmModalEyebrow }}
                   </p>
                   <h3 class="text-lg font-bold text-white">{{ t.finalization?.confirmButton }}</h3>
@@ -338,7 +338,7 @@
                 <button
                   type="button"
                   :disabled="actionLoading"
-                  class="flex-1 px-4 py-2.5 bg-brand-brown text-white text-sm font-bold rounded-lg hover:bg-brand-brown-dark disabled:opacity-50 transition flex items-center justify-center gap-2"
+                  class="flex-1 px-4 py-2.5 bg-ink-900 text-white text-sm font-bold rounded-lg hover:bg-ink-500 disabled:opacity-50 transition flex items-center justify-center gap-2"
                   @click="handleConfirm"
                 >
                   <span v-if="actionLoading">{{ t.finalization?.confirming }}</span>

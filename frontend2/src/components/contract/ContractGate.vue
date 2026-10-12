@@ -8,7 +8,7 @@
           {{ acceptance.signatureName }} · {{ formatDate(acceptance.acceptedAt) }}
         </p>
       </div>
-      <button type="button" class="text-xs font-bold text-brand-brown hover:underline shrink-0" @click="$emit('open')">
+      <button type="button" class="text-xs font-bold text-ink-900 hover:underline shrink-0" @click="$emit('open')">
         {{ c.viewButton }}
       </button>
     </div>
@@ -16,7 +16,7 @@
     <template v-else>
       <button
         type="button"
-        class="w-full px-5 py-3.5 bg-white text-brand-brown border-2 border-brand-brown rounded-full font-bold hover:bg-brand-cream transition flex items-center justify-center gap-2"
+        class="w-full px-5 py-3.5 bg-white text-ink-900 border-2 border-ink-900 rounded-full font-bold hover:bg-surface-alt transition flex items-center justify-center gap-2"
         @click="$emit('open')"
       >
         <FileText :size="18" />

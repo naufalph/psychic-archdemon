@@ -21,7 +21,7 @@
           </div>
           <button
             v-if="!store.isEditMode && store.hasProfile"
-            class="px-6 py-3 bg-brand-brown text-white rounded-full font-semibold hover:bg-brand-brown-dark transition-all hover:scale-105"
+            class="px-6 py-3 bg-ink-900 text-white rounded-full font-semibold hover:bg-ink-500 transition-all hover:scale-105"
             @click="store.enableEditMode"
           >
             {{ t.profile.editProfile }}
@@ -31,14 +31,14 @@
         <div v-if="store.hasProfile" class="bg-white rounded-3xl p-6 shadow-sm border border-black/5">
           <div class="flex items-center justify-between mb-3">
             <p class="text-sm font-semibold text-black/70">{{ t.profile.completion.title }}</p>
-            <p class="text-sm font-bold text-brand-brown">{{ store.profileCompletionPercent }}%</p>
+            <p class="text-sm font-bold text-ink-900">{{ store.profileCompletionPercent }}%</p>
           </div>
           <div v-if="checklist" class="grid grid-cols-4 gap-1.5">
             <div
               v-for="item in checklistItems"
               :key="item.key"
               class="h-2 rounded-full overflow-hidden"
-              :class="item.complete ? 'bg-brand-brown' : 'bg-black/5'"
+              :class="item.complete ? 'bg-ink-900' : 'bg-black/5'"
             ></div>
           </div>
           <div v-if="checklist" class="grid grid-cols-4 gap-1.5 mt-2">
@@ -87,7 +87,7 @@
               />
               <div
                 v-else
-                class="w-16 h-16 rounded-full bg-brand-brown/10 text-brand-brown flex items-center justify-center text-lg font-bold"
+                class="w-16 h-16 rounded-full bg-ink-900/10 text-ink-900 flex items-center justify-center text-lg font-bold"
               >
                 {{ initials }}
               </div>

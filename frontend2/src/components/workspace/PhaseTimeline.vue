@@ -127,7 +127,7 @@
             </span>
             <button
               type="button"
-              class="absolute -top-1.5 h-[78px] rounded-[10px] bg-transparent cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-gold"
+              class="absolute -top-1.5 h-[78px] rounded-[10px] bg-transparent cursor-pointer focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink-900"
               :aria-label="r.ariaLabel"
               :title="r.heading"
               :style="{ left: r.tBandLeft, width: r.tBandWidth }"
@@ -191,7 +191,7 @@
         </span>
         <button
           type="button"
-          class="ml-auto text-xs font-semibold text-brand-brown hover:text-[#0A0A0A]"
+          class="ml-auto text-xs font-semibold text-ink-900 hover:text-[#0A0A0A]"
           @click="hover != null ? open(rows[hover].id) : $emit('go-phases')"
         >
           {{ footerCta }} &rarr;

@@ -24,7 +24,7 @@ test.describe('Login Page', () => {
 
   test('shows error on wrong credentials', async ({ page }) => {
     await page.getByLabel('Email').fill('wrong@example.com')
-    await page.getByLabel('Kata Sandi').fill('wrongpassword')
+    await page.getByLabel('Kata Sandi', { exact: true }).fill('wrongpassword')
     await page.getByRole('button', { name: 'Masuk' }).click()
     // Wait for error alert to appear
     await expect(page.locator('.bg-red-50, [class*="error"], [class*="alert"]').first()).toBeVisible({
@@ -43,7 +43,7 @@ test.describe('Login Flow — CLIENT', () => {
   test('successful login redirects to client dashboard', async ({ page }) => {
     await page.goto(ROUTES.login)
     await page.getByLabel('Email').fill(TEST_USERS.client.email)
-    await page.getByLabel('Kata Sandi').fill(TEST_USERS.client.password)
+    await page.getByLabel('Kata Sandi', { exact: true }).fill(TEST_USERS.client.password)
     await page.getByRole('button', { name: 'Masuk' }).click()
     await page.waitForURL(url => url.pathname.startsWith('/client'), { timeout: 15000 })
     await expect(page).toHaveURL(/\/client\//)
@@ -52,7 +52,7 @@ test.describe('Login Flow — CLIENT', () => {
   test('successful login sets auth_token in localStorage', async ({ page }) => {
     await page.goto(ROUTES.login)
     await page.getByLabel('Email').fill(TEST_USERS.client.email)
-    await page.getByLabel('Kata Sandi').fill(TEST_USERS.client.password)
+    await page.getByLabel('Kata Sandi', { exact: true }).fill(TEST_USERS.client.password)
     await page.getByRole('button', { name: 'Masuk' }).click()
     await page.waitForURL(url => url.pathname.startsWith('/client'), { timeout: 15000 })
     const token = await page.evaluate(() => localStorage.getItem('auth_token'))
@@ -64,7 +64,7 @@ test.describe('Login Flow — ARCHITECT', () => {
   test('successful login redirects to architect area', async ({ page }) => {
     await page.goto(ROUTES.login)
     await page.getByLabel('Email').fill(TEST_USERS.architect.email)
-    await page.getByLabel('Kata Sandi').fill(TEST_USERS.architect.password)
+    await page.getByLabel('Kata Sandi', { exact: true }).fill(TEST_USERS.architect.password)
     await page.getByRole('button', { name: 'Masuk' }).click()
     await page.waitForURL(url => url.pathname.startsWith('/architect'), { timeout: 15000 })
     await expect(page).toHaveURL(/\/architect\//)
@@ -76,34 +76,28 @@ test.describe('Signup Page', () => {
     await page.goto(ROUTES.signup)
   })
 
-  test('step 1 shows role selection cards', async ({ page }) => {
-    // Role cards are in Indonesian
-    await expect(page.getByText('Menyewa Arsitek')).toBeVisible()
-    await expect(page.getByText('Menawarkan Layanan')).toBeVisible()
-  })
-
-  test('selecting CLIENT role advances to step 2 form', async ({ page }) => {
-    await page.getByText('Menyewa Arsitek').click()
-    await expect(page.getByLabel('Nama Depan')).toBeVisible({ timeout: 5000 })
+  test('signup is a single card with a role toggle defaulting to client', async ({ page }) => {
+    await expect(page.getByRole('radio', { name: 'Klien' })).toHaveAttribute('aria-checked', 'true')
+    await expect(page.getByRole('radio', { name: 'Arsitek' })).toHaveAttribute('aria-checked', 'false')
+    await expect(page.getByLabel('Nama Depan')).toBeVisible()
     await expect(page.getByLabel('Nama Belakang')).toBeVisible()
     await expect(page.getByLabel('Email')).toBeVisible()
-    await expect(page.getByLabel('Kata Sandi')).toBeVisible()
+    await expect(page.getByLabel('Kata Sandi', { exact: true })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Buat Akun' })).toBeVisible()
   })
 
-  test('selecting ARCHITECT role advances to step 2 form', async ({ page }) => {
-    await page.getByText('Menawarkan Layanan').click()
-    await expect(page.getByLabel('Nama Depan')).toBeVisible({ timeout: 5000 })
+  test('switching to ARCHITECT keeps the same form', async ({ page }) => {
+    await page.getByRole('radio', { name: 'Arsitek' }).click()
+    await expect(page.getByRole('radio', { name: 'Arsitek' })).toHaveAttribute('aria-checked', 'true')
     await expect(page.getByRole('button', { name: 'Buat Akun' })).toBeVisible()
     await expect(page.getByRole('button', { name: /google/i })).toBeVisible()
   })
 
   test('signup form shows password strength error', async ({ page }) => {
-    await page.getByText('Menyewa Arsitek').click()
     await page.getByLabel('Nama Depan').fill('Test')
     await page.getByLabel('Nama Belakang').fill('User')
     await page.getByLabel('Email').fill('newuser@example.com')
-    await page.getByLabel('Kata Sandi').fill('weak')
+    await page.getByLabel('Kata Sandi', { exact: true }).fill('weak')
     await page.getByLabel('Konfirmasi Kata Sandi').fill('weak')
     await page.locator('#agreeTerms').check()
     await page.getByRole('button', { name: 'Buat Akun' }).click()
@@ -114,11 +108,10 @@ test.describe('Signup Page', () => {
   })
 
   test('signup form shows password mismatch error', async ({ page }) => {
-    await page.getByText('Menyewa Arsitek').click()
     await page.getByLabel('Nama Depan').fill('Test')
     await page.getByLabel('Nama Belakang').fill('User')
     await page.getByLabel('Email').fill('newuser@example.com')
-    await page.getByLabel('Kata Sandi').fill('Password1!')
+    await page.getByLabel('Kata Sandi', { exact: true }).fill('Password1!')
     await page.getByLabel('Konfirmasi Kata Sandi').fill('Different1!')
     await page.locator('#agreeTerms').check()
     await page.getByRole('button', { name: 'Buat Akun' }).click()
@@ -126,8 +119,7 @@ test.describe('Signup Page', () => {
   })
 
   test('has link back to login page', async ({ page }) => {
-    await page.getByText('Menyewa Arsitek').click()
-    await page.getByRole('link', { name: /masuk|sign in/i }).click()
+    await page.getByRole('link', { name: 'Masuk di sini' }).click()
     await expect(page).toHaveURL(ROUTES.login)
   })
 })

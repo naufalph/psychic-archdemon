@@ -17,7 +17,7 @@ export default {
     hero: {
       title: 'Build Your Dream Design, Effortlessly',
       subline:
-        'Compare top architect bids, manage your project with precision, and build your dream with Rumantra.',
+        'Compare top architect bids, manage your project with precision, and build your dream with rumantra.',
       cta: 'Start Free Project',
       learnMore: 'Learn how it works',
       microcopy: 'Free for clients · No registration fees'
@@ -61,7 +61,7 @@ export default {
       card2Title: 'Transparent pricing',
       card2Desc: 'Compare prices across studios apples-to-apples with no hidden fees.',
       card3Title: 'Secure payments',
-      card3Desc: 'Your funds are held safely in Rumantra escrow until each phase is approved.',
+      card3Desc: 'Your funds are held safely in rumantra escrow until each phase is approved.',
       card4Title: 'Centralised communication',
       card4Desc: 'All revisions, documents, and chats are neatly stored in one project dashboard.',
       card5Title: 'Diverse expertise',
@@ -72,7 +72,7 @@ export default {
     },
     cta: {
       title: 'Ready to Start Your Dream Project?',
-      subline: 'Join thousands of clients building confidently with Rumantra.',
+      subline: 'Join thousands of clients building confidently with rumantra.',
       primary: 'Start Free Project',
       secondary: 'Join as an Architect'
     },
@@ -92,22 +92,38 @@ export default {
         yourProject: 'Your project',
         offerPrefix: 'Offer #'
       },
+      joinArchitect: {
+        question: 'Are you an architect/designer?',
+        cta: 'Join here'
+      },
+      caraKerja: {
+        title: 'How rumantra works',
+        cta: 'Start a free brief',
+        step1Title: 'Describe your project',
+        step1Desc: 'A short brief on type, location, area and budget. Free, about 5 minutes.',
+        step2Title: 'Receive proposals',
+        step2Desc: 'Verified architects send their fee, timeline and portfolio.',
+        step3Title: 'Compare and choose',
+        step3Desc: 'Review proposals side by side, then pick the architect that fits best.',
+        step4Title: 'Manage it in one dashboard',
+        step4Desc: 'Track progress, discuss, and approve each stage with your architect.'
+      },
       tipeProyek: {
-        title: 'Every design need you have, on Rumantra.',
+        title: 'Every design need you have, on rumantra',
         viewAll: 'View all',
         hunian: {
           title: 'Residential',
-          desc: 'Placeholder text — describe the scope of residential projects here.'
+          desc: 'Build a home that is comfortable, functional, and beautiful'
         },
         komersil: {
           title: 'Commercial',
-          desc: 'Placeholder text — describe the scope of commercial projects here.'
+          desc: 'Align your design with your business goals'
         },
         industrial: {
           title: 'Industrial',
-          desc: 'Placeholder text — describe the scope of industrial projects here.'
+          desc: 'Efficient designs and layouts that support your production and operations'
         },
-        lainnya: { title: 'Other', desc: 'Placeholder text — describe other project types here.' }
+        lainnya: { title: 'Other', desc: 'From places of worship to schools, it is all here' }
       },
       estimasi: {
         title: 'Find your ideal budget',
@@ -140,9 +156,14 @@ export default {
         calcMethodValue: 'IAI Guideline 2007 edition fee table'
       },
       mitra: {
-        title: 'The best architects and designers, on Rumantra.',
+        title: 'The best architects and designers, on rumantra',
         subtitle: 'Our partners have passed a screening process — only the best are here',
-        more: 'more'
+        awardTitle: 'Award-winning Architects',
+        awardDesc: 'Work recognised at national and international architecture awards.',
+        firmTitle: 'Well-established Firms',
+        firmDesc: 'Established practices with a long track record and a proven project portfolio.',
+        risingTitle: 'Rising Designers',
+        risingDesc: 'New talent with fresh ideas and a bold approach to design.'
       },
       ruangProyek: {
         title: 'One place to manage your project.',
@@ -185,13 +206,13 @@ export default {
           'You review the results in the project space, request revisions if needed, then approve that stage.',
         step4Title: 'Help when disputes arise',
         step4Desc:
-          'The Rumantra team helps mediate using the contract and work history in the project space.'
+          'The rumantra team helps mediate using the contract and work history in the project space.'
       },
       faq: {
         title: 'FAQ',
         items: [
           {
-            q: 'What is free on Rumantra?',
+            q: 'What is free on rumantra?',
             a: 'Creating a project brief, receiving offers, and comparing architects are free. What you pay for is the architect design fee, as agreed in the contract.'
           },
           {
@@ -204,7 +225,7 @@ export default {
           },
           {
             q: 'How long until the first offer arrives?',
-            a: 'Rumantra is still in beta, so we don’t yet have a reliable average figure. You’ll be notified whenever a new offer arrives in your project space.'
+            a: 'rumantra is still in beta, so we don’t yet have a reliable average figure. You’ll be notified whenever a new offer arrives in your project space.'
           },
           {
             q: 'Who owns the rights to the design drawings?',
@@ -216,7 +237,7 @@ export default {
           },
           {
             q: 'What if the work is late?',
-            a: 'Each stage’s deadline is recorded in the project space and can be escalated to the Rumantra team.'
+            a: 'Each stage’s deadline is recorded in the project space and can be escalated to the rumantra team.'
           },
           {
             q: 'What if I disagree with the architect?',
@@ -237,18 +258,18 @@ export default {
         cta: 'Create project brief',
         freeNote:
           'Free to create a brief and receive offers. The design fee is agreed with the architect before work begins.',
-        architectCta: 'Are you an architect? Join as a Rumantra partner'
+        architectCta: 'Are you an architect? Join as a rumantra partner'
       }
     }
   },
   mulaiProyek: {
     title: 'Find your dream design',
     subline:
-      'Browse designs Rumantra can build, or fill a short form if you already know what you want.',
+      'Browse designs rumantra can build, or fill a short form if you already know what you want.',
     toggleToForm: 'Fill manual form',
     toggleToBrowse: 'Back to browse designs',
     form: {
-      heading: 'Tell us about your project',
+      heading: 'Describe your project',
       projectType: 'Category',
       projectScope: 'Project Scope',
       location: 'Location',
@@ -311,7 +332,7 @@ export default {
     trustedBy: 'Trusted By'
   },
   premium: {
-    label: 'Rumantra Premium',
+    label: 'rumantra Premium',
     title: 'Professional Solutions for Every Blueprint',
     cta: 'Our Complete Solution',
     features: {
@@ -339,7 +360,7 @@ export default {
   },
   cta: {
     title: 'Ready to Hire Your Expert Architect?',
-    subtitle: 'Join thousands of homeowners building their dreams through the Rumantra platform.',
+    subtitle: 'Join thousands of homeowners building their dreams through the rumantra platform.',
     startNow: 'Start Now',
     learnMore: 'Learn More',
     hirePro: 'Hire Pro',
@@ -367,7 +388,13 @@ export default {
   },
   auth: {
     signup: {
-      title: 'Join Rumantra',
+      registerTitle: 'Create a new account',
+      registerSubtitle: 'Free. Takes just a minute.',
+      registerAs: 'Sign up as',
+      roleClient: 'Client',
+      roleArchitect: 'Architect',
+      orEmail: 'or sign up with email',
+      title: 'Join rumantra',
       subtitle: 'Start your architecture journey today',
       firstName: 'First Name',
       lastName: 'Last Name',
@@ -380,7 +407,7 @@ export default {
         termsLabel: 'Terms & Conditions',
         and: 'and',
         privacyLabel: 'Privacy Policy',
-        suffix: 'of Rumantra.',
+        suffix: 'of rumantra.',
         loading: 'Loading document...',
         staleTerms: 'Terms were updated, please review and accept again.',
         noticePrefix: 'By continuing, you agree to our',
@@ -392,7 +419,7 @@ export default {
       orContinueWith: 'Or continue with',
       roleSelection: {
         title: 'I want to',
-        subtitle: "Choose how you'll use Rumantra",
+        subtitle: "Choose how you'll use rumantra",
         client: {
           title: 'Hire an Architect',
           desc: 'Post projects, compare bids, and manage your architectural designs'
@@ -405,7 +432,7 @@ export default {
       },
       success: {
         title: 'Account Created Successfully!',
-        subtitle: 'Welcome to Rumantra',
+        subtitle: 'Welcome to rumantra',
         message:
           'A verification email has been sent to your email. Please check your inbox or spam folder.',
         redirecting: 'Redirecting you...'
@@ -420,7 +447,7 @@ export default {
     },
     login: {
       title: 'Welcome Back',
-      subtitle: 'Sign in to your Rumantra account',
+      subtitle: 'Sign in to your rumantra account',
       email: 'Email',
       password: 'Password',
       rememberMe: 'Remember me',
@@ -429,6 +456,21 @@ export default {
       noAccount: "Don't have an account?",
       signUpHere: 'Sign up here',
       orContinueWith: 'Or continue with',
+      panelTitle: 'One account for all your projects.',
+      panelSubtitle: 'Clients and architects sign in through the same door.',
+      perks: [
+        'Pick up your brief and projects anytime',
+        'Compare proposals from verified architects',
+        'Manage contracts, progress, and payments in one place'
+      ],
+      tabLogin: 'Sign in',
+      tabRegister: 'Sign up',
+      emailPlaceholder: 'e.g. budi@email.com',
+      passwordPlaceholder: 'Your password',
+      googleCta: 'Continue with Google',
+      linkedinCta: 'Continue with LinkedIn',
+      orEmail: 'or with email',
+      verified: 'Email verified. Please sign in to continue.',
       errors: {
         invalidCredentials: 'Invalid email or password',
         required: 'This field is required'
@@ -588,7 +630,7 @@ export default {
       photos: 'photos',
       edit: 'Edit',
       delete: 'Delete',
-      madeWithRumantra: 'Made with Rumantra'
+      madeWithRumantra: 'Made with rumantra'
     },
     modal: {
       createTitle: 'Create Portfolio',
@@ -807,7 +849,7 @@ export default {
     title: 'Identity Verification',
     subtitle: 'Required before submitting bids. You can skip this for now.',
     notice:
-      'KTP, NPWP, and your full name will be verified manually by the Rumantra team. Phone number requires WhatsApp OTP verification, which can be done from your Profile page.',
+      'KTP, NPWP, and your full name will be verified manually by the rumantra team. Phone number requires WhatsApp OTP verification, which can be done from your Profile page.',
     fullnameKtp: 'Full Name (as in KTP)',
     fullnameKtpPlaceholder: 'e.g., Budi Santoso',
     ktpNum: 'KTP Number',
@@ -840,6 +882,8 @@ export default {
     title: 'Client Dashboard',
     subtitle: 'Welcome to your workspace',
     myProjects: 'My Projects',
+    seeAll: 'View all',
+    noSubmittedProjects: 'No submitted projects yet. Briefs you send will appear here.',
     myProjectsSubtitle: 'Manage and track your architecture projects',
     newProject: 'New Project',
     noProjectsYet: 'No projects yet',
@@ -1878,7 +1922,7 @@ export default {
     filesTaggedTo: '{n} file(s) tagged to this deliverable \u00b7 {phase}',
     previewBtn: 'Preview',
     contractLede:
-      'Funds are held in Rumantra escrow and disbursed per phase once you approve the work.',
+      'Funds are held in rumantra escrow and disbursed per phase once you approve the work.',
     colPhase: 'Phase',
     colDeadline: 'Deadline',
     colAmount: 'Amount',
@@ -2195,7 +2239,7 @@ export default {
         subtitle: 'Choose one or more services.'
       },
       quick: {
-        title: 'Tell us about your project',
+        title: 'Describe your project',
         subtitle: ''
       }
     },
@@ -2360,6 +2404,9 @@ export default {
       verifyBody:
         'We sent a verification link to {email}. Once your account is active, log in to continue your brief.',
       verifyCta: 'Back to log in',
+      doneTitle: 'Signed in',
+      doneBody: 'Your brief so far is saved to your account. Continue with the project details.',
+      doneCta: 'Continue',
       close: 'Close'
     }
   }

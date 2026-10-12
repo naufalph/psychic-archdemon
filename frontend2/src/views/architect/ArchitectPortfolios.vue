@@ -20,7 +20,7 @@
             <p class="text-lg text-black/60 tracking-tight mt-2">Showcase your architectural projects</p>
           </div>
           <button
-            class="px-6 py-3 bg-brand-brown text-white rounded-full font-semibold hover:bg-brand-brown-dark transition-all hover:scale-105 flex items-center gap-2"
+            class="px-6 py-3 bg-ink-900 text-white rounded-full font-semibold hover:bg-ink-500 transition-all hover:scale-105 flex items-center gap-2"
             @click="handleAddPortfolio"
           >
             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -63,7 +63,7 @@
             <p class="text-black/60">{{ t.portfolio.emptyState.description }}</p>
           </div>
           <button
-            class="px-8 py-3 bg-brand-brown text-white rounded-full font-semibold hover:bg-brand-brown-dark transition-all hover:scale-105"
+            class="px-8 py-3 bg-ink-900 text-white rounded-full font-semibold hover:bg-ink-500 transition-all hover:scale-105"
             @click="handleAddPortfolio"
           >
             {{ t.portfolio.emptyState.cta }}

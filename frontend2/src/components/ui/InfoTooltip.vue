@@ -3,7 +3,7 @@
     <button
       ref="triggerRef"
       type="button"
-      class="w-4 h-4 rounded-full flex items-center justify-center text-gray-400 hover:text-brand-brown hover:bg-brand-tan/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-brown/40 transition"
+      class="w-4 h-4 rounded-full flex items-center justify-center text-gray-400 hover:text-ink-900 hover:bg-surface-alt focus:outline-none focus-visible:ring-2 focus-visible:ring-ink-900/20 transition"
       :aria-label="label || t.common.moreInfo"
       :aria-expanded="open"
       :aria-describedby="open ? panelId : undefined"
@@ -28,7 +28,7 @@
         @mouseenter="show"
         @mouseleave="hide"
       >
-        <p v-if="label" class="font-semibold text-brand-brown-900 mb-1">{{ label }}</p>
+        <p v-if="label" class="font-semibold text-ink-900 mb-1">{{ label }}</p>
         <slot />
       </div>
     </Teleport>

@@ -16,7 +16,7 @@
         <div class="flex flex-col items-center gap-4">
           <AlertCircle :size="64" class="text-red-400" />
           <p class="text-red-600 mb-2 text-lg font-medium">{{ error }}</p>
-          <button class="text-brand-brown hover:underline font-medium" @click="router.back()">Back</button>
+          <button class="text-ink-900 hover:underline font-medium" @click="router.back()">Back</button>
         </div>
       </div>
 
@@ -41,7 +41,7 @@
             </div>
             <div class="bg-gray-50 rounded-2xl p-6">
               <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.projectDetailArchitect.floors }}</p>
-              <p class="text-2xl font-bold text-black">{{ project.numberOfFloors }}</p>
+              <p class="text-2xl font-bold text-black">{{ project.numberOfFloors ?? '—' }}</p>
             </div>
           </div>
 
@@ -81,9 +81,9 @@
                   <span
                     v-for="value in group.items"
                     :key="value"
-                    class="bg-white border border-brand-gold/30 px-3 py-1.5 rounded-full text-sm font-medium text-gray-800 flex items-center gap-1.5"
+                    class="bg-white border border-hairline px-3 py-1.5 rounded-full text-sm font-medium text-gray-800 flex items-center gap-1.5"
                   >
-                    <Check :size="12" class="text-brand-brown" />
+                    <Check :size="12" class="text-ink-900" />
                     {{ t.bidCreate.deliverableItems[value] || value.replace(/_/g, ' ') }}
                   </span>
                 </div>
@@ -145,7 +145,7 @@
               rel="noopener noreferrer"
               class="flex items-center gap-3 p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition border border-gray-200"
             >
-              <FileText :size="24" class="text-brand-brown" />
+              <FileText :size="24" class="text-ink-900" />
               <div class="flex-1">
                 <p class="font-medium text-gray-900">{{ file.fileName }}</p>
                 <p class="text-sm text-gray-500">{{ file.fileType }}</p>
@@ -188,7 +188,7 @@
 
             <button
               v-if="existingBid.status === 'DRAFT'"
-              class="w-full bg-brand-brown text-white py-4 px-6 rounded-2xl hover:bg-brand-brown-hover transition flex items-center justify-center gap-3 text-lg font-bold"
+              class="w-full bg-ink-900 text-white py-4 px-6 rounded-2xl hover:bg-ink-500 transition flex items-center justify-center gap-3 text-lg font-bold"
               @click="goToBid"
             >
               <Send :size="24" />
@@ -218,7 +218,7 @@
           <button
             v-else
             :disabled="project.status !== 'OPEN'"
-            class="w-full bg-brand-brown text-white py-4 px-6 rounded-2xl hover:bg-brand-brown-hover transition flex items-center justify-center gap-3 text-lg font-bold disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-500"
+            class="w-full bg-ink-900 text-white py-4 px-6 rounded-2xl hover:bg-ink-500 transition flex items-center justify-center gap-3 text-lg font-bold disabled:bg-gray-300 disabled:cursor-not-allowed disabled:text-gray-500"
             @click="goToBid"
           >
             <Send :size="24" />

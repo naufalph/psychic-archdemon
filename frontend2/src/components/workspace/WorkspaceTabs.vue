@@ -19,7 +19,7 @@
         class="ml-auto mb-2 px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 transition-colors"
         :class="
           chatOpen
-            ? 'bg-white border border-border-gray hover:border-brand-gold'
+            ? 'bg-white border border-border-gray hover:border-ink-900'
             : 'bg-ink-700 text-white hover:bg-ink-500'
         "
         @click="$emit('toggle-chat')"

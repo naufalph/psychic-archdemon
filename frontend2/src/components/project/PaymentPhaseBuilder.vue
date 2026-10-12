@@ -57,7 +57,7 @@
           <h4 class="font-bold text-gray-900">{{ t.paymentPhaseBuilder.paymentPhases }}</h4>
           <button
             type="button"
-            class="flex items-center gap-1 px-3 py-1.5 bg-brand-brown text-white rounded-full text-xs font-bold hover:bg-black transition"
+            class="flex items-center gap-1 px-3 py-1.5 bg-ink-900 text-white rounded-full text-xs font-bold hover:bg-ink-500 transition"
             @click="addPhase"
           >
             {{ t.paymentPhaseBuilder.addPhase }}
@@ -88,7 +88,7 @@
             :class="[
               'rounded-2xl border-2 p-4 transition-all cursor-pointer',
               activePhaseIndex === index
-                ? 'border-brand-brown bg-brand-cream/50'
+                ? 'border-ink-900 bg-surface-alt'
                 : 'border-gray-200 bg-white hover:border-gray-300'
             ]"
             @click="activePhaseIndex = index"
@@ -97,7 +97,7 @@
           >
             <!-- Phase header -->
             <div class="flex items-center gap-2 mb-3">
-              <span class="text-sm font-bold px-2.5 py-1 rounded-full bg-brand-brown text-white whitespace-nowrap">
+              <span class="text-sm font-bold px-2.5 py-1 rounded-full bg-ink-900 text-white whitespace-nowrap">
                 {{ t.paymentPhaseBuilder.phase }} {{ phase.phaseNumber }}
               </span>
               <span class="flex-1" />
@@ -122,7 +122,7 @@
                   max="100"
                   step="1"
                   placeholder="0"
-                  class="w-full mt-1 px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:border-brand-brown outline-none"
+                  class="w-full mt-1 px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:border-ink-900 outline-none"
                   @click.stop
                   @input="phase.percentage = clampPercentage($event.target.value)"
                 />
@@ -136,7 +136,7 @@
                   min="0"
                   max="10"
                   placeholder="0"
-                  class="w-full mt-1 px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:border-brand-brown outline-none"
+                  class="w-full mt-1 px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:border-ink-900 outline-none"
                   @click.stop
                 />
               </div>
@@ -147,7 +147,7 @@
                   type="number"
                   min="1"
                   placeholder="0"
-                  class="w-full mt-1 px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:border-brand-brown outline-none"
+                  class="w-full mt-1 px-2 py-1.5 border border-gray-200 rounded-lg text-sm focus:border-ink-900 outline-none"
                   @click.stop
                 />
               </div>
@@ -156,7 +156,7 @@
             <!-- Drop zone + assigned deliverables -->
             <div
               class="min-h-[48px] border border-dashed border-gray-300 rounded-xl p-2 flex flex-wrap gap-1.5 transition-colors"
-              :class="dragOverPhaseIndex === index ? 'bg-brand-tan/50 border-brand-gold' : ''"
+              :class="dragOverPhaseIndex === index ? 'bg-surface-alt border-ink-900' : ''"
             >
               <span v-if="phase.deliverables.length === 0" class="text-xs text-gray-400 self-center px-1">
                 {{ t.paymentPhaseBuilder.dropZoneHint }}
@@ -164,12 +164,12 @@
               <span
                 v-for="d in phase.deliverables"
                 :key="d"
-                class="inline-flex items-center gap-1 px-2 py-1 bg-brand-tan text-brand-brown rounded-full text-xs font-medium"
+                class="inline-flex items-center gap-1 px-2 py-1 bg-surface-alt text-ink-900 rounded-full text-xs font-medium"
               >
                 {{ getLabelForValue(d) }}
                 <button
                   type="button"
-                  class="text-brand-gold hover:text-red-500 leading-none"
+                  class="text-ink-400 hover:text-red-500 leading-none"
                   @click.stop="removeDeliverable(index, d)"
                 >
                   ×
@@ -317,12 +317,12 @@ const daysTotal = computed(() => phases.value.reduce((sum, p) => sum + (Number(p
 const totalMatchesBid = computed(() => percentageTotal.value === 100)
 
 const bulkButtonClasses =
-  'text-xs font-semibold text-brand-brown hover:text-black transition disabled:text-gray-300 disabled:cursor-not-allowed'
+  'text-xs font-semibold text-ink-900 hover:text-black transition disabled:text-gray-300 disabled:cursor-not-allowed'
 
 const chipClasses = value => {
   const base = 'px-3 py-1 rounded-full text-xs font-medium border transition-all cursor-pointer'
   if (isAssigned(value)) return `${base} bg-gray-100 text-gray-400 border-gray-200 opacity-50 cursor-not-allowed`
-  return `${base} bg-brand-tan text-brand-brown border-brand-gold hover:bg-brand-brown hover:text-white`
+  return `${base} bg-surface-alt text-ink-900 border-ink-900 hover:bg-ink-500 hover:text-white`
 }
 
 const onDragStart = (event, value) => {

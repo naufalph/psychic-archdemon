@@ -34,23 +34,23 @@ Prerequisites:
 ## Scenario 3: Create project form opens
 
 1. Log in as CLIENT
-2. Navigate to http://localhost:3001/client/projects/create
+2. Navigate to http://localhost:3001/brief-proyek (the old /client/projects/create redirects here)
 3. Take a screenshot
-4. Verify: a form is visible with input fields for project details
+4. Verify: the survey's first step "Layanan apa yang Anda butuhkan?" is shown, with "Desain arsitektur" selected
 
-**Pass criteria:** Form renders with inputs.
+**Pass criteria:** The survey brief renders at /brief-proyek.
 
 ---
 
 ## Scenario 4: Create project — validation
 
 1. Log in as CLIENT
-2. Navigate to http://localhost:3001/client/projects/create
-3. Click the submit/next button WITHOUT filling anything
+2. Navigate to http://localhost:3001/brief-proyek (the old /client/projects/create redirects here)
+3. Click "Lanjutkan" once to reach "Apa tujuan dari proyek Anda?", then try "Lanjutkan" again WITHOUT picking anything
 4. Take a screenshot
-5. Verify: validation errors appear and the form does not navigate away
+5. Verify: the button stays disabled and the hint "Pilih minimal satu lingkup" is shown
 
-**Pass criteria:** Errors shown, URL still contains "create".
+**Pass criteria:** The survey does not advance past an unanswered step.
 
 ---
 

@@ -6,7 +6,7 @@
       </p>
       <button
         v-if="cameFromTimeline"
-        class="text-xs font-semibold text-brand-brown hover:text-[#0A0A0A] flex items-center gap-1"
+        class="text-xs font-semibold text-ink-900 hover:text-[#0A0A0A] flex items-center gap-1"
         @click="$emit('back-to-timeline')"
       >
         &larr; {{ t.projectWorkspace?.backToTimeline || 'Back to timeline' }}
@@ -20,11 +20,11 @@
       class="bg-white border rounded-xl overflow-hidden scroll-mt-24 transition-[box-shadow,border-color] duration-[800ms] ease-[cubic-bezier(0.16,1,0.3,1)]"
       :class="
         flashPhaseId === phase.id
-          ? 'border-brand-gold shadow-[0_0_0_4px_rgba(197,161,122,0.25),0_20px_40px_-8px_rgba(0,0,0,0.08)]'
+          ? 'border-ink-900 shadow-[0_0_0_4px_rgba(10,10,10,0.08),0_20px_40px_-8px_rgba(0,0,0,0.08)]'
           : 'border-border-gray shadow-none'
       "
     >
-      <div v-if="openPhases[phase.id]" class="h-[3px] bg-brand-gold" />
+      <div v-if="openPhases[phase.id]" class="h-[3px] bg-ink-900" />
 
       <button
         class="w-full px-5 py-4 flex items-center gap-3 hover:bg-gray-50 text-left"
@@ -145,7 +145,7 @@
             @click="$emit('toggle-log', phase)"
           >
             {{ t.projectWorkspace?.activityLogLabel }}
-            <span class="text-brand-brown normal-case tracking-normal font-semibold">
+            <span class="text-ink-900 normal-case tracking-normal font-semibold">
               {{
                 openLogs[phase.id]
                   ? t.projectWorkspace?.hideLabel || 'Hide'

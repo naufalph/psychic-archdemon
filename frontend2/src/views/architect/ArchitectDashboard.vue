@@ -8,7 +8,7 @@
         </div>
         <router-link :to="{ name: 'OpportunityList' }">
           <button
-            class="bg-black text-white px-6 py-3 rounded-full font-bold tracking-widest text-sm hover:bg-brand-brown transition flex items-center gap-2"
+            class="bg-black text-white px-6 py-3 rounded-full font-bold tracking-widest text-sm hover:bg-ink-500 transition flex items-center gap-2"
           >
             <Search :size="16" />
             {{ t.architectDashboard.findProjects }}
@@ -27,7 +27,7 @@
           <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">
             {{ t.architectDashboard.accepted }}
           </p>
-          <p class="text-4xl font-bold text-brand-brown">{{ acceptedBids.length }}</p>
+          <p class="text-4xl font-bold text-ink-900">{{ acceptedBids.length }}</p>
         </div>
         <div class="bg-white rounded-2xl p-6 border border-gray-200 shadow-soft">
           <p class="text-xs text-gray-500 uppercase font-bold tracking-wider mb-2">
@@ -57,7 +57,7 @@
             <p class="text-gray-500 text-sm">{{ t.architectDashboard.noBidsYet }}</p>
             <router-link :to="{ name: 'OpportunityList' }">
               <button
-                class="mt-4 bg-brand-brown hover:bg-black text-white px-5 py-2 rounded-full text-sm font-medium transition"
+                class="mt-4 bg-ink-900 hover:bg-ink-500 text-white px-5 py-2 rounded-full text-sm font-medium transition"
               >
                 {{ t.architectDashboard.browseProjects }}
               </button>
@@ -72,12 +72,12 @@
               class="bg-white rounded-2xl border border-gray-200 p-5 shadow-soft flex items-center justify-between hover:shadow-md transition block"
             >
               <div class="flex items-center gap-4 min-w-0">
-                <div class="w-10 h-10 rounded-full bg-brand-tan flex items-center justify-center flex-shrink-0">
-                  <FileText :size="18" class="text-brand-brown" />
+                <div class="w-10 h-10 rounded-full bg-surface-alt flex items-center justify-center flex-shrink-0">
+                  <FileText :size="18" class="text-ink-900" />
                 </div>
                 <div class="min-w-0">
                   <p class="font-semibold text-gray-900 truncate">{{ bid.projectTitle || 'Untitled Project' }}</p>
-                  <p class="text-xs text-brand-brown font-medium mt-0.5">IDR {{ formatNumber(bid.bidAmount) }}</p>
+                  <p class="text-xs text-ink-900 font-medium mt-0.5">IDR {{ formatNumber(bid.bidAmount) }}</p>
                 </div>
               </div>
               <span
@@ -99,19 +99,19 @@
               <h2 class="text-sm font-bold text-black tracking-widest uppercase">
                 {{ t.profile.completion.title }}
               </h2>
-              <span class="text-sm font-bold text-brand-brown">
+              <span class="text-sm font-bold text-ink-900">
                 {{ architectProfileStore.profileCompletionPercent }}%
               </span>
             </div>
             <div class="h-2 rounded-full bg-black/5 overflow-hidden mb-4">
               <div
-                class="h-full bg-brand-brown transition-all duration-300"
+                class="h-full bg-ink-900 transition-all duration-300"
                 :style="{ width: architectProfileStore.profileCompletionPercent + '%' }"
               ></div>
             </div>
             <router-link :to="{ name: 'ArchitectProfile' }">
               <button
-                class="w-full bg-brand-brown text-white px-4 py-2 rounded-full text-xs font-bold tracking-wider hover:bg-black transition"
+                class="w-full bg-ink-900 text-white px-4 py-2 rounded-full text-xs font-bold tracking-wider hover:bg-ink-500 transition"
               >
                 {{ t.profile.completion.cta }}
               </button>
@@ -131,14 +131,14 @@
               <span class="font-semibold text-gray-700">{{ bidsStore.quota.tier }}</span>
             </p>
             <button
-              class="w-full bg-black text-white px-4 py-2 rounded-full text-xs font-bold tracking-wider hover:bg-brand-brown transition"
+              class="w-full bg-black text-white px-4 py-2 rounded-full text-xs font-bold tracking-wider hover:bg-ink-500 transition"
               @click="tokenPurchaseStore.openModal()"
             >
               {{ t.architectDashboard.buyTokens }}
             </button>
           </div>
 
-          <div class="bg-brand-brown rounded-2xl p-6 text-white">
+          <div class="bg-ink-900 rounded-2xl p-6 text-white">
             <p class="text-xs font-bold tracking-widest uppercase mb-2 text-white/70">
               {{ t.architectDashboard.opportunities }}
             </p>
@@ -146,7 +146,7 @@
             <p class="text-sm text-white/80 mb-4">{{ t.architectDashboard.browseProjectsDesc }}</p>
             <router-link :to="{ name: 'OpportunityList' }">
               <button
-                class="bg-white text-brand-brown px-4 py-2 rounded-full text-xs font-bold tracking-wider hover:bg-brand-tan transition"
+                class="bg-white text-ink-900 px-4 py-2 rounded-full text-xs font-bold tracking-wider hover:bg-surface-alt transition"
               >
                 {{ t.architectDashboard.browseProjectsBtn }}
               </button>

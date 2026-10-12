@@ -2,7 +2,11 @@
   <div ref="rootRef">
     <button
       class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all"
-      :class="isOpen || isOnPage ? 'bg-white/10 text-white' : 'text-white/60 hover:text-white hover:bg-white/5'"
+      :class="
+        isOpen || isOnPage
+          ? 'bg-surface-alt text-ink-900 font-semibold'
+          : 'text-ink-400 hover:text-ink-900 hover:bg-surface-alt'
+      "
       :aria-expanded="isOpen"
       aria-haspopup="dialog"
       @click.stop="toggleDropdown"
@@ -11,7 +15,7 @@
       <span>{{ t.notifications.title }}</span>
       <span
         v-if="notificationsStore.hasUnread"
-        class="ml-auto min-w-[20px] h-5 px-1.5 rounded-full bg-brand-gold text-ink-900 text-[11px] font-bold flex items-center justify-center"
+        class="ml-auto min-w-[20px] h-5 px-1.5 rounded-full bg-ink-900 text-white text-[11px] font-bold flex items-center justify-center"
       >
         {{ notificationsStore.formattedUnreadCount }}
       </span>
@@ -79,7 +83,7 @@
               :to="getNotificationRoute(notification) || undefined"
               class="flex gap-3 px-5 py-3.5 border-t border-hairline text-left w-full"
               :class="[
-                notification.isRead ? '' : 'bg-brand-cream',
+                notification.isRead ? '' : 'bg-surface-alt',
                 getNotificationRoute(notification) ? 'hover:bg-surface-alt transition-colors' : ''
               ]"
               @click="handleNotificationClick(notification)"
@@ -95,7 +99,7 @@
                   <p class="text-sm font-semibold text-ink-900">
                     {{ getNotificationDisplay(notification).title }}
                   </p>
-                  <span v-if="!notification.isRead" class="shrink-0 w-2 h-2 rounded-full bg-brand-gold mt-1.5"></span>
+                  <span v-if="!notification.isRead" class="shrink-0 w-2 h-2 rounded-full bg-ink-900 mt-1.5"></span>
                 </div>
                 <p class="text-[13px] leading-normal text-ink-400 mt-0.5 line-clamp-2">
                   {{ getNotificationDisplay(notification).message }}

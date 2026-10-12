@@ -2,8 +2,8 @@
   <div v-if="hasAnyLocation" class="space-y-4">
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div class="flex items-start gap-3">
-        <div class="w-10 h-10 rounded-full bg-brand-tan flex items-center justify-center flex-shrink-0">
-          <MapPin :size="20" class="text-brand-brown" />
+        <div class="w-10 h-10 rounded-full bg-surface-alt flex items-center justify-center flex-shrink-0">
+          <MapPin :size="20" class="text-ink-900" />
         </div>
         <div>
           <p class="text-base font-semibold text-gray-900">{{ primaryLine }}</p>
@@ -18,7 +18,7 @@
           type="button"
           :class="[
             'px-4 py-1.5 rounded-full text-sm font-medium transition',
-            mapType === option.value ? 'bg-white text-brand-brown shadow-sm' : 'text-gray-500 hover:text-gray-700'
+            mapType === option.value ? 'bg-white text-ink-900 shadow-sm' : 'text-gray-500 hover:text-gray-700'
           ]"
           @click="selectMapType(option.value)"
         >
@@ -48,8 +48,8 @@
         v-if="!isLoaded(mapType)"
         class="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-gray-100"
       >
-        <div class="w-10 h-10 rounded-full bg-brand-tan flex items-center justify-center animate-pulse">
-          <MapPin :size="20" class="text-brand-brown" />
+        <div class="w-10 h-10 rounded-full bg-surface-alt flex items-center justify-center animate-pulse">
+          <MapPin :size="20" class="text-ink-900" />
         </div>
         <p class="text-sm text-gray-400">{{ t.projectDetailArchitect.mapLoading }}</p>
       </div>

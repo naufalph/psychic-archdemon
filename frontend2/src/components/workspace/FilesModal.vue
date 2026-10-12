@@ -52,7 +52,7 @@
             </div>
             <button
               v-if="isImage(file.fileType)"
-              class="px-3 py-1.5 rounded-full border border-border-gray hover:border-brand-gold text-xs font-semibold flex items-center gap-1.5"
+              class="px-3 py-1.5 rounded-full border border-border-gray hover:border-ink-900 text-xs font-semibold flex items-center gap-1.5"
               @click="$emit('preview', file)"
             >
               <Eye class="w-3.5 h-3.5" />
@@ -62,7 +62,7 @@
               :href="file.filePath"
               target="_blank"
               rel="noopener"
-              class="text-xs font-semibold text-brand-brown hover:underline flex items-center gap-1.5"
+              class="text-xs font-semibold text-ink-900 hover:underline flex items-center gap-1.5"
             >
               <Download class="w-3.5 h-3.5" />
               {{ t.projectWorkspace?.downloadLabel }}

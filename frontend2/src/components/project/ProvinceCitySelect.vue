@@ -51,7 +51,7 @@ const emit = defineEmits(['update:province', 'update:city'])
 const { t } = useI18n()
 
 const selectClass =
-  'w-full px-4 py-3 rounded-2xl border-2 border-gray-200 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition bg-white disabled:bg-gray-50 disabled:text-gray-400'
+  'w-full px-4 py-3 rounded-2xl border-2 border-gray-200 focus:border-ink-900 focus:ring-2 focus:ring-ink-900/20 outline-none transition bg-white disabled:bg-gray-50 disabled:text-gray-400'
 
 const availableCities = computed(() => citiesFor(props.province))
 

@@ -265,11 +265,11 @@ public class ProjectService {
     if (project.getLocation() == null || project.getLocation().isBlank()) {
       missing.add("Location");
     }
-    if (project.getLotSize() == null) {
+    // An interior fit-out works inside an existing unit, so the client may not know the lot at
+    // all. Floors are optional for every scope: the brief lets a client answer "not sure yet".
+    boolean interiorFitOut = "INTERIOR_FIT_OUT".equals(project.getProjectScope());
+    if (project.getLotSize() == null && !interiorFitOut) {
       missing.add("Lot Size");
-    }
-    if (project.getNumberOfFloors() == null) {
-      missing.add("Number of Floors");
     }
     if (!ProjectTaxonomy.isValidScope(project.getProjectScope())) {
       missing.add("Project Scope");

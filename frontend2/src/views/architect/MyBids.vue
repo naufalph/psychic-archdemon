@@ -46,7 +46,7 @@
         <h3 class="text-xl font-bold text-gray-900 mb-2">{{ t.myBids.empty.title }}</h3>
         <p class="text-gray-500 mb-6">{{ t.myBids.empty.message }}</p>
         <router-link :to="{ name: 'OpportunityList' }">
-          <button class="bg-brand-brown hover:bg-black text-white px-6 py-3 rounded-full font-medium transition">
+          <button class="bg-ink-900 hover:bg-ink-500 text-white px-6 py-3 rounded-full font-medium transition">
             {{ t.myBids.empty.cta }}
           </button>
         </router-link>

@@ -25,21 +25,21 @@
         <p class="text-caption text-ink-500 mb-3">{{ tv.budgetHint }}</p>
         <div class="flex items-center gap-3 flex-wrap mb-4">
           <input
-            v-model="budgetMin"
-            type="number"
-            min="0"
-            step="100000000"
+            :value="formatIDRDisplay(budgetMin)"
+            type="text"
+            inputmode="numeric"
             :placeholder="tv.minPlaceholder"
             class="w-[200px] box-border h-12 px-4 border border-hairline rounded-xl bg-white text-body font-semibold text-ink-900 focus:outline-none focus:ring-2 focus:ring-ink-200"
+            @input="budgetMin = onBudgetInput($event)"
           />
           <span class="text-body-sm text-ink-500">{{ tv.sampai }}</span>
           <input
-            v-model="budgetMax"
-            type="number"
-            min="0"
-            step="100000000"
+            :value="formatIDRDisplay(budgetMax)"
+            type="text"
+            inputmode="numeric"
             :placeholder="tv.maxPlaceholder"
             class="w-[200px] box-border h-12 px-4 border border-hairline rounded-xl bg-white text-body font-semibold text-ink-900 focus:outline-none focus:ring-2 focus:ring-ink-200"
+            @input="budgetMax = onBudgetInput($event)"
           />
         </div>
       </div>
@@ -52,7 +52,7 @@
 
     <div
       class="rounded-[20px] p-8 flex flex-col text-white"
-      style="background: linear-gradient(135deg, #2f7dc0, #185c93)"
+      :style="{ background: `center / cover no-repeat url(${calculatorBg})` }"
     >
       <span class="text-caption-sm font-semibold uppercase tracking-[.06em] text-white/70">{{ tv.feeEyebrow }}</span>
       <div class="text-[34px] font-bold tracking-[-.025em] leading-[1.15] mt-4 mb-3">{{ feeText }}</div>
@@ -89,6 +89,8 @@
 import { ref, computed } from 'vue'
 import { useI18n } from '@/composables/useI18n'
 import { estimateDesignFee, FEE_CATEGORY } from '@/utils/architectFee'
+import calculatorBg from '@/assets/images/landing/calculator-bg.jpg'
+import { formatIDRDisplay } from '@/utils/currencyFormat'
 
 const { t } = useI18n()
 const tv = computed(() => t.value.landing.v2.estimasi)
@@ -99,6 +101,13 @@ const work = ref('baru')
 const budgetMin = ref('1000000000')
 const budgetMax = ref('')
 const showCalc = ref(false)
+
+// Re-format in place: typing a non-digit leaves the stored value unchanged, so Vue would not re-render the input
+const onBudgetInput = e => {
+  const digits = e.target.value.replace(/[^0-9]/g, '')
+  e.target.value = formatIDRDisplay(digits)
+  return digits
+}
 
 const result = computed(() => {
   const r = estimateDesignFee(work.value, budgetMin.value, budgetMax.value)

@@ -8,7 +8,7 @@
     >
       <button
         type="button"
-        class="w-full flex items-center justify-between gap-3 px-4 py-3 text-left bg-brand-cream/60 hover:bg-brand-tan/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brand-brown/40 transition"
+        class="w-full flex items-center justify-between gap-3 px-4 py-3 text-left bg-surface-alt hover:bg-surface-alt focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-ink-900/20 transition"
         :aria-expanded="isExpanded(category.value)"
         :aria-controls="panelIdFor(category.value)"
         @click="toggleGroup(category.value)"
@@ -16,16 +16,16 @@
         <span class="flex items-center gap-2 min-w-0">
           <ChevronRight
             :size="16"
-            class="shrink-0 text-brand-brown transition-transform"
+            class="shrink-0 text-ink-900 transition-transform"
             :class="{ 'rotate-90': isExpanded(category.value) }"
           />
-          <span class="text-sm font-semibold text-brand-brown-900 truncate">
+          <span class="text-sm font-semibold text-ink-900 truncate">
             {{ iaiCategoryLabel(category.value, locale) }}
           </span>
         </span>
         <span
           v-if="countFor(category.value) > 0"
-          class="shrink-0 text-xs font-bold text-white bg-brand-brown rounded-full px-2 py-0.5"
+          class="shrink-0 text-xs font-bold text-white bg-ink-900 rounded-full px-2 py-0.5"
         >
           {{ countFor(category.value) }}
         </span>
@@ -46,12 +46,12 @@
               :value="type.value"
               :checked="isSelected(type.value)"
               :disabled="disabled"
-              class="shrink-0 w-4 h-4 accent-brand-brown cursor-pointer disabled:cursor-not-allowed"
+              class="shrink-0 w-4 h-4 accent-ink-900 cursor-pointer disabled:cursor-not-allowed"
               @change="onToggle(type.value)"
             />
             <span
-              class="text-sm text-black/80 group-hover:text-brand-brown transition truncate"
-              :class="{ 'font-semibold text-brand-brown': isSelected(type.value) }"
+              class="text-sm text-black/80 group-hover:text-ink-900 transition truncate"
+              :class="{ 'font-semibold text-ink-900': isSelected(type.value) }"
             >
               {{ iaiTypeLabel(type.value, locale) }}
             </span>

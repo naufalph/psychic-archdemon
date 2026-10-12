@@ -12,7 +12,6 @@
     <div class="flex-[1_1_320px] bg-ink-900 text-white p-10 box-border flex flex-col gap-8">
       <div class="flex items-baseline gap-0.5">
         <span class="text-[22px] font-extrabold tracking-[-.03em]">rumantra</span>
-        <span class="text-[22px] font-extrabold text-brand-gold">.</span>
       </div>
       <div>
         <h3 class="text-[28px] font-bold tracking-[-.03em] leading-[1.15] m-0 mb-3">{{ tv.panelTitle }}</h3>
@@ -29,7 +28,20 @@
     </div>
 
     <div class="flex-[1_1_380px] pt-[84px] px-6 md:px-10 pb-10 box-border min-h-[560px] flex flex-col">
-      <template v-if="view === 'verify'">
+      <template v-if="view === 'done'">
+        <div class="my-auto flex flex-col items-start gap-4">
+          <span class="w-14 h-14 rounded-full bg-ink-900 text-white flex items-center justify-center">
+            <Check :size="26" :stroke-width="3" />
+          </span>
+          <h2 class="text-[24px] font-bold tracking-[-.025em] m-0 text-ink-900">{{ tv.doneTitle }}</h2>
+          <p class="text-[15px] leading-relaxed text-ink-400 m-0">{{ tv.doneBody }}</p>
+          <button type="button" :class="primaryBtn" class="mt-2" @click="$emit('authenticated')">
+            {{ tv.doneCta }}
+          </button>
+        </div>
+      </template>
+
+      <template v-else-if="view === 'verify'">
         <div class="my-auto flex flex-col items-start gap-4">
           <span class="w-14 h-14 rounded-full bg-surface-blue text-accent-blue flex items-center justify-center">
             <Mail :size="24" />
@@ -169,7 +181,6 @@
 
 <script setup>
 import { ref, computed, watch, useId } from 'vue'
-import { useRouter } from 'vue-router'
 import { X, Check, Mail } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
 import { useAuthStore } from '@/stores/auth'
@@ -179,13 +190,12 @@ import LegalConsentNotice from '@/components/legal/LegalConsentNotice.vue'
 import BriefModal from './BriefModal.vue'
 
 const props = defineProps({ open: { type: Boolean, default: false } })
-defineEmits(['close'])
+defineEmits(['close', 'authenticated'])
 
 const { t } = useI18n()
 const tv = computed(() => t.value.brief.auth)
-const router = useRouter()
 const authStore = useAuthStore()
-const { storedToken, pendingBriefPath } = useProjectBrief()
+const { storedToken } = useProjectBrief()
 
 const PASSWORD_POLICY = /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!_-]).{8,}$/
 
@@ -231,7 +241,7 @@ watch([fullName, email, password, agreeTerms], () => {
 watch(
   () => props.open,
   isOpen => {
-    if (isOpen && view.value === 'verify') view.value = 'login'
+    if (isOpen && (view.value === 'verify' || view.value === 'done')) view.value = 'login'
   }
 )
 
@@ -240,21 +250,26 @@ const switchTo = next => {
   error.value = ''
 }
 
-const dashboardFor = user => {
-  const roles = user?.registeredRoles || []
-  if (roles.includes('CLIENT')) return '/client/dashboard'
-  if (roles.includes('ARCHITECT')) return '/architect/dashboard'
-  return '/'
-}
+// Dev-server shortcut: an empty sign-in uses the account in .env.development.local, so local
+// walkthroughs of the brief skip typing credentials. Never set in a production build.
+const DEV_LOGIN =
+  import.meta.env.DEV && import.meta.env.VITE_DEV_LOGIN_EMAIL && import.meta.env.VITE_DEV_LOGIN_PASSWORD
+    ? { email: import.meta.env.VITE_DEV_LOGIN_EMAIL, password: import.meta.env.VITE_DEV_LOGIN_PASSWORD }
+    : null
 
 const submitLogin = async () => {
-  if (!emailValid.value) return (error.value = tv.value.errEmail)
-  if (!password.value) return (error.value = tv.value.errPassword)
+  const useDevLogin = DEV_LOGIN && !email.value.trim() && !password.value
+  if (!useDevLogin) {
+    if (!emailValid.value) return (error.value = tv.value.errEmail)
+    if (!password.value) return (error.value = tv.value.errPassword)
+  }
 
   busy.value = true
   try {
-    const result = await authStore.login({ email: email.value.trim(), password: password.value })
-    if (result?.success) router.push(pendingBriefPath(result.user) || dashboardFor(result.user))
+    const credentials = useDevLogin ? DEV_LOGIN : { email: email.value.trim(), password: password.value }
+    const result = await authStore.login(credentials)
+    // The survey carries on in place, so a successful login confirms here instead of navigating
+    if (result?.success) view.value = 'done'
   } catch (err) {
     error.value = err.response?.data?.message || err.message || tv.value.errLogin
   } finally {

@@ -14,7 +14,7 @@
           />
           <div
             v-else
-            class="w-20 h-20 rounded-full bg-brand-brown/10 text-brand-brown flex items-center justify-center text-xl font-bold"
+            class="w-20 h-20 rounded-full bg-ink-900/10 text-ink-900 flex items-center justify-center text-xl font-bold"
           >
             {{ initials }}
           </div>
@@ -41,7 +41,7 @@
           v-model="formData.name"
           type="text"
           :placeholder="t.profile.form.practiceNamePlaceholder"
-          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
+          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-ink-900 focus:ring-2 focus:ring-ink-900/20 outline-none transition-all"
           :class="{ 'border-red-300': errors.name }"
         />
         <p v-if="errors.name" class="text-xs text-red-600">{{ errors.name }}</p>
@@ -57,7 +57,7 @@
             :class="[
               'flex-1 px-4 py-3 rounded-2xl font-medium text-sm transition-all',
               formData.category === 'freelance'
-                ? 'bg-brand-brown text-white shadow-md'
+                ? 'bg-ink-900 text-white shadow-md'
                 : 'bg-black/5 text-black/60 hover:bg-black/10'
             ]"
             @click="formData.category = 'freelance'"
@@ -69,7 +69,7 @@
             :class="[
               'flex-1 px-4 py-3 rounded-2xl font-medium text-sm transition-all',
               formData.category === 'company'
-                ? 'bg-brand-brown text-white shadow-md'
+                ? 'bg-ink-900 text-white shadow-md'
                 : 'bg-black/5 text-black/60 hover:bg-black/10'
             ]"
             @click="formData.category = 'company'"
@@ -87,7 +87,7 @@
           v-model="formData.fullAddress"
           type="text"
           :placeholder="t.profile.form.fullAddressPlaceholder"
-          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
+          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-ink-900 focus:ring-2 focus:ring-ink-900/20 outline-none transition-all"
         />
       </div>
 
@@ -99,7 +99,7 @@
         </label>
         <select
           v-model="formData.experienceRange"
-          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all bg-white"
+          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-ink-900 focus:ring-2 focus:ring-ink-900/20 outline-none transition-all bg-white"
         >
           <option value="" disabled>{{ t.profile.form.experiencePlaceholder }}</option>
           <option v-for="option in EXPERIENCE_OPTIONS" :key="option" :value="option">
@@ -116,7 +116,7 @@
           v-model="formData.philosophy"
           rows="6"
           :placeholder="t.profile.form.philosophyPlaceholder"
-          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all resize-none"
+          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-ink-900 focus:ring-2 focus:ring-ink-900/20 outline-none transition-all resize-none"
         />
         <div class="flex justify-between items-center">
           <p class="text-xs text-black/40">{{ formData.philosophy.length }} characters</p>
@@ -161,7 +161,7 @@
               <label class="block text-xs font-medium text-black/50">{{ t.profile.form.educationLevel }}</label>
               <select
                 v-model="entry.level"
-                class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all bg-white"
+                class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-ink-900 focus:ring-2 focus:ring-ink-900/20 outline-none transition-all bg-white"
               >
                 <option value="" disabled>{{ t.profile.form.educationLevelPlaceholder }}</option>
                 <option v-for="lvl in DEGREE_LEVELS" :key="lvl" :value="lvl">
@@ -174,7 +174,7 @@
               <label class="block text-xs font-medium text-black/50">{{ t.profile.form.educationUniversity }}</label>
               <select
                 v-model="entry.universityName"
-                class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all bg-white"
+                class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-ink-900 focus:ring-2 focus:ring-ink-900/20 outline-none transition-all bg-white"
               >
                 <option value="" disabled>{{ t.profile.form.educationUniversityPlaceholder }}</option>
                 <optgroup label="Indonesia">
@@ -194,7 +194,7 @@
                 v-model="entry.fieldOfStudy"
                 type="text"
                 :placeholder="t.profile.form.educationFieldOfStudyPlaceholder"
-                class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
+                class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-ink-900 focus:ring-2 focus:ring-ink-900/20 outline-none transition-all"
               />
             </div>
             <div class="space-y-2">
@@ -205,7 +205,7 @@
                 v-model.number="entry.graduationYear"
                 type="number"
                 :placeholder="t.profile.form.educationGraduationYearPlaceholder"
-                class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
+                class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-ink-900 focus:ring-2 focus:ring-ink-900/20 outline-none transition-all"
               />
             </div>
           </div>
@@ -228,7 +228,7 @@
           v-model="formData.fullnameKtp"
           type="text"
           :placeholder="t.profile.form.fullnameKtpPlaceholder"
-          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
+          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-ink-900 focus:ring-2 focus:ring-ink-900/20 outline-none transition-all"
         />
       </div>
 
@@ -242,7 +242,7 @@
           maxlength="16"
           inputmode="numeric"
           :placeholder="t.profile.form.phoneNumPlaceholder"
-          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
+          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-ink-900 focus:ring-2 focus:ring-ink-900/20 outline-none transition-all"
           :class="{ 'border-red-300': errors.phoneNum }"
           @input="formData.phoneNum = formData.phoneNum.replace(/\D/g, '')"
         />
@@ -260,7 +260,7 @@
           maxlength="16"
           inputmode="numeric"
           :placeholder="t.profile.form.ktpNumPlaceholder"
-          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
+          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-ink-900 focus:ring-2 focus:ring-ink-900/20 outline-none transition-all"
           :class="{ 'border-red-300': errors.ktpNum }"
           @input="formData.ktpNum = formData.ktpNum.replace(/\D/g, '')"
         />
@@ -278,7 +278,7 @@
           maxlength="16"
           inputmode="numeric"
           :placeholder="t.profile.form.npwpPlaceholder"
-          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-brand-brown focus:ring-2 focus:ring-brand-brown/20 outline-none transition-all"
+          class="w-full px-4 py-3 rounded-2xl border border-black/10 focus:border-ink-900 focus:ring-2 focus:ring-ink-900/20 outline-none transition-all"
           :class="{ 'border-red-300': errors.npwp }"
           @input="formData.npwp = formData.npwp.replace(/\D/g, '')"
         />
@@ -317,7 +317,7 @@
 
       <button
         type="button"
-        class="px-8 py-3 rounded-full font-semibold transition-all bg-brand-brown text-white hover:bg-brand-brown-dark hover:scale-105"
+        class="px-8 py-3 rounded-full font-semibold transition-all bg-ink-900 text-white hover:bg-ink-500 hover:scale-105"
         @click="handleDone"
       >
         {{ t.profile.done }}

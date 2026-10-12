@@ -6,7 +6,7 @@
 
     <div v-else-if="error" class="flex flex-col items-center justify-center py-32 gap-3">
       <p class="text-sm text-red-600">{{ error }}</p>
-      <button class="text-sm font-semibold text-brand-brown" @click="loadAll">
+      <button class="text-sm font-semibold text-ink-900" @click="loadAll">
         {{ t.projectWorkspace?.tryAgain }}
       </button>
     </div>

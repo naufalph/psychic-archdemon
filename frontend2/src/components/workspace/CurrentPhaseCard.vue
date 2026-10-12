@@ -1,6 +1,6 @@
 <template>
   <div v-if="phase" class="bg-white border border-border-gray rounded-xl overflow-hidden">
-    <div class="h-[3px] bg-brand-gold" />
+    <div class="h-[3px] bg-ink-900" />
 
     <div class="px-5 py-4 flex items-center gap-3">
       <span
@@ -82,7 +82,7 @@
     </div>
 
     <button
-      class="w-full px-5 py-3 border-t border-gray-100 text-xs font-semibold text-brand-brown hover:bg-gray-50 text-left"
+      class="w-full px-5 py-3 border-t border-gray-100 text-xs font-semibold text-ink-900 hover:bg-gray-50 text-left"
       @click="$emit('go-phase', phase.id)"
     >
       {{ t.projectWorkspace?.openDeliverablesLink }} &rarr;

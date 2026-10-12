@@ -3,36 +3,46 @@
     <!-- Hero -->
     <div
       class="relative w-full flex flex-col overflow-hidden bg-no-repeat"
-      :style="{ backgroundImage: `url(${heroBg})`, backgroundSize: 'cover', backgroundPosition: 'left bottom' }"
+      data-hero-backdrop
+      :style="{ backgroundImage: `url(${heroBg})`, backgroundSize: 'cover', backgroundPosition: 'left top' }"
     >
       <!-- Hero navbar -->
       <div
         class="relative min-h-[72px] flex flex-wrap gap-4 items-center justify-between box-border px-5 md:px-12 py-3 max-w-[1328px] mx-auto w-full"
       >
-        <div class="flex items-baseline gap-0.5">
+        <div class="flex items-center flex-wrap gap-x-6 gap-y-2">
           <span class="text-[22px] font-extrabold tracking-[-.03em] text-white">rumantra</span>
-          <span class="text-[22px] font-extrabold text-brand-gold">.</span>
+          <nav class="flex items-center flex-wrap gap-1" aria-label="Navigasi halaman">
+            <a
+              href="#cara-kerja"
+              class="h-11 flex items-center px-3 text-caption font-semibold text-white hover:opacity-65 transition-opacity"
+            >
+              {{ tv.nav.howItWorks }}
+            </a>
+            <a
+              href="#mitra"
+              class="h-11 flex items-center px-3 text-caption font-semibold text-white hover:opacity-65 transition-opacity"
+            >
+              {{ tv.nav.findArchitect }}
+            </a>
+            <a
+              href="#estimasi"
+              class="h-11 flex items-center px-3 text-caption font-semibold text-white hover:opacity-65 transition-opacity"
+            >
+              {{ tv.nav.estimateCost }}
+            </a>
+          </nav>
         </div>
         <div class="flex items-center flex-wrap gap-2">
-          <a
-            href="#ruang-proyek"
-            class="h-11 flex items-center px-3 text-caption font-semibold text-white hover:opacity-65 transition-opacity"
-          >
-            {{ tv.nav.howItWorks }}
-          </a>
-          <a
-            href="#mitra"
-            class="h-11 flex items-center px-3 text-caption font-semibold text-white hover:opacity-65 transition-opacity"
-          >
-            {{ tv.nav.findArchitect }}
-          </a>
-          <a
-            href="#estimasi"
-            class="h-11 flex items-center px-3 mr-3 text-caption font-semibold text-white hover:opacity-65 transition-opacity"
-          >
-            {{ tv.nav.estimateCost }}
-          </a>
           <router-link
+            v-if="authStore.isAuthenticated"
+            :to="dashboardPath"
+            class="h-11 flex items-center px-5 border border-white rounded-full text-caption font-bold text-white hover:bg-white/10 transition-colors"
+          >
+            Dashboard
+          </router-link>
+          <router-link
+            v-else
             to="/login"
             class="h-11 flex items-center px-5 border border-white rounded-full text-caption font-bold text-white hover:bg-white/10 transition-colors"
           >
@@ -44,6 +54,10 @@
           >
             {{ tv.nav.cta }}
           </router-link>
+          <AccountMenu
+            :role-label="authStore.isClient ? 'klien' : authStore.isArchitect ? 'arsitek' : ''"
+            @logout="authStore.logout()"
+          />
         </div>
       </div>
 
@@ -68,8 +82,50 @@
         </div>
 
         <div class="relative flex items-end box-border px-5 md:px-12 pb-12">
-          <HeroShowcase />
+          <HeroShowcase :backdrop="heroBg" />
         </div>
+      </div>
+    </div>
+
+    <!-- Cara Kerja -->
+    <div id="cara-kerja" class="box-border px-5 md:px-12 py-16 md:py-24 max-w-[1328px] mx-auto scroll-mt-[72px]">
+      <div class="flex flex-wrap items-baseline justify-between gap-4 mb-12">
+        <h2 class="text-[36px] font-bold tracking-[-.025em] m-0 text-ink-900">{{ tv.caraKerja.title }}</h2>
+        <router-link
+          to="/brief-proyek"
+          class="inline-flex items-center gap-2 flex-shrink-0 text-body-lg font-semibold text-ink-900 hover:opacity-60 transition-opacity"
+        >
+          {{ tv.caraKerja.cta }} <ChevronRight :size="18" :stroke-width="2.4" />
+        </router-link>
+      </div>
+
+      <ol class="list-none m-0 p-0 grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-x-8 gap-y-10">
+        <li v-for="(step, i) in caraKerjaSteps" :key="i" class="relative">
+          <div class="flex items-center gap-4 mb-5">
+            <span
+              class="flex-none w-12 h-12 rounded-full text-white flex items-center justify-center"
+              :style="{ background: `center / cover no-repeat url(${heroBg})` }"
+            >
+              <component :is="step.icon" class="w-[22px] h-[22px]" :stroke-width="1.75" />
+            </span>
+            <span class="text-caption font-semibold tracking-[.08em] text-ink-300">0{{ i + 1 }}</span>
+            <span v-if="i < caraKerjaSteps.length - 1" class="hidden xl:block flex-1 h-px bg-hairline"></span>
+          </div>
+          <h3 class="text-h3 text-ink-900 m-0 mb-2">{{ step.title }}</h3>
+          <p class="text-body-sm leading-relaxed text-ink-500 m-0">{{ step.desc }}</p>
+        </li>
+      </ol>
+
+      <div class="mt-12 pt-6 border-t border-hairline">
+        <p class="text-body-sm text-ink-500 m-0 flex flex-wrap items-center gap-x-2 gap-y-1">
+          {{ tv.joinArchitect.question }}
+          <router-link
+            :to="{ path: '/signup', query: { role: 'ARCHITECT', redirect: '/architect/onboarding' } }"
+            class="inline-flex items-center gap-1 font-semibold text-ink-900 hover:opacity-60 transition-opacity"
+          >
+            {{ tv.joinArchitect.cta }} <ArrowRight :size="16" :stroke-width="2.4" />
+          </router-link>
+        </p>
       </div>
     </div>
 
@@ -96,7 +152,7 @@
             class="relative flex-1 min-h-[240px] bg-cover bg-center"
             :style="tipe.image ? { backgroundImage: `url(${tipe.image})` } : { background: tipe.gradient }"
           ></div>
-          <div class="p-7 pb-8" :style="{ background: tipe.footerGradient }">
+          <div class="p-7 pb-8" :style="{ background: tipe.footerBg }">
             <h3 class="text-[34px] font-bold tracking-[-.03em] leading-[1.08] m-0 mb-2 text-white">
               {{ tipe.title }}
             </h3>
@@ -122,7 +178,11 @@
     </div>
 
     <!-- Mitra -->
-    <div id="mitra" class="box-border px-5 md:px-12 py-16 md:py-24 scroll-mt-[72px] bg-brand-cream">
+    <div
+      id="mitra"
+      class="box-border px-5 md:px-12 py-16 md:py-24 scroll-mt-[72px]"
+      :style="{ background: `center / cover no-repeat url(${mitraSectionBg})` }"
+    >
       <div
         class="max-w-[1328px] mx-auto bg-white rounded-[20px] p-8 md:p-14 flex flex-wrap items-center justify-between gap-10"
       >
@@ -134,28 +194,27 @@
             {{ tv.mitra.title }}
           </h3>
           <p class="text-body-lg leading-relaxed text-ink-500 m-0 max-w-[56ch]">{{ tv.mitra.subtitle }}</p>
+          <p class="text-body text-ink-500 m-0 mt-6 flex flex-wrap items-center gap-x-2 gap-y-1">
+            {{ tv.joinArchitect.question }}
+            <router-link
+              :to="{ path: '/signup', query: { role: 'ARCHITECT', redirect: '/architect/onboarding' } }"
+              class="inline-flex items-center gap-1 font-semibold text-ink-900 hover:opacity-60 transition-opacity"
+            >
+              {{ tv.joinArchitect.cta }} <ArrowRight :size="16" :stroke-width="2.4" />
+            </router-link>
+          </p>
         </div>
-        <div class="flex items-center flex-shrink-0">
-          <div
-            v-for="(g, i) in mitraGradients"
-            :key="i"
-            class="relative flex-shrink-0 w-[110px] h-[148px] md:w-[132px] md:h-[176px] rounded-2xl overflow-hidden shadow-[0_18px_40px_-28px_rgba(0,0,0,.45)] transition-transform duration-300 hover:-translate-y-2"
-            :class="i > 0 ? '-ml-8' : ''"
-            :style="{ background: g, boxShadow: '0 0 0 4px #FDF6EE, 0 18px 40px -28px rgba(0,0,0,.45)' }"
-          ></div>
-          <div
-            class="relative flex-shrink-0 w-[110px] h-[148px] md:w-[132px] md:h-[176px] -ml-8 rounded-2xl flex flex-col items-center justify-center gap-0.5"
-            style="
-              background: linear-gradient(135deg, #185c93, #0d2f4d);
-              box-shadow:
-                0 0 0 4px #fdf6ee,
-                0 18px 40px -28px rgba(0, 0, 0, 0.45);
-            "
-          >
-            <span class="text-[28px] font-bold tracking-[-.03em] text-white leading-none">+20</span>
-            <span class="text-caption font-semibold text-white/80">{{ tv.mitra.more }}</span>
-          </div>
-        </div>
+        <ul class="list-none m-0 p-0 flex-1 basis-[360px] min-w-0 flex flex-col gap-6">
+          <li v-for="item in mitraTiers" :key="item.title" class="flex items-start gap-4">
+            <span class="flex-none w-12 h-12 rounded-full bg-surface-alt text-ink-900 flex items-center justify-center">
+              <component :is="item.icon" class="w-[22px] h-[22px]" :stroke-width="1.75" />
+            </span>
+            <div class="min-w-0">
+              <div class="text-[18px] font-bold tracking-[-.01em] text-ink-900 mb-1">{{ item.title }}</div>
+              <p class="text-body leading-normal text-ink-500 m-0">{{ item.desc }}</p>
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
 
@@ -276,20 +335,23 @@
     </div>
 
     <!-- Pembayaran -->
-    <div class="box-border px-5 md:px-12 py-16 md:py-24" style="background: linear-gradient(135deg, #2f7dc0, #0d2f4d)">
+    <div
+      class="box-border px-5 md:px-12 py-16 md:py-24"
+      :style="{ background: `center / cover no-repeat url(${pembayaranSectionBg})` }"
+    >
       <div class="max-w-[1328px] mx-auto">
-        <h2 class="text-[36px] font-bold tracking-[-.025em] m-0 mb-10 max-w-[720px] text-white">
+        <h2 class="text-[36px] font-bold tracking-[-.025em] leading-[1.15] m-0 mb-12 text-ink-900">
           {{ tv.pembayaran.title }}
         </h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-10 gap-x-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-10">
           <div v-for="(step, i) in pembayaranSteps" :key="i">
             <div
-              class="w-9 h-9 rounded-full bg-white text-ink-900 flex items-center justify-center text-body-sm font-semibold mb-5"
+              class="w-9 h-9 rounded-full bg-ink-900 text-white flex items-center justify-center text-body-sm font-semibold mb-5"
             >
               {{ i + 1 }}
             </div>
-            <h3 class="text-h3 text-white mb-2">{{ step.title }}</h3>
-            <p class="text-body-sm text-white leading-relaxed">{{ step.desc }}</p>
+            <h3 class="text-h3 text-ink-900 m-0 mb-2 sm:min-h-[2.6em]">{{ step.title }}</h3>
+            <p class="text-body-sm leading-relaxed text-ink-500 m-0">{{ step.desc }}</p>
           </div>
         </div>
       </div>
@@ -306,22 +368,22 @@
     <!-- Penutup -->
     <div
       class="box-border px-5 md:px-12 py-16 md:py-24 text-center"
-      style="background: linear-gradient(160deg, #3d2114 0%, #1a1a1a 60%, #0a0a0a 100%)"
+      :style="{ background: `center / cover no-repeat url(${penutupSectionBg})` }"
     >
-      <h2 class="text-[36px] font-bold tracking-[-.025em] m-0 mb-4 text-white">{{ tv.penutup.title }}</h2>
-      <p class="text-body-lg text-white mx-auto mb-3 max-w-[620px] leading-relaxed">{{ tv.penutup.desc1 }}</p>
-      <p class="text-body-lg text-white mx-auto mb-8 max-w-[620px] leading-relaxed">{{ tv.penutup.desc2 }}</p>
+      <h2 class="text-[36px] font-bold tracking-[-.025em] m-0 mb-4 text-ink-900">{{ tv.penutup.title }}</h2>
+      <p class="text-body-lg text-ink-900 mx-auto mb-3 max-w-[620px] leading-relaxed">{{ tv.penutup.desc1 }}</p>
+      <p class="text-body-lg text-ink-900 mx-auto mb-8 max-w-[620px] leading-relaxed">{{ tv.penutup.desc2 }}</p>
       <router-link
         to="/brief-proyek"
-        class="inline-flex h-[52px] items-center px-8 bg-white text-ink-900 rounded-full font-semibold text-body-lg hover:opacity-90 transition-opacity"
+        class="inline-flex h-[52px] items-center px-8 bg-ink-900 text-white rounded-full font-semibold text-body-lg hover:opacity-90 transition-opacity"
       >
         {{ tv.penutup.cta }}
       </router-link>
-      <p class="text-body-sm text-white mx-auto mt-5 max-w-[560px] leading-relaxed">{{ tv.penutup.freeNote }}</p>
+      <p class="text-body-sm text-ink-900 mx-auto mt-5 max-w-[560px] leading-relaxed">{{ tv.penutup.freeNote }}</p>
       <div class="flex justify-center mt-7">
         <router-link
           to="/signup?role=ARCHITECT"
-          class="inline-flex items-center gap-2 h-12 px-6 border border-white rounded-full text-body font-bold text-white hover:bg-white/10 transition-colors"
+          class="inline-flex items-center gap-2 h-12 px-6 border border-ink-900 rounded-full text-body font-bold text-ink-900 hover:bg-ink-900/5 transition-colors"
         >
           {{ tv.penutup.architectCta }} <ChevronRight :size="18" :stroke-width="2.4" />
         </router-link>
@@ -333,17 +395,46 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { ChevronRight } from 'lucide-vue-next'
+import { computed } from 'vue'
+import {
+  ArrowRight,
+  Award,
+  Building2,
+  ChevronRight,
+  FileText,
+  Inbox,
+  LayoutDashboard,
+  Scale,
+  Sparkles
+} from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
-import { landingAPI } from '@/services/api'
 import HeroShowcase from '@/components/landing/HeroShowcase.vue'
 import BudgetEstimator from '@/components/landing/BudgetEstimator.vue'
 import LandingFaq from '@/components/landing/LandingFaq.vue'
 import LandingFooter from '@/components/landing/LandingFooter.vue'
-import heroBg from '@/assets/images/landing/hero-background.png'
+import AccountMenu from '@/components/layout/AccountMenu.vue'
+import { useAuthStore } from '@/stores/auth'
+import heroBg from '@/assets/images/landing/hero-background.jpg'
+import cardBgHunian from '@/assets/images/landing/card-bg-hunian.jpg'
+import cardImageHunian from '@/assets/images/landing/card-image-hunian.jpg'
+import cardImageKomersil from '@/assets/images/landing/card-image-komersil.jpg'
+import cardImageIndustrial from '@/assets/images/landing/card-image-industrial.jpg'
+import cardImageLainnya from '@/assets/images/landing/card-image-lainnya.jpg'
+import cardBgKomersil from '@/assets/images/landing/card-bg-komersil.jpg'
+import cardBgIndustrial from '@/assets/images/landing/card-bg-industrial.jpg'
+import cardBgLainnya from '@/assets/images/landing/card-bg-lainnya.jpg'
+import mitraSectionBg from '@/assets/images/landing/mitra-section-bg.jpg'
+import penutupSectionBg from '@/assets/images/landing/penutup-section-bg.jpg'
+import pembayaranSectionBg from '@/assets/images/landing/pembayaran-section-bg.jpg'
 
-const { t, locale } = useI18n()
+const { t } = useI18n()
+const authStore = useAuthStore()
+
+const dashboardPath = computed(() => {
+  if (authStore.isClient) return '/client/dashboard'
+  if (authStore.isArchitect) return '/architect/dashboard'
+  return '/'
+})
 const tv = computed(() => t.value.landing.v2)
 
 const tipeCards = computed(() => [
@@ -353,7 +444,8 @@ const tipeCards = computed(() => [
     title: tv.value.tipeProyek.hunian.title,
     desc: tv.value.tipeProyek.hunian.desc,
     gradient: 'linear-gradient(135deg,#9B5E3C,#3D2114)',
-    footerGradient: 'linear-gradient(135deg,#7C4728,#3D2114)'
+    image: cardImageHunian,
+    footerBg: `center / cover no-repeat url(${cardBgHunian})`
   },
   {
     key: 'komersil',
@@ -361,7 +453,8 @@ const tipeCards = computed(() => [
     title: tv.value.tipeProyek.komersil.title,
     desc: tv.value.tipeProyek.komersil.desc,
     gradient: 'linear-gradient(135deg,#2F7DC0,#0d2f4d)',
-    footerGradient: 'linear-gradient(135deg,#185C93,#0d2f4d)'
+    image: cardImageKomersil,
+    footerBg: `center / cover no-repeat url(${cardBgKomersil})`
   },
   {
     key: 'industrial',
@@ -369,7 +462,8 @@ const tipeCards = computed(() => [
     title: tv.value.tipeProyek.industrial.title,
     desc: tv.value.tipeProyek.industrial.desc,
     gradient: 'linear-gradient(135deg,#333333,#0A0A0A)',
-    footerGradient: 'linear-gradient(135deg,#1C1C1C,#0A0A0A)'
+    image: cardImageIndustrial,
+    footerBg: `center / cover no-repeat url(${cardBgIndustrial})`
   },
   {
     key: 'lainnya',
@@ -377,52 +471,28 @@ const tipeCards = computed(() => [
     title: tv.value.tipeProyek.lainnya.title,
     desc: tv.value.tipeProyek.lainnya.desc,
     gradient: 'linear-gradient(135deg,#B39069,#6A3D22)',
-    footerGradient: 'linear-gradient(135deg,#C5A17A,#6A3D22)'
+    image: cardImageLainnya,
+    footerBg: `center / cover no-repeat url(${cardBgLainnya})`
   }
 ])
 
-const presets = ref([])
+// Always the four category cards; per-type detail lives on its own page later
+const projectTypeCards = computed(() =>
+  tipeCards.value.map(c => ({ ...c, to: { path: '/brief-proyek', query: { kategori: c.category } } }))
+)
 
-const localizedPreset = (preset, field) =>
-  (locale.value === 'en' ? preset[`${field}En`] : preset[`${field}Id`]) || preset[`${field}En`] || ''
+const mitraTiers = computed(() => [
+  { icon: Award, title: tv.value.mitra.awardTitle, desc: tv.value.mitra.awardDesc },
+  { icon: Building2, title: tv.value.mitra.firmTitle, desc: tv.value.mitra.firmDesc },
+  { icon: Sparkles, title: tv.value.mitra.risingTitle, desc: tv.value.mitra.risingDesc }
+])
 
-// Presets are the cards when the superuser has any; the four fixed category cards are the fallback
-// so the section never renders empty. A preset borrows its category's gradient until it has a photo.
-const projectTypeCards = computed(() => {
-  const fixed = tipeCards.value
-  if (!presets.value.length) {
-    return fixed.map(c => ({ ...c, to: { path: '/brief-proyek', query: { kategori: c.category } } }))
-  }
-  const fallbackStyle = fixed[fixed.length - 1]
-  return presets.value.map(preset => {
-    const style = fixed.find(c => c.category === preset.buildingFunction) || fallbackStyle
-    return {
-      key: preset.slug,
-      to: { path: '/brief-proyek', query: { preset: preset.slug } },
-      title: localizedPreset(preset, 'label'),
-      desc: localizedPreset(preset, 'defaultDescription') || localizedPreset(preset, 'eyebrow'),
-      image: preset.imageLargeUrl || preset.imageUrl,
-      gradient: style.gradient,
-      footerGradient: style.footerGradient
-    }
-  })
-})
-
-onMounted(async () => {
-  try {
-    const res = await landingAPI.getPresets()
-    presets.value = res.data?.data || []
-  } catch {
-    // The fixed category cards cover a failed request
-  }
-})
-
-const mitraGradients = [
-  'linear-gradient(135deg,#9B5E3C,#3D2114)',
-  'linear-gradient(135deg,#2F7DC0,#0d2f4d)',
-  'linear-gradient(135deg,#B39069,#6A3D22)',
-  'linear-gradient(135deg,#333333,#0A0A0A)'
-]
+const caraKerjaSteps = computed(() => [
+  { icon: FileText, title: tv.value.caraKerja.step1Title, desc: tv.value.caraKerja.step1Desc },
+  { icon: Inbox, title: tv.value.caraKerja.step2Title, desc: tv.value.caraKerja.step2Desc },
+  { icon: Scale, title: tv.value.caraKerja.step3Title, desc: tv.value.caraKerja.step3Desc },
+  { icon: LayoutDashboard, title: tv.value.caraKerja.step4Title, desc: tv.value.caraKerja.step4Desc }
+])
 
 const pembayaranSteps = computed(() => [
   { title: tv.value.pembayaran.step1Title, desc: tv.value.pembayaran.step1Desc },

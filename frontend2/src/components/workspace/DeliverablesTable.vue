@@ -100,7 +100,7 @@
         <div class="text-right">
           <button
             v-if="item.files?.length"
-            class="px-3 py-1.5 rounded-full bg-gray-50 border border-border-gray hover:border-brand-gold hover:bg-white text-xs font-semibold text-gray-700"
+            class="px-3 py-1.5 rounded-full bg-gray-50 border border-border-gray hover:border-ink-900 hover:bg-white text-xs font-semibold text-gray-700"
             :aria-label="`${t.projectWorkspace?.colFiles}: ${deliverableLabel(item.name, t)}`"
             @click="$emit('open-files', item)"
           >

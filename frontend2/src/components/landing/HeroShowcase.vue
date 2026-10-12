@@ -6,7 +6,9 @@
     >
       <div class="justify-self-start">
         <button
-          class="inline-flex items-center gap-2 h-[34px] pl-3.5 pr-1.5 rounded-full border border-white/[.18] bg-ink-900/[.62] backdrop-blur-sm text-white text-caption font-bold hover:bg-ink-900/[.78] transition-colors"
+          ref="projectPill"
+          class="inline-flex items-center gap-2 h-[34px] pl-3.5 pr-1.5 rounded-full border border-ink-900/[.14] text-white text-caption font-bold hover:shadow-[inset_0_0_0_999px_rgba(0,0,0,.06)] transition-shadow"
+          :style="projectPillStyle"
           @click="nextProject"
         >
           <span>{{ t.landing.v2.hero.yourProject }}</span>
@@ -21,12 +23,7 @@
       </h3>
 
       <div class="relative my-4 rounded-[14px] overflow-hidden">
-        <div
-          class="absolute inset-0 flex items-center justify-center text-center px-4"
-          :style="placeholderStyle(heroProj)"
-        >
-          <span class="text-caption-sm font-semibold text-white/80">{{ activeProject.slotLabel }}</span>
-        </div>
+        <div class="absolute inset-0" :style="projectImageStyle"></div>
       </div>
 
       <div class="self-start border-t border-black/10">
@@ -49,6 +46,19 @@
       @mouseenter="paused = true"
       @mouseleave="paused = false"
     >
+      <!-- Outside the flipping page so the hole in the card stays put while the offer turns over -->
+      <button
+        ref="offerPill"
+        class="absolute top-8 left-8 z-10 inline-flex items-center gap-2 h-[34px] pl-3.5 pr-1.5 rounded-full border border-ink-900/[.14] text-white text-caption font-bold hover:shadow-[inset_0_0_0_999px_rgba(0,0,0,.06)] transition-shadow"
+        :style="offerPillStyle"
+        @click="nextOffer"
+      >
+        <span>{{ t.landing.v2.hero.offerPrefix }}{{ heroOffer + 1 }}</span>
+        <span class="inline-flex items-center justify-center w-[22px] h-[22px] rounded-full bg-white flex-shrink-0">
+          <ChevronRight :size="12" :stroke-width="3" class="text-ink-900" />
+        </span>
+      </button>
+
       <div
         aria-hidden="true"
         class="absolute -top-[40%] left-0 w-[45%] h-[180%] pointer-events-none mix-blend-multiply hero-sheen"
@@ -58,19 +68,7 @@
         :key="'offer-' + heroProj + '-' + heroOffer"
         class="flex-1 basis-[260px] min-w-0 grid grid-rows-[auto_78px_auto_auto_1fr_104px] hero-flip"
       >
-        <div class="justify-self-start">
-          <button
-            class="inline-flex items-center gap-2 h-[34px] pl-3.5 pr-1.5 rounded-full border border-white/[.18] bg-ink-900/[.62] backdrop-blur-sm text-white text-caption font-bold hover:bg-ink-900/[.78] transition-colors"
-            @click="nextOffer"
-          >
-            <span>{{ t.landing.v2.hero.offerPrefix }}{{ heroOffer + 1 }}</span>
-            <span
-              class="inline-flex items-center justify-center w-[22px] h-[22px] rounded-full bg-white flex-shrink-0"
-            >
-              <ChevronRight :size="12" :stroke-width="3" class="text-ink-900" />
-            </span>
-          </button>
-        </div>
+        <div class="h-[34px]" aria-hidden="true"></div>
 
         <div class="flex items-baseline justify-between gap-4 self-start pt-3.5">
           <h3 class="text-[30px] font-semibold tracking-[-.025em] leading-[1.12] m-0 text-ink-900">
@@ -120,7 +118,7 @@
         class="flex-[1.8] basis-[340px] min-w-0 relative min-h-[260px] rounded-2xl overflow-hidden hero-flip-img hero-float"
       >
         <div class="absolute inset-0 flex items-center justify-center text-center px-4" :style="offerImageStyle">
-          <span class="text-caption-sm font-semibold text-white/80">Eksplorasi massa</span>
+          <span v-if="!activeOffer.image" class="text-caption-sm font-semibold text-white/80">Eksplorasi massa</span>
         </div>
       </div>
     </div>
@@ -128,21 +126,30 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
 import { ChevronRight } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
+import heroProject1 from '@/assets/images/landing/hero-project-1.jpg'
+import heroProject2 from '@/assets/images/landing/hero-project-2.jpg'
+import heroOfferKosan1 from '@/assets/images/landing/hero-offer-kosan-1.jpg'
+import heroOfferKosan2 from '@/assets/images/landing/hero-offer-kosan-2.jpg'
 
 const { t } = useI18n()
+
+const props = defineProps({
+  // The hero section's background image; the pills show the slice of it behind them so they read as holes in the card
+  backdrop: { type: String, default: '' }
+})
 
 const HERO_PROJECTS = [
   {
     title: 'Kosan Premium 12 Kamar',
     total: 'Rp1,8 M',
     desain: 'Rp144 Jt',
-    slotLabel: 'Foto lokasi / referensi',
     offers: [
       {
         name: 'Aryadiza Gunawan',
+        image: heroOfferKosan1,
         rating: '★ 4,9',
         chips: ['Arsitek freelance', '8 tahun pengalaman', 'Anggota IAI', 'Arsitektur ITB'],
         biaya: 'Rp105 Jt',
@@ -151,6 +158,7 @@ const HERO_PROJECTS = [
       },
       {
         name: 'RR Studio',
+        image: heroOfferKosan2,
         rating: '',
         chips: ['Firma arsitektur', '20 tahun pengalaman', 'IAI certified'],
         biaya: 'Rp160 Jt',
@@ -160,26 +168,25 @@ const HERO_PROJECTS = [
     ]
   },
   {
-    title: 'American-style Diner',
-    total: 'Rp—',
-    desain: 'Rp—',
-    slotLabel: 'Foto lokasi / referensi',
+    title: 'Cafe at Canggu',
+    total: 'Rp850 Jt',
+    desain: 'Rp68 Jt',
     offers: [
       {
-        name: 'Nama arsitek',
-        rating: '',
-        chips: ['Tipe praktik', 'Pengalaman', 'Sertifikasi'],
-        biaya: 'Rp—',
-        durasi: '— minggu',
-        revisi: '—'
+        name: 'Made Wiratama',
+        rating: '★ 4,8',
+        chips: ['Arsitek freelance', '6 tahun pengalaman', 'Anggota IAI', 'Arsitektur Udayana'],
+        biaya: 'Rp58 Jt',
+        durasi: '5 minggu',
+        revisi: '3 kali'
       },
       {
-        name: 'Nama arsitek',
+        name: 'Studio Ruang Tropis',
         rating: '',
-        chips: ['Tipe praktik', 'Pengalaman', 'Sertifikasi'],
-        biaya: 'Rp—',
-        durasi: '— minggu',
-        revisi: '—'
+        chips: ['Firma arsitektur', '12 tahun pengalaman', 'Spesialis F&B'],
+        biaya: 'Rp72 Jt',
+        durasi: '7 minggu',
+        revisi: 'Unlimited'
       }
     ]
   }
@@ -193,11 +200,17 @@ let timer = null
 const activeProject = computed(() => HERO_PROJECTS[heroProj.value])
 const activeOffer = computed(() => activeProject.value.offers[heroOffer.value])
 
-const PROJECT_GRADIENTS = ['linear-gradient(135deg,#7C4728,#3D2114)', 'linear-gradient(135deg,#185C93,#0d2f4d)']
+const PROJECT_IMAGES = [heroProject1, heroProject2]
 const OFFER_GRADIENTS = ['linear-gradient(135deg,#C5A17A,#7C4728)', 'linear-gradient(135deg,#2F7DC0,#185C93)']
 
-const placeholderStyle = i => ({ background: PROJECT_GRADIENTS[i % PROJECT_GRADIENTS.length] })
-const offerImageStyle = computed(() => ({ background: OFFER_GRADIENTS[heroOffer.value % OFFER_GRADIENTS.length] }))
+const projectImageStyle = computed(() => ({
+  background: `center / cover no-repeat url(${PROJECT_IMAGES[heroProj.value % PROJECT_IMAGES.length]})`
+}))
+const offerImageStyle = computed(() => ({
+  background: activeOffer.value.image
+    ? `center / cover no-repeat url(${activeOffer.value.image})`
+    : OFFER_GRADIENTS[heroOffer.value % OFFER_GRADIENTS.length]
+}))
 
 const nextProject = () => {
   heroProj.value = (heroProj.value + 1) % HERO_PROJECTS.length
@@ -208,14 +221,68 @@ const nextOffer = () => {
   heroOffer.value = (heroOffer.value + 1) % activeProject.value.offers.length
 }
 
+const projectPill = ref(null)
+const offerPill = ref(null)
+const projectPillStyle = ref({})
+const offerPillStyle = ref({})
+let heroEl = null
+let backdropSize = null
+let resizeObserver = null
+
+// Offsets rather than getBoundingClientRect, so the offer pill's flip animation does not skew the alignment
+const offsetWithin = (el, ancestor) => {
+  let x = 0
+  let y = 0
+  for (let node = el; node && node !== ancestor; node = node.offsetParent) {
+    x += node.offsetLeft
+    y += node.offsetTop
+  }
+  return { x, y }
+}
+
+// Mirrors the hero's `background-size: cover; background-position: left top`
+const backdropStyleFor = el => {
+  if (!el || !heroEl || !backdropSize) return {}
+  const scale = Math.max(heroEl.clientWidth / backdropSize.w, heroEl.clientHeight / backdropSize.h)
+  const { x, y } = offsetWithin(el, heroEl)
+  return {
+    backgroundImage: `url(${props.backdrop})`,
+    backgroundSize: `${backdropSize.w * scale}px ${backdropSize.h * scale}px`,
+    backgroundPosition: `${-x}px ${-y}px`,
+    backgroundOrigin: 'border-box',
+    backgroundRepeat: 'no-repeat'
+  }
+}
+
+const alignPills = () => {
+  projectPillStyle.value = backdropStyleFor(projectPill.value)
+  offerPillStyle.value = backdropStyleFor(offerPill.value)
+}
+
+watch([heroProj, heroOffer], () => nextTick(alignPills))
+
 onMounted(() => {
   timer = setInterval(() => {
     if (paused.value) return
     nextOffer()
   }, 10000)
+
+  heroEl = projectPill.value?.closest('[data-hero-backdrop]')
+  if (!props.backdrop || !heroEl) return
+  const img = new Image()
+  img.onload = () => {
+    backdropSize = { w: img.naturalWidth, h: img.naturalHeight }
+    alignPills()
+  }
+  img.src = props.backdrop
+  resizeObserver = new ResizeObserver(alignPills)
+  resizeObserver.observe(heroEl)
 })
 
-onUnmounted(() => clearInterval(timer))
+onUnmounted(() => {
+  clearInterval(timer)
+  resizeObserver?.disconnect()
+})
 </script>
 
 <style scoped>

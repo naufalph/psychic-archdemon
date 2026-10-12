@@ -17,7 +17,7 @@ export default {
     hero: {
       title: 'Wujudkan Desain Impian, Tanpa Ribet',
       subline:
-        'Bandingkan penawaran arsitek terbaik, kelola proyek dengan cermat, dan bangun impian Anda bersama Rumantra.',
+        'Bandingkan penawaran arsitek terbaik, kelola proyek dengan cermat, dan bangun impian Anda bersama rumantra.',
       cta: 'Mulai Proyek Gratis',
       learnMore: 'Pelajari cara kerja',
       microcopy: 'Gratis untuk klien · Tanpa biaya pendaftaran'
@@ -63,7 +63,7 @@ export default {
       card2Desc:
         'Bandingkan harga dari berbagai studio secara apel-ke-apel tanpa biaya tersembunyi.',
       card3Title: 'Pembayaran aman',
-      card3Desc: 'Dana Anda aman di escrow Rumantra sampai tahap pengerjaan disetujui.',
+      card3Desc: 'Dana Anda aman di escrow rumantra sampai tahap pengerjaan disetujui.',
       card4Title: 'Komunikasi terpusat',
       card4Desc: 'Semua revisi, dokumen, dan chat tersimpan rapi dalam satu dashboard proyek.',
       card5Title: 'Beragam keahlian',
@@ -74,7 +74,7 @@ export default {
     cta: {
       title: 'Siap Mulai Proyek Impian Anda?',
       subline:
-        'Bergabunglah dengan ribuan klien yang membangun dengan percaya diri bersama Rumantra.',
+        'Bergabunglah dengan ribuan klien yang membangun dengan percaya diri bersama rumantra.',
       primary: 'Mulai Proyek Gratis',
       secondary: 'Daftar sebagai Arsitek'
     },
@@ -87,31 +87,47 @@ export default {
         cta: 'Buat brief proyek'
       },
       hero: {
-        title: 'One stop shop for architect services',
+        title: 'Semua kebutuhan arsitektur Anda, dalam satu tempat',
         subline:
           'Kirim satu brief, dapatkan proposal desain, dan kelola proyek Anda dalam satu platform.',
         cta: 'Buat brief proyek',
         yourProject: 'Proyek Anda',
         offerPrefix: 'Penawaran #'
       },
+      joinArchitect: {
+        question: 'Anda arsitek/desainer?',
+        cta: 'Gabung di sini'
+      },
+      caraKerja: {
+        title: 'Cara kerja rumantra',
+        cta: 'Mulai brief gratis',
+        step1Title: 'Ceritakan proyek Anda',
+        step1Desc: 'Isi brief singkat soal jenis, lokasi, luas, dan budget. Gratis, ±5 menit.',
+        step2Title: 'Terima penawaran arsitek',
+        step2Desc: 'Harga, jadwal, dan portofolio dari arsitek yang terverifikasi.',
+        step3Title: 'Bandingkan dan pilih',
+        step3Desc: 'Lihat penawaran berdampingan, lalu pilih arsitek yang paling cocok.',
+        step4Title: 'Kelola bersama di dashboard',
+        step4Desc: 'Pantau progres, diskusi, dan setujui tiap tahap bersama arsitek Anda.'
+      },
       tipeProyek: {
-        title: 'Seluruh kebutuhan desain Anda, ada di rumantra.',
+        title: 'Seluruh kebutuhan desain Anda, ada di rumantra',
         viewAll: 'Lihat semua',
         hunian: {
           title: 'Hunian',
-          desc: 'Placeholder text — jelaskan cakupan proyek hunian di sini.'
+          desc: 'Wujudkan hunian yang nyaman, fungsional, dan estetik'
         },
         komersil: {
           title: 'Komersil',
-          desc: 'Placeholder text — jelaskan cakupan proyek komersil di sini.'
+          desc: 'Selaraskan desain dengan tujuan bisnis Anda'
         },
         industrial: {
           title: 'Industrial',
-          desc: 'Placeholder text — jelaskan cakupan proyek industrial di sini.'
+          desc: 'Desain dan denah efisien untuk mendukung produksi dan operasi Anda'
         },
         lainnya: {
           title: 'Lainnya',
-          desc: 'Placeholder text — jelaskan jenis proyek lain di sini.'
+          desc: 'Dari rumah ibadah hingga sekolah, semuanya ada di sini'
         }
       },
       estimasi: {
@@ -145,9 +161,14 @@ export default {
         calcMethodValue: 'Tabel imbalan jasa Pedoman IAI edisi 2007'
       },
       mitra: {
-        title: 'Arsitek dan desainer terbaik, ada di rumantra.',
+        title: 'Arsitek dan desainer terbaik, ada di rumantra',
         subtitle: 'Mitra kami telah melewati proses screening, hanya yang terbaik yang ada disini',
-        more: 'more'
+        awardTitle: 'Arsitek Peraih Penghargaan',
+        awardDesc: 'Karya mereka diakui di ajang arsitektur nasional maupun internasional.',
+        firmTitle: 'Biro Arsitek Ternama',
+        firmDesc: 'Firma mapan dengan rekam jejak panjang dan portofolio proyek yang terbukti.',
+        risingTitle: 'Desainer Muda Berbakat',
+        risingDesc: 'Talenta baru dengan ide segar dan pendekatan desain yang berani.'
       },
       ruangProyek: {
         title: 'Satu tempat untuk mengelola proyek Anda.',
@@ -191,13 +212,13 @@ export default {
           'Anda meninjau hasil di ruang proyek, mengajukan revisi bila perlu, lalu menyetujui tahap tersebut.',
         step4Title: 'Bantuan saat terjadi perselisihan',
         step4Desc:
-          'Tim Rumantra membantu menengahi dengan acuan kontrak dan rekam jejak pekerjaan di ruang proyek.'
+          'Tim rumantra membantu menengahi dengan acuan kontrak dan rekam jejak pekerjaan di ruang proyek.'
       },
       faq: {
         title: 'FAQ',
         items: [
           {
-            q: 'Apa saja yang gratis di Rumantra?',
+            q: 'Apa saja yang gratis di rumantra?',
             a: 'Membuat brief proyek, menerima penawaran, dan membandingkan arsitek tidak dipungut biaya. Yang Anda bayar adalah jasa desain arsitek, sesuai kesepakatan di kontrak.'
           },
           {
@@ -210,7 +231,7 @@ export default {
           },
           {
             q: 'Berapa lama sampai penawaran pertama masuk?',
-            a: 'Rumantra masih dalam tahap beta, jadi kami belum punya angka rata-rata yang bisa dipertanggungjawabkan. Anda akan diberi kabar setiap kali ada penawaran baru di ruang proyek.'
+            a: 'rumantra masih dalam tahap beta, jadi kami belum punya angka rata-rata yang bisa dipertanggungjawabkan. Anda akan diberi kabar setiap kali ada penawaran baru di ruang proyek.'
           },
           {
             q: 'Siapa pemilik hak atas gambar desainnya?',
@@ -222,7 +243,7 @@ export default {
           },
           {
             q: 'Bagaimana kalau pekerjaan terlambat?',
-            a: 'Tenggat setiap tahap tercatat di ruang proyek dan bisa Anda angkat ke tim Rumantra.'
+            a: 'Tenggat setiap tahap tercatat di ruang proyek dan bisa Anda angkat ke tim rumantra.'
           },
           {
             q: 'Bagaimana kalau saya tidak sepakat dengan arsitek?',
@@ -243,14 +264,14 @@ export default {
         cta: 'Buat brief proyek',
         freeNote:
           'Gratis membuat brief dan menerima penawaran. Biaya desain disepakati dengan arsitek sebelum pekerjaan dimulai.',
-        architectCta: 'Anda arsitek? Bergabung sebagai mitra Rumantra'
+        architectCta: 'Anda arsitek? Bergabung sebagai mitra rumantra'
       }
     }
   },
   mulaiProyek: {
     title: 'Cari desain impian Kamu',
     subline:
-      'Jelajahi desain yang Rumantra bisa akomodir, atau isi formulir singkat kalau Kamu sudah tahu apa yang dicari.',
+      'Jelajahi desain yang rumantra bisa akomodir, atau isi formulir singkat kalau Kamu sudah tahu apa yang dicari.',
     toggleToForm: 'Isi formulir manual',
     toggleToBrowse: 'Kembali jelajahi desain',
     form: {
@@ -317,7 +338,7 @@ export default {
     trustedBy: 'Dipercayai Oleh'
   },
   premium: {
-    label: 'Rumantra Premium',
+    label: 'rumantra Premium',
     title: 'Solusi Profesional untuk Setiap Blueprint',
     cta: 'Solusi Lengkap Kami',
     features: {
@@ -347,7 +368,7 @@ export default {
   cta: {
     title: 'Siap menyewa Arsitek Ahli Anda?',
     subtitle:
-      'Bergabunglah dengan ribuan pemilik rumah yang membangun impian mereka melalui platform Rumantra.',
+      'Bergabunglah dengan ribuan pemilik rumah yang membangun impian mereka melalui platform rumantra.',
     startNow: 'Mulai Sekarang',
     learnMore: 'Pelajari Lebih Lanjut',
     hirePro: 'Sewa Pro',
@@ -375,7 +396,13 @@ export default {
   },
   auth: {
     signup: {
-      title: 'Bergabung dengan Rumantra',
+      registerTitle: 'Buat akun baru',
+      registerSubtitle: 'Gratis. Hanya butuh satu menit.',
+      registerAs: 'Daftar sebagai',
+      roleClient: 'Klien',
+      roleArchitect: 'Arsitek',
+      orEmail: 'atau daftar dengan email',
+      title: 'Bergabung dengan rumantra',
       subtitle: 'Mulai perjalanan arsitektur Anda hari ini',
       firstName: 'Nama Depan',
       lastName: 'Nama Belakang',
@@ -388,7 +415,7 @@ export default {
         termsLabel: 'Syarat & Ketentuan',
         and: 'dan',
         privacyLabel: 'Kebijakan Privasi',
-        suffix: 'Rumantra.',
+        suffix: 'rumantra.',
         loading: 'Memuat dokumen...',
         staleTerms: 'Syarat & Ketentuan telah diperbarui, silakan tinjau dan setujui kembali.',
         noticePrefix: 'Dengan melanjutkan, Anda menyetujui',
@@ -400,7 +427,7 @@ export default {
       orContinueWith: 'Atau lanjutkan dengan',
       roleSelection: {
         title: 'Saya ingin',
-        subtitle: 'Pilih cara Anda menggunakan Rumantra',
+        subtitle: 'Pilih cara Anda menggunakan rumantra',
         client: {
           title: 'Menyewa Arsitek',
           desc: 'Posting proyek, bandingkan penawaran, dan kelola desain arsitektur Anda'
@@ -413,7 +440,7 @@ export default {
       },
       success: {
         title: 'Akun Berhasil Dibuat!',
-        subtitle: 'Selamat datang di Rumantra',
+        subtitle: 'Selamat datang di rumantra',
         message:
           'Email verifikasi telah dikirim ke email Anda. Silakan cek inbox atau folder spam Anda.',
         redirecting: 'Mengarahkan Anda...'
@@ -428,7 +455,7 @@ export default {
     },
     login: {
       title: 'Selamat Datang Kembali',
-      subtitle: 'Masuk ke akun Rumantra Anda',
+      subtitle: 'Masuk ke akun rumantra Anda',
       email: 'Email',
       password: 'Kata Sandi',
       rememberMe: 'Ingat saya',
@@ -437,6 +464,21 @@ export default {
       noAccount: 'Belum punya akun?',
       signUpHere: 'Daftar di sini',
       orContinueWith: 'Atau lanjutkan dengan',
+      panelTitle: 'Satu akun untuk seluruh proyek Anda.',
+      panelSubtitle: 'Klien dan arsitek masuk dari pintu yang sama.',
+      perks: [
+        'Lanjutkan brief dan proyek kapan saja',
+        'Bandingkan penawaran dari arsitek terverifikasi',
+        'Kelola kontrak, progres, dan pembayaran di satu tempat'
+      ],
+      tabLogin: 'Masuk',
+      tabRegister: 'Daftar',
+      emailPlaceholder: 'cth. budi@email.com',
+      passwordPlaceholder: 'Kata sandi Anda',
+      googleCta: 'Lanjutkan dengan Google',
+      linkedinCta: 'Lanjutkan dengan LinkedIn',
+      orEmail: 'atau dengan email',
+      verified: 'Email berhasil diverifikasi. Silakan masuk untuk melanjutkan.',
       errors: {
         invalidCredentials: 'Email atau kata sandi salah',
         required: 'Bidang ini wajib diisi'
@@ -595,7 +637,7 @@ export default {
       photos: 'foto',
       edit: 'Edit',
       delete: 'Hapus',
-      madeWithRumantra: 'Dibuat dengan Rumantra'
+      madeWithRumantra: 'Dibuat dengan rumantra'
     },
     modal: {
       createTitle: 'Buat Portofolio',
@@ -820,7 +862,7 @@ export default {
     title: 'Verifikasi Identitas',
     subtitle: 'Diperlukan sebelum mengajukan penawaran. Anda dapat melewati ini untuk sekarang.',
     notice:
-      'KTP, NPWP, dan nama lengkap Anda akan diverifikasi secara manual oleh tim Rumantra. Nomor HP memerlukan verifikasi OTP via WhatsApp, yang dapat dilakukan di halaman Profil.',
+      'KTP, NPWP, dan nama lengkap Anda akan diverifikasi secara manual oleh tim rumantra. Nomor HP memerlukan verifikasi OTP via WhatsApp, yang dapat dilakukan di halaman Profil.',
     fullnameKtp: 'Nama Lengkap (sesuai KTP)',
     fullnameKtpPlaceholder: 'mis. Budi Santoso',
     ktpNum: 'Nomor KTP',
@@ -853,6 +895,9 @@ export default {
     title: 'Dashboard Klien',
     subtitle: 'Selamat datang di ruang kerja Anda',
     myProjects: 'Proyek Saya',
+    seeAll: 'Lihat semua',
+    noSubmittedProjects:
+      'Belum ada proyek yang dikirim. Brief yang sudah Anda kirim akan muncul di sini.',
     myProjectsSubtitle: 'Kelola dan lacak proyek arsitektur Anda',
     newProject: 'Proyek Baru',
     noProjectsYet: 'Belum ada proyek',
@@ -1899,7 +1944,7 @@ export default {
     filesTaggedTo: '{n} berkas terkait deliverable ini \u00b7 {phase}',
     previewBtn: 'Pratinjau',
     contractLede:
-      'Dana ditahan di escrow Rumantra dan dicairkan per tahap setelah Anda menyetujui pekerjaan.',
+      'Dana ditahan di escrow rumantra dan dicairkan per tahap setelah Anda menyetujui pekerjaan.',
     colPhase: 'Tahap',
     colDeadline: 'Tenggat',
     colAmount: 'Jumlah',
@@ -2388,6 +2433,9 @@ export default {
       verifyBody:
         'Kami mengirim tautan verifikasi ke {email}. Setelah akun aktif, masuk untuk melanjutkan brief Anda.',
       verifyCta: 'Kembali ke halaman masuk',
+      doneTitle: 'Berhasil masuk',
+      doneBody: 'Brief awal Anda sudah tersimpan di akun. Lanjutkan mengisi detail proyek.',
+      doneCta: 'Lanjutkan',
       close: 'Tutup'
     }
   }

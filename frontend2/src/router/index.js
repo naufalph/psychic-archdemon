@@ -10,7 +10,7 @@ const routes = [
   {
     path: '/brief-proyek',
     name: 'ProjectBrief',
-    component: () => import('@/views/landing/ProjectBrief.vue')
+    component: () => import('@/views/landing/ProjectSurvey.vue')
   },
   {
     path: '/signup',
@@ -73,9 +73,10 @@ const routes = [
         component: () => import('@/views/client/ClientProfile.vue')
       },
       {
+        // The survey at /brief-proyek is the one project-submission flow; old links land there
         path: 'projects/create',
         name: 'ProjectCreate',
-        component: () => import('@/views/client/ProjectCreate.vue')
+        redirect: { name: 'ProjectBrief', query: { baru: '1' } }
       },
       {
         path: 'projects/:projectId/finalization',
@@ -118,6 +119,12 @@ const routes = [
     path: '/architect/opportunities/:projectId/bid',
     name: 'BidCreate',
     component: () => import('@/views/architect/BidCreate.vue'),
+    meta: { requiresAuth: true, requiresRole: 'ARCHITECT' }
+  },
+  {
+    path: '/architect/onboarding',
+    name: 'ArchitectOnboarding',
+    component: () => import('@/views/architect/ArchitectOnboarding.vue'),
     meta: { requiresAuth: true, requiresRole: 'ARCHITECT' }
   },
   // Architect app shell (persistent sidebar)

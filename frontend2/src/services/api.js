@@ -89,8 +89,12 @@ api.interceptors.response.use(
       }
     }
 
-    // Handle 401 Unauthorized errors (JWT token expired or invalid)
-    if (error.response?.status === 401 && !originalRequest._retry) {
+    // Handle 401 Unauthorized errors (JWT token expired or invalid). Only a request that carried
+    // a token can have an expired session: a failed sign-in (wrong password, unverified email)
+    // also answers 401 and must reach its form as an error, not bounce the page to /login.
+    const sentToken = !!originalRequest?.headers?.Authorization
+    const isSignIn = originalRequest?.url?.includes('/rmtr/users/login')
+    if (error.response?.status === 401 && sentToken && !isSignIn && !originalRequest._retry) {
       originalRequest._retry = true
 
       // For stateless JWT, clear auth and redirect to login

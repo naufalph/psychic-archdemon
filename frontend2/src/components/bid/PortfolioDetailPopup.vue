@@ -62,7 +62,7 @@
               :key="i"
               type="button"
               class="shrink-0 w-14 h-14 rounded-lg overflow-hidden border-2 transition"
-              :class="i === activeIndex ? 'border-brand-brown' : 'border-transparent opacity-60 hover:opacity-100'"
+              :class="i === activeIndex ? 'border-ink-900' : 'border-transparent opacity-60 hover:opacity-100'"
               @click="activeIndex = i"
             >
               <img :src="img.mediumUrl || img.originalUrl" :alt="`thumb ${i + 1}`" class="w-full h-full object-cover" />
