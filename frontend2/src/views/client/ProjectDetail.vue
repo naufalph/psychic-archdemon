@@ -36,7 +36,9 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div class="bg-gray-50 rounded-2xl p-6">
               <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.clientDashboard.lotSize }}</p>
-              <p class="text-2xl font-bold text-black">{{ currentProject.lotSize }} m²</p>
+              <p class="text-2xl font-bold text-black">
+                {{ currentProject.lotSize ? `${currentProject.lotSize} m²` : '—' }}
+              </p>
             </div>
             <div class="bg-gray-50 rounded-2xl p-6">
               <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.clientDashboard.designBudget }}</p>

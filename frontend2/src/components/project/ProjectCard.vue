@@ -90,7 +90,10 @@
       </p>
 
       <div class="flex flex-wrap gap-2 mb-6">
-        <span class="bg-gray-100 px-3 py-1.5 rounded-full text-xs font-medium border border-gray-200">
+        <span
+          v-if="project.lotSize"
+          class="bg-gray-100 px-3 py-1.5 rounded-full text-xs font-medium border border-gray-200"
+        >
           {{ project.lotSize }} m²
         </span>
         <span

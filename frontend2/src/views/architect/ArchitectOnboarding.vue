@@ -4,7 +4,7 @@
       <AccountMenu role-label="arsitek" @logout="logout" />
     </DashboardTopbar>
 
-    <main class="px-6 pt-[clamp(32px,5vw,64px)] pb-[clamp(56px,7vw,96px)] box-border">
+    <main v-if="profileChecked" class="px-6 pt-[clamp(32px,5vw,64px)] pb-[clamp(56px,7vw,96px)] box-border">
       <div v-if="key === 'welcome'" class="max-w-[1232px] mx-auto">
         <OnbWelcome @next="go(1)" />
       </div>
@@ -64,6 +64,8 @@ const go = delta => {
   router.push({ query: { ...route.query, langkah: Math.max(0, index.value + delta) } })
 }
 
+const existingProfile = ref(null)
+const profileChecked = ref(false)
 const finished = ref(false)
 const saving = ref(false)
 const saveError = ref('')
@@ -71,7 +73,7 @@ const finish = async () => {
   saving.value = true
   saveError.value = ''
   try {
-    await architectAPI.updateFullProfile(profilePayload())
+    await architectAPI.updateFullProfile(profilePayload(existingProfile.value))
     finished.value = true
     window.scrollTo({ top: 0 })
   } catch (error) {
@@ -91,8 +93,23 @@ onMounted(async () => {
   const missing = firstIncomplete()
   if (missing !== null && index.value > missing) router.replace({ query: { ...route.query, langkah: missing } })
 
-  if (!state.nama && authStore.user?.firstName) {
-    state.nama = [authStore.user.firstName, authStore.user.lastName].filter(Boolean).join(' ')
+  try {
+    existingProfile.value = (await architectAPI.getProfile()).data?.data || null
+  } catch {
+    existingProfile.value = null
+  }
+  // Onboarding is for new architects; anyone whose business details are already saved edits
+  // them on the profile page, so the onboarding defaults cannot overwrite what is there
+  if (existingProfile.value?.profileCompletion?.businessLocationComplete) {
+    router.replace('/architect/dashboard')
+    return
+  }
+  profileChecked.value = true
+
+  if (!state.nama) {
+    state.nama =
+      existingProfile.value?.fullnameKtp ||
+      [authStore.user?.firstName, authStore.user?.lastName].filter(Boolean).join(' ')
   }
 })
 </script>

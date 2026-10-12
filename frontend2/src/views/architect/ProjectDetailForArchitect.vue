@@ -41,7 +41,7 @@
             </div>
             <div class="bg-gray-50 rounded-2xl p-6">
               <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.projectDetailArchitect.floors }}</p>
-              <p class="text-2xl font-bold text-black">{{ project.numberOfFloors }}</p>
+              <p class="text-2xl font-bold text-black">{{ project.numberOfFloors ?? '—' }}</p>
             </div>
           </div>
 

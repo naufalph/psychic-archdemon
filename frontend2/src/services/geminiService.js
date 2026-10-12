@@ -29,7 +29,7 @@ export const analyzeBids = async (project, bids) => {
     Scope: ${project.projectScope || 'N/A'}
     Category: ${project.buildingFunction || project.buildingType}
     Sub-Category: ${project.subCategory || 'N/A'}
-    Lot Size: ${project.lotSize} m2
+    Lot Size: ${project.lotSize ? `${project.lotSize} m2` : 'N/A'}
     Description: ${project.description}
     Design Budget (Target): ${project.designBudget || project.budget}
     Requested Deliverables: ${project.deliverables ? project.deliverables.join(', ') : 'Not specified'}

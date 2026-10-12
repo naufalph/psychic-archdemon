@@ -90,12 +90,19 @@ export function useArchitectOnboarding() {
 
   // Only fields the architect profile API already stores. Profession, exact year, social
   // links and interior expertise stay in the local draft until the backend has columns for them.
-  const profilePayload = () => {
+  // Fields left undefined are dropped from the request, and the backend keeps the saved value.
+  const profilePayload = (existing = null) => {
     const jenis = JENIS_USAHA_OPTIONS.find(o => o.id === state.jenis)
     const tel = digits(state.telp).replace(/^(62|0)/, '')
     const site = state.website.trim().replace(/^https?:\/\//, '')
+    // A KTP name an admin already verified must not change under the verified badge
+    const keepKtpName = !!(existing?.ktpVerified && existing?.fullnameKtp)
+    // V19 left unmappable legacy expertise on some profiles; it survives, and picking only
+    // interior work (no IAI codes) leaves the saved expertise untouched instead of emptying it
+    const picked = activeKeahlian.value.filter(v => iaiValues.has(v))
+    const legacy = (existing?.expertise || []).filter(v => !iaiValues.has(v))
     return {
-      fullnameKtp: state.nama.trim(),
+      fullnameKtp: keepKtpName ? undefined : state.nama.trim(),
       contactName: state.nama.trim(),
       companyName: isSolo.value ? null : state.entitas.trim(),
       category: jenis?.category || null,
@@ -106,7 +113,7 @@ export function useArchitectOnboarding() {
       city: state.city,
       companySite: site ? `https://${site}` : null,
       experienceRange: state.tahun ? experienceFromYear(state.tahun) : null,
-      expertise: activeKeahlian.value.filter(v => iaiValues.has(v))
+      expertise: picked.length ? [...legacy, ...picked] : undefined
     }
   }
 
