@@ -116,6 +116,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useProjectsStore } from '@/stores/projects'
 import { useClientProfileStore } from '@/stores/clientProfile'
 import { useProjectSurvey } from '@/composables/useProjectSurvey'
+import { useProjectBrief } from '@/composables/useProjectBrief'
 import { landingAPI } from '@/services/api'
 import { isValidCategory } from '@/constants/projectTaxonomy'
 import {
@@ -149,6 +150,7 @@ const authStore = useAuthStore()
 const projectsStore = useProjectsStore()
 const clientProfileStore = useClientProfileStore()
 const survey = useProjectSurvey()
+const { saveToken, storedToken, clearToken } = useProjectBrief()
 
 const authOpen = ref(false)
 const notifyService = ref(null)
@@ -290,9 +292,43 @@ const openDashboard = () => {
   else leaveOpen.value = true
 }
 
+// A visitor who reaches the account step signed out leaves a server-side record of their
+// answers, so briefs abandoned before sign-in still count toward traction. Best effort only.
+const recordAnonymousBrief = async () => {
+  if (storedToken()) return
+  try {
+    const res = await landingAPI.createBrief(survey.briefSnapshot())
+    saveToken(res.data?.data?.claimToken)
+  } catch {
+    // Rate limit or network: the survey carries on without the record
+  }
+}
+
+watch(
+  () => key.value === 'akun' && !signedInClient.value,
+  atAccountSignedOut => {
+    if (atAccountSignedOut) recordAnonymousBrief()
+  },
+  { immediate: true }
+)
+
+// Sign-up already links the brief to the new account; a login or OAuth return claims it here
+const claimPendingBrief = async () => {
+  const token = storedToken()
+  if (!token || !signedInClient.value) return
+  try {
+    await landingAPI.claimBrief(token)
+    clearToken()
+  } catch (err) {
+    // A missing or someone else's brief can never be claimed, so stop retrying it
+    if ([400, 404, 409].includes(err.response?.status)) clearToken()
+  }
+}
+
 const onAuthenticated = async () => {
   authOpen.value = false
   if (!authStore.isClient) return
+  claimPendingBrief()
   if (await openDraftFromRoute()) return
   survey.goTo('alamat')
   autosave()
@@ -364,6 +400,7 @@ const openDraftFromRoute = async () => {
 }
 
 onMounted(async () => {
+  claimPendingBrief()
   // "Proyek baru" from the dashboard starts a clean brief; an unfinished one is already a
   // draft in the account, so clearing this browser's copy loses nothing
   if (route.query.baru) {

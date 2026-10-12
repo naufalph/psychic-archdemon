@@ -1,5 +1,8 @@
 import { defineStore } from 'pinia'
 import { authAPI } from '@/services/api'
+import { useProjectSurvey } from '@/composables/useProjectSurvey'
+import { useProjectBrief } from '@/composables/useProjectBrief'
+import { useArchitectOnboarding } from '@/composables/useArchitectOnboarding'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -147,6 +150,11 @@ export const useAuthStore = defineStore('auth', {
         // Since JWT tokens are stateless, just clear local storage
         // No server-side logout endpoint needed
         this.clearAuth()
+        // Drafts sit in shared browser storage; the next person to sign in must not inherit them
+        useProjectSurvey().reset()
+        useArchitectOnboarding().reset()
+        localStorage.removeItem('rumantra:architect-onboarding:v1')
+        useProjectBrief().clearToken()
       } catch (error) {
         console.error('Logout failed:', error)
       } finally {

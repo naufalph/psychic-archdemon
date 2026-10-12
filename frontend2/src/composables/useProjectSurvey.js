@@ -264,6 +264,16 @@ export function useProjectSurvey() {
     expectedStartDate: state.startType === 'SPECIFIC_DATE' ? state.startDate : null
   })
 
+  // The anonymous record of what a visitor answered before signing in; see LandingBriefService
+  const briefSnapshot = () => ({
+    presetSlug: state.presetSlug || null,
+    projectScope: primaryScope.value,
+    buildingFunction: state.category || null,
+    subCategory: state.subCategory || null,
+    title: projectTitle().slice(0, 160),
+    description: requirementsText().slice(0, 2000)
+  })
+
   const go = index => {
     state.step = Math.min(Math.max(index, 0), SURVEY_FLOW.length - 1)
     window.scrollTo(0, 0)
@@ -408,6 +418,7 @@ export function useProjectSurvey() {
     services,
     valid,
     buildProjectData,
+    briefSnapshot,
     hydrateFromProject,
     go,
     goTo,
