@@ -23,7 +23,7 @@
         <div class="flex-1 min-w-0">
           <p class="font-semibold text-gray-900 truncate">{{ project.title }}</p>
           <p class="text-sm text-gray-500 mt-0.5">
-            {{ project.location }} · Design Fee IDR {{ formatCurrency(project.designBudgetMin) }} -
+            {{ placeLabel(project) }} · Design Fee IDR {{ formatCurrency(project.designBudgetMin) }} -
             {{ formatCurrency(project.designBudgetMax) }}
           </p>
           <p class="text-xs text-gray-400 mt-1">
@@ -103,6 +103,7 @@
 import { ref, onMounted } from 'vue'
 import { adminProjectsAPI, superuserProjectsAPI } from '@/services/adminApi'
 import { useI18n } from '@/composables/useI18n'
+import { placeLabel } from '@/constants/regions'
 
 const { t } = useI18n()
 

@@ -15,7 +15,6 @@ public class ProjectPublicPreviewResponse {
 
   private Long id;
   private String title;
-  private String location;
 
   // Served unauthenticated to the landing page, so the site's exact whereabouts stay out:
   // no fullAddress, latitude or longitude here. City and province are coarse enough to be public.

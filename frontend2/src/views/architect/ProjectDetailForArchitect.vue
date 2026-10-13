@@ -122,7 +122,6 @@
             :province="project.province"
             :latitude="project.latitude"
             :longitude="project.longitude"
-            :legacy-location="project.location"
           />
         </div>
 
@@ -240,7 +239,7 @@ import ProjectStatusBadge from '@/components/project/ProjectStatusBadge.vue'
 import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
 import BidImageGallery from '@/components/bid/BidImageGallery.vue'
 import SiteLocationMap from '@/components/project/SiteLocationMap.vue'
-import { displayProvince } from '@/constants/regions'
+import { placeLabel } from '@/constants/regions'
 import { useProjectsStore } from '@/stores/projects'
 import { useBidsStore } from '@/stores/bids'
 import { groupDeliverables } from '@/constants/projectDeliverables'
@@ -262,12 +261,9 @@ const galleryImages = computed(() =>
   imageFiles.value.map(file => ({ imageUrl: file.filePath, fileName: file.fileName }))
 )
 
-const regionLine = computed(() => {
-  const structured = [project.value?.city, displayProvince(project.value?.province)].filter(Boolean).join(', ')
-  return structured || project.value?.location || ''
-})
+const regionLine = computed(() => placeLabel(project.value))
 
-const hasLocation = computed(() => !!(project.value?.fullAddress || project.value?.city || project.value?.location))
+const hasLocation = computed(() => !!(project.value?.fullAddress || project.value?.city))
 
 const documentFiles = computed(() => (project.value?.files ?? []).filter(f => !f.fileType?.startsWith('image/')))
 

@@ -1,4 +1,5 @@
 import { GoogleGenAI, Type } from '@google/genai'
+import { placeLabel } from '@/constants/regions'
 
 const apiKey = import.meta.env.VITE_GEMINI_API_KEY || ''
 const ai = new GoogleGenAI({ apiKey })
@@ -25,7 +26,7 @@ export const analyzeBids = async (project, bids) => {
 
     Project Details:
     Title: ${project.title}
-    Location: ${project.location}
+    Location: ${placeLabel(project) || 'N/A'}
     Scope: ${project.projectScope || 'N/A'}
     Category: ${project.buildingFunction || project.buildingType}
     Sub-Category: ${project.subCategory || 'N/A'}

@@ -36,7 +36,7 @@
                 <p class="text-xs text-gray-500 uppercase font-bold mb-1">
                   {{ t.bidCreate?.location || 'Location' }}
                 </p>
-                <p class="text-gray-900">{{ currentBid.projectLocation || currentProject?.location }}</p>
+                <p class="text-gray-900">{{ bidPlace }}</p>
               </div>
 
               <template v-if="currentProject">
@@ -328,6 +328,7 @@
 <script setup>
 import { computed, onMounted, ref } from 'vue'
 import { projectTypeLabel } from '@/constants/projectTaxonomy'
+import { placeLabel } from '@/constants/regions'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { ArrowLeft, Check, Trophy } from 'lucide-vue-next'
@@ -347,6 +348,11 @@ const projectsStore = useProjectsStore()
 
 const { currentBid, loading, error } = storeToRefs(bidsStore)
 const { currentProject } = storeToRefs(projectsStore)
+const bidPlace = computed(
+  () =>
+    placeLabel({ city: currentBid.value?.projectCity, province: currentBid.value?.projectProvince }) ||
+    placeLabel(currentProject.value)
+)
 
 const viewingPortfolio = ref(null)
 

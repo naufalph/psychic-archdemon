@@ -37,7 +37,7 @@
                 <p class="text-xs text-gray-500 uppercase font-bold mb-1">
                   {{ t.bidCreate?.location || 'Location' }}
                 </p>
-                <p class="text-gray-900">{{ project.location }}</p>
+                <p class="text-gray-900">{{ placeLabel(project) }}</p>
               </div>
 
               <div>
@@ -552,6 +552,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { projectTypeLabel } from '@/constants/projectTaxonomy'
+import { placeLabel } from '@/constants/regions'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { ArrowLeft, FileText, Loader, Send, AlertTriangle, X } from 'lucide-vue-next'

@@ -21,7 +21,6 @@ public class ProjectResponse {
   private Long id;
   private Long clientId;
   private String title;
-  private String location;
   private String fullAddress;
   private String city;
   private String province;

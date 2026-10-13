@@ -13,8 +13,5 @@ public interface LandingBriefRepository extends JpaRepository<LandingBrief, Long
 
   Optional<LandingBrief> findByClaimToken(String claimToken);
 
-  Optional<LandingBrief> findFirstByClaimedByUserIdAndClaimedAtIsNullOrderByCreatedAtDesc(
-      Long claimedByUserId);
-
   long countByCreatedAtAfter(LocalDateTime since);
 }

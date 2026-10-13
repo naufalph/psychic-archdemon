@@ -36,8 +36,8 @@
       </p>
 
       <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-caption-sm text-ink-400 mt-auto mb-4">
-        <span v-if="project.location" class="inline-flex items-center gap-1 min-w-0 max-w-full">
-          <MapPin :size="12" class="shrink-0" /> <span class="truncate">{{ project.location }}</span>
+        <span v-if="place" class="inline-flex items-center gap-1 min-w-0 max-w-full">
+          <MapPin :size="12" class="shrink-0" /> <span class="truncate">{{ place }}</span>
         </span>
         <span v-if="project.designBudget" class="whitespace-nowrap">Rp {{ formatCurrency(project.designBudget) }}</span>
         <span v-if="project.createdAt" class="inline-flex items-center gap-1 whitespace-nowrap">
@@ -83,7 +83,7 @@
         </div>
       </div>
 
-      <p class="text-gray-500 text-sm mb-4">{{ project.location }} • {{ projectTypeText }}</p>
+      <p class="text-gray-500 text-sm mb-4">{{ place }} • {{ projectTypeText }}</p>
 
       <p v-if="project.description" class="text-gray-600 text-sm mb-6 line-clamp-3">
         {{ project.description }}
@@ -127,6 +127,7 @@ import { useRouter } from 'vue-router'
 import { MapPin, Clock, Building2 } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
 import { projectTypeLabel } from '@/constants/projectTaxonomy'
+import { placeLabel } from '@/constants/regions'
 import ProjectStatusBadge from './ProjectStatusBadge.vue'
 import BidStatusBadge from './BidStatusBadge.vue'
 import BiddingCountdown from '../bidding/BiddingCountdown.vue'
@@ -166,6 +167,7 @@ const coverImage = computed(() => {
 })
 
 const projectTypeText = computed(() => projectTypeLabel(props.project, locale.value))
+const place = computed(() => placeLabel(props.project))
 
 // Status reads as a coloured dot on a neutral pill, so the badge stays calm over any photo
 const STATUS_DOT = {

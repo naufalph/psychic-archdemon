@@ -440,8 +440,8 @@ export const landingAPI = {
   getHeroSlides: () => api.get('/rmtr/landing/hero-slides'),
   getPresets: () => api.get('/rmtr/landing/presets'),
   createBrief: payload => api.post('/rmtr/landing/briefs', payload),
-  claimBrief: claimToken => api.post(`/rmtr/landing/briefs/${claimToken}/claim`),
-  consumeMyBrief: () => api.post('/rmtr/landing/briefs/mine/consume')
+  updateBrief: (claimToken, payload) => api.put(`/rmtr/landing/briefs/${claimToken}`, payload),
+  claimBrief: claimToken => api.post(`/rmtr/landing/briefs/${claimToken}/claim`)
 }
 
 export const universityAPI = {

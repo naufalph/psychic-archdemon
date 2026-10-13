@@ -45,7 +45,7 @@
               </span>
             </div>
             <p class="text-sm text-gray-500">
-              {{ project.location }} · Design Fee IDR {{ formatCurrency(project.designBudgetMin) }} -
+              {{ placeLabel(project) }} · Design Fee IDR {{ formatCurrency(project.designBudgetMin) }} -
               {{ formatCurrency(project.designBudgetMax) }}
             </p>
             <p class="text-xs text-gray-400 mt-1">
@@ -84,6 +84,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { adminProjectsAPI } from '@/services/adminApi'
 import { useI18n } from '@/composables/useI18n'
+import { placeLabel } from '@/constants/regions'
 import BaseAlert from '@/components/ui/BaseAlert.vue'
 
 const { t } = useI18n()

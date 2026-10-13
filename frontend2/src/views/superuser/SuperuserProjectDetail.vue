@@ -21,7 +21,7 @@
           <div class="flex justify-between items-start mb-6">
             <div>
               <h1 class="text-3xl font-bold text-black mb-2">{{ detail.project.title }}</h1>
-              <p class="text-gray-500">{{ detail.project.location }} • {{ detail.project.projectCategory }}</p>
+              <p class="text-gray-500">{{ placeLabel(detail.project) }} • {{ detail.project.projectCategory }}</p>
             </div>
             <ProjectStatusBadge :status="detail.project.status" />
           </div>
@@ -62,7 +62,6 @@
               :province="detail.project.province"
               :latitude="detail.project.latitude"
               :longitude="detail.project.longitude"
-              :legacy-location="detail.project.location"
             />
           </div>
 
@@ -211,6 +210,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ArrowLeft, Phone } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
+import { placeLabel } from '@/constants/regions'
 import ProjectStatusBadge from '@/components/project/ProjectStatusBadge.vue'
 import BidImageGallery from '@/components/bid/BidImageGallery.vue'
 import SiteLocationMap from '@/components/project/SiteLocationMap.vue'
@@ -234,7 +234,7 @@ const galleryImages = computed(() =>
 
 const hasLocation = computed(() => {
   const p = detail.value?.project
-  return !!(p?.fullAddress || p?.city || p?.location)
+  return !!(p?.fullAddress || p?.city)
 })
 
 const formatCurrency = value => {

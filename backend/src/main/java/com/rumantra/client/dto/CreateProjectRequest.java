@@ -19,9 +19,6 @@ public class CreateProjectRequest {
   @Size(max = 255, message = "Title must not exceed 255 characters")
   private String title;
 
-  @Size(max = 255, message = "Location must not exceed 255 characters")
-  private String location;
-
   private String fullAddress;
 
   @Size(max = 255, message = "City must not exceed 255 characters")
@@ -79,4 +76,8 @@ public class CreateProjectRequest {
   private LocalDate expectedStartDate;
 
   private LocalDate biddingDeadline;
+
+  // The survey's landing brief, linked to the draft it produced (see LandingBriefService)
+  @Size(max = 64, message = "Brief token must not exceed 64 characters")
+  private String landingBriefToken;
 }

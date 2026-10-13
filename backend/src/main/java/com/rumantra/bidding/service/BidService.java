@@ -337,7 +337,8 @@ public class BidService {
         .id(bid.getId())
         .projectId(bid.getProject().getId())
         .projectTitle(bid.getProject().getTitle())
-        .projectLocation(bid.getProject().getLocation())
+        .projectCity(bid.getProject().getCity())
+        .projectProvince(bid.getProject().getProvince())
         .projectStatus(
             bid.getProject().getStatus() != null ? bid.getProject().getStatus().name() : null)
         .projectCoverImagePath(

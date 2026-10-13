@@ -251,6 +251,23 @@ categories, so the prefix is not optional. V19 left unmappable legacy values in 
 - Migrations sort **lexically**, so `ls` puts V9 last — use `ls | sort -V` to find the
   real latest version
 
+### Survey funnel (`rmtr_landing_brief`)
+Every `/brief-proyek` survey keeps one brief row, keyed by the claim token in localStorage.
+Each "Lanjut" moves `furthest_step` forward, before and after login. The answers given before
+login stay on the brief. After login they live in the project draft, which the brief points to
+via `project_id`. `SURVEY_STEPS` in `LandingBriefService` mirrors `SURVEY_FLOW` in
+`projectSurvey.js`, so edit them together. Drop-off per step:
+
+```sql
+SELECT s.step, count(b.id) AS reached
+FROM unnest(ARRAY['lineup','scope','property','akun','alamat','luas','kebutuhan','deliv','fee','mulai','review'])
+     WITH ORDINALITY AS s(step, ord)
+LEFT JOIN rmtr_landing_brief b
+  ON array_position(ARRAY['lineup','scope','property','akun','alamat','luas','kebutuhan','deliv','fee','mulai','review'], b.furthest_step) >= s.ord
+GROUP BY s.step, s.ord ORDER BY s.ord;
+```
+A brief counts as submitted when its `project_id` points to a project past `DRAFT`.
+
 ### Status ledger (money-touching streams)
 
 Status changes on the five money-touching entities are recorded in append-only log

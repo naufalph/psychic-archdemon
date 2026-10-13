@@ -16,9 +16,7 @@
 
     <div class="p-5">
       <h3 class="text-base font-bold text-black mb-1 line-clamp-1">{{ bid.projectTitle || 'Project' }}</h3>
-      <p v-if="bid.projectLocation" class="text-gray-500 text-xs mb-3 flex items-center gap-1">
-        <MapPin :size="11" /> {{ bid.projectLocation }}
-      </p>
+      <p v-if="place" class="text-gray-500 text-xs mb-3 flex items-center gap-1"><MapPin :size="11" /> {{ place }}</p>
 
       <div class="flex flex-wrap gap-2 mb-4">
         <span class="bg-gray-100 px-3 py-1.5 rounded-full text-xs font-medium border border-gray-200">
@@ -49,6 +47,7 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { MapPin } from 'lucide-vue-next'
 import { useI18n } from '@/composables/useI18n'
+import { placeLabel } from '@/constants/regions'
 import BidStatusBadge from '@/components/project/BidStatusBadge.vue'
 import ProjectStatusBadge from '@/components/project/ProjectStatusBadge.vue'
 
@@ -59,6 +58,7 @@ const props = defineProps({
 const { t } = useI18n()
 const router = useRouter()
 
+const place = computed(() => placeLabel({ city: props.bid.projectCity, province: props.bid.projectProvince }))
 const coverImage = computed(() => props.bid.projectCoverImagePath || props.bid.facadeImages?.[0]?.imageUrl || null)
 
 const ctaLabel = computed(() => {

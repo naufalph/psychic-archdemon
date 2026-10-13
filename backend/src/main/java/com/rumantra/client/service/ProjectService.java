@@ -33,6 +33,7 @@ import com.rumantra.client.dto.ProjectResponse;
 import com.rumantra.client.repository.ClientRepository;
 import com.rumantra.client.repository.ProjectFileRepository;
 import com.rumantra.client.repository.ProjectRepository;
+import com.rumantra.landing.service.LandingBriefService;
 import com.rumantra.ledger.service.StatusTransitionService;
 import com.rumantra.notification.event.ProjectValidatedEvent;
 import com.rumantra.payment.domain.PhasePaymentStatus;
@@ -74,6 +75,7 @@ public class ProjectService {
   private final PhasePaymentRepository phasePaymentRepository;
   private final StatusTransitionService statusTransitionService;
   private final ContractDocumentService contractDocumentService;
+  private final LandingBriefService landingBriefService;
 
   @PersistenceContext private EntityManager entityManager;
 
@@ -137,6 +139,9 @@ public class ProjectService {
     applyDraftFields(project, request);
 
     project = projectRepository.save(project);
+
+    landingBriefService.linkProject(
+        request.getLandingBriefToken(), SecurityUtils.getCurrentUserId(), project.getId());
 
     return mapToProjectResponse(project);
   }
@@ -216,7 +221,6 @@ public class ProjectService {
 
   private void applyDraftFields(Project project, CreateProjectRequest request) {
     project.setTitle(request.getTitle());
-    project.setLocation(request.getLocation());
     project.setFullAddress(request.getFullAddress());
     project.setCity(request.getCity());
     project.setProvince(request.getProvince());
@@ -262,8 +266,11 @@ public class ProjectService {
     if (project.getTitle() == null || project.getTitle().isBlank()) {
       missing.add("Title");
     }
-    if (project.getLocation() == null || project.getLocation().isBlank()) {
-      missing.add("Location");
+    if (project.getProvince() == null || project.getProvince().isBlank()) {
+      missing.add("Province");
+    }
+    if (project.getCity() == null || project.getCity().isBlank()) {
+      missing.add("City");
     }
     // An interior fit-out works inside an existing unit, so the client may not know the lot at
     // all. Floors are optional for every scope: the brief lets a client answer "not sure yet".
@@ -772,7 +779,6 @@ public class ProjectService {
         .id(project.getId())
         .clientId(project.getClient().getId())
         .title(project.getTitle())
-        .location(project.getLocation())
         .fullAddress(project.getFullAddress())
         .city(project.getCity())
         .province(project.getProvince())
@@ -835,7 +841,6 @@ public class ProjectService {
     return com.rumantra.client.dto.ProjectPublicPreviewResponse.builder()
         .id(project.getId())
         .title(project.getTitle())
-        .location(project.getLocation())
         // Deliberately no fullAddress/latitude/longitude - this DTO is served unauthenticated.
         .city(project.getCity())
         .province(project.getProvince())

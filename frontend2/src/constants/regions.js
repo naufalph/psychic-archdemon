@@ -647,3 +647,6 @@ export const provinceLabel = province => PROVINCES.find(p => p.value === provinc
 // Rows saved before the survey stored codes hold a plain name instead (Google's
 // "Daerah Khusus Ibukota Jakarta", or a label); those are shown as they are.
 export const displayProvince = value => provinceLabel(value) || value || ''
+
+export const placeLabel = place =>
+  [place?.city, displayProvince(place?.province)].filter(Boolean).join(', ')

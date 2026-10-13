@@ -27,7 +27,7 @@
             <div>
               <h1 class="text-3xl font-bold text-black mb-2">{{ currentProject.title }}</h1>
               <p class="text-gray-500">
-                {{ currentProject.location }} • {{ projectTypeLabel(currentProject, locale) }}
+                {{ placeLabel(currentProject) }} • {{ projectTypeLabel(currentProject, locale) }}
               </p>
             </div>
             <ProjectStatusBadge :status="currentProject.status" />
@@ -58,7 +58,6 @@
               :province="currentProject.province"
               :latitude="currentProject.latitude"
               :longitude="currentProject.longitude"
-              :legacy-location="currentProject.location"
             />
           </div>
 
@@ -233,6 +232,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { projectTypeLabel } from '@/constants/projectTaxonomy'
+import { placeLabel } from '@/constants/regions'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/composables/useI18n'
@@ -263,9 +263,7 @@ const galleryImages = computed(() =>
   imageFiles.value.map(file => ({ imageUrl: file.filePath, fileName: file.fileName }))
 )
 
-const hasLocation = computed(
-  () => !!(currentProject.value?.fullAddress || currentProject.value?.city || currentProject.value?.location)
-)
+const hasLocation = computed(() => !!(currentProject.value?.fullAddress || currentProject.value?.city))
 
 const groupedDeliverables = computed(() => groupDeliverables(currentProject.value?.deliverables))
 

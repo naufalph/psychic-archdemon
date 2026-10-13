@@ -73,9 +73,7 @@ const props = defineProps({
   city: { type: String, default: '' },
   province: { type: String, default: '' },
   latitude: { type: [Number, String], default: null },
-  longitude: { type: [Number, String], default: null },
-  // Projects created before structured addresses existed only have this free-text string
-  legacyLocation: { type: String, default: '' }
+  longitude: { type: [Number, String], default: null }
 })
 
 const { t } = useI18n()
@@ -88,7 +86,7 @@ const mapTypes = computed(() => [
 
 const regionLine = computed(() => [props.city, displayProvince(props.province)].filter(Boolean).join(', '))
 
-const primaryLine = computed(() => props.fullAddress || regionLine.value || props.legacyLocation)
+const primaryLine = computed(() => props.fullAddress || regionLine.value)
 
 const secondaryLine = computed(() => (props.fullAddress ? regionLine.value : ''))
 
@@ -98,7 +96,7 @@ const urlFor = type =>
   embedMapUrl({
     latitude: props.latitude,
     longitude: props.longitude,
-    address: [props.fullAddress, regionLine.value || props.legacyLocation].filter(Boolean).join(', '),
+    address: [props.fullAddress, regionLine.value].filter(Boolean).join(', '),
     mapType: type
   })
 

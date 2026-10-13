@@ -1,3 +1,5 @@
+import { placeLabel } from '@/constants/regions'
+
 export const CATEGORIES = [
   { value: 'semua', labelKey: 'filterAll' },
   { value: 'hunian', labelKey: 'filterHunian' },
@@ -56,7 +58,7 @@ export function filterProjects(projects, { search = '', category = 'semua' } = {
     result = result.filter(
       p =>
         p.title?.toLowerCase().includes(q) ||
-        p.location?.toLowerCase().includes(q) ||
+        placeLabel(p).toLowerCase().includes(q) ||
         p.buildingFunction?.toLowerCase().includes(q) ||
         p.subCategory?.toLowerCase().includes(q)
     )

@@ -15,18 +15,15 @@ export const createApprovedOpenProject = async (page, title) => {
   const clientToken = await loginAsClient(page)
   const clientAuth = { Authorization: `Bearer ${clientToken}` }
 
-  // Setup goes through the API rather than the create form on purpose. The form's Location is
-  // derived from city/province, which only the Google Places callback populates — so a
-  // UI-driven setup depends on a live Maps API and breaks whenever a field is added.
-  // The create form itself is covered by client-projects.spec.js.
+  // Setup goes through the API rather than the survey on purpose: a UI-driven setup breaks
+  // whenever a survey step is added. The survey itself is covered by client-projects.spec.js.
   const draft = await page.request.post(`${API_BASE_URL}/rmtr/projects`, {
     headers: clientAuth,
     data: {
       title,
-      location: 'Depok, Jawa Barat',
       fullAddress: 'Jl. Margonda Raya No. 1, Depok',
-      city: 'Depok',
-      province: 'Jawa Barat',
+      city: 'Kota Depok',
+      province: 'JAWA_BARAT',
       projectScope: 'NEW_BUILD',
       projectCategory: 'RESIDENTIAL',
       buildingFunction: 'RESIDENTIAL',

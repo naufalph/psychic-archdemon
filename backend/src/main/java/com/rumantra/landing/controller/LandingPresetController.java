@@ -43,17 +43,16 @@ public class LandingPresetController {
         ApiResponse.success(briefService.create(request, resolveClientIp(httpRequest))));
   }
 
+  @PutMapping("/briefs/{claimToken}")
+  public ResponseEntity<ApiResponse<BriefResponse>> updateBrief(
+      @PathVariable String claimToken, @Valid @RequestBody BriefRequest request) {
+    return ResponseEntity.ok(ApiResponse.success(briefService.updateProgress(claimToken, request)));
+  }
+
   @PostMapping("/briefs/{claimToken}/claim")
   public ResponseEntity<ApiResponse<BriefResponse>> claimBrief(@PathVariable String claimToken) {
     Long userId = SecurityUtils.getCurrentUserId();
     return ResponseEntity.ok(ApiResponse.success(briefService.claim(claimToken, userId)));
-  }
-
-  /** Fallback for users who verified their email on a device that never held the claim token. */
-  @PostMapping("/briefs/mine/consume")
-  public ResponseEntity<ApiResponse<BriefResponse>> consumeMyBrief() {
-    Long userId = SecurityUtils.getCurrentUserId();
-    return ResponseEntity.ok(ApiResponse.success(briefService.consumeMine(userId)));
   }
 
   /**

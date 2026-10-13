@@ -252,7 +252,6 @@ export function useProjectSurvey() {
 
   const buildProjectData = () => ({
     title: projectTitle(),
-    location: [state.city, provinceLabel(state.province)].filter(Boolean).join(', '),
     city: state.city || null,
     province: state.province || null,
     fullAddress: trim(state.address) || null,
@@ -278,8 +277,7 @@ export function useProjectSurvey() {
     projectScope: primaryScope.value,
     buildingFunction: state.category || null,
     subCategory: state.subCategory || null,
-    title: projectTitle().slice(0, 160),
-    description: requirementsText().slice(0, 2000)
+    title: projectTitle().slice(0, 160)
   })
 
   const go = index => {

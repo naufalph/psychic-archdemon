@@ -5,6 +5,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Base64;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -32,6 +33,22 @@ public class LandingBriefService {
   private static final int MAX_BRIEFS_PER_IP_PER_HOUR = 30;
   private static final Duration RATE_WINDOW = Duration.ofHours(1);
 
+  // Mirrors SURVEY_FLOW in frontend2/src/constants/projectSurvey.js. furthest_step only moves
+  // forward along this order, and the funnel query reads it in the same order.
+  private static final List<String> SURVEY_STEPS =
+      List.of(
+          "lineup",
+          "scope",
+          "property",
+          "akun",
+          "alamat",
+          "luas",
+          "kebutuhan",
+          "deliv",
+          "fee",
+          "mulai",
+          "review");
+
   private final LandingBriefRepository briefRepository;
   private final LandingPresetRepository presetRepository;
   private final SecureRandom secureRandom = new SecureRandom();
@@ -48,20 +65,7 @@ public class LandingBriefService {
             .projectScope(validScope(request.getProjectScope()))
             .subCategory(validSubCategory(request.getBuildingFunction(), request.getSubCategory()))
             .title(trimToNull(request.getTitle()))
-            .location(trimToNull(request.getLocation()))
-            .city(trimToNull(request.getCity()))
-            .province(trimToNull(request.getProvince()))
-            .latitude(request.getLatitude())
-            .longitude(request.getLongitude())
-            .buildArea(request.getBuildArea())
-            .lotSize(request.getLotSize())
-            .designBudgetTotal(request.getDesignBudgetTotal())
-            .designBudgetMin(request.getDesignBudgetMin())
-            .designBudgetMax(request.getDesignBudgetMax())
-            .description(trimToNull(request.getDescription()))
-            .phoneNumber(trimToNull(request.getPhoneNumber()))
-            .startDateType(trimToNull(request.getStartDateType()))
-            .expectedStartDate(request.getExpectedStartDate())
+            .furthestStep(validStep(request.getFurthestStep()))
             .build();
 
     if (request.getPresetSlug() != null && !request.getPresetSlug().isBlank()) {
@@ -69,6 +73,58 @@ public class LandingBriefService {
     }
 
     return mapToResponse(briefRepository.save(brief));
+  }
+
+  /**
+   * Records how far a survey got. The token is the only credential here, so the pre-login answers
+   * are overwritten only while the brief is unclaimed; once it belongs to an account those answers
+   * live in the project draft and only the progress moves.
+   */
+  @Transactional
+  public BriefResponse updateProgress(String claimToken, BriefRequest request) {
+    LandingBrief brief =
+        briefRepository
+            .findByClaimToken(claimToken)
+            .orElseThrow(() -> new ResourceNotFoundException("Brief not found for this token"));
+
+    String step = validStep(request.getFurthestStep());
+    if (step != null
+        && SURVEY_STEPS.indexOf(step) > SURVEY_STEPS.indexOf(brief.getFurthestStep())) {
+      brief.setFurthestStep(step);
+    }
+
+    if (brief.getClaimedByUserId() == null) {
+      brief.setBuildingFunction(validCategory(request.getBuildingFunction()));
+      brief.setProjectScope(validScope(request.getProjectScope()));
+      brief.setSubCategory(
+          validSubCategory(request.getBuildingFunction(), request.getSubCategory()));
+      brief.setTitle(trimToNull(request.getTitle()));
+      brief.setPreset(
+          request.getPresetSlug() == null || request.getPresetSlug().isBlank()
+              ? null
+              : presetRepository.findBySlug(request.getPresetSlug()).orElse(null));
+    }
+
+    return mapToResponse(briefRepository.save(brief));
+  }
+
+  /**
+   * Ties a claimed brief to the draft its survey produced, so the funnel can follow a visitor
+   * through to submission. Best-effort: a stale or foreign token must never fail the draft.
+   */
+  @Transactional
+  public void linkProject(String claimToken, Long userId, Long projectId) {
+    if (claimToken == null || claimToken.isBlank()) {
+      return;
+    }
+    briefRepository
+        .findByClaimToken(claimToken)
+        .filter(brief -> userId.equals(brief.getClaimedByUserId()) && brief.getProjectId() == null)
+        .ifPresent(
+            brief -> {
+              brief.setProjectId(projectId);
+              briefRepository.save(brief);
+            });
   }
 
   /**
@@ -87,7 +143,11 @@ public class LandingBriefService {
     }
 
     brief.setClaimedByUserId(userId);
-    brief.setClaimedAt(LocalDateTime.now());
+    // The survey keeps its token after login to report progress, so it claims again on every
+    // visit; the first claim time is the one worth keeping.
+    if (brief.getClaimedAt() == null) {
+      brief.setClaimedAt(LocalDateTime.now());
+    }
     return mapToResponse(briefRepository.save(brief));
   }
 
@@ -107,19 +167,6 @@ public class LandingBriefService {
               briefRepository.save(brief);
             },
             () -> log.info("No unlinked landing brief for the supplied token"));
-  }
-
-  /** Returns the newest brief this user owns that has not yet been consumed by a project form. */
-  @Transactional
-  public BriefResponse consumeMine(Long userId) {
-    return briefRepository
-        .findFirstByClaimedByUserIdAndClaimedAtIsNullOrderByCreatedAtDesc(userId)
-        .map(
-            brief -> {
-              brief.setClaimedAt(LocalDateTime.now());
-              return mapToResponse(briefRepository.save(brief));
-            })
-        .orElse(null);
   }
 
   private void enforceRateLimit(String clientIp) {
@@ -177,6 +224,11 @@ public class LandingBriefService {
     return ProjectTaxonomy.isValidSubCategory(trimmedCategory, trimmed) ? trimmed : null;
   }
 
+  private String validStep(String step) {
+    String trimmed = trimToNull(step);
+    return SURVEY_STEPS.contains(trimmed) ? trimmed : null;
+  }
+
   private String trimToNull(String value) {
     if (value == null) {
       return null;
@@ -192,20 +244,7 @@ public class LandingBriefService {
         .projectScope(brief.getProjectScope())
         .subCategory(brief.getSubCategory())
         .title(brief.getTitle())
-        .location(brief.getLocation())
-        .city(brief.getCity())
-        .province(brief.getProvince())
-        .latitude(brief.getLatitude())
-        .longitude(brief.getLongitude())
-        .buildArea(brief.getBuildArea())
-        .lotSize(brief.getLotSize())
-        .designBudgetTotal(brief.getDesignBudgetTotal())
-        .designBudgetMin(brief.getDesignBudgetMin())
-        .designBudgetMax(brief.getDesignBudgetMax())
-        .description(brief.getDescription())
-        .phoneNumber(brief.getPhoneNumber())
-        .startDateType(brief.getStartDateType())
-        .expectedStartDate(brief.getExpectedStartDate())
+        .furthestStep(brief.getFurthestStep())
         .build();
   }
 

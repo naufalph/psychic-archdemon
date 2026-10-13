@@ -120,8 +120,9 @@ public class SecurityConfig {
                     // claiming a brief stays authenticated so it binds to a real user.
                     .requestMatchers(HttpMethod.POST, "/rmtr/landing/briefs")
                     .permitAll()
-                    .requestMatchers(HttpMethod.POST, "/rmtr/landing/briefs/mine/consume")
-                    .authenticated()
+                    // The survey reports its progress by claim token, before and after login
+                    .requestMatchers(HttpMethod.PUT, "/rmtr/landing/briefs/*")
+                    .permitAll()
                     .requestMatchers(HttpMethod.POST, "/rmtr/landing/briefs/*/claim")
                     .authenticated()
 

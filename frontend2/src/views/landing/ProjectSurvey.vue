@@ -207,7 +207,7 @@ const persistDraft = async () => {
       survey.state.draftId = null
     }
   }
-  const draft = await projectsStore.createDraftProject(data)
+  const draft = await projectsStore.createDraftProject({ ...data, landingBriefToken: storedToken() })
   survey.state.draftId = draft.id
 }
 
@@ -255,7 +255,7 @@ const submit = async () => {
 
     await queueSave()
     await projectsStore.submitProject(survey.state.draftId, [...survey.refs])
-    survey.reset()
+    startOver()
     finished.value = true
     window.scrollTo(0, 0)
   } catch (err) {
@@ -274,6 +274,7 @@ const goNext = () => {
     return
   }
   if (survey.state.step >= AKUN_STEP) autosave()
+  trackProgress(SURVEY_FLOW[survey.state.step + 1])
   survey.go(survey.state.step + 1)
 }
 
@@ -292,46 +293,70 @@ const openDashboard = () => {
   else leaveOpen.value = true
 }
 
-// A visitor who reaches the account step signed out leaves a server-side record of their
-// answers, so briefs abandoned before sign-in still count toward traction. Best effort only.
-const recordAnonymousBrief = async () => {
-  if (storedToken()) return
-  try {
-    const res = await landingAPI.createBrief(survey.briefSnapshot())
-    saveToken(res.data?.data?.claimToken)
-  } catch {
-    // Rate limit or network: the survey carries on without the record
-  }
-}
-
-watch(
-  () => key.value === 'akun' && !signedInClient.value,
-  atAccountSignedOut => {
-    if (atAccountSignedOut) recordAnonymousBrief()
-  },
-  { immediate: true }
-)
-
-// Sign-up already links the brief to the new account; a login or OAuth return claims it here
+// Sign-up already links the brief to the new account; a login or OAuth return claims it here.
+// The token is kept afterwards, because the brief goes on recording the survey's progress.
 const claimPendingBrief = async () => {
   const token = storedToken()
   if (!token || !signedInClient.value) return
   try {
     await landingAPI.claimBrief(token)
-    clearToken()
   } catch (err) {
     // A missing or someone else's brief can never be claimed, so stop retrying it
     if ([400, 404, 409].includes(err.response?.status)) clearToken()
   }
 }
 
-const onAuthenticated = async () => {
-  authOpen.value = false
-  if (!authStore.isClient) return
-  claimPendingBrief()
-  if (await openDraftFromRoute()) return
+// One landing brief per survey, keyed by the claim token. Every step moves its furthest_step
+// forward, signed in or not, so drop-off can be counted per step (see V18). Calls run one at a
+// time so two quick steps cannot both create a brief. Best effort: it never blocks the survey.
+let briefChain = Promise.resolve()
+
+const trackProgress = furthestStep => {
+  briefChain = briefChain.then(async () => {
+    const payload = { ...survey.briefSnapshot(), furthestStep }
+    try {
+      const token = storedToken()
+      if (token) {
+        await landingAPI.updateBrief(token, payload)
+        return
+      }
+      // A draft reopened from the dashboard began as an earlier survey, so it gets no new brief
+      if (survey.state.draftId) return
+      const res = await landingAPI.createBrief(payload)
+      if (saveToken(res.data?.data?.claimToken)) await claimPendingBrief()
+    } catch (err) {
+      if (err.response?.status === 404) clearToken()
+    }
+  })
+  return briefChain
+}
+
+// A finished or abandoned survey's brief must not collect the next survey's progress
+const startOver = () => {
+  survey.reset()
+  clearToken()
+}
+
+// A visitor who has just signed in on the account step moves on to the address step
+const leaveAccountStep = () => {
+  if (finished.value || survey.state.step !== AKUN_STEP) return
   survey.goTo('alamat')
+  trackProgress('alamat')
+}
+
+// Runs the moment the popup signs a client in, not when its button is pressed: a visitor who
+// closes the popup or leaves the page must still find the brief claimed and the draft saved.
+// The draft links to the brief only once the brief belongs to this account, hence the order.
+watch(signedInClient, async (signedIn, wasSignedIn) => {
+  if (!signedIn || wasSignedIn) return
+  await claimPendingBrief()
+  if (await openDraftFromRoute()) return
+  leaveAccountStep()
   autosave()
+})
+
+const onAuthenticated = () => {
+  authOpen.value = false
 }
 
 // Steps after "akun" assume a signed-in client; a stale session or a logout sends the visitor
@@ -393,6 +418,7 @@ const openDraftFromRoute = async () => {
       return true
     }
     survey.hydrateFromProject(project)
+    clearToken()
   } catch {
     submitError.value = 'Draft tidak dapat dibuka. Anda bisa melanjutkan brief di bawah ini.'
   }
@@ -400,22 +426,24 @@ const openDraftFromRoute = async () => {
 }
 
 onMounted(async () => {
-  claimPendingBrief()
+  await claimPendingBrief()
   // "Proyek baru" from the dashboard starts a clean brief; an unfinished one is already a
   // draft in the account, so clearing this browser's copy loses nothing
   if (route.query.baru) {
-    survey.reset()
+    startOver()
     router.replace({ query: {} })
     return
   }
   if (await openDraftFromRoute()) return
+  // An OAuth or email-verification return lands here already signed in
+  if (signedInClient.value) leaveAccountStep()
   // A signed-in client past the account step should always have the draft in their account
   if (signedInClient.value && survey.state.step > AKUN_STEP && !survey.state.draftId) autosave()
   // Landing links only seed a fresh survey; they never overwrite answers already in progress
   if (survey.state.step > 0) return
   const preset = route.query.preset
   if (typeof preset === 'string' && preset) {
-    survey.reset()
+    startOver()
     await applyPreset(preset)
     return
   }

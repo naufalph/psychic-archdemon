@@ -209,7 +209,7 @@ public class PortoService {
             .title(project.getTitle())
             .description(project.getScopeOfWork())
             .projectDate(LocalDate.now())
-            .location(project.getLocation())
+            .location(project.getCity())
             .projectType(IaiTaxonomy.fromProjectCategory(project.getProjectCategory()))
             .isBuilt(true)
             .madeWithRumantra(true)
