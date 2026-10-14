@@ -1,5 +1,31 @@
 <template>
-  <div class="min-h-screen bg-surface-alt py-12">
+  <div v-if="preApproval" class="min-h-screen bg-surface-alt">
+    <DetailShell :crumb-label="v2.crumbProjects" :crumb-to="{ name: 'ClientDashboard' }" :title="brief.title">
+      <ProjectBriefColumn
+        :project="currentProject"
+        :brief="brief"
+        :status="currentProject.status"
+        :needs-title="v2.needsClient"
+        :refs-hint="v2.refsHintClient"
+      />
+      <template #rail>
+        <BriefRail
+          :title="rejected ? v2.rejectedTitle : v2.pendingTitle"
+          :body="rejected ? v2.rejectedBody : v2.pendingBody"
+          :notes="rejected ? currentProject.validationNotes || t.clientDashboard.projectRejectedFallback : ''"
+          :notes-title="v2.notesTitle"
+          :footnote="rejected ? v2.rejectedFootnote : v2.pendingFootnote"
+          :meta="railMeta"
+        >
+          <template #after>
+            <ValidationSteps :steps="validationSteps" />
+          </template>
+        </BriefRail>
+      </template>
+    </DetailShell>
+  </div>
+
+  <div v-else class="min-h-screen bg-surface-alt py-12">
     <div class="max-w-7xl mx-auto px-6">
       <button
         class="mb-6 flex items-center gap-2 text-gray-600 hover:text-black transition"
@@ -42,7 +68,7 @@
             </div>
             <div class="bg-gray-50 rounded-2xl p-6">
               <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.clientDashboard.designBudget }}</p>
-              <p class="text-2xl font-bold text-black">{{ formatCurrency(currentProject.designBudget) }}</p>
+              <p class="text-2xl font-bold text-black">{{ designBudgetRange }}</p>
             </div>
             <div class="bg-gray-50 rounded-2xl p-6">
               <p class="text-xs text-gray-500 uppercase font-bold mb-2">{{ t.clientDashboard.bidPlural }}</p>
@@ -246,6 +272,11 @@ import BiddingCountdown from '@/components/bidding/BiddingCountdown.vue'
 import BidComparisonTable from '@/components/bid/BidComparisonTable.vue'
 import BidComparison from '@/components/bid/BidComparison.vue'
 import { groupDeliverables } from '@/constants/projectDeliverables'
+import DetailShell from '@/components/project/brief/DetailShell.vue'
+import ProjectBriefColumn from '@/components/project/brief/ProjectBriefColumn.vue'
+import BriefRail from '@/components/project/brief/BriefRail.vue'
+import ValidationSteps from '@/components/project/brief/ValidationSteps.vue'
+import { briefView, formatBriefDate } from '@/utils/projectBrief'
 
 const { t, locale } = useI18n()
 const route = useRoute()
@@ -257,6 +288,65 @@ const { currentProject, loading, error } = storeToRefs(projectsStore)
 const { projectBids } = storeToRefs(bidsStore)
 
 const compareIds = ref([])
+
+const v2 = computed(() => t.value.projectDetailV2)
+
+// Only briefs still awaiting the team's review use the v2 brief layout; once open, the page
+// is about comparing bids
+const preApproval = computed(
+  () =>
+    !loading.value &&
+    String(currentProject.value?.id) === String(route.params.id) &&
+    ['PENDING_APPROVAL', 'REJECTED'].includes(currentProject.value?.status)
+)
+const rejected = computed(() => currentProject.value?.status === 'REJECTED')
+
+const brief = computed(() =>
+  preApproval.value
+    ? briefView(currentProject.value, {
+        locale: locale.value,
+        copy: v2.value,
+        deliverableItems: t.value.bidCreate?.deliverableItems
+      })
+    : null
+)
+
+const railMeta = computed(() =>
+  [
+    { k: brief.value.feeLabel, v: brief.value.fee },
+    { k: v2.value.startDesign, v: brief.value.start },
+    brief.value.submittedAt && { k: v2.value.submitted, v: formatBriefDate(brief.value.submittedAt, locale.value) }
+  ].filter(Boolean)
+)
+
+const validationSteps = computed(() => {
+  const copy = v2.value
+  const submitted = {
+    state: 'done',
+    label: copy.stepSubmitted,
+    meta: formatBriefDate(brief.value.submittedAt, locale.value, true)
+  }
+  // No resubmit step: a rejected brief cannot be edited and sent again yet
+  if (rejected.value) {
+    return [
+      submitted,
+      { state: 'error', label: copy.stepRejected, meta: formatBriefDate(brief.value.reviewedAt, locale.value, true) },
+      { state: 'todo', label: copy.stepOpen, meta: copy.stepOpenMeta }
+    ]
+  }
+  return [
+    submitted,
+    { state: 'active', label: copy.stepValidating, meta: copy.stepValidatingMeta },
+    { state: 'todo', label: copy.stepOpen, meta: copy.stepOpenMeta },
+    { state: 'todo', label: copy.stepCompare, meta: copy.stepCompareMeta }
+  ]
+})
+
+const designBudgetRange = computed(() => {
+  const { designBudgetMin: min, designBudgetMax: max } = currentProject.value || {}
+  if (min == null) return 'N/A'
+  return max != null && max !== min ? `${formatCurrency(min)} – ${formatCurrency(max)}` : formatCurrency(min)
+})
 
 const imageFiles = computed(() => (currentProject.value?.files ?? []).filter(f => f.fileType?.startsWith('image/')))
 const galleryImages = computed(() =>

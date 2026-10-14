@@ -1,5 +1,9 @@
 <template>
-  <span :class="badgeClasses">
+  <span
+    class="inline-flex items-center whitespace-nowrap rounded-full font-semibold text-ink-900"
+    :class="[SIZES[size].pill, onImage ? 'bg-white/90 backdrop-blur-sm' : 'bg-surface-alt']"
+  >
+    <span class="rounded-full shrink-0" :class="[SIZES[size].dot, dotClass]" />
     {{ statusText }}
   </span>
 </template>
@@ -8,65 +12,72 @@
 import { computed } from 'vue'
 import { useI18n } from '@/composables/useI18n'
 
-const { t } = useI18n()
-
+/**
+ * The one way a project status is shown. Statuses are told apart by the dot colour alone, so
+ * every surface reads the same; only the size and the backdrop (over a photo or not) vary.
+ */
 const props = defineProps({
   status: {
     type: String,
     required: true
+  },
+  size: {
+    type: String,
+    default: 'md',
+    validator: value => ['sm', 'md'].includes(value)
+  },
+  onImage: {
+    type: Boolean,
+    default: false
   }
 })
 
-const statusConfig = {
-  DRAFT: {
-    text: 'Draft',
-    classes: 'bg-amber-100 text-amber-700 border-amber-200'
-  },
-  PENDING_APPROVAL: {
-    text: 'Pending Validation',
-    classes: 'bg-yellow-100 text-yellow-700 border-yellow-200'
-  },
-  OPEN: {
-    text: 'Open for Bidding',
-    classes: 'bg-green-100 text-green-700 border-green-200'
-  },
-  BIDDING_CLOSED: {
-    text: 'Bidding Closed',
-    classes: 'bg-gray-100 text-gray-700 border-gray-200'
-  },
-  NEGOTIATION: {
-    text: 'Finalization',
-    classes: 'bg-amber-100 text-amber-700 border-amber-200'
-  },
-  IN_PROGRESS: {
-    text: 'In Progress',
-    classes: 'bg-blue-100 text-blue-700 border-blue-200'
-  },
-  COMPLETED: {
-    text: 'Completed',
-    classes: 'bg-ink-900 text-white border-ink-900'
-  },
-  CANCELLED: {
-    text: 'Cancelled',
-    classes: 'bg-gray-100 text-gray-500 border-gray-200'
-  },
-  REJECTED: {
-    text: 'Rejected',
-    classes: 'bg-red-100 text-red-700 border-red-200'
-  },
-  // Legacy values kept for backwards compatibility
-  CLOSED: { text: 'Closed', classes: 'bg-gray-100 text-gray-700 border-gray-200' },
-  AWARDED: { text: 'Awarded', classes: 'bg-ink-900 text-white border-ink-900' },
-  PENDING: { text: 'Pending Validation', classes: 'bg-yellow-100 text-yellow-700 border-yellow-200' }
+const { t } = useI18n()
+
+const SIZES = {
+  sm: { pill: 'gap-1.5 px-2.5 py-1 text-micro', dot: 'w-1.5 h-1.5' },
+  md: { pill: 'gap-2 h-[30px] px-3 text-caption-sm', dot: 'w-2 h-2' }
 }
 
-const statusText = computed(
-  () => t.value.projectStatus?.[props.status] || statusConfig[props.status]?.text || props.status
-)
+const WAITING = 'bg-amber-500'
+const ENDED = 'bg-ink-300'
 
-const badgeClasses = computed(() => {
-  const baseClasses = 'inline-flex items-center whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-bold border'
-  const statusClasses = statusConfig[props.status]?.classes || 'bg-gray-100 text-gray-700'
-  return `${baseClasses} ${statusClasses}`
-})
+const DOT_COLORS = {
+  DRAFT: WAITING,
+  PENDING_APPROVAL: WAITING,
+  NEGOTIATION: WAITING,
+  OPEN: 'bg-brand-green',
+  IN_PROGRESS: 'bg-accent-blue',
+  COMPLETED: 'bg-ink-900',
+  REJECTED: 'bg-red-500',
+  BIDDING_CLOSED: ENDED,
+  NEGOTIATION_EXPIRED: ENDED,
+  CANCELLED: ENDED,
+  DELETED: ENDED,
+  // Legacy values kept for backwards compatibility
+  PENDING: WAITING,
+  AWARDED: 'bg-accent-blue',
+  CLOSED: ENDED
+}
+
+const FALLBACK_TEXT = {
+  DRAFT: 'Draft',
+  PENDING_APPROVAL: 'Pending Validation',
+  OPEN: 'Open for Bidding',
+  BIDDING_CLOSED: 'Bidding Closed',
+  NEGOTIATION: 'Finalization',
+  NEGOTIATION_EXPIRED: 'Finalization Expired',
+  IN_PROGRESS: 'In Progress',
+  COMPLETED: 'Completed',
+  CANCELLED: 'Cancelled',
+  REJECTED: 'Rejected',
+  DELETED: 'Deleted',
+  CLOSED: 'Closed',
+  AWARDED: 'Awarded',
+  PENDING: 'Pending Validation'
+}
+
+const dotClass = computed(() => DOT_COLORS[props.status] || ENDED)
+
+const statusText = computed(() => t.value.projectStatus?.[props.status] || FALLBACK_TEXT[props.status] || props.status)
 </script>

@@ -110,12 +110,6 @@ const routes = [
     meta: { requiresAuth: true, requiresRole: 'ARCHITECT' }
   },
   {
-    path: '/architect/opportunities/:projectId',
-    name: 'ProjectDetailForArchitect',
-    component: () => import('@/views/architect/ProjectDetailForArchitect.vue'),
-    meta: { requiresAuth: true, requiresRole: 'ARCHITECT' }
-  },
-  {
     path: '/architect/opportunities/:projectId/bid',
     name: 'BidCreate',
     component: () => import('@/views/architect/BidCreate.vue'),
@@ -144,9 +138,19 @@ const routes = [
         component: () => import('@/views/architect/OpportunityList.vue')
       },
       {
+        path: 'opportunities/:projectId',
+        name: 'ProjectDetailForArchitect',
+        component: () => import('@/views/architect/ProjectDetailForArchitect.vue')
+      },
+      {
         path: 'bids',
         name: 'MyBids',
         component: () => import('@/views/architect/MyBids.vue')
+      },
+      {
+        path: 'bids/:bidId',
+        name: 'ArchitectBidDetail',
+        component: () => import('@/views/architect/ArchitectBidDetail.vue')
       },
       {
         path: 'portfolios',

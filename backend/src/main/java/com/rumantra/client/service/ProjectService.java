@@ -27,12 +27,14 @@ import com.rumantra.client.domain.Client;
 import com.rumantra.client.domain.Project;
 import com.rumantra.client.domain.ProjectFile;
 import com.rumantra.client.domain.ProjectStatus;
+import com.rumantra.client.domain.ProjectStatusLog;
 import com.rumantra.client.dto.CreateProjectRequest;
 import com.rumantra.client.dto.ProjectFileDto;
 import com.rumantra.client.dto.ProjectResponse;
 import com.rumantra.client.repository.ClientRepository;
 import com.rumantra.client.repository.ProjectFileRepository;
 import com.rumantra.client.repository.ProjectRepository;
+import com.rumantra.client.repository.ProjectStatusLogRepository;
 import com.rumantra.landing.service.LandingBriefService;
 import com.rumantra.ledger.service.StatusTransitionService;
 import com.rumantra.notification.event.ProjectValidatedEvent;
@@ -76,6 +78,7 @@ public class ProjectService {
   private final StatusTransitionService statusTransitionService;
   private final ContractDocumentService contractDocumentService;
   private final LandingBriefService landingBriefService;
+  private final ProjectStatusLogRepository projectStatusLogRepository;
 
   @PersistenceContext private EntityManager entityManager;
 
@@ -311,7 +314,21 @@ public class ProjectService {
             .findByIdWithFiles(projectId)
             .orElseThrow(
                 () -> new ResourceNotFoundException("Project not found with id: " + projectId));
-    return mapToProjectResponse(project);
+    return withReviewDates(mapToProjectResponse(project));
+  }
+
+  // Detail-only: read from the ledger so list endpoints don't pay a query per project
+  private ProjectResponse withReviewDates(ProjectResponse response) {
+    for (ProjectStatusLog entry :
+        projectStatusLogRepository.findByProjectIdOrderByCreatedAtAsc(response.getId())) {
+      switch (entry.getAction() == null ? "" : entry.getAction()) {
+        case "PROJECT_SUBMITTED" -> response.setSubmittedAt(entry.getCreatedAt());
+        case "PROJECT_VALIDATED", "PROJECT_REJECTED" ->
+            response.setReviewedAt(entry.getCreatedAt());
+        default -> {}
+      }
+    }
+    return response;
   }
 
   @Transactional(readOnly = true)
@@ -486,7 +503,7 @@ public class ProjectService {
           "This project is not accessible");
     }
 
-    ProjectResponse response = mapToProjectResponse(project);
+    ProjectResponse response = withReviewDates(mapToProjectResponse(project));
 
     if (project.getStatus() == ProjectStatus.COMPLETED) {
       List<Bid> acceptedBids =

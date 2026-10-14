@@ -19,12 +19,7 @@
       >
         {{ projectTypeText || 'Proyek' }}
       </span>
-      <span
-        class="absolute bottom-3 left-3 inline-flex items-center gap-1.5 bg-white/90 text-ink-900 text-micro font-semibold px-2.5 py-1 rounded-full"
-      >
-        <span class="w-1.5 h-1.5 rounded-full" :class="statusDotClass"></span>
-        {{ t.projectStatus?.[project.status] || project.status }}
-      </span>
+      <ProjectStatusBadge :status="project.status" size="sm" on-image class="absolute bottom-3 left-3" />
     </div>
 
     <div class="p-5 flex flex-col flex-1">
@@ -170,20 +165,6 @@ const projectTypeText = computed(() => projectTypeLabel(props.project, locale.va
 const place = computed(() => placeLabel(props.project))
 
 // Status reads as a coloured dot on a neutral pill, so the badge stays calm over any photo
-const STATUS_DOT = {
-  DRAFT: 'bg-amber-500',
-  PENDING_APPROVAL: 'bg-amber-500',
-  NEGOTIATION: 'bg-amber-500',
-  OPEN: 'bg-green-500',
-  IN_PROGRESS: 'bg-blue-500',
-  AWARDED: 'bg-blue-500',
-  COMPLETED: 'bg-ink-400',
-  CLOSED: 'bg-ink-400',
-  CANCELLED: 'bg-ink-400',
-  REJECTED: 'bg-red-500'
-}
-const statusDotClass = computed(() => STATUS_DOT[props.project.status] || 'bg-ink-300')
-
 const summary = computed(() => briefVision(props.project.description))
 
 const formatCurrency = value => {

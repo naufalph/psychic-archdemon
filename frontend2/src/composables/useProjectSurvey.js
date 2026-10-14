@@ -16,18 +16,9 @@ import {
 } from '@/constants/projectSurvey'
 import { citiesFor, provinceLabel } from '@/constants/regions'
 import { formatIDRDisplay } from '@/utils/currencyFormat'
+import { LINE, parseRequirementsText } from '@/utils/projectBrief'
 
 const STORAGE_KEY = 'rumantra:project-survey:v1'
-
-// Labels of the lines appended to the requirements text; see requirementsText()
-const LINE = {
-  services: 'Layanan:',
-  scopes: 'Lingkup proyek:',
-  areas: 'Area interior:',
-  apartment: 'Tipe unit apartemen:',
-  wall: 'Panjang dinding:',
-  floorsUnknown: 'Jumlah lantai: belum ditentukan'
-}
 
 const blankState = () => ({
   step: 0,
@@ -293,20 +284,7 @@ export function useProjectSurvey() {
    */
   const hydrateFromProject = project => {
     const fresh = blankState()
-    const text = String(project.scopeOfWork || '')
-    // A draft saved before the needs step has no vision yet, so its text opens with the labels
-    const markerAt = text.startsWith(LINE.services) ? 0 : text.indexOf(`\n\n${LINE.services}`)
-    const vision = markerAt >= 0 ? text.slice(0, markerAt) : text
-    const meta = {}
-    if (markerAt >= 0) {
-      text
-        .slice(markerAt)
-        .split('\n')
-        .forEach(line => {
-          const hit = Object.entries(LINE).find(([, label]) => line.startsWith(label))
-          if (hit) meta[hit[0]] = line.slice(hit[1].length).trim()
-        })
-    }
+    const { vision, meta, floorsUnknown } = parseRequirementsText(project.scopeOfWork)
 
     if (meta.services) {
       fresh.services = Object.fromEntries(
@@ -362,9 +340,9 @@ export function useProjectSurvey() {
     fresh.land = project.lotSize != null ? String(project.lotSize) : ''
     fresh.building = project.estimatedBuildArea != null ? String(project.estimatedBuildArea) : ''
     fresh.floors = project.numberOfFloors != null ? String(project.numberOfFloors) : ''
-    fresh.floorsUnknown = text.includes(LINE.floorsUnknown)
+    fresh.floorsUnknown = floorsUnknown
     fresh.wall = meta.wall ? meta.wall.replace(/\s*m$/, '') : ''
-    fresh.vision = vision.trim()
+    fresh.vision = vision
 
     const min = project.designBudgetMin
     const max = project.designBudgetMax

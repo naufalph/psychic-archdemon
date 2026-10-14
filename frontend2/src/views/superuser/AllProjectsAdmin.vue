@@ -37,12 +37,7 @@
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 mb-1">
               <p class="font-semibold text-gray-900 truncate">{{ project.title }}</p>
-              <span
-                class="text-xs px-2 py-0.5 rounded-full font-semibold whitespace-nowrap"
-                :class="statusColor(project.status)"
-              >
-                {{ t.projectStatus?.[project.status] || project.status }}
-              </span>
+              <ProjectStatusBadge :status="project.status" size="sm" />
             </div>
             <p class="text-sm text-gray-500">
               {{ placeLabel(project) }} · Design Fee IDR {{ formatCurrency(project.designBudgetMin) }} -
@@ -81,6 +76,7 @@
 </template>
 
 <script setup>
+import ProjectStatusBadge from '@/components/project/ProjectStatusBadge.vue'
 import { ref, computed, onMounted } from 'vue'
 import { adminProjectsAPI } from '@/services/adminApi'
 import { useI18n } from '@/composables/useI18n'
@@ -148,18 +144,6 @@ const overrideNegotiation = async id => {
     processing.value = null
   }
 }
-
-const statusColor = s =>
-  ({
-    PENDING_APPROVAL: 'bg-amber-100 text-amber-700',
-    OPEN: 'bg-green-100 text-green-700',
-    NEGOTIATION: 'bg-blue-100 text-blue-700',
-    IN_PROGRESS: 'bg-purple-100 text-purple-700',
-    COMPLETED: 'bg-gray-100 text-gray-600',
-    CANCELLED: 'bg-red-100 text-red-600',
-    REJECTED: 'bg-red-100 text-red-600',
-    BIDDING_CLOSED: 'bg-orange-100 text-orange-700'
-  })[s] || 'bg-gray-100 text-gray-600'
 
 const formatCurrency = v => (v ? Number(v).toLocaleString('id-ID') : '-')
 const formatDate = d =>

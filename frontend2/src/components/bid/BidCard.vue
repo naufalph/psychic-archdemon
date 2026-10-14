@@ -11,7 +11,7 @@
         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
       />
       <BidStatusBadge :status="bid.status" class="absolute top-3 right-3" />
-      <ProjectStatusBadge :status="bid.projectStatus" class="absolute bottom-3 left-3" />
+      <ProjectStatusBadge :status="bid.projectStatus" size="sm" on-image class="absolute bottom-3 left-3" />
     </div>
 
     <div class="p-5">

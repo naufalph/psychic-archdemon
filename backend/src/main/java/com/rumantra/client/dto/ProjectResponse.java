@@ -53,6 +53,8 @@ public class ProjectResponse {
   private Boolean architectConfirmed;
   private Long bidCount;
   private Long archivedPortoId;
+  private LocalDateTime submittedAt;
+  private LocalDateTime reviewedAt;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
 }

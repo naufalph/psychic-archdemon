@@ -27,7 +27,11 @@
       </div>
     </div>
 
-    <div v-if="mapUrl" class="relative h-[420px] rounded-2xl overflow-hidden border border-gray-200 bg-gray-100">
+    <div
+      v-if="mapUrl"
+      class="relative rounded-2xl overflow-hidden border border-gray-200 bg-gray-100"
+      :class="compact ? 'h-[280px]' : 'h-[420px]'"
+    >
       <!-- Each map type keeps its own frame once opened. Switching maptype changes the iframe
            src, which forces a full reload and a white flash, so the loaded frames are kept
            alive and cross-faded instead — the Embed API is unmetered, so this costs nothing. -->
@@ -73,7 +77,8 @@ const props = defineProps({
   city: { type: String, default: '' },
   province: { type: String, default: '' },
   latitude: { type: [Number, String], default: null },
-  longitude: { type: [Number, String], default: null }
+  longitude: { type: [Number, String], default: null },
+  compact: { type: Boolean, default: false }
 })
 
 const { t } = useI18n()
